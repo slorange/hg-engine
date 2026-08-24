@@ -138,6 +138,10 @@
 // comment out the line below to revert back to Gen 8- behavior
 #define RESTORE_ITEMS_AT_BATTLE_END
 
+// HEAL_AFTER_BATTLE fully restores the player's party (HP, PP, status) when any battle ends
+// comment out the line below to revert to vanilla attrition
+#define HEAL_AFTER_BATTLE
+
 // AI_CAN_GRAB_ITEMS allows to use Trick, Switcheroo, (Thief still todo) on the Player and actually grab items. This can result in lost items.
 #define AI_CAN_GRAB_ITEMS
 

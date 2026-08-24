@@ -2,6 +2,10 @@
 
 Working notes for this fork so we don’t re-discover the text/data layout every session.
 
+## Git (agents)
+
+**Read-only only.** Agents may run git commands that **inspect** state (`status`, `diff`, `log`, `show`, etc.). **Never commit, push, merge, rebase, reset, checkout, add, stash, or any other mutating git action** — the user handles all of that themselves. If they say they’re committing, they mean they will do it; don’t beat them to it.
+
 ## Why the Mom line was hard to find
 
 It wasn’t “lots of lines in the repo.” **That dialogue was not in the repo at all.**
@@ -177,3 +181,18 @@ Vanilla init header runs **`scr_seq_R36_010` on map load**. **`tools/patch_scr_s
 
 **Out of scope for now:** Floria / SquirtBottle / flower-shop chain, moving Sudowoodo encounter elsewhere.
 
+---
+
+## Heal after every battle
+
+**Status:** verified (wild, trainer, flee, and catch tested in-game).
+
+**Design:** `DESIGN.md` §17 — full HP/PP/status restore after every battle (wild, trainer, flee; no special exclusions).
+
+| What | Where |
+|------|--------|
+| Toggle | `HEAL_AFTER_BATTLE` in `include/config.h` (enabled by default; comment out to disable) |
+| Hook | existing `Battle_End` overlay hook → `BattleEndRevertFormChange` in `src/battle/battle_pokemon.c` |
+| Logic | Nurse Joy–equivalent: max HP, clear status, `RestoreBoxMonPP` on save party + battle-work copies |
+
+**Verified:** wild, trainer, flee, and catch all restore HP/PP/status on return to field.

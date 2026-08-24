@@ -1,3 +1,4 @@
+#include "config.h"
 #include "types.h"
 
 #include "constants/ability.h"
@@ -13,6 +14,7 @@
 #include "battle.h"
 #include "overlay.h"
 #include "pokemon.h"
+#include "save.h"
 
 #ifdef DEBUG_BATTLE_SCENARIOS
 #include "test_battle.h"
@@ -29,6 +31,37 @@ void CT_EncountSendOutMessageParamMake(void *bw, struct CLIENT_PARAM *cp, struct
 // void BattleFormChange(int client, int form_no, void* bw, struct BattleStruct *sp, bool8 SwitchAbility);
 void TryRevertFormChange(struct BattleStruct *sp, void *bw, int client_no);
 void BattleEndRevertFormChange(struct BattleSystem *bw);
+
+#ifdef HEAL_AFTER_BATTLE
+static void HealPartyMon(struct PartyPokemon *mon)
+{
+    u32 maxhp;
+    u32 status = 0;
+
+    if (!GetMonData(mon, MON_DATA_SPECIES_EXISTS, NULL)) {
+        return;
+    }
+
+    maxhp = GetMonData(mon, MON_DATA_MAXHP, NULL);
+    SetMonData(mon, MON_DATA_HP, &maxhp);
+    SetMonData(mon, MON_DATA_STATUS, &status);
+    RestoreBoxMonPP(&mon->box);
+}
+
+static void BattleEndHealParty(struct BattleSystem *bw)
+{
+    int i;
+    struct Party *party = SaveData_GetPlayerPartyPtr(SaveBlock2_get());
+
+    for (i = 0; i < party->count; i++) {
+        HealPartyMon(&party->members[i]);
+    }
+
+    for (i = 0; i < BattleWorkPokeCountGet(bw, 0); i++) {
+        HealPartyMon(BattleWorkPokemonParamGet(bw, 0, i));
+    }
+}
+#endif // HEAL_AFTER_BATTLE
 // void ClearBattleMonFlags(struct BattleStruct *sp, int client);
 // u32 GetAdjustedMoveTypeBasics(struct BattleStruct *sp, u32 move, u32 ability, u32 type);
 // u32 GetAdjustedMoveType(struct BattleStruct *sp, u32 client, u32 move);
@@ -1109,6 +1142,10 @@ void BattleEndRevertFormChange(struct BattleSystem *bw)
         newBS.itemsToRestore[i] = 0;
     }
 #endif // RESTORE_ITEMS_AT_BATTLE_END
+
+#ifdef HEAL_AFTER_BATTLE
+    BattleEndHealParty(bw);
+#endif // HEAL_AFTER_BATTLE
 
 #ifdef DEBUG_BATTLE_SCENARIOS
 
