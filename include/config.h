@@ -121,10 +121,10 @@
 // comment out the line below to keep the max at 18
 #define EXPAND_PC_BOXES
 
-// SHINY_ODDS are the odds that a pokémon will be shiny.  actual odds are SHINY_ODDS over 65,536, by default 8 / 65536 or 1 / 8192
+// SHINY_ODDS: actual odds are SHINY_ODDS / 65536 (256 => 1/256; vanilla was 8 => ~1/8192)
 // note that changing this still has no chance of spawning shiny mons in for trainers like the tutorial's method does
 // this will change existing mons too!  if you want to change the odds of wild mons only, you will have to add a certain amount of pid rerolls to the AddWildPartyPokemon routine
-#define SHINY_ODDS 8
+#define SHINY_ODDS 256
 
 // FRIENDSHIP_EVOLUTION_THRESHOLD defines the amount of friendship needed to evolve mons with friendship-related evolutions
 // modern generations have this value at 160, older ones at 220.  still max out at 255
@@ -162,13 +162,13 @@
 #define UPDATE_VITAMIN_EV_CAPS
 
 // DISABLE_ITEMS_IN_TRAINER_BATTLE will disable the usage of items in trainer battles. This is also true for the AI.
-// #define DISABLE_ITEMS_IN_TRAINER_BATTLE
+#define DISABLE_ITEMS_IN_TRAINER_BATTLE
 
 // REUSABLE_TMS will make TMs infinite and hide the quantity number.
 #define REUSABLE_TMS
 
 // DELETABLE_HMS allows HMs to be forgotten, this also makes their quantity reduce, but the infinite TMs change prevents this.
-// #define DELETABLE_HMS
+#define DELETABLE_HMS
 
 // MART_EXPANSION allows for adding and modifying items to the mart inventories
 #define MART_EXPANSION
@@ -241,7 +241,7 @@
 
 // SKIP_TUTORIAL_INFO will skip the tutorial when starting a new game and go straight to Professor Oak greeting you.
 // uncomment the line out to get this functionality
-// #define SKIP_TUTORIAL_INFO
+#define SKIP_TUTORIAL_INFO
 
 // Champions-specific move configurations. Set to 0 to use Scarlet/Violet values.
 #define CHAMPIONS_POWER_CHANGES         1
