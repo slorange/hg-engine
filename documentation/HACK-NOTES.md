@@ -196,3 +196,68 @@ Vanilla init header runs **`scr_seq_R36_010` on map load**. **`tools/patch_scr_s
 | Logic | Nurse Joy–equivalent: max HP, clear status, `RestoreBoxMonPP` on save party + battle-work copies |
 
 **Verified:** wild, trainer, flee, and catch all restore HP/PP/status on return to field.
+
+---
+
+## Full party EXP share (interim)
+
+**Status:** verified in-game.
+
+**Design:** interim stand-in until `DESIGN.md` §16 battle-limit EXP share exists. Every non-fainted party member gets the **full** calculated EXP for each KO (not split). Fainted bench mons still get nothing. No Exp Share item required.
+
+| What | Where |
+|------|--------|
+| Toggle | `FULL_PARTY_EXP_SHARE` in `include/config.h` (enabled by default) |
+| Hook | `Task_DistributeExp_Extend` in `src/battle/battle_script_commands.c` |
+
+**Verified:** bench mons gain EXP (and level) from wild/trainer KOs while only one mon is out in battle.
+
+---
+
+## Route 42 bridges (next)
+
+**Status:** planned — not started. **Tool:** DSPRE (user recon in progress).
+
+**Goal:** both water patches on Route 42 become crossable **without Surf** — walkable **and** bridge-looking (collision + metatile paint in one DSPRE pass; not scr_seq/zone_event).
+
+### Scope (decided)
+
+1. **West** — water near the Ecruteak gatehouse side  
+2. **East** — water toward Mt. Mortar  
+
+Both need the same treatment.
+
+### IDs (don’t mix them up)
+
+| What | Route 42 |
+|------|----------|
+| Map header | `MAP_R42` = **44** |
+| zone_event (`a/0/3/2`) | member **041** (`041_R42.json`) |
+| scr_seq (`a/0/1/2`) | member **252** (`scr_seq_0252_R42.s`) |
+| Encounter bank | **52** (`ENCDATA_R42_ROUTE_42` in `data/Encounters.c`) |
+| Text bank | **399** |
+
+Route 42 uses the shared Johto **EVERYWHERE** matrix (`map_matrix_0000`) — edits are in **world coordinates** (~x 422–504, z ~164–184). Map header **44** ≠ zone_event **041** ≠ scr_seq **252**.
+
+### Why this is different from badge gates / Sudowoodo
+
+Water blocking is **terrain collision** (`land_data`), not scripts. hg-engine rebuilds scr_seq, zone_event, and encounters — **not** land_data. No in-repo Makefile target yet; patch `base/root/` after DSPRE export.
+
+| NARC | ROM path | Purpose |
+|------|----------|---------|
+| `land_data.narc` | `a/0/6/5` | **Required** — walkability + metatile behavior |
+| `bm_field.narc` | `a/0/4/0` | Optional — 3D bridge models if flat tiles aren’t enough |
+| `area_data.narc` | `a/0/4/2` | Routes land_data chunk via `areaDataBank 8` |
+
+### Steps
+
+1. **DSPRE recon** (user) — open Route 42; for each water patch note world `(x, z)` rectangles; find bridge metatiles elsewhere in Johto to copy/paint.  
+2. **Edit both patches in DSPRE** — per patch: (a) collision → walkable, not water/surf behavior; (b) paint bridge metatiles over water.  
+3. **Export / patch ROM** — save modified NARC(s) into `base/root/a/0/6/5` (and `a/0/4/0` if models changed) → Docker `make -j24` → test `test.nds`.  
+4. **Optional polish** — zero `rateSurf` / surf slots in encounter bank 52 on bridged tiles; sign in msg bank 399; zone_event/scr_seq only if adding NPCs/signs (not needed for basic walkability).  
+5. **Test** — walk both crossings without Surf; confirm Ecruteak gatehouse + Mt. Mortar warps still work; check you didn’t open unintended water elsewhere on the shared matrix.  
+6. **Document** — mark verified here; note exact coords and which land_data member was edited.
+
+**Gotcha:** clean ROM re-extract can wipe `base/root/` land_data edits (same class of problem as bad scr_seq overrides).
+
+**Pret references:** `files/fielddata/eventdata/zone_event/041_R42.json`, `scr_seq_0252_R42.s` — useful for warp coords during recon; scripts do **not** control surf/walk on water tiles.

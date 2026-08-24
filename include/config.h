@@ -142,6 +142,10 @@
 // comment out the line below to revert to vanilla attrition
 #define HEAL_AFTER_BATTLE
 
+// FULL_PARTY_EXP_SHARE gives every non-fainted party member the full battle EXP amount (not split)
+// comment out the line below to revert to vanilla EXP distribution
+#define FULL_PARTY_EXP_SHARE
+
 // AI_CAN_GRAB_ITEMS allows to use Trick, Switcheroo, (Thief still todo) on the Player and actually grab items. This can result in lost items.
 #define AI_CAN_GRAB_ITEMS
 

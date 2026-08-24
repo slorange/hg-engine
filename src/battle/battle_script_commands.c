@@ -1298,6 +1298,36 @@ u8 ALIGN4 scratchpad[4] = { 0, 0, 0, 0 };
 #define monCountFromItem     scratchpad[1]
 #define trackPartyExperience scratchpad[2]
 
+#ifdef FULL_PARTY_EXP_SHARE
+static BOOL PartyMonEligibleForFullExpShare(struct PartyPokemon *pp)
+{
+    return (GetMonData(pp, MON_DATA_SPECIES, NULL) != 0)
+        && (GetMonData(pp, MON_DATA_HP, NULL) != 0);
+}
+
+static void FullPartyExpShareMarkEligible(struct BattleStruct *sp, void *bw, int client_no, int exp_client_no, struct Party *party)
+{
+    int i;
+
+    for (i = 0; i < party->count; i++) {
+        struct PartyPokemon *pploop = BattleWorkPokemonParamGet(bw, exp_client_no, i);
+
+        if (PartyMonEligibleForFullExpShare(pploop)) {
+            sp->obtained_exp_right_flag[client_no] |= No2Bit(i);
+        }
+    }
+}
+
+static void FullPartyExpShareAssignExp(struct BattleStruct *sp, u32 totalexp)
+{
+    sp->obtained_exp = totalexp;
+    if (sp->obtained_exp == 0) {
+        sp->obtained_exp = 1;
+    }
+    sp->exp_share_obtained_exp = 0;
+}
+#endif // FULL_PARTY_EXP_SHARE
+
 /**
  *  @brief task to distribute experience
  *
@@ -1308,8 +1338,10 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
 {
     int sel_mons_no = 0;
     int client_no;
+#ifndef FULL_PARTY_EXP_SHARE
     int item;
     int eqp;
+#endif
     struct PartyPokemon *pp = NULL;
     struct EXP_CALCULATOR *expcalc = work;
     int exp_client_no = 0;
@@ -1324,12 +1356,18 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
             if (pp == NULL) {
                 goto _skipAllThis;
             }
+#ifdef FULL_PARTY_EXP_SHARE
+            if (PartyMonEligibleForFullExpShare(pp)) {
+                break;
+            }
+#else
             item = GetMonData(pp, MON_DATA_HELD_ITEM, NULL);
             eqp = GetItemData(item, ITEM_PARAM_HOLD_EFFECT, 5);
 
             if ((eqp == HOLD_EFFECT_EXP_SHARE) || (sp->obtained_exp_right_flag[client_no] & No2Bit(sel_mons_no))) {
                 break;
             }
+#endif
         }
     }
 
@@ -1343,9 +1381,15 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
     if (!expcalc->work[6]) {
         monCount = 0;
         monCountFromItem = 0;
+#ifdef FULL_PARTY_EXP_SHARE
+        FullPartyExpShareMarkEligible(sp, expcalc->bw, client_no, exp_client_no, party);
+#endif
         for (int i = 0; i < party->count; i++) {
             struct PartyPokemon *pploop = BattleWorkPokemonParamGet(expcalc->bw, exp_client_no, i);
             if ((GetMonData(pploop, MON_DATA_SPECIES, NULL)) && (GetMonData(pploop, MON_DATA_HP, NULL))) {
+#ifdef FULL_PARTY_EXP_SHARE
+                monCount++;
+#else
                 if (sp->obtained_exp_right_flag[client_no /*(sp->fainting_client >> 1) & 1*/] & No2Bit(i)) {
                     monCount++;
                 }
@@ -1356,6 +1400,7 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
                 if (eqp == HOLD_EFFECT_EXP_SHARE) {
                     monCountFromItem++;
                 }
+#endif
             }
         }
     }
@@ -1391,6 +1436,9 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
 
             // debug_printf("[Task_DistributeExp_Extend] L = %d, Lp = %d, b = %d, top = %d, bottom = %d, exp = %d\n", level, Lp, base, top, bottom, totalexp);
 
+#ifdef FULL_PARTY_EXP_SHARE
+            FullPartyExpShareAssignExp(sp, totalexp);
+#else
             if (monCountFromItem) {
                 sp->obtained_exp = (totalexp / 2) / monCount;
                 if (sp->obtained_exp == 0) {
@@ -1407,6 +1455,7 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
                 }
                 sp->exp_share_obtained_exp = 0;
             }
+#endif
         }
     }
 
@@ -1430,9 +1479,15 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
         if (!expcalc->work[6]) {
             monCount = 0;
             monCountFromItem = 0;
+#ifdef FULL_PARTY_EXP_SHARE
+            FullPartyExpShareMarkEligible(sp, expcalc->bw, client_no, exp_client_no, party);
+#endif
             for (int i = 0; i < party->count; i++) {
                 struct PartyPokemon *pploop = BattleWorkPokemonParamGet(expcalc->bw, exp_client_no, i);
                 if ((GetMonData(pploop, MON_DATA_SPECIES, NULL)) && (GetMonData(pploop, MON_DATA_HP, NULL))) {
+#ifdef FULL_PARTY_EXP_SHARE
+                    monCount++;
+#else
                     if (sp->obtained_exp_right_flag[client_no /*(sp->fainting_client >> 1) & 1*/] & No2Bit(i)) {
                         monCount++;
                     }
@@ -1443,12 +1498,16 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
                     if (eqp == HOLD_EFFECT_EXP_SHARE) {
                         monCountFromItem++;
                     }
+#endif
                 }
             }
         }
         // multiply by 255/390 (map audino to 255) to not get massively inflated experience rates
         totalexp = 255 * GetSpeciesBaseExp(sp->battlemon[sp->fainting_client].species, sp->battlemon[sp->fainting_client].form_no) / 390; // PokePersonalParaGet(sp->battlemon[sp->fainting_client].species, PERSONAL_EXP_YIELD);
         totalexp = (totalexp * sp->battlemon[sp->fainting_client].level) / 7;
+#ifdef FULL_PARTY_EXP_SHARE
+        FullPartyExpShareAssignExp(sp, totalexp);
+#else
         if (monCountFromItem) {
             sp->obtained_exp = (totalexp / 2) / monCount;
             if (sp->obtained_exp == 0) {
@@ -1465,6 +1524,7 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
             }
             sp->exp_share_obtained_exp = 0;
         }
+#endif
     }
 
 #ifdef DEBUG_PRINT_EXPERIENCE_VALUES
@@ -1532,7 +1592,10 @@ BOOL Task_DistributeExp_capture_experience(void *arg0, void *work, u32 get_clien
 
     if (expcalc->seq_no == 0) // set first pokemon gaining experience to a specific one so that it doesn't try to give experience to something that doesn't need it
     {
-        int sel_mons_no, item, eqp;
+        int sel_mons_no;
+#ifndef FULL_PARTY_EXP_SHARE
+        int item, eqp;
+#endif
         struct PartyPokemon *pp;
 
         // grab the pokémon that is actually gaining the experience, factor in experience share here because i don't want to expose the whole main task
@@ -1544,14 +1607,24 @@ BOOL Task_DistributeExp_capture_experience(void *arg0, void *work, u32 get_clien
                     expcalc->work[6] = BattleWorkPokeCountGet(expcalc->bw, 0);
                     break;
                 }
+#ifndef FULL_PARTY_EXP_SHARE
                 item = GetMonData(pp, MON_DATA_HELD_ITEM, NULL);
                 eqp = GetItemData(item, ITEM_PARAM_HOLD_EFFECT, 5);
+#endif
 
+#ifdef FULL_PARTY_EXP_SHARE
+                if (PartyMonEligibleForFullExpShare(pp)) {
+                    expcalc->work[6] = sel_mons_no;
+                    trackPartyExperience |= No2Bit(sel_mons_no);
+                    break;
+                }
+#else
                 if ((eqp == HOLD_EFFECT_EXP_SHARE) || (expcalc->sp->obtained_exp_right_flag[(expcalc->sp->fainting_client >> 1) & 1] & No2Bit(sel_mons_no))) {
                     expcalc->work[6] = sel_mons_no;
                     trackPartyExperience |= No2Bit(sel_mons_no);
                     break;
                 }
+#endif
             }
         }
         if (sel_mons_no >= BattleWorkPokeCountGet(expcalc->bw, 0)) { // invalid party index will end the task
