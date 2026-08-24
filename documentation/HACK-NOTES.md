@@ -154,3 +154,26 @@ Helper files: `tools/zone_event_enc.py`, `data/zone_event/events/event_<MAP>.h`,
 
 Vanilla had no coord events on this map; slots `_001`/`_002` keep their NPC talk scripts unchanged.
 
+---
+
+## Remove Sudowoodo block (Route 36) — verified PoC
+
+**Goal:** walk Violet ↔ Goldenrod / Ecruteak with **0 badges**; Sudowoodo never blocks the path. **Tested in-game:** tree gone, no collision, existing save OK.
+
+### Wiring (pret decomp)
+
+| What | ID / symbol |
+|------|-------------|
+| Map header | `MAP_R36` = **40** |
+| scr_seq member | **243** — patched via `tools/patch_scr_seq_r36.py` |
+| scr_seq init header | **488** (`scr_seq_00488_R36_hdr.s`) |
+| zone_event member | **037** (`037_R36.json`) |
+| Sudowoodo object | `obj_R36_usokky` |
+| Hide flag | `FLAG_HIDE_ROUTE_36_SUDOWOODO` (**450**) |
+
+Vanilla init header runs **`scr_seq_R36_010` on map load**. **`tools/patch_scr_seq_r36.py`** rewrites slot `_010` after scr_seq extract to **`setflag FLAG_HIDE_ROUTE_36_SUDOWOODO`** on every Route 36 load.
+
+**Option B (fallback):** remove `obj_R36_usokky` from `037_R36.json` if the flag alone leaves collision (not needed — flag patch sufficient).
+
+**Out of scope for now:** Floria / SquirtBottle / flower-shop chain, moving Sudowoodo encounter elsewhere.
+

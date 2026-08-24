@@ -678,6 +678,7 @@ SCR_SEQ_DEPENDENCIES := $(SCR_SEQ_DEPENDENCIES_DIR)/*
 $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES)
 	$(NARCHIVE) extract $(SCR_SEQ_TARGET) -o $(SCR_SEQ_DIR) -nf
 	for file in $^; do $(ARMIPS) $$file; done
+	$(PYTHON) tools/patch_scr_seq_r36.py $(SCR_SEQ_DIR)/2_243
 	$(NARCHIVE) create $@ $(SCR_SEQ_DIR) -nf
 
 # for convenience, rebuild SCR_SEQ_NARC every build so that DSPRE changes are not overwritten
