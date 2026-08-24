@@ -469,6 +469,9 @@ move_narc: $(NARC_FILES)
 	@echo "scripts:"
 	cp $(SCR_SEQ_NARC) $(SCR_SEQ_TARGET)
 
+	@echo "map events:"
+	cp $(ZONE_EVENT_NARC) $(ZONE_EVENT_TARGET)
+
 	@echo "headbutt trees:"
 	cp $(HEADBUTT_NARC) $(HEADBUTT_TARGET)
 

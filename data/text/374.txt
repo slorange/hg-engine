@@ -1,0 +1,3 @@
+You can’t climb ledges.\rBut you can jump down from them to\ntake a shortcut.
+Different kinds of Pokémon appear\npast here.\rIf you want to catch them all,\nyou have to look everywhere.
+Whoa! It’s not safe for you to go\nthrough here yet.\rCome back after you’ve earned\nat least two Gym Badges.
