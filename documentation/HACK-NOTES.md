@@ -214,50 +214,98 @@ Vanilla init header runs **`scr_seq_R36_010` on map load**. **`tools/patch_scr_s
 
 ---
 
-## Route 42 bridges (next)
+## Paid ferry / local bypass NPCs (reusable recipe)
 
-**Status:** planned — not started. **Tool:** DSPRE (user recon in progress).
+**Status:** Route 42 reference implementation **verified in-game** (Aug 2026).
 
-**Goal:** both water patches on Route 42 become crossable **without Surf** — walkable **and** bridge-looking (collision + metatile paint in one DSPRE pass; not scr_seq/zone_event).
+**Use when:** geography blocks travel (water without Surf, long mandatory gaps) and you want a **diegetic paid bypass** instead of a bridge edit or global fast travel. Same toolchain as badge gates, but adds **object NPCs** + **append scr_seq slots** instead of coord triggers.
 
-### Scope (decided)
+**Do not use for:** story roadblocks (prefer removing them) or map-wide walkability (that is `land_data`, not scripts).
 
-1. **West** — water near the Ecruteak gatehouse side  
-2. **East** — water toward Mt. Mortar  
+### Three IDs per map (don’t mix them up)
 
-Both need the same treatment.
+| What | Route 42 example |
+|------|------------------|
+| **Map header** (`include/constants/maps.h`) | `MAP_R42` = **44** |
+| **scr_seq** (`a/0/1/2`) | member **252** |
+| **zone_event** (`a/0/3/2`) | member **041** |
+| **Text bank** | **399** (`data/text/399.txt`) |
 
-### IDs (don’t mix them up)
+Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/_scan_zone_events.py`.
 
-| What | Route 42 |
-|------|----------|
-| Map header | `MAP_R42` = **44** |
-| zone_event (`a/0/3/2`) | member **041** (`041_R42.json`) |
-| scr_seq (`a/0/1/2`) | member **252** (`scr_seq_0252_R42.s`) |
-| Encounter bank | **52** (`ENCDATA_R42_ROUTE_42` in `data/Encounters.c`) |
-| Text bank | **399** |
+**Facing constants (object `dirn`):** 0=south, 1=north, 2=west, 3=east.
 
-Route 42 uses the shared Johto **EVERYWHERE** matrix (`map_matrix_0000`) — edits are in **world coordinates** (~x 422–504, z ~164–184). Map header **44** ≠ zone_event **041** ≠ scr_seq **252**.
+**scriptId on objects/bg events = scr_seq slot index + 1** (slot `_006` → scriptId **7**).
 
-### Why this is different from badge gates / Sudowoodo
+### Recipe for a new ferry pair (copy Route 42)
 
-Water blocking is **terrain collision** (`land_data`), not scripts. hg-engine rebuilds scr_seq, zone_event, and encounters — **not** land_data. No in-repo Makefile target yet; patch `base/root/` after DSPRE export.
+1. **Recon in-game / DSPRE** — note world `(x, z)` for each shore NPC, landing tile after warp, and nearby sign/bg-event tiles (avoid placing NPC on same tile as a sign).
 
-| NARC | ROM path | Purpose |
-|------|----------|---------|
-| `land_data.narc` | `a/0/6/5` | **Required** — walkability + metatile behavior |
-| `bm_field.narc` | `a/0/4/0` | Optional — 3D bridge models if flat tiles aren’t enough |
-| `area_data.narc` | `a/0/4/2` | Routes land_data chunk via `areaDataBank 8` |
+2. **scr_seq script** — one `.s` per crossing, e.g. `armips/scr_seq/scr_seq_<map>_ferry_west.s`:
+   - Output blob: `build/<name>.bin` via `.create "build/....bin", 0` … `.close`
+   - Flow: `play_se`, `lockall`, `faceplayer`, offer text (`npc_msg`), `yesno VAR_SPECIAL_RESULT`
+   - **HGSS yes/no:** `0` = Yes, `1` = No → `compare VAR_SPECIAL_RESULT, 1` / `goto_if_eq` decline branch
+   - `hasenoughmoneyimmediate` / `submoneyimmediate` for fee
+   - `fade_screen` → `warp MAP_<X>, WARP_DOOR, <x>, <z>, DIR_*` → fade in → `releaseall` / `end`
+   - Decline / no-money branches: message + `wait_button_or_walk_away` + `closemsg`
 
-### Steps
+3. **Text** — append lines to the map’s msg bank (`data/text/<bank>.txt`). Reuse indices across ferries on the same map if dialogue is identical. Use curly apostrophe **`’`** (U+2019), not ASCII `'`.
 
-1. **DSPRE recon** (user) — open Route 42; for each water patch note world `(x, z)` rectangles; find bridge metatiles elsewhere in Johto to copy/paint.  
-2. **Edit both patches in DSPRE** — per patch: (a) collision → walkable, not water/surf behavior; (b) paint bridge metatiles over water.  
-3. **Export / patch ROM** — save modified NARC(s) into `base/root/a/0/6/5` (and `a/0/4/0` if models changed) → Docker `make -j24` → test `test.nds`.  
-4. **Optional polish** — zero `rateSurf` / surf slots in encounter bank 52 on bridged tiles; sign in msg bank 399; zone_event/scr_seq only if adding NPCs/signs (not needed for basic walkability).  
-5. **Test** — walk both crossings without Surf; confirm Ecruteak gatehouse + Mt. Mortar warps still work; check you didn’t open unintended water elsewhere on the shared matrix.  
-6. **Document** — mark verified here; note exact coords and which land_data member was edited.
+4. **scr_seq patch tool** — copy/adapt `tools/patch_scr_seq_r42_ferry.py`:
+   - Set `MEMBER_INDEX`, `PATCH_SOURCES`, `VANILLA_SCRIPT_COUNT`, slot numbers (`WEST_SLOT`, …)
+   - **Always rebuild from vanilla** via `extract_scripts()` + `build_scr_seq()` — never insert bytes into the offset table (that corrupts existing sign/story scripts; see **Gotchas** below)
+   - Hook in `narcs.mk` after scr_seq extract: `$(PYTHON) tools/patch_scr_seq_<map>_ferry.py $(SCR_SEQ_DIR)/2_<NNN>`
 
-**Gotcha:** clean ROM re-extract can wipe `base/root/` land_data edits (same class of problem as bad scr_seq overrides).
+5. **zone_event patch tool** — copy/adapt `tools/patch_zone_event_r42_ferry.py`:
+   - Pack `OBJECT_EVENT` (32 bytes): sprite, `movement 15` (stand), `type 0` (NPC), `scriptId`, facing, `x`, `z`
+   - Use **unused object ids** above vanilla max; patcher should strip `id >= <first_ferry_id>` before re-adding (idempotent rebuild)
+   - Hook in `narcs.mk` after zone_event extract: `$(PYTHON) tools/patch_zone_event_<map>_ferry.py $(ZONE_EVENT_DIR)/2_<NNN>`
 
-**Pret references:** `files/fielddata/eventdata/zone_event/041_R42.json`, `scr_seq_0252_R42.s` — useful for warp coords during recon; scripts do **not** control surf/walk on water tiles.
+6. **Header defs** — extend `data/zone_event/events/event_<MAP>.h` with new `_EV_scr_seq_*` slot `#define`s and `obj_*` ids.
+
+7. **Build & test** — Docker `make -j1` (avoid `make clean` on Windows bind mounts). Close emulator, load fresh `test.nds`. Test: talk to NPC both sides, yes/no, no-money, warp landing visible and walkable, vanilla signs still readable.
+
+### Route 42 reference (verified)
+
+**Goal:** cross both Route 42 water gaps without Surf — one fisherman per outer shore, full crossing per trip.
+
+| File | Role |
+|------|------|
+| `armips/scr_seq/scr_seq_r42_ferry_west.s` | Slot **6** (scriptId **7**) → warp to `(504, 173)` |
+| `armips/scr_seq/scr_seq_r42_ferry_east.s` | Slot **7** (scriptId **8**) → warp to `(427, 178)` |
+| `tools/patch_scr_seq_r42_ferry.py` | Rebuild member **252** from vanilla + 2 scripts |
+| `tools/patch_zone_event_r42_ferry.py` | Objects **13** / **14** at `(429,177)` / `(502,172)` |
+| `data/text/399.txt` | Indices **10–13** (offer / aboard / decline / no money) |
+| `data/zone_event/events/event_R42.h` | Slot + object id defs |
+
+**Fee:** $200. **Sprite:** fishing NPC (`347`).
+
+### Debug helpers (keep using these)
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/inspect_zone_event.py build/a032/2_<NNN>` | bg events, objects, coords |
+| `scripts/inspect_scr_seq.py build/a012/2_<NNN>` | script slot offsets |
+| `scripts/dump_scr_seq_slots.py build/a012/2_<NNN>` | slot sizes + bytecode heads |
+| `scripts/verify_scr_seq_patch.py build/a012_vanilla/2_<NNN> build/a012/2_<NNN>` | confirm vanilla slots unchanged |
+| `scripts/decode_r42_objects.py` | quick object field dump (adapt member path) |
+
+Vanilla scr_seq for recovery: `build/a012_vanilla/2_<NNN>` (extracted from `rom.nds` on first patch run).
+
+### Gotchas
+
+- **scr_seq append corruption:** inserting into the offset table shifts script bodies without updating old pointers → signs and story scripts break silently. `patch_scr_seq_r42_ferry.py` must **extract vanilla bodies and rebuild the table** (`build_scr_seq()` in `tools/patch_scr_seq_r42_ferry.py` / `tools/append_scr_seq_script.py`).
+- **Healthy scr_seq size:** Route 42 member ~**1188 bytes** (8 scripts). Multi‑MB member = corrupt; patcher resets from vanilla when `count != VANILLA_SCRIPT_COUNT` or size > 8 KB.
+- **Duplicate NPCs on rebuild:** zone_event patcher must delete prior ferry objects by id before re-adding.
+- **Sign overlap:** bg-event signs and object NPCs on the same tile fight for interaction; offset NPC one tile from sign.
+- **land_data ≠ ferry:** walking on water still needs terrain edits; ferries only skip the gap via warp. Failed bridge exports live in `rawdata/changed_maps/route_42/failed attempt at bridge/`; apply manually via `scripts/apply_changed_maps.py` (not in Makefile). Matrix loads land_data member **44** for Route 42 chunks — DSPRE export indices 082–084 ≠ runtime member.
+
+### Route 42 bridges (abandoned)
+
+**Status:** abandoned in favour of ferry NPCs above. Bridge metatile/collision experiments archived under `rawdata/changed_maps/route_42/failed attempt at bridge/` (members 082–084). See pret `041_R42.json` for vanilla sign/warp coords during recon.
+
+**IDs (same map):** header **44**, zone_event **041**, scr_seq **252**, encounters **52**, text **399**. Shared Johto matrix — world coords ~x 422–504, z ~164–184.
+
+Water walkability is **`land_data.narc`** (`a/0/6/5`), not scr_seq. hg-engine rebuilds scr_seq/zone_event automatically; land_data persists in `base/root/` until re-extracted from `rom.nds`.
+
+**Pret references:** `files/fielddata/eventdata/zone_event/041_R42.json`, `scr_seq_0252_R42.s`.

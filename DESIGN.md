@@ -95,11 +95,14 @@ Possible gating mechanisms include:
 - blocked grass tiles;
 - dungeon entrances;
 - alternate paths;
-- transportation around dangerous routes.
+- transportation around dangerous routes;
+- encounter-tile checks (see below).
 
 A single map can potentially contain areas intended for different progression levels.
 
 For example, one set of grass tiles may be available immediately while another portion of the same route is blocked until a higher badge count.
+
+As an alternative to route-wide guards, the player could be allowed to walk freely along a route's paths. Only when they attempt to step onto a dangerous encounter tile would they be stopped, with a message such as: *"The wild Pokémon here seem dangerous. You shouldn't enter yet."* This keeps travel open while still preventing inappropriate wild encounters.
 
 Where a route is geographically necessary for travel between cities but cannot reasonably support unrestricted traversal, paid transportation should allow the player to bypass the dangerous section.
 
@@ -727,9 +730,12 @@ Gating methods include:
 - HM requirements;
 - badge checks;
 - terrain;
-- alternate paths.
+- alternate paths;
+- encounter-tile checks.
 
 Some routes may contain both low-progression and high-progression encounter areas simultaneously.
+
+Where guards would feel heavy-handed, encounter-tile gating is a lighter option: the player can traverse the route freely, but stepping into grass, caves, or other encounter areas above their current progression level triggers a block and a short message (e.g. *"The wild Pokémon here seem dangerous. You shouldn't enter yet."*). Path tiles remain walkable; only the encounter tiles themselves are restricted.
 
 Where geography makes a dangerous route mandatory for reaching another city, the player should have an alternative transportation option.
 
