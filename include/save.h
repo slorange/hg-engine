@@ -304,6 +304,7 @@ BOOL LONG_CALL Save_LoadDynamicRegion(SaveData *saveData);
 u32 LONG_CALL Save_GetPCBoxModifiedFlags(SaveData *saveData);
 void LONG_CALL Save_CheckFrontierData(SaveData *saveData, int *err1, int *err2);
 void LONG_CALL Save_InitDynamicRegion(SaveData *saveData);
+void *SaveArray_Get(SaveData *saveData, int id);
 void LONG_CALL Sys_SetSleepDisableFlag(BOOL sleepDisable);
 int LONG_CALL FlashClobberChunkFooter(SaveData *saveData, int spec, int sector);
 s32 LONG_CALL FlashWriteChunk(u32 offset, void *data, u32 size);

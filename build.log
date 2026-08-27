@@ -1,3 +1,56 @@
+arm-none-eabi-gcc -MMD -MF build/save.d -I/hg-engine/include -mthumb -mno-thumb-interwork -mcpu=arm946e-s -mtune=arm946e-s -mno-long-calls -Wall -Wextra -Wno-builtin-declaration-mismatch -Wno-sequence-point -Wno-address-of-packed-member -Os -fira-loop-pressure -fipa-pta -c src/save.c -o build/save.o
+arm-none-eabi-ld rom.ld -T src/linker.ld -o build/linked.o build/bag.o build/field_roamer.o build/item.o build/message.o build/moves.o build/music_tables.o build/npc_trade.o build/openworld_start.o build/overlay.o build/party_menu.o build/pokemon.o build/pokemon_storage_system.o build/qmath64.o build/repel.o build/save.o build/script_new_cmds.o build/sound.o build/starters.o build/summary.o build/swarms.o build/test_battle.o build/textbox.o build/trainermoney.o build/arm_hooks.o build/general_hooks.o build/other_hook.o build/qmath.o build/thumb_help.o
+arm-none-eabi-objcopy -O binary build/linked.o build/output.bin
+cp rom.ld build/rom_gen.ld
+. .venv/bin/activate; python3 scripts/generate_ld.py build/rom_gen.ld build/linked.o
+Generating linker script...
+arm-none-eabi-ld build/rom_gen.ld -T src/battle/linker.ld -o build/battle_linked.o build/battle/ability.o build/battle/ai.o build/battle/anim.o build/battle/battle_calc_damage.o build/battle/battle_controller_player.o build/battle/battle_display.o build/battle/battle_input.o build/battle/battle_item.o build/battle/battle_pokemon.o build/battle/battle_script_commands.o build/battle/battle_start.o build/battle/mega.o build/battle/other_battle_calculators.o build/battle/test_battle.o build/battle/weather.o build/battle/battle_hooks.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen.ld -T src/field/linker.ld -o build/field_linked.o build/field/encounter_check.o build/field/enemy_party.o build/field/hidden_items.o build/field/mart.o build/field/move_tutor.o build/field/overworld_table.o build/field/pokewalker.o build/field/rock_smash_item.o build/field/script_commands.o build/field/bdhcam_routine.o build/field/field_hooks.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen.ld -T src/pokedex/linker.ld -o build/pokedex_linked.o build/pokedex/pokedex.o  build/thumb_help.o
+arm-none-eabi-objcopy -O binary build/pokedex_linked.o build/output_pokedex.bin
+arm-none-eabi-objcopy -O binary build/field_linked.o build/output_field.bin
+arm-none-eabi-objcopy -O binary build/battle_linked.o build/output_battle.bin
+cp build/rom_gen.ld build/rom_gen_battle.ld
+. .venv/bin/activate; python3 scripts/generate_ld.py build/rom_gen_battle.ld build/battle_linked.o
+Generating linker script...
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/BattleController_BeforeMove.ld -o build/BattleController_BeforeMove_linked.o build/individual/BattleController_BeforeMove.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/BattleController_MoveEnd.ld -o build/BattleController_MoveEnd_linked.o build/individual/BattleController_MoveEnd.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/BattleFormChangeCheck.ld -o build/BattleFormChangeCheck_linked.o build/individual/BattleFormChangeCheck.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/BattleSystem_BufferMessage.ld -o build/BattleSystem_BufferMessage_linked.o build/individual/BattleSystem_BufferMessage.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/CalcBaseDamage.ld -o build/CalcBaseDamage_linked.o build/individual/CalcBaseDamage.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/CalculateBallShakes.ld -o build/CalculateBallShakes_linked.o build/individual/CalculateBallShakes.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/CheckDefenderItemEffectOnHit.ld -o build/CheckDefenderItemEffectOnHit_linked.o build/individual/CheckDefenderItemEffectOnHit.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/CreateTradeMonInternal.ld -o build/CreateTradeMonInternal_linked.o build/individual/CreateTradeMonInternal.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/GetMonEvolutionBattle.ld -o build/GetMonEvolutionBattle_linked.o build/individual/GetMonEvolutionBattle.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/GetMonEvolutionInternal.ld -o build/GetMonEvolutionInternal_linked.o build/individual/GetMonEvolutionInternal.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/InheritMovesInternal.ld -o build/InheritMovesInternal_linked.o build/individual/InheritMovesInternal.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/MoveHitDefenderAbilityCheck.ld -o build/MoveHitDefenderAbilityCheck_linked.o build/individual/MoveHitDefenderAbilityCheck.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/PartyMenu_HandleUseItemOnMon.ld -o build/PartyMenu_HandleUseItemOnMon_linked.o build/individual/PartyMenu_HandleUseItemOnMon.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/ServerBeforeAct.ld -o build/ServerBeforeAct_linked.o build/individual/ServerBeforeAct.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/ServerDoPostMoveEffects.ld -o build/ServerDoPostMoveEffects_linked.o build/individual/ServerDoPostMoveEffects.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/ServerFieldConditionCheck.ld -o build/ServerFieldConditionCheck_linked.o build/individual/ServerFieldConditionCheck.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/ServerHPCalc.ld -o build/ServerHPCalc_linked.o build/individual/ServerHPCalc.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/SwitchInAbilityCheck.ld -o build/SwitchInAbilityCheck_linked.o build/individual/SwitchInAbilityCheck.o build/thumb_help.o
+arm-none-eabi-ld build/rom_gen_battle.ld -T src/individual/linker/btl_scr_cmd_33_statbuffchange.ld -o build/btl_scr_cmd_33_statbuffchange_linked.o build/individual/btl_scr_cmd_33_statbuffchange.o build/thumb_help.o
+arm-none-eabi-objcopy -O binary build/BattleFormChangeCheck_linked.o build/output_BattleFormChangeCheck.bin
+arm-none-eabi-objcopy -O binary build/BattleSystem_BufferMessage_linked.o build/output_BattleSystem_BufferMessage.bin
+arm-none-eabi-objcopy -O binary build/CalcBaseDamage_linked.o build/output_CalcBaseDamage.bin
+arm-none-eabi-objcopy -O binary build/CalculateBallShakes_linked.o build/output_CalculateBallShakes.bin
+arm-none-eabi-objcopy -O binary build/CheckDefenderItemEffectOnHit_linked.o build/output_CheckDefenderItemEffectOnHit.bin
+arm-none-eabi-objcopy -O binary build/CreateTradeMonInternal_linked.o build/output_CreateTradeMonInternal.bin
+arm-none-eabi-objcopy -O binary build/GetMonEvolutionBattle_linked.o build/output_GetMonEvolutionBattle.bin
+arm-none-eabi-objcopy -O binary build/GetMonEvolutionInternal_linked.o build/output_GetMonEvolutionInternal.bin
+arm-none-eabi-objcopy -O binary build/InheritMovesInternal_linked.o build/output_InheritMovesInternal.bin
+arm-none-eabi-objcopy -O binary build/MoveHitDefenderAbilityCheck_linked.o build/output_MoveHitDefenderAbilityCheck.bin
+arm-none-eabi-objcopy -O binary build/PartyMenu_HandleUseItemOnMon_linked.o build/output_PartyMenu_HandleUseItemOnMon.bin
+arm-none-eabi-objcopy -O binary build/ServerBeforeAct_linked.o build/output_ServerBeforeAct.bin
+arm-none-eabi-objcopy -O binary build/ServerDoPostMoveEffects_linked.o build/output_ServerDoPostMoveEffects.bin
+arm-none-eabi-objcopy -O binary build/ServerFieldConditionCheck_linked.o build/output_ServerFieldConditionCheck.bin
+arm-none-eabi-objcopy -O binary build/ServerHPCalc_linked.o build/output_ServerHPCalc.bin
+arm-none-eabi-objcopy -O binary build/SwitchInAbilityCheck_linked.o build/output_SwitchInAbilityCheck.bin
+arm-none-eabi-objcopy -O binary build/btl_scr_cmd_33_statbuffchange_linked.o build/output_btl_scr_cmd_33_statbuffchange.bin
+arm-none-eabi-objcopy -O binary build/BattleController_BeforeMove_linked.o build/output_BattleController_BeforeMove.bin
+arm-none-eabi-objcopy -O binary build/BattleController_MoveEnd_linked.o build/output_BattleController_MoveEnd.bin
 find . \( -name "*.DS_Store" -o -name "*:Zone.Identifier" \) -delete
 . .venv/bin/activate; python3 scripts/make.py -I/hg-engine/include -mthumb -mno-thumb-interwork -mcpu=arm946e-s -mtune=arm946e-s -mno-long-calls -Wall -Wextra -Wno-builtin-declaration-mismatch -Wno-sequence-point -Wno-address-of-packed-member -Os -fira-loop-pressure -fipa-pta
 
@@ -6,28 +59,37 @@ Inserting code.
 make move_narc
 make[1]: Entering directory '/hg-engine'
 . .venv/bin/activate; python3 tools/extract_scr_seq_vanilla.py build/a012
-seeded build/a012 from rom.nds scr_seq (965 members)
-for file in armips/scr_seq/scr_seq_00003_commonscript.s armips/scr_seq/scr_seq_00226_R29R0101.s armips/scr_seq/scr_seq_00953_trainerscript.s armips/scr_seq/scr_seq_r36_010_patch.s armips/scr_seq/scr_seq_r42_ferry_east.s armips/scr_seq/scr_seq_r42_ferry_west.s armips/scr_seq/scr_seq_t28_005_patch.s; do tools/armips $file; done
-. .venv/bin/activate; python3 tools/patch_scr_seq_r36.py build/a012/2_243
-patched Sudowoodo OnLoad script in build/a012/2_243
-. .venv/bin/activate; python3 tools/patch_scr_seq_r42_ferry.py build/a012/2_252
-Route 42 ferry scripts patched into build/a012/2_252 (1188 bytes, scriptIds 7, 8)
-. .venv/bin/activate; python3 tools/patch_scr_seq_t28_rocket.py build/a012/2_930
-patched Mahogany rocket-skip OnLoad in build/a012/2_930 (1022 bytes)
-. .venv/bin/activate; python3 tools/narcpy.py create build/narc/scr_seq.narc build/a012 -nf
 . .venv/bin/activate; python3 tools/extract_zone_event_vanilla.py build/a032
 seeded build/a032 from rom.nds zone_event (491 members)
 for json in data/zone_event/130_R29R0101.json; do . .venv/bin/activate; python3 tools/zone_event_enc.py $json build/a032; done
 wrote build/a032/2_130 (120 bytes)
 . .venv/bin/activate; python3 tools/patch_zone_event_r42_ferry.py build/a032/2_041
 installed 2 ferry NPCs in build/a032/2_041
-. .venv/bin/activate; python3 tools/patch_zone_event_t28_rocket.py build/a032/2_084
-removed middleman + bigman=True, exit coord=True, objects 4->2
-patched Mahogany zone_event in build/a032/2_084
-. .venv/bin/activate; python3 tools/patch_zone_event_r44_rocket.py build/a032/2_046
-removed from Route 44: id1/script2/sprite332, id2/script7/sprite328
-patched Route 44 zone_event in build/a032/2_046
+. .venv/bin/activate; python3 tools/patch_zone_event_r32_badge.py build/a032/2_033
+removed Route 32 gate: id1/script2/sprite328, coord=True, objects 19->18
+patched Route 32 badge gate in build/a032/2_033
+. .venv/bin/activate; python3 tools/patch_zone_event_t28_rocket.py build/a032
+084: removed middleman + bigman=True, exit coord=True, objects 4->2
+043: removed matrix middleman, objects 12->11
+patched Mahogany zone_event in build/a032
+. .venv/bin/activate; python3 tools/patch_zone_event_r44_rocket.py build/a032
+removed from zone_event 046: id0/script1/sprite325, id1/script2/sprite332, id2/script7/sprite328
+removed from zone_event 090: id12/script1/sprite328, id1/script65535/sprite332
+patched Route 44 RageCandyBar NPCs in build/a032
 . .venv/bin/activate; python3 tools/narcpy.py create build/narc/zone_event.narc build/a032 -nf
+seeded build/a012 from rom.nds scr_seq (965 members)
+for file in armips/scr_seq/scr_seq_00003_commonscript.s armips/scr_seq/scr_seq_00226_R29R0101.s armips/scr_seq/scr_seq_00953_trainerscript.s armips/scr_seq/scr_seq_r32_gate_nop_patch.s armips/scr_seq/scr_seq_r32_onload_patch.s armips/scr_seq/scr_seq_r36_010_patch.s armips/scr_seq/scr_seq_r42_ferry_east.s armips/scr_seq/scr_seq_r42_ferry_west.s armips/scr_seq/scr_seq_t28_005_patch.s; do tools/armips $file; done
+. .venv/bin/activate; python3 tools/patch_scr_seq_r36.py build/a012/2_243
+patched Sudowoodo OnLoad script in build/a012/2_243
+. .venv/bin/activate; python3 tools/patch_scr_seq_r32_badge.py build/a012/2_232
+patched gate@592 @592
+patched gate@816 @816
+patched Route 32 badge gate scripts in build/a012/2_232
+. .venv/bin/activate; python3 tools/patch_scr_seq_r42_ferry.py build/a012/2_252
+Route 42 ferry scripts patched into build/a012/2_252 (1188 bytes, scriptIds 7, 8)
+. .venv/bin/activate; python3 tools/patch_scr_seq_t28_rocket.py build/a012/2_930
+patched Mahogany rocket-skip OnLoad in build/a012/2_930 (1022 bytes)
+. .venv/bin/activate; python3 tools/narcpy.py create build/narc/scr_seq.narc build/a012 -nf
 battle hud layout:
 cp build/narc/a007.narc base/root/a/0/0/7
 move data:

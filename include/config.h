@@ -251,6 +251,10 @@
 // uncomment the line out to get this functionality
 #define SKIP_TUTORIAL_INFO
 
+// OPENWORLD_STARTING_ITEMS grants key transport items, Apricorn Box, running shoes, and Pokédex
+// after Mom gives the bag / Trainer Card / save and settings (scr_seq member 845).
+#define OPENWORLD_STARTING_ITEMS
+
 // Champions-specific move configurations. Set to 0 to use Scarlet/Violet values.
 #define CHAMPIONS_POWER_CHANGES         1
 #define CHAMPIONS_TYPE_CHANGES          1

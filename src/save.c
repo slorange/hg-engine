@@ -2,6 +2,7 @@
 #include "debug.h"
 #include "types.h"
 
+#include "bag.h"
 #include "save.h"
 
 #include "constants/buttons.h"

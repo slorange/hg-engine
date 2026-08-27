@@ -71,6 +71,7 @@ endif
 
 .PHONY: clean all dumprom move_narc
 
+
 move_narc clean restore: NOSCAN = 1
 
 NOSCAN ?= 0
@@ -333,6 +334,12 @@ clean:
 	rm -rf $(BUILD) $(BASE) $(BUILD)/rom_gen.ld $(BUILD)/rom_gen_battle.ld
 	rm -rf $(shell find . -type d -name "generated")
 	@echo "Build artifacts removed."
+
+# Drop scr_seq intermediates only (~2 min), not a full clean.
+scr_seq_clean:
+	rm -rf build/a012 build/a012_vanilla build/narc/scr_seq.narc base/root/a/0/1/2 build/t20_mom_script0.bin build/t20_mom_openworld.bin
+
+.PHONY: scr_seq_clean
 
 clean_tools:
 	rm -rf $(TOOLS) $(VENV)
