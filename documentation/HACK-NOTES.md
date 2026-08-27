@@ -183,6 +183,32 @@ Vanilla init header runs **`scr_seq_R36_010` on map load**. **`tools/patch_scr_s
 
 ---
 
+## Remove Route 32 badge gate (south of Violet) — verified pattern
+
+**Goal:** walk Route 32 toward Union Cave / Azalea with **0 badges**; no Cooltrainer M stop, no invisible barrier line.
+
+### Wiring (pret decomp)
+
+| What | ID |
+|------|-----|
+| Map header | `MAP_R32` = **36** |
+| zone_event member | **033** (not 040 — that is Route 39 / Moomoo Farm) |
+| scr_seq member | **232** (not 225 — that is Route 29) |
+
+Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,305)` script **2** (GSMIDDLEMAN1 — renders as an old man). No Miltank barrier sprites (those live on Route 39 member 040). No outdoor-matrix duplicate found (unlike Mahogany).
+
+**Gotcha:** map header ID ≠ zone_event index ≠ scr_seq index. Cross-check pret `map_headers.h` / `{NNN}_R32` filenames before patching.
+
+| File | Role |
+|------|------|
+| `tools/patch_zone_event_r32_badge.py` | Remove blocker NPC, barriers, coord trigger |
+| `tools/patch_scr_seq_r32_badge.py` | OnLoad sets flags **550/552**; NOP walk-past/coord/talk scripts |
+| `narcs.mk` | Hook after scr_seq / zone_event extract |
+
+**Test checklist:** new save → leave Violet south → no NPC stop, path walkable toward Ruins/Union Cave.
+
+---
+
 ## Heal after every battle
 
 **Status:** verified (wild, trainer, flee, and catch tested in-game).

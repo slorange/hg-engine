@@ -282,7 +282,8 @@ They can:
 - appear on routes;
 - walk through grass;
 - have different levels of progression;
-- interact with the player in multiple ways.
+- interact with the player in multiple ways;
+- appear to be battling each other.
 
 Each trainer has or represents a badge progression level.
 

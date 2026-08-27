@@ -1,0 +1,158 @@
+find . \( -name "*.DS_Store" -o -name "*:Zone.Identifier" \) -delete
+. .venv/bin/activate; python3 scripts/make.py -I/hg-engine/include -mthumb -mno-thumb-interwork -mcpu=arm946e-s -mtune=arm946e-s -mno-long-calls -Wall -Wextra -Wno-builtin-declaration-mismatch -Wno-sequence-point -Wno-address-of-packed-member -Os -fira-loop-pressure -fipa-pta
+
+
+Inserting code.
+make move_narc
+make[1]: Entering directory '/hg-engine'
+. .venv/bin/activate; python3 tools/extract_scr_seq_vanilla.py build/a012
+seeded build/a012 from rom.nds scr_seq (965 members)
+for file in armips/scr_seq/scr_seq_00003_commonscript.s armips/scr_seq/scr_seq_00226_R29R0101.s armips/scr_seq/scr_seq_00953_trainerscript.s armips/scr_seq/scr_seq_r36_010_patch.s armips/scr_seq/scr_seq_r42_ferry_east.s armips/scr_seq/scr_seq_r42_ferry_west.s armips/scr_seq/scr_seq_t28_005_patch.s; do tools/armips $file; done
+. .venv/bin/activate; python3 tools/patch_scr_seq_r36.py build/a012/2_243
+patched Sudowoodo OnLoad script in build/a012/2_243
+. .venv/bin/activate; python3 tools/patch_scr_seq_r42_ferry.py build/a012/2_252
+Route 42 ferry scripts patched into build/a012/2_252 (1188 bytes, scriptIds 7, 8)
+. .venv/bin/activate; python3 tools/patch_scr_seq_t28_rocket.py build/a012/2_930
+patched Mahogany rocket-skip OnLoad in build/a012/2_930 (1022 bytes)
+. .venv/bin/activate; python3 tools/narcpy.py create build/narc/scr_seq.narc build/a012 -nf
+. .venv/bin/activate; python3 tools/extract_zone_event_vanilla.py build/a032
+seeded build/a032 from rom.nds zone_event (491 members)
+for json in data/zone_event/130_R29R0101.json; do . .venv/bin/activate; python3 tools/zone_event_enc.py $json build/a032; done
+wrote build/a032/2_130 (120 bytes)
+. .venv/bin/activate; python3 tools/patch_zone_event_r42_ferry.py build/a032/2_041
+installed 2 ferry NPCs in build/a032/2_041
+. .venv/bin/activate; python3 tools/patch_zone_event_t28_rocket.py build/a032/2_084
+removed middleman + bigman=True, exit coord=True, objects 4->2
+patched Mahogany zone_event in build/a032/2_084
+. .venv/bin/activate; python3 tools/patch_zone_event_r44_rocket.py build/a032/2_046
+removed from Route 44: id1/script2/sprite332, id2/script7/sprite328
+patched Route 44 zone_event in build/a032/2_046
+. .venv/bin/activate; python3 tools/narcpy.py create build/narc/zone_event.narc build/a032 -nf
+battle hud layout:
+cp build/narc/a007.narc base/root/a/0/0/7
+move data:
+cp build/narc/a011.narc base/root/a/0/1/1
+move particles:
+cp build/narc/a029.narc base/root/a/0/2/9
+item data files:
+cp build/narc/itemdata.narc base/root/a/0/1/7
+mon sprite data:
+cp build/narc/pokegra.narc base/root/a/0/0/4
+cp build/narc/pokegra.narc base/root/pbr/pokegra.narc
+opening demo files:
+cp build/narc/a262.narc base/root/a/2/6/2
+mon personal data:
+cp build/narc/personal.narc base/root/a/0/0/2
+sprite offsets:
+cp build/narc/spriteoffsets.narc base/root/a/1/8/0
+mon height offsets (a005):
+cp build/narc/heighttable.narc base/root/a/0/0/5
+dex area data:
+cp build/narc/dexareas.narc base/root/a/1/3/3
+pokedex sort lists:
+cp build/narc/a214.narc base/root/a/2/1/4
+evolution data:
+cp build/narc/a034.narc base/root/a/0/3/4
+regional dex order:
+cp build/narc/a138.narc base/root/a/1/3/8
+trainer data:
+cp build/narc/a055.narc base/root/a/0/5/5
+cp build/narc/a056.narc base/root/a/0/5/6
+trainer text:
+cp build/narc/trainer_text_map.narc base/root/a/0/5/7
+cp build/narc/trainer_text_offsets.narc base/root/a/1/3/1
+footprints:
+cp build/narc/a069.narc base/root/a/0/6/9
+move anims:
+cp build/narc/a010.narc base/root/a/0/1/0
+move sub animations:
+cp build/narc/a061.narc base/root/a/0/6/1
+move battle scripts:
+cp build/narc/a000.narc base/root/a/0/0/0
+move battle scripts:
+cp build/narc/a030.narc base/root/a/0/3/0
+battle sub effects:
+cp build/narc/a001.narc base/root/a/0/0/1
+bag gfx:
+cp build/narc/a015.narc base/root/a/0/1/5
+item gfx:
+cp build/narc/a018.narc base/root/a/0/1/8
+dex gfx for fairy:
+cp build/narc/dexgfx.narc base/root/a/0/6/8
+battle gfx for fairy:
+cp build/narc/battlegfx.narc base/root/a/0/0/8
+otherpoke gfx for fairy:
+cp build/narc/otherpoke.narc base/root/a/1/1/4
+pokemon icons:
+cp build/narc/pokemonicon.narc base/root/a/0/2/0
+wild encounters:
+cp build/narc/encounters.narc base/root/a/0/3/7
+safari zone encounters:
+cp build/narc/safari.narc base/root/a/2/3/0
+pokemon overworlds:
+cp build/narc/pokemonow.narc base/root/a/0/8/1
+pokemon overworld data:
+cp build/narc/overworld_properties.narc base/root/a/1/4/1
+move an updated gs_sound_data.sdat:
+cp build/narc/gs_sound_data.sdat base/root/data/sound/gs_sound_data.sdat
+text data:
+cp build/narc/msg_data.narc base/root/a/0/2/7
+ball spa files:
+cp build/narc/ball_spa.narc base/root/a/0/9/5
+pokewalker sprites:
+cp build/narc/pw_pokegra.narc base/root/a/2/5/6
+pokewalker icons:
+cp build/narc/pw_pokeicon.narc base/root/a/2/4/8
+font:
+if [ $(grep -i -c "//#define IMPLEMENT_TRANSPARENT_TEXTBOXES" include/config.h) -eq 0 ]; then cp build/narc/font.narc base/root/a/0/1/6; fi
+textbox:
+if [ $(grep -i -c "//#define IMPLEMENT_TRANSPARENT_TEXTBOXES" include/config.h) -eq 0 ]; then cp build/narc/textbox.narc base/root/a/0/3/8; fi
+scripts:
+cp build/narc/scr_seq.narc base/root/a/0/1/2
+map events:
+cp build/narc/zone_event.narc base/root/a/0/3/2
+headbutt trees:
+cp build/narc/headbutt.narc base/root/a/2/5/2
+trainer gfx:
+cp build/narc/trainer_gfx.narc base/root/a/0/5/8
+trainer back gfx:
+cp build/narc/trainer_back_gfx.narc base/root/a/0/0/6
+levelup learnset:
+cp build/narc/a033.narc base/root/a/0/3/3
+egg moves:
+cp build/narc/a229.narc base/root/a/2/2/9
+baby mons:
+cp build/BabyMons.bin base/root/poketool/personal/pms.narc
+hidden ability table:
+cp build/HiddenAbilityTable.bin build/a028/9_07
+base experience table:
+cp build/BaseExperienceTable.bin build/a028/9_08
+icon palette table:
+cp build/IconPaletteTable.bin build/a028/9_09
+species to ow female table:
+cp build/SpeciesToOWFormFemale.bin build/a028/9_10
+form data table:
+cp build/PokeFormDataTbl.bin build/a028/9_11
+form to species mapping table:
+cp build/FormToSpeciesMapping.bin build/a028/9_12
+form reversion mapping table:
+cp build/FormReversionMapping.bin build/a028/9_13
+machine moves:
+cp build/MachineMoveLearnsets.bin build/a028/9_14
+tutor moves:
+cp build/TutorMoveLearnsets.bin build/a028/9_15
+battle tests:
+cp build/BattleTests.bin build/a028/9_16
+background gfx ids:
+cp build/BackgroundGfx.bin build/a028/9_17
+hidden item params:
+cp build/HiddenItems.bin build/a028/9_18
+make[1]: Leaving directory '/hg-engine'
+tools/armips armips/global.s -equ DEBUG_BATTLE_SCENARIOS 0
+. .venv/bin/activate; python3 tools/narcpy.py create base/root/a/0/2/8 build/a028/ -nf
+Making ROM...
+tools/ndstool -c test.nds -9 base/arm9.bin -7 base/arm7.bin -y9 base/overarm9.bin -y7 base/overarm7.bin -d base/root -y base/overlay -t base/banner.bin -h base/header.bin
+Nintendo DS rom tool 2.1.2 - Aug 24 2026
+by Rafael Vuijk, Dave Murphy, Alexei Karpenko
+Done.  See output test.nds.
+EXIT:True
