@@ -448,7 +448,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Loop fix:** keep vanilla init header **618** (OnFrame `var==0`, like retail). Script **0** sets `VAR_SCENE_PLAYERS_HOUSE_1F = 1` on the first frame before any `wait`, so the cutscene cannot re-trigger. Do **not** move this cutscene to OnTransition — that runs too early and crashes on stairs.
 
-**Grants:** Rebuilt script **0** (`scr_seq_t20_mom_script0.s`) inserts items/shoes/dex inline after `closemsg`.
+**Grants:** Rebuilt script **0** inserts items/shoes/dex after UI unlock fanfares. `std_give_item_verbose` already waits for A per item — do not add extra `wait_button` between grants; one `closemsg` after all three clears the window.
 
 | Grant | Item / command |
 |-------|----------------|
@@ -460,7 +460,9 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Starting city (design):** Same player house interior is viable. Zone event member **060** warps the front door to `MAP_NEW_BARK` today; redirect via script warp / dynamic warp + save var for chosen city (`DESIGN.md` §4). Story hooks (Elm, rival, Mom) stay New-Bark-specific until separately skipped or rewritten.
 
-**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`, narcs.mk). Init header **618** stays vanilla.
+**Dialogue:** Mom’s intro greet is **msg bank 545**, strings **0–1** — moving-out joke only. **String 6** is her first post-cutscene talk (`Don’t come back!`; vanilla Elm errand line). Cutscene script skips bag/card/save/options `npc_msg`s; fanfares + flags still unlock the touch menu.
+
+**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`, narcs.mk), `data/text/545.txt`. Init header **618** stays vanilla.
 
 **Gotcha:** map header `MAP_T20R0201` = **63** ≠ scr_seq member **845** (same pattern as Route 32 / badge gates).
 

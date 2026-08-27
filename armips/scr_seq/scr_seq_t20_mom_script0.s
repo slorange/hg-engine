@@ -12,10 +12,6 @@
 
 .equ MSG_MOM_GREET_M, 0
 .equ MSG_MOM_GREET_F, 1
-.equ MSG_MOM_BAG, 2
-.equ MSG_MOM_CARD, 3
-.equ MSG_MOM_SAVE, 4
-.equ MSG_MOM_OPTIONS, 5
 
 .equ OBJ_MOM, 0
 
@@ -34,26 +30,23 @@
     wait_movement
     buffer_players_name 0
     gender_msgbox MSG_MOM_GREET_M, MSG_MOM_GREET_F
+    closemsg
     setflag FLAG_GOT_BAG
     play_fanfare SEQ_SE_PL_KIRAKIRA
     wait_fanfare
-    npc_msg MSG_MOM_BAG
     setflag FLAG_GOT_TRAINER_CARD
     play_fanfare SEQ_SE_PL_KIRAKIRA
     wait_fanfare
-    npc_msg MSG_MOM_CARD
     setflag FLAG_GOT_SAVE_BUTTON
     play_fanfare SEQ_SE_PL_KIRAKIRA
     wait_fanfare
-    npc_msg MSG_MOM_SAVE
     setflag FLAG_GOT_OPTIONS_BUTTON
     play_fanfare SEQ_SE_PL_KIRAKIRA
     wait_fanfare
-    npc_msg MSG_MOM_OPTIONS
-    closemsg
     giveitem_no_check ITEM_SS_TICKET, 1
     giveitem_no_check ITEM_PASS, 1
     giveitem_no_check ITEM_APRICORN_BOX, 1
+    closemsg
     setflag FLAG_GOT_APRICORN_BOX
     give_running_shoes
     setflag FLAG_GOT_POKEDEX
