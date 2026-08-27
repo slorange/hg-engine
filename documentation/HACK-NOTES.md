@@ -309,3 +309,106 @@ Vanilla scr_seq for recovery: `build/a012_vanilla/2_<NNN>` (extracted from `rom.
 Water walkability is **`land_data.narc`** (`a/0/6/5`), not scr_seq. hg-engine rebuilds scr_seq/zone_event automatically; land_data persists in `base/root/` until re-extracted from `rom.nds`.
 
 **Pret references:** `files/fielddata/eventdata/zone_event/041_R42.json`, `scr_seq_0252_R42.s`.
+
+---
+
+## Skip Mahogany Rocket arc — post-clear town on load
+
+**Goal:** Mahogany Town behaves as if the Rocket Hideout was cleared — gym accessible, rocket grunts gone, shady RageCandyBar salesman gone, Route 43 gate normal — without running the hideout event chain. **Red Gyarados at Lake of Rage must remain** (do not set flags 483, 362, 201, or 202).
+
+### Wiring (pret decomp)
+
+| What | ID / symbol |
+|------|-------------|
+| Map header | `MAP_T28` = **87** |
+| scr_seq member | **930** — patched via `tools/patch_scr_seq_t28_rocket.py` |
+| scr_seq init header | **703** — OnLoad → scriptId **6** (slot **5**) |
+| zone_event member | **084** |
+| Scene var | `VAR_SCENE_ROCKET_TAKEOVER` (`0x4077`) → **5** (post-clear) |
+
+Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TAKEOVER = 2`, sets rocket flags). **`tools/patch_scr_seq_t28_rocket.py`** replaces the first bytes at OnLoad entry (**38**) with `call` → appended patch blob (preserves overlapping script layout — **do not** rebuild the offset table).
+
+**Flags set:** hide rocket town NPCs (439–444), shady salesman (498), Lance in shop (504), Route 43 gate rockets (506); restore normal shopkeeper (`clearflag` 487), gate guard (`clearflag` 507); hide hideout interior NPCs if entered. **`clearflag FLAG_ROCKET_TAKEOVER_ACTIVE`** (2459), **`clearflag FLAG_UNK_0C5`** (197), **`setflag FLAG_BEAT_RADIO_TOWER_ROCKETS`** (198), **`setflag FLAG_ROCKET_HIDEOUT_CLEARED`** (202, Route 43 toll).
+
+**Gym blocker:** hide flag **439** on obj1. **East exit:** remove middleman obj0 `(540,175)` from zone_event **084** *and* matrix duplicate **043** (script 65535 — visible from Route 44); remove exit coord script 2; remove bigman obj2 `(523,184)`. **Route 44:** remove all three junction NPCs from **046** (incl. sprite 325 blocker) plus matrix duplicates in **090**. OnLoad sets `VAR_UNK_407A=1`, flags **505/517**, `hide_person 0/2`.
+
+**Build note:** `tools/extract_scr_seq_vanilla.py` seeds `build/a012` from `rom.nds` every scr_seq rebuild. Do not extract scr_seq from `base/root` after a bad build — member files can get shuffled/corrupted.
+
+**Flags left alone (Gyarados):** `FLAG_HIDE_LAKE_OF_RAGE_RED_GYARADOS` (483), `FLAG_CAUGHT_RED_GYARADOS` (362), `FLAG_GOT_RED_SCALE` (201). Flag **202** is hideout-cleared (pret name), not Gyarados hide.
+
+| File | Role |
+|------|------|
+| `armips/scr_seq/scr_seq_t28_005_patch.s` | OnLoad replacement bytecode |
+| `tools/patch_scr_seq_t28_rocket.py` | Append patch; `call` from OnLoad entry **38** (keep slot 0 @ **101**) |
+| `tools/patch_zone_event_t28_rocket.py` | zone_event **084** (town) + **043** (outdoor matrix) |
+| `tools/patch_zone_event_r44_rocket.py` | zone_event **046** (Route 44) + **090** (outdoor matrix) |
+| `narcs.mk` | Hook after scr_seq / zone_event extract |
+
+**Test checklist:** load Mahogany (new + existing save) → no rocket grunts, gym enterable, shop normal, Route 44 reachable, Lake of Rage red Gyarados still present.
+
+---
+
+## Removing / skipping story NPCs (reusable recipe)
+
+**Use when:** a roadblock NPC should be gone from the start (or after a scripted state) — gym blockers, arc skip, etc. Same toolchain as badge gates + ferries, but usually **delete objects** and/or **set hide flags** instead of adding new ones.
+
+**Status:** Mahogany rocket-skip **verified in-game** (Aug 2026). Expect the same multi-layer trap on other Johto outdoor blockers.
+
+### Two layers of “remove this guy”
+
+| Layer | What it does | Mahogany rocket example |
+|-------|----------------|-------------------------|
+| **scr_seq OnLoad** | Force post-event vars/flags; `hide_person N` for map-local ids | `scr_seq_t28_005_patch.s` via member **930** |
+| **zone_event objects** | Static overworld spawns — **must patch every copy** | See table below |
+
+**scr_seq alone is not enough** if the NPC still appears: vanilla often duplicates the same `(x, z)` object across **outdoor matrix** zone_event members. Removing only the “town map” member leaves a ghost visible from the connecting route.
+
+### zone_event members to check (Mahogany RageCandyBar)
+
+| Member | Role | Object removed |
+|--------|------|----------------|
+| **084** | Mahogany Town map | middleman `(540,175)` script **1**, bigman `(523,184)` |
+| **043** | Outdoor matrix — Mahogany chunk | middleman `(540,175)` script **65535** ← visible from Route 44 |
+| **046** | Route 44 map | sprites **325/328/332** at junction |
+| **090** | Outdoor matrix — Route 44 chunk | sprites **328/332** at junction |
+
+**Lesson:** after fixing the “obvious” map member, stand on the **connecting route** and re-check. If still visible, scan vanilla for duplicates.
+
+### Recon workflow (copy for next blocker)
+
+1. **In-game** — note map, world-ish position, sprite look. Confirm blocker is gone functionally but maybe still visible (cosmetic duplicate).
+2. **Find map member** — pret JSON / HACK-NOTES / `inspect_zone_event.py build/a032/2_<NNN>`.
+3. **Scan all copies in vanilla:**
+   ```bash
+   # sprite + coords from inspect; search build/a032_vanilla/2_*
+   python3 scripts/inspect_zone_event.py build/a032_vanilla/2_<NNN>
+   ```
+   Grep all members for same `(x,z)` or sprite id near that area (see `tools/patch_zone_event_*` — object match is `(obj_id, script, x, z)`).
+4. **Static matrix copies** — script **65535** (`WARP_DOOR`) on an object usually means “display only, no talk” outdoor-layer duplicate.
+5. **Patch** — extend or copy `tools/patch_zone_event_<name>.py`:
+   - Seed from `extract_zone_event_vanilla.py` (never patch stale `base/root`)
+   - `MEMBER_SPECS` dict: member id → list of `(obj_id, script, x, z)` tuples to delete
+   - Optional: hide flag on obj instead of delete (gym blocker uses flag **439**)
+   - Hook in `narcs.mk` after zone_event extract
+6. **State script** (if needed) — OnLoad patch sets scene var + hide flags + `hide_person`. Use **`call` + append** for overlapping scr_seq (T28) or full rebuild when slots are clean (R42 ferry).
+7. **Build & test** — `make build/narc/zone_event.narc` for quick iterate, full `make -j1` for `test.nds`. Test from **both** maps (town + connecting route).
+
+### Debug helpers
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/inspect_zone_event.py build/a032/2_<NNN>` | objects, warps, coords |
+| `scripts/inspect_zone_event.py build/a032_vanilla/2_<NNN>` | vanilla baseline before patch |
+| `scripts/dump_zone_objects.py` | bulk object dump (adapt path) |
+| `scripts/decode_clear_script.py build/a012/2_<NNN> <off> <end>` | OnLoad bytecode |
+
+Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanilla.py`).
+
+### Gotchas
+
+- **One member ≠ one map** — Johto overworld uses extra zone_event members for matrix chunks; same NPC at same world coords can appear in **084 + 043** or **046 + 090**.
+- **Delete vs hide flag** — delete for gone-for-good skip; hide flag when vanilla toggles visibility later (gym blocker **439**).
+- **coord events** — Mahogany east exit also had a **coord script** blocking walk-through; remove from zone_event coords table, not just the object.
+- **Idempotent patchers** — match on `(obj_id, script, x, z)`; raise if vanilla object missing (catches wrong member / already-wrong base).
+- **Do not commit `build/`** — patchers re-seed from `rom.nds` each rebuild.
+

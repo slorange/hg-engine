@@ -676,10 +676,11 @@ SCR_SEQ_DEPENDENCIES_DIR := armips/scr_seq
 SCR_SEQ_DEPENDENCIES := $(SCR_SEQ_DEPENDENCIES_DIR)/*
 
 $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES)
-	$(NARCHIVE) extract $(SCR_SEQ_TARGET) -o $(SCR_SEQ_DIR) -nf
+	$(PYTHON) tools/extract_scr_seq_vanilla.py $(SCR_SEQ_DIR)
 	for file in $^; do $(ARMIPS) $$file; done
 	$(PYTHON) tools/patch_scr_seq_r36.py $(SCR_SEQ_DIR)/2_243
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
+	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
 	$(NARCHIVE) create $@ $(SCR_SEQ_DIR) -nf
 
 # for convenience, rebuild SCR_SEQ_NARC every build so that DSPRE changes are not overwritten
@@ -695,9 +696,11 @@ ZONE_EVENT_JSONS := $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/*.json)
 ZONE_EVENT_DEPENDENCIES := tools/zone_event_enc.py $(ZONE_EVENT_JSONS) $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/events/*)
 
 $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
-	$(NARCHIVE) extract $(ZONE_EVENT_TARGET) -o $(ZONE_EVENT_DIR) -nf
+	$(PYTHON) tools/extract_zone_event_vanilla.py $(ZONE_EVENT_DIR)
 	for json in $(ZONE_EVENT_JSONS); do $(PYTHON) tools/zone_event_enc.py $$json $(ZONE_EVENT_DIR); done
 	$(PYTHON) tools/patch_zone_event_r42_ferry.py $(ZONE_EVENT_DIR)/2_041
+	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
+	$(PYTHON) tools/patch_zone_event_r44_rocket.py $(ZONE_EVENT_DIR)
 	$(NARCHIVE) create $@ $(ZONE_EVENT_DIR) -nf
 
 .PHONY: $(ZONE_EVENT_NARC)

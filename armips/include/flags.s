@@ -214,6 +214,7 @@ FLAG_GOT_TM10_FROM_LAKE_OF_RAGE_MAN                        equ 199
 FLAG_UNK_0C8                                               equ 200
 FLAG_GOT_RED_SCALE                                         equ 201
 FLAG_RED_GYARADOS_MEET                                     equ 202
+FLAG_ROCKET_HIDEOUT_CLEARED                                equ 202
 FLAG_REMOVED_ROCKET_HIDEOUT_B3F_ELECTRODE_1                equ 203
 FLAG_REMOVED_ROCKET_HIDEOUT_B3F_ELECTRODE_2                equ 204
 FLAG_REMOVED_ROCKET_HIDEOUT_B3F_ELECTRODE_3                equ 205
