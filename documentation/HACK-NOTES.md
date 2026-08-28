@@ -259,7 +259,7 @@ Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,3
 
 Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/_scan_zone_events.py`.
 
-**Facing constants (object `dirn`):** 0=south, 1=north, 2=west, 3=east.
+**Facing constants (object `facingDirection`):** pret `DIR_NORTH=0`, `DIR_SOUTH=1`, `DIR_WEST=2`, `DIR_EAST=3` (`global_fieldmap.h`).
 
 **scriptId on objects/bg events = scr_seq slot index + 1** (slot `_006` → scriptId **7**).
 
@@ -492,4 +492,47 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 **Verify:** `make scr_seq_clean && make -j24`, then `python scripts/verify_train_patch.py`. In-game: new save → Mom intro → Goldenrod or Saffron station → policeman allows platform → pass coord gate → board train.
 
 **Gotcha:** map header IDs ≠ scr_seq members (`MAP_T25R0501` / `MAP_T11R0601` vs **893** / **834**).
+
+---
+
+## Route 4 ledge boost (Cerulean → Mt Moon)
+
+**Status:** implemented; **NPC / landing coords are placeholders** — tune after in-game test.
+
+**Goal:** one-way paid bypass below the Cerulean-side ledge — fisherman boosts you up 2 tiles for **$100** (same flow as Route 42 ferry, single shore).
+
+### Four IDs (easy to mix up)
+
+| What | Route 4 value | pret name |
+|------|---------------|-----------|
+| **Map header** | `MAP_R04` = **12** | — |
+| **zone_event** | member **009** | `009_R04.json` |
+| **scr_seq** | member **178** | `scr_seq_0178_R04.s` |
+| **Text bank** | **328** | `msg_0328_R04` |
+
+**Not** zone_event 178 (that is a different small map). **Not** scr_seq 009.
+
+No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / Route 44).
+
+### Defaults (tune in patch tools)
+
+| Constant | Default | File |
+|----------|---------|------|
+| NPC tile | **(1270, 118)** facing **south** (sprite **333** hiker) | `tools/patch_zone_event_r04_boost.py` |
+| Landing tile | **(1270, 116)** — 2 north of NPC | same + `armips/scr_seq/scr_seq_r04_boost.s` (`LAND_X` / `LAND_Z`) |
+| Object id | **4** | zone_event patch |
+| scr_seq slot | **1** → scriptId **2** | scr_seq patch |
+
+### Files
+
+| File | Role |
+|------|------|
+| `armips/scr_seq/scr_seq_r04_boost.s` | Paid warp script |
+| `tools/patch_scr_seq_r04_boost.py` | Append slot to **2_178** |
+| `tools/patch_zone_event_r04_boost.py` | Object on **2_009** |
+| `data/text/328.txt` | Trainer tips (0) + boost lines (1–4) |
+| `scripts/verify_r04_boost.py` | Post-build check |
+| `scripts/find_r04_coords.py` | Recon helper for world `(x,z)` |
+
+**Verify:** `make scr_seq_clean && make -j24`, then `python scripts/verify_r04_boost.py`.
 
