@@ -466,5 +466,30 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Gotcha:** map header `MAP_T20R0201` = **63** ≠ scr_seq member **845** (same pattern as Route 32 / badge gates).
 
-**Note:** Existing saves are unchanged. Start a **new game**, go downstairs, and finish Mom’s intro. Transport scripts (ferry/train weekday gates, Copycat, ship interior) are separate patches still TODO.
+**Note:** Existing saves are unchanged. Start a **new game**, go downstairs, and finish Mom’s intro. Ferry weekday / game-clear gates and ship interior are still TODO.
+
+---
+
+## Magnet Train (Goldenrod ↔ Saffron)
+
+**Toggle:** same `OPENWORLD_STARTING_ITEMS` gate as Mom grants.
+
+**Assumption:** Pass (`ITEM_PASS` 480) and S.S. Ticket (`ITEM_SS_TICKET` 456) already in bag from Mom; coord gates keep vanilla `HasItem ITEM_PASS` (passes). No Copycat / power-plant story required.
+
+**Members patched:**
+
+| Member | Map | What changed |
+|--------|-----|--------------|
+| **893** | `T25R0501` Goldenrod station 1F | OnTransition **006**, OnInit **005**, policeman **000** — `FLAG_RESTORED_POWER` (280) gates → unconditional branch to “power restored” path |
+| **834** | `T11R0601` Saffron station 1F | Same for **006** / **005** / **000**, plus NPC **001** (weekday-flavour line gated on power) |
+
+**Ride scripts (895 / 836):** unchanged — no power or ticket checks; only play ride animation after coord gate sets boarding vars.
+
+**Patch style:** in-place bytecode (`checkflag 280` + `goto_if` → `goto`); no `build_scr_seq()` rebuild (table layout is non-sequential).
+
+**Files:** `tools/patch_scr_seq_train.py` (`2_893`, `2_834` in narcs.mk), `scripts/verify_train_patch.py`, `scripts/scan_train_power.py`.
+
+**Verify:** `make scr_seq_clean && make -j24`, then `python scripts/verify_train_patch.py`. In-game: new save → Mom intro → Goldenrod or Saffron station → policeman allows platform → pass coord gate → board train.
+
+**Gotcha:** map header IDs ≠ scr_seq members (`MAP_T25R0501` / `MAP_T11R0601` vs **893** / **834**).
 

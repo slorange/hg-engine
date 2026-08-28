@@ -683,6 +683,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES)
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
 	$(PYTHON) tools/patch_scr_seq_t20_mom.py $(SCR_SEQ_DIR)/2_845
+	$(PYTHON) tools/patch_scr_seq_train.py $(SCR_SEQ_DIR)/2_893 $(SCR_SEQ_DIR)/2_834
 	$(NARCHIVE) create $@ $(SCR_SEQ_DIR) -nf
 
 # for convenience, rebuild SCR_SEQ_NARC every build so that DSPRE changes are not overwritten
