@@ -1,8 +1,10 @@
 # Pokémon Wandering Heart — Design Document
 
-> Working design document for a Pokémon HeartGold/SoulSilver ROM hack built using HG-Engine.
+> Working design document (**Design 1 — core ROM**) for a Pokémon HeartGold/SoulSilver ROM hack built using HG-Engine.
 >
-> This document is the current source of truth for the intended game design. It describes desired behaviour, design philosophy, tentative ideas, and long-term possibilities.
+> This document is the source of truth for **core** game design: open world, progression, battles, trainers, travel, and world systems.
+>
+> **Future / addon design:** [`DESIGN2.md`](DESIGN2.md) — V2 ball rebalance, V3 Full Moon, V4 unlimited moves. Not required for the core ROM.
 >
 > **This document is NOT an instruction to automatically implement everything described here.**
 
@@ -171,6 +173,12 @@ This scaling may affect:
 
 Exact scaling rules remain subject to balancing.
 
+## Progression priority
+
+**Badge-scaled Gyms and general trainer scaling should be prototyped before badge-based level caps are enabled.** Without scaled opposition, alternate starting cities go from very difficult to impossible; level caps alone would punish players without fixing what they fight.
+
+Trainer scaling (§§8–9) and Gym scaling (§6) are prerequisites for fair starting-city selection (§4) and for level caps (§7).
+
 ---
 
 # 6. Gym Leader Rosters
@@ -262,6 +270,10 @@ The exact cap associated with badges #2 through #15 remains TBD and should event
 - overall pacing.
 
 Do not invent the intermediate curve without explicit design work.
+
+## Implementation order
+
+**Do not enable level caps until Gym and trainer scaling exists (or is prototyped).** Level caps encourage building a wider collection; they do not make late-game areas safe for a low-badge player who walks in from another starting city. Scaling trainer/Gym levels and teams by badge tier must come first.
 
 ---
 
@@ -668,9 +680,7 @@ The player can rest to intentionally advance the accelerated in-game clock.
 
 ### Apricorn crafting
 
-**TBD but currently favoured**
-
-Pokémon Centers may provide Apricorn Ball crafting so that the player does not repeatedly need to return to Azalea Town.
+If the [`DESIGN2.md`](DESIGN2.md) addon is implemented, Pokémon Centers may provide distributed Apricorn Ball crafting. **Not core scope.**
 
 ### Additional services
 
@@ -739,6 +749,10 @@ Some routes may contain both low-progression and high-progression encounter area
 Where guards would feel heavy-handed, encounter-tile gating is a lighter option: the player can traverse the route freely, but stepping into grass, caves, or other encounter areas above their current progression level triggers a block and a short message (e.g. *"The wild Pokémon here seem dangerous. You shouldn't enter yet."*). Path tiles remain walkable; only the encounter tiles themselves are restricted.
 
 Where geography makes a dangerous route mandatory for reaching another city, the player should have an alternative transportation option.
+
+## Proof of concept (implemented)
+
+**Route 29 → Route 46 gatehouse** — walk-past coord gate requiring **2 badges** (Zephyr + Hive). See `documentation/HACK-NOTES.md` § Route 46 gate. Template for guard-style gating; broader encounter-tile gating remains TBD.
 
 ---
 
@@ -889,8 +903,7 @@ The accelerated clock affects systems including:
 - evolutions;
 - NPC behaviour;
 - events;
-- Apricorn regrowth;
-- potentially other systems.
+- potentially other systems (including Apricorn refresh if [`DESIGN2.md`](DESIGN2.md) is implemented);
 
 ## Time advancement
 
@@ -910,289 +923,23 @@ Exact implementation remains TBD.
 
 ---
 
-# 24. Apricorn Economy
+# 24. Apricorn Economy & Poké Balls (addon)
 
-**Status: DECIDED direction; numbers TBD**
+**Status: ADDON — see [`DESIGN2.md`](DESIGN2.md)**
 
-Apricorns become a renewable crafting resource tied to the accelerated game clock.
+Apricorn tree refresh, shop ball rebalance, removed balls, and all Apricorn ball formulas live in the addon design doc. **Not core to the open-world ROM** — vanilla shop balls remain until that addon is deliberately scheduled.
 
-Current target:
+Core touchpoints only:
 
-- trees refresh approximately once per in-game day;
-- each tree yields approximately **3–5 Apricorns**.
+- Accelerated clock ([§23](#23-accelerated-daynight-cycle)) — shared with addon tree refresh if implemented later.
+- Auto-heal on capture ([§17](#17-healing-and-attrition)) — rationale for removing Heal Ball in the addon doc.
+- Mom's open-world Apricorn Box (`OPENWORLD_STARTING_ITEMS`) — inventory convenience only, not the full rebalance.
 
-With the current ~30-minute day target, this creates a much faster renewable economy than vanilla HGSS.
-
-Exact quantities and refresh timing remain subject to balance testing.
-
-The player should not need to repeatedly return to Azalea Town merely to craft Apricorn Balls.
-
-Pokémon Center crafting or another distributed crafting system is currently being considered.
+Do not implement ball changes from DESIGN2 unless explicitly requested.
 
 ---
 
-# 25. Poké Ball Design Philosophy
-
-**Status: DECIDED**
-
-Poké Balls are being rebalanced around two broad categories.
-
-## Shop Balls
-
-> **Readily available, generally weaker/reliable bonuses.**
-
-The player can purchase these in quantity.
-
-They should be useful without one infinitely purchasable ball becoming the obvious solution to nearly every encounter.
-
-## Apricorn Balls
-
-> **Renewable but resource-limited, with stronger and more specialized bonuses.**
-
-Apricorn harvesting/crafting limits availability enough that these balls can have substantially stronger effects.
-
-The player should have reasons to carry and select different balls for different encounters.
-
-The intended outcome is explicitly to avoid:
-
-> "Buy 99 Quick Balls and throw one at everything."
-
----
-
-# 26. Shop Balls
-
-**Status: DECIDED unless noted**
-
-| Ball | Maximum | Effect |
-|---|---:|---|
-| Poké Ball | 1× | Standard |
-| Great Ball | 1.5× | Standard |
-| Ultra Ball | 2× | Standard |
-| Timer Ball | 4× | Increasing bonus during long battles |
-| Repeat Ball | 3× | Bonus against previously caught species |
-| Net Ball | 3× | Bonus against Water or Bug Pokémon |
-
-Additional shop balls may exist later.
-
-However, **Quick Ball and Dusk Ball are intentionally removed from normal shops**.
-
----
-
-# 27. Removed / Replaced Balls
-
-**Status: CURRENTLY DECIDED**
-
-The following vanilla/special balls are currently removed or replaced:
-
-- Heal Ball
-- Dive Ball
-- Luxury Ball
-- Nest Ball
-- Lure Ball
-
-## Heal Ball
-
-The Heal Ball is unnecessary because **all newly caught Pokémon are automatically healed**.
-
-## Luxury Ball
-
-Its conceptual role is replaced by the redesigned Friend Ball.
-
-## Nest Ball
-
-Removed due to conceptual overlap with Level Ball.
-
-## Dive / Lure
-
-Removed because the ball roster otherwise contains excessive overlap between Water-oriented capture bonuses.
-
-These decisions can theoretically be revisited, but they are not currently part of the intended ball roster.
-
----
-
-# 28. Apricorn Balls
-
-**Status: DECIDED conceptually; some formulas TBD**
-
-New Apricorn colours may be introduced.
-
-Colours are chosen primarily to communicate the identity of the resulting Ball rather than to preserve vanilla Apricorn associations.
-
-Current mapping:
-
-| Apricorn | Ball | Maximum | Proposed Effect |
-|---|---|---:|---|
-| 🔴 Red | Fast Ball | 5× / 10× beasts | Scales roughly 1–5× according to base Speed; 10× against roaming legendary beasts |
-| 🩶 Grey | Heavy Ball | 5× | Scales roughly 1–5× according to weight |
-| 🩷 Pink | Love Ball | 8× | 3× opposite gender; 8× opposite gender + compatible Egg Group |
-| 🟢 Green | Friend Ball | 8× | 8× against qualifying friendship-evolution families; caught Pokémon starts at 200 friendship |
-| 🟡 Yellow | Level Ball | 8× | Scales according to player's level advantage |
-| 🟣 Purple | Dream Ball | 4× | Sleeping target |
-| 🔵 Blue | Quick Ball | 5× | First turn |
-| ⚫ Black | Dusk Ball | ~7× | 4× at night; increasingly powerful with cave depth |
-
-Grey and Purple are intentionally new Apricorn colours.
-
-This immediately communicates to experienced HGSS players that the Apricorn system has changed.
-
----
-
-# 29. Fast Ball
-
-**Status: DECIDED; exact intermediate curve TBD**
-
-Fast Ball scales according to the target species' **base Speed**.
-
-Target range:
-
-**~1× to 5×**
-
-Exact thresholds/formula remain TBD.
-
-## Roaming beasts
-
-Fast Ball receives:
-
-**10×**
-
-against the roaming legendary beasts.
-
-The intended targets are specifically the Johto roaming beasts such as:
-
-- Raikou;
-- Entei;
-- Suicune, where relevant to encounter implementation.
-
-This is a deliberate thematic specialty.
-
----
-
-# 30. Heavy Ball
-
-**Status: DECIDED; thresholds TBD**
-
-Heavy Ball scales according to target weight.
-
-Maximum:
-
-**5×**
-
-The exact weight thresholds/formula remain TBD.
-
----
-
-# 31. Love Ball
-
-**Status: DECIDED**
-
-Love Ball:
-
-**3×** against an opposite-gender target.
-
-**8×** if the target is opposite gender AND shares a compatible Egg Group.
-
-This intentionally makes Love Ball extremely strong when its narrower thematic condition is fully satisfied.
-
----
-
-# 32. Friend Ball
-
-**Status: DECIDED**
-
-Friend Ball combines capture specialization with its friendship utility.
-
-## Capture modifier
-
-**8×**
-
-against a Pokémon belonging to an evolutionary family that contains a friendship evolution.
-
-The bonus applies to the **entire evolutionary family**, not only the exact species that evolves through friendship.
-
-For example, if a family contains a friendship evolution, other catchable members of that family can also qualify.
-
-## Friendship
-
-Pokémon caught in a Friend Ball begin at:
-
-**200 friendship**
-
-This puts friendship-evolution Pokémon close to being ready to evolve.
-
----
-
-# 33. Level Ball
-
-**Status: DECIDED conceptually**
-
-Maximum:
-
-**8×**
-
-The Ball becomes stronger based on the player's level advantage over the target.
-
-The vanilla concept is retained.
-
-The exact progression may become more gradual than vanilla.
-
-Formula:
-
-**TBD**
-
----
-
-# 34. Dream Ball
-
-**Status: DECIDED**
-
-Dream Ball receives:
-
-**4×**
-
-against sleeping Pokémon.
-
-Because Sleep is already one of the strongest capture statuses, the bonus intentionally remains lower than the most specialized Apricorn Balls.
-
----
-
-# 35. Quick Ball
-
-**Status: DECIDED**
-
-Quick Ball receives:
-
-**5×**
-
-on the first turn.
-
-Quick Ball is moved from normal shops into the Apricorn economy because an infinitely purchasable 5× first-turn ball otherwise risks becoming the default capture strategy.
-
----
-
-# 36. Dusk Ball
-
-**Status: DECIDED conceptually; exact depth mapping TBD**
-
-Dusk Ball receives:
-
-**4× at night.**
-
-In caves, its strength increases according to cave depth.
-
-Current concept:
-
-- shallow cave → approximately 4×;
-- deeper floor → approximately 5×;
-- deeper still → approximately 6×;
-- deepest areas → approximately 7×.
-
-Exact mapping between map/floor depth and modifier remains TBD.
-
-This gives Dusk Ball an unusually powerful ceiling while requiring increasingly specialized conditions.
-
----
-
-# 37. Wild Encounters
+# 25. Wild Encounters
 
 **Status: PARTIALLY DECIDED**
 
@@ -1203,6 +950,8 @@ Encounter design should ensure that every viable starting city provides useful l
 Different sections of the same route may support different progression tiers.
 
 Badge-gated grass or dungeon areas can contain stronger encounters while leaving the overall geography traversable.
+
+**Guard-style gating** has one proof of concept (Route 29→46, §20). **Trainer and Gym scaling by badge tier should land before broad encounter-table work or level caps** — otherwise starting-city balance depends entirely on static vanilla tables.
 
 Exact encounter-scaling philosophy remains to be designed.
 
@@ -1217,74 +966,7 @@ These should not be assumed without explicit design work.
 
 ---
 
-# 38. Full Moon System
-
-**Status: V2 / PARKING LOT**
-
-A full-moon system is NOT part of the initial intended scope.
-
-If implemented later, it should be a meaningful world system rather than existing solely to justify Moon Ball mechanics.
-
-Possible system:
-
-- full moon every X in-game days;
-- lasts several nights;
-- special encounters;
-- NPC dialogue/world changes;
-- quests/events;
-- potentially special legendary/mythical content;
-- Darkrai/Lunala-related content depending on available generations.
-
-## Moon Ball
-
-Potential V2 design:
-
-**8×** against every member of an evolutionary family containing a Moon Stone evolution.
-
-During a full moon:
-
-**8× against all Pokémon.**
-
-Therefore the Moon Ball is normally niche but temporarily becomes a powerful general-purpose Ball during the event.
-
-Do not implement the Moon Ball independently unless the broader moon system is intentionally brought into scope.
-
----
-
-# 39. Move Limit Removal
-
-**Status: V2 / TECHNICAL MOONSHOT**
-
-Long-term desired design:
-
-> **Pokémon retain every move they learn rather than being restricted to four moves.**
-
-The inspiration is closer to the Pokémon anime: learning a fifth move does not require permanently forgetting one of the previous four.
-
-This means genuinely having access to more than four learned moves, NOT merely selecting four moves before each battle from a larger remembered list.
-
-This is expected to be technically difficult.
-
-Potentially affected systems include:
-
-- Pokémon data structures;
-- save format;
-- box storage;
-- battle UI;
-- move-selection UI;
-- AI;
-- move learning;
-- evolution;
-- scripts;
-- compatibility assumptions throughout HGSS/HG-Engine.
-
-This should NOT be attempted as part of initial development.
-
-Before implementation, a dedicated feasibility investigation is required.
-
----
-
-# 40. Pokémon Generations / Content Scope
+# 26. Pokémon Generations / Content Scope
 
 **Status: TBD / TECHNICAL INVESTIGATION**
 
@@ -1321,7 +1003,7 @@ This decision affects:
 
 ---
 
-# 41. Design Principles
+# 27. Design Principles
 
 When evaluating future ideas, prefer designs that support these principles.
 
@@ -1362,12 +1044,13 @@ Examples:
 - repeated Pokémon Center healing;
 - returning to PCs;
 - HM slaves;
-- real-time Apricorn waiting;
 - permanently finite TMs.
+
+(Vanilla Apricorn waiting and ball rebalance chores: [`DESIGN2.md`](DESIGN2.md) addon only.)
 
 **Preserve/enhance:**
 - choosing which TM to spend now;
-- selecting the right Poké Ball;
+- selecting the right Poké Ball (vanilla until addon);
 - deciding which Pokémon to commit during battle;
 - choosing where to explore;
 - choosing which Gym to challenge;
@@ -1390,7 +1073,7 @@ This principle is not absolute; implementation and balance may require scaling s
 
 ---
 
-# 42. Major Technical Investigations
+# 28. Major Technical Investigations
 
 The following designs should receive dedicated technical investigation before implementation.
 
@@ -1428,16 +1111,20 @@ Questions include:
 - badge-conditioned encounter tables;
 - grass-tile-specific encounter sets;
 - map scripting;
-- guards;
+- guards (PoC: Route 29→46);
 - doors;
 - HM gates.
 
-## Badge-scaled Gyms
+## Badge-scaled Gyms and trainers
+
+**Priority investigation** — should precede level caps and broad starting-city rollout.
 
 Questions include:
 
 - identifying current badge count;
+- scaling wild-adjacent trainer levels and teams by badge tier;
 - dynamic trainer generation;
+- dynamic Gym generation;
 - battle-size selection;
 - rematches;
 - TM rewards;
@@ -1471,8 +1158,9 @@ Questions include:
 - day/night rendering;
 - encounter tables;
 - evolutions;
-- Apricorn refresh;
 - manual time advancement.
+
+(Apricorn refresh: [`DESIGN2.md`](DESIGN2.md) addon.)
 
 ## HM progression
 
@@ -1483,21 +1171,9 @@ Questions include:
 - badge-count unlocks;
 - existing scripts expecting specific badges/HMs.
 
-## Expanded Apricorn system
-
-Questions include:
-
-- additional Apricorn colours;
-- inventory/data representation;
-- crafting;
-- trees;
-- refresh logic;
-- custom Ball formulas;
-- cave-depth detection.
-
 ---
 
-# 43. Initial Development Philosophy
+# 29. Initial Development Philosophy
 
 The project should NOT begin by attempting its most ambitious systems.
 
@@ -1523,25 +1199,53 @@ The first implementation targets should preferably:
 
 ---
 
-# 44. Current Technical Baseline
+# 30. Current Technical Baseline
 
-As of the initial development setup:
+As of August 2026:
 
-- HG-Engine has been successfully built using Docker.
-- A clean HeartGold ROM is used as the build input.
-- The build produces `test.nds`.
-- `test.nds` successfully boots in DeSmuME.
-- A test dialogue modification has successfully appeared in-game.
+### Build and toolchain
 
-Therefore the basic development loop is proven:
+- HG-Engine builds reliably via **Docker** (`make -j24` → `test.nds`; DeSmuME verification).
+- Field scripting workflow is established: **scr_seq**, **zone_event**, **text banks**, Python patch tools, and `narcs.mk` hooks.
+- Map identity pitfalls are documented (`map header ≠ scr_seq member ≠ zone_event member`) in `documentation/HACK-NOTES.md`.
+
+### Core battle / QoL (verified in-game)
+
+| Feature | Toggle / hook | Design ref |
+|---------|---------------|------------|
+| Post-battle heal (HP/PP/status) | `HEAL_AFTER_BATTLE` | §17 |
+| Full-party EXP share (interim) | `FULL_PARTY_EXP_SHARE` | §16 |
+
+### Open-world shell (verified or implemented)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified | scr_seq **845**; `OPENWORLD_STARTING_ITEMS` |
+| Magnet Train (Goldenrod ↔ Saffron) | Verified | No power-plant gate; scr_seq **893** / **834** |
+| Route 42 paid ferry | Verified | Reference recipe for paid bypass NPCs |
+| Route 4 ledge boost ($100 hiker) | Implemented | Coords may need in-game tuning |
+| Route 29→46 gate (2 badges) | PoC verified | Guard-style encounter gating template |
+| Route 36 Sudowoodo removed | Verified | 0-badge Violet ↔ Goldenrod path |
+| Route 32 badge gate removed | Verified | 0-badge path toward Union Cave |
+| Mahogany rocket arc skipped | Verified | Town accessible on load |
+
+Reusable recipes for badge gates, ferry NPCs, and story NPC removal live in **`documentation/HACK-NOTES.md`**.
+
+### Not yet started (core design priorities)
+
+- Badge-scaled Gym and trainer difficulty (§§5–7).
+- Starting city selection (§4).
+- Living trainers, dynamic rosters, universal PC, collection-based HMs.
+
+The basic development loop is proven:
 
 > **edit source/data → Docker build → test.nds → DeSmuME → verify**
 
-Environment setup should not be considered complete merely because an alternative native MSYS2 build partially works. Docker is currently the known-good build path.
+Docker remains the known-good build path.
 
 ---
 
-# 45. Open Design Questions
+# 31. Open Design Questions
 
 The following are intentionally unresolved.
 
@@ -1559,37 +1263,28 @@ The following are intentionally unresolved.
 - Exact HM progression order.
 - Exact transportation prices.
 - Exact Pokémon Center service list.
-- Exact Apricorn yield and refresh rate.
-- Exact Apricorn crafting mechanism.
-- Fast Ball intermediate Speed curve.
-- Heavy Ball weight thresholds.
-- Level Ball scaling formula.
-- Dusk Ball cave-depth mapping.
 - Exact accelerated-time resting mechanics.
 - Included Pokémon generations/content.
 - Scope and structure of traditional story content.
+
+(Ball/Apricorn V2 questions: [`DESIGN2.md`](DESIGN2.md) §18. V3/V4 deferred scope also in DESIGN2.)
 
 These questions should remain open until deliberately resolved.
 
 ---
 
-# 46. V2 / Parking Lot Summary
+# 32. Deferred Scope (V2–V4)
 
-Ideas deliberately outside initial scope include:
+Features deliberately outside **core** scope are documented in [`DESIGN2.md`](DESIGN2.md):
 
-### Full Moon system
-A recurring accelerated-calendar world event affecting encounters, NPCs, quests and potentially legendary content.
+- **V2** — Apricorn economy and Poké Ball rebalance
+- **V3** — Full Moon world system and Moon Ball
+- **V4** — Unlimited learned moves (anime-style move retention)
 
-### Moon Ball
-Implemented as part of the Full Moon system rather than as an isolated capture mechanic.
-
-### Unlimited learned moves
-Anime-style removal of Pokémon's four-move restriction.
-
-These ideas should remain documented but should not influence initial architecture unless doing so is inexpensive and clearly prevents future incompatibility.
+These should not influence initial core architecture unless doing so is inexpensive and clearly prevents future incompatibility.
 
 ---
 
-# 47. One-Sentence Game Identity
+# 33. One-Sentence Game Identity
 
 > **Pokémon Wandering Heart is an open-world HGSS journey where the player builds a collection rather than a fixed party, travels freely through Johto and Kanto, challenges all 16 scaling Gyms in any order, and encounters other trainers undertaking dynamic journeys of their own.**
