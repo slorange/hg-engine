@@ -391,6 +391,8 @@ No random species, no move changes, no items. This alone makes open-world travel
 
 After levels are set, assign **last four level-up moves** at that level (wild-mon logic). Still fixed or rescaled species from vanilla data.
 
+**Implementation note (Phase 2):** `TRAINER_LEVEL_APPROPRIATE_MOVES` in `include/config.h` — skips NARC move sets, calls `InitBoxMonMoveset()` after `ChangeToBattleForm` in `MakeTrainerPokemonParty()`.
+
 ### Phase 3 — Downgrade / upgrade (same species)
 
 Keep the trainer's **vanilla species identity** (or current party slot species), but adjust **evolution stage** so the form is legal at the assigned level:
@@ -398,7 +400,11 @@ Keep the trainer's **vanilla species identity** (or current party slot species),
 - **Downgrade** when the natural line evolves above `ceiling` (e.g. Dragonite at cap 22 → Dratini or Dragonair).
 - **Upgrade** when a lower stage is below the intended level and a higher stage is legal (e.g. Pidgey at level 18 → Pidgeotto if cap allows).
 
-Still no random species swap. Stone/trade lines remain excluded until Phase 5.
+Still no random species swap. Stone/trade lines remain excluded until Phase 5 (only `EVO_LEVEL` edges are used).
+
+**Stage rule:** walk the full level-up chain from base using forward tables generated from `Evolutions.c`. Pick the stage whose **level window** contains the scaled level (min stage level through next evolution level − 1). Example: Dratini line (30 / 55) at **L22 → Dratini**, not Dragonair; Pidgey at **L18 → Pidgeotto**.
+
+**Implementation note (Phase 3):** `TRAINER_SPECIES_STAGE_ADJUST` — build-time tables via `scripts/gen_level_up_evo_tables.py` → `src/field/level_up_evo_tables.c` (regenerated when `Evolutions.c` changes). Runtime: O(chain depth) array lookups, no NARC scans.
 
 ### Phase 4 — Randomize species
 
@@ -418,6 +424,8 @@ Apply scaling to **in-Gym trainer battles** and **Gym Leader battles**, on top o
 | Gym Leader | **all at level cap** | ≥1 type matches Gym |
 
 Gym type matching applies to generated parties too (Phase 4 rolls from a Gym-type-filtered pool). Characterization exceptions (§6) remain manual/curated, not random off-type.
+
+**Implementation note (Phase 6 — Gym Leader cap):** `TRAINER_GYM_LEADER_CAP_LEVEL` in `include/config.h` — `MakeTrainerPokemonParty()` in `src/field/enemy_party.c`. Detects Johto/Kanto Gym Leader trainer classes (`TRAINERCLASS_LEADER_*`); every party slot gets the badge cap exactly instead of a random level in the band. Gym trainer band + type filter still TBD.
 
 ### Phase 7 — Agreed battle size
 

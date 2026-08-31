@@ -201,8 +201,14 @@ EVOS_NARC := $(BUILD_NARC)/a034.narc
 EVOS_TARGET := $(FILESYS)/a/0/3/4
 EVOS_DEPENDENCIES := data/Evolutions.c
 EVOS_OBJS := $(patsubst data/%.c,$(BUILD)/%.o,$(EVOS_DEPENDENCIES))
+LEVEL_UP_EVO_TABLES_C := src/field/level_up_evo_tables.c
+LEVEL_UP_EVO_TABLES_H := include/constants/generated/level_up_evo_tables.h
+LEVEL_UP_EVO_TABLES_SCRIPT := scripts/gen_level_up_evo_tables.py
 
-$(EVOS_NARC): $(EVOS_DEPENDENCIES)
+$(LEVEL_UP_EVO_TABLES_C) $(LEVEL_UP_EVO_TABLES_H): $(EVOS_DEPENDENCIES) $(LEVEL_UP_EVO_TABLES_SCRIPT) include/constants/species.h
+	$(PYTHON) $(LEVEL_UP_EVO_TABLES_SCRIPT)
+
+$(EVOS_NARC): $(EVOS_DEPENDENCIES) $(LEVEL_UP_EVO_TABLES_C)
 	$(CC) $(CFLAGS) -c $(EVOS_DEPENDENCIES) -o $(EVOS_OBJS)
 	$(O2NARC) $(EVOS_OBJS) $@ -n
 

@@ -146,10 +146,22 @@
 // comment out the line below to revert to vanilla EXP distribution
 #define FULL_PARTY_EXP_SHARE
 
-// TRAINER_LEVEL_SCALING remaps trainer party levels to the badge-tier band (DESIGN.md §9 Phase 1)
+// TRAINER_LEVEL_SCALING remaps trainer party levels to the badge-tier band
 // cap = 10 + 4 * badges (max 70 at 15 badges, 80 at 16); trainer levels random in [cap-4, cap]
 // comment out the line below to revert to vanilla fixed trainer levels
 #define TRAINER_LEVEL_SCALING
+
+// TRAINER_LEVEL_APPROPRIATE_MOVES assigns last four level-up moves at scaled level
+// uses InitBoxMonMoveset (same as wild); requires TRAINER_LEVEL_SCALING
+#define TRAINER_LEVEL_APPROPRIATE_MOVES
+
+// TRAINER_SPECIES_STAGE_ADJUST downgrades/upgrades within the same level-up evolution line
+// requires TRAINER_LEVEL_SCALING; stone/trade lines unchanged
+#define TRAINER_SPECIES_STAGE_ADJUST
+
+// TRAINER_GYM_LEADER_CAP_LEVEL sets every Gym Leader party mon to the badge level cap exactly
+// requires TRAINER_LEVEL_SCALING; ordinary trainers still use the [cap-4, cap] band
+#define TRAINER_GYM_LEADER_CAP_LEVEL
 
 // AI_CAN_GRAB_ITEMS allows to use Trick, Switcheroo, (Thief still todo) on the Player and actually grab items. This can result in lost items.
 #define AI_CAN_GRAB_ITEMS

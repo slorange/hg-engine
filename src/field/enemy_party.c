@@ -9,6 +9,7 @@
 #include "constants/item.h"
 #include "constants/moves.h"
 #include "constants/species.h"
+#include "constants/trainerclass.h"
 #include "constants/weather_numbers.h"
 
 #include "bag.h"
@@ -116,17 +117,105 @@ static u16 PickTrainerLevelInBand(u8 floor, u8 ceiling)
     return (u16)(floor + (gf_rand() % range));
 }
 
-/**
- *  @brief remap a trainer mon level to the badge-tier band; ignores vanilla level
- */
-static u16 ScaleTrainerMonLevelToBadgeBand(void)
-{
-    u8 badgeCount = CountPlayerBadges();
-    u8 cap = GetPlayerLevelCapForBadges(badgeCount);
-    u8 floor = cap - 4;
+#if defined(TRAINER_GYM_LEADER_CAP_LEVEL)
 
-    return PickTrainerLevelInBand(floor, cap);
+/**
+ *  @brief true for Johto/Kanto Gym Leader trainer classes
+ */
+static BOOL IsGymLeaderTrainerClass(u8 trainerClass)
+{
+    switch (trainerClass) {
+    case TRAINERCLASS_LEADER_FALKNER:
+    case TRAINERCLASS_LEADER_BUGSY:
+    case TRAINERCLASS_LEADER_WHITNEY:
+    case TRAINERCLASS_LEADER_MORTY:
+    case TRAINERCLASS_LEADER_PRYCE:
+    case TRAINERCLASS_LEADER_JASMINE:
+    case TRAINERCLASS_LEADER_CHUCK:
+    case TRAINERCLASS_LEADER_CLAIR:
+    case TRAINERCLASS_LEADER_BROCK:
+    case TRAINERCLASS_LEADER_MISTY:
+    case TRAINERCLASS_LEADER_LT_SURGE:
+    case TRAINERCLASS_LEADER_ERIKA:
+    case TRAINERCLASS_LEADER_JANINE:
+    case TRAINERCLASS_LEADER_SABRINA:
+    case TRAINERCLASS_LEADER_BLAINE:
+    case TRAINERCLASS_LEADER_BLUE:
+        return TRUE;
+    default:
+        return FALSE;
+    }
 }
+
+#endif // TRAINER_GYM_LEADER_CAP_LEVEL
+
+#if defined(TRAINER_SPECIES_STAGE_ADJUST)
+
+#include "constants/generated/level_up_evo_tables.h"
+
+/**
+ *  @brief walk level-up prevo links to the base of the chain
+ */
+static u16 FindLevelUpChainBase(u16 species)
+{
+    u16 prevo;
+
+    species = (u16)(species & 0x07FF);
+
+    while (species <= MAX_SPECIES_INCLUDING_FORMS) {
+        prevo = sLevelUpPrevo[species];
+        if (prevo == SPECIES_NONE) {
+            break;
+        }
+        species = prevo;
+    }
+
+    return species;
+}
+
+/**
+ *  @brief pick the stage whose level window contains the target level
+ *
+ *  Example (Dratini line): L30 / L55 evolutions → L22 is Dratini (1–29).
+ */
+static u16 AdjustTrainerSpeciesForLevel(u16 species, u8 level)
+{
+    u16 base;
+    u16 cur;
+    u16 best;
+    u16 next;
+    u8 minLv;
+    u8 maxLv;
+
+    species = (u16)(species & 0x07FF);
+    base = FindLevelUpChainBase(species);
+    cur = base;
+    best = base;
+
+    while (cur != SPECIES_NONE && cur <= MAX_SPECIES_INCLUDING_FORMS) {
+        minLv = sLevelUpMinStageLevel[cur];
+        maxLv = 100;
+        next = sLevelUpEvoTarget[cur];
+
+        if (next != SPECIES_NONE && next <= MAX_SPECIES_INCLUDING_FORMS) {
+            maxLv = (u8)(sLevelUpMinStageLevel[next] - 1);
+        }
+
+        if (level >= minLv && level <= maxLv) {
+            best = cur;
+        }
+
+        if (next == SPECIES_NONE) {
+            break;
+        }
+
+        cur = next;
+    }
+
+    return best;
+}
+
+#endif // TRAINER_SPECIES_STAGE_ADJUST
 
 #endif // TRAINER_LEVEL_SCALING
 
@@ -201,6 +290,17 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
     struct PartyPokemon *mons[pokecount];
 
+#ifdef TRAINER_LEVEL_SCALING
+    u8 badgeCount = CountPlayerBadges();
+    u8 trainerLevelCap = GetPlayerLevelCapForBadges(badgeCount);
+    u8 trainerLevelFloor = trainerLevelCap - 4;
+#if defined(TRAINER_GYM_LEADER_CAP_LEVEL)
+    BOOL gymLeaderUsesCap = IsGymLeaderTrainerClass(bp->trainer_data[num].tr_type);
+#else
+    BOOL gymLeaderUsesCap = FALSE;
+#endif
+#endif
+
     for (i = 0; i < pokecount; i++) {
         mons[i] = AllocMonZeroed(heapID);
         // ivs field
@@ -214,7 +314,11 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         // level field
         level = buf[offset] | (buf[offset + 1] << 8);
 #ifdef TRAINER_LEVEL_SCALING
-        level = ScaleTrainerMonLevelToBadgeBand();
+        if (gymLeaderUsesCap) {
+            level = trainerLevelCap;
+        } else {
+            level = PickTrainerLevelInBand(trainerLevelFloor, trainerLevelCap);
+        }
 #endif
         gLastPokemonLevelForMoneyCalc = level; // ends up being the last level at the end of the loop that we use for the money calc loop default case
         offset += 2;
@@ -224,6 +328,17 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         offset += 2;
         form_no = (species & 0xF800) >> 11;
         species &= 0x07FF;
+
+#if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
+        {
+            u16 adjusted = AdjustTrainerSpeciesForLevel(species, (u8)level);
+
+            if (adjusted != species) {
+                species = adjusted;
+                form_no = 0;
+            }
+        }
+#endif
 
         // item field - conditional
         if (bp->trainer_data[num].data_type & TRAINER_DATA_TYPE_ITEMS) {
@@ -383,6 +498,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         if (bp->trainer_data[num].data_type & TRAINER_DATA_TYPE_ITEMS) {
             SetMonData(mons[i], MON_DATA_HELD_ITEM, &item);
         }
+#if !defined(TRAINER_LEVEL_APPROPRIATE_MOVES)
         if (bp->trainer_data[num].data_type & TRAINER_DATA_TYPE_MOVES) {
             for (j = 0; j < 4; j++) {
 #ifdef BLOCK_LEARNING_UNIMPLEMENTED_MOVES
@@ -393,6 +509,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
                 SetPartyPokemonMoveAtPos(mons[i], moves[j], j);
             }
         }
+#endif
         TrainerCBSet(ballseal, mons[i], heapID);
         if (bp->trainer_data[num].data_type & TRAINER_DATA_TYPE_ABILITY) {
             SetMonData(mons[i], MON_DATA_ABILITY, &ability);
@@ -426,6 +543,10 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         }
 
         ChangeToBattleForm(mons[i]);
+
+#if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_LEVEL_APPROPRIATE_MOVES)
+        InitBoxMonMoveset(&mons[i]->box);
+#endif
 
         RecalcPartyPokemonStats(mons[i]); // recalculate stats here
 
