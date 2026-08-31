@@ -146,6 +146,11 @@
 // comment out the line below to revert to vanilla EXP distribution
 #define FULL_PARTY_EXP_SHARE
 
+// TRAINER_LEVEL_SCALING remaps trainer party levels to the badge-tier band (DESIGN.md §9 Phase 1)
+// cap = 10 + 4 * badges (max 70 at 15 badges, 80 at 16); trainer levels random in [cap-4, cap]
+// comment out the line below to revert to vanilla fixed trainer levels
+#define TRAINER_LEVEL_SCALING
+
 // AI_CAN_GRAB_ITEMS allows to use Trick, Switcheroo, (Thief still todo) on the Player and actually grab items. This can result in lost items.
 #define AI_CAN_GRAB_ITEMS
 

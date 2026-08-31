@@ -199,7 +199,7 @@ Their available Pokémon can be dynamically generated or selected according to:
 
 Gym Leaders are **monotype by default**, but this is not an absolute restriction.
 
-Thematically appropriate exceptions are allowed.
+Thematically appropriate exceptions are allowed for characterization (see [§9 Phase 6](#phase-6--gym-trainers-and-gym-leaders) for the generation rule: at least one type must match the Gym).
 
 Examples:
 
@@ -207,6 +207,15 @@ Examples:
 - Brock could potentially use a thematically appropriate non-Rock Pokémon such as Ninetales.
 
 These should be deliberate characterization/design decisions rather than random violations of the Gym's identity.
+
+## Scaling (badge tier)
+
+Gym battles use the same badge-tier ladder as ordinary trainers ([§7](#7-badge-based-level-caps), [§9](#9-trainer-generation)).
+
+- **Gym trainers** (inside the Gym): levels in the current band (`floor`–`ceiling`); every Pokémon must have **at least one type matching the Gym**.
+- **Gym Leaders:** same type rule; **every Pokémon is exactly at level cap** (not a random level in the band).
+
+Rematches use the player's **current** badge tier and cap, not the tier at first defeat.
 
 ## Rematches
 
@@ -224,7 +233,7 @@ There is no intended hard limit on the number of rematches/TM copies.
 
 # 7. Badge-Based Level Caps
 
-**Status: DECIDED; exact intermediate curve TBD**
+**Status: DECIDED**
 
 Pokémon levels are capped according to the player's badge progression.
 
@@ -234,42 +243,48 @@ Level caps are fundamental to the collection-oriented progression system.
 
 Once the player's primary Pokémon reach the current cap, additional experience naturally encourages the player to develop more Pokémon rather than continuously overlevelling a small permanent party.
 
-## Current progression targets
+## Level cap curve
 
-Before challenging Badge #1:
+**+4 levels per badge earned**, starting at **10** before the first Gym:
 
-**Level cap: 10**
+| Badges earned | Level cap |
+|---:|---:|
+| 0 | 10 |
+| 1 | 14 |
+| 2 | 18 |
+| 3 | 22 |
+| … | … (+4 each) |
+| 15 | 70 |
+| 16 | 80 |
 
-Each subsequent Gym generally increases the available level range by approximately:
+Formula (badges 0–15): **`cap = 10 + 4 × badges_earned`**
 
-**3–4 levels**
+- **0 badges → cap 10** (before first Gym).
+- **3 badges → cap 22** (example checkpoint).
+- **15 badges → cap 70** (before the sixteenth Gym / Victory Road band).
+- **All 16 badges → cap 80** (Victory Road and Elite Four). This is a **+10 jump** from the +4-per-badge ladder, not another +4 step.
+- **Champion → cap removed** (postgame progression toward Level 100).
 
-Before challenging Badge #16:
+### Player cap vs trainer levels
 
-**Level cap: 70**
+These ladders are **not the same thing**:
 
-After obtaining all 16 badges:
+- **Player level cap** — badge ladder above, then **uncapped after Champion** (toward 100 in postgame). Champion status is a **player-only** unlock; it does not raise the badge-tier formula.
+- **Ordinary trainer scaling** — badge band from [§9](#9-trainer-generation); **hard ceiling 80** even if the player is Champion. Route trainers, Gym trainers, and rematches should not creep past 80 without an explicit exception.
 
-**Level cap: 80**
+**Special trainers** (scripted bosses, postgame fights) may override the band. Candidates need a curated list — not badge-tier random levels.
 
-Victory Road and the Elite Four therefore operate within the level 70–80 endgame progression.
+| Trainer / fight | Level policy (TBD) |
+|---|---|
+| Elite Four / Champion (first clear) | Likely fixed or band tied to 16-badge tier (76–80 / cap 80) — **TBD** |
+| **Red** (Mt. Silver / equivalent) | Full party **~100**; Pikachu intentionally **buffed** (target **100**, stretch goal **120** if engine allows) |
+| Other postgame rematches | Default **≤80** unless flagged special |
 
-After becoming Champion:
+Red and similar fights are **design exceptions**, not extensions of `10 + 4n`. Implementation: trainer ID whitelist, script flag, or dedicated battle setup — **TBD** (no code until designed).
 
-**The level cap is removed.**
+Victory Road and the Elite Four therefore operate within the level 70–80 endgame band (trainer/Gym scaling may use the full band; player cap is 80 until Champion).
 
-Pokémon can then progress normally toward Level 100 during postgame content.
-
-The exact cap associated with badges #2 through #15 remains TBD and should eventually be designed around:
-
-- encounter levels;
-- evolution levels;
-- learnsets;
-- Gym difficulty;
-- trainer progression;
-- overall pacing.
-
-Do not invent the intermediate curve without explicit design work.
+The hg-engine hook **`IMPLEMENT_LEVEL_CAP`** exists in `include/config.h` but remains disabled until trainer/Gym scaling is prototyped (see [Implementation order](#implementation-order)).
 
 ## Implementation order
 
@@ -317,9 +332,128 @@ The experiential goal matters more than literally simulating every trainer off-s
 
 # 9. Trainer Generation
 
-**Status: DECIDED conceptually; exact generation system TBD**
+**Status: DECIDED conceptually; phased implementation**
 
-Ordinary trainer Pokémon are generated rather than relying primarily on fixed vanilla teams.
+Ordinary trainer Pokémon will eventually be **generated** rather than relying on fixed vanilla teams. Implementation is deliberately staged — rescaling existing parties is the first milestone.
+
+## Trainer level band (same badge ladder as §7)
+
+When the player has **`n` badges earned**, their level cap is **`10 + 4n`** (max **70** while `n < 16`; **80** with all 16 badges).
+
+**Ordinary trainers** draw Pokémon levels from the current **4-level band** ending at that cap:
+
+| Badges earned | Player cap | Trainer level range |
+|---:|---:|---|
+| 0 | 10 | 6–10 |
+| 1 | 14 | 10–14 |
+| 2 | 18 | 14–18 |
+| 3 | 22 | 18–22 |
+| … | … | … |
+| 15 | 70 | 66–70 |
+| 16 | 80 | 76–80 |
+
+Formula: **`floor = cap − 4`**, **`ceiling = cap`** (inclusive), using the cap for the player's current badge count.
+
+**Trainer ceiling:** ordinary scaled trainers **never exceed level 80**, regardless of Champion status. Postgame badge-tier fights stay in the **76–80** band at 16 badges. Fights above 80 require a **special-trainer** flag ([§7 player cap vs trainer levels](#player-cap-vs-trainer-levels)).
+
+Example: **3 badges** → cap **22** → ordinary trainer Pokémon at levels **18–22** (the band since the last +4 step).
+
+**Gym Leaders** are an exception: all party Pokémon are at **level cap** exactly ([§6](#6-gym-leader-rosters)).
+
+## Target behaviour (full system)
+
+When a battle starts, the opponent's party is built for the player's current badge tier:
+
+1. **Level** — ordinary trainers: each Pokémon in the current band (`floor`–`ceiling`). Gym Leaders: **all at cap** (§6).
+2. **Species (later phases)** — Phases 3–4 below. Stone and trade evolutions are **excluded for now** (Phase 5).
+3. **Moves (Phase 2)** — last **four level-up moves** the species would know at its assigned level (same rule as wild Pokémon). No bespoke move sets yet.
+4. **Held items** — **none for now** (roadmap).
+5. **TMs** — **none for now** (roadmap).
+6. **Gym type filter (Phase 6)** — every Pokémon on **Gym trainers and Gym Leaders** must have **at least one type matching the Gym** (§6).
+
+Longer term, a trainer may own a generated collection larger than battle size (§12 dynamic rosters), with on-demand generation and optional counter-picking — unchanged from prior design intent.
+
+## Implementation phases
+
+Work in order. Do not skip ahead unless a phase is blocked and the spike is explicitly scoped.
+
+### Phase 1 — Rescale vanilla teams *(start here)*
+
+On trainer battle start: read badge count, compute `floor`/`ceiling`, **keep the trainer's existing species and party size**, only **remap levels** into the band (e.g. uniform random per slot, or proportional offset — pick one and document in code).
+
+No random species, no move changes, no items. This alone makes open-world travel viable.
+
+**Exit criterion:** same Youngster on Route 30 fights at ~6–10 with 0 badges and ~18–22 with 3 badges; species unchanged.
+
+**Implementation note (Phase 1):** `TRAINER_LEVEL_SCALING` in `include/config.h` — `MakeTrainerPokemonParty()` in `src/field/enemy_party.c`. Uses badge count only; **does not** apply Champion uncap to trainers (max band 80 at 16 badges). Special-trainer overrides deferred.
+
+### Phase 2 — Level-appropriate moves
+
+After levels are set, assign **last four level-up moves** at that level (wild-mon logic). Still fixed or rescaled species from vanilla data.
+
+### Phase 3 — Downgrade / upgrade (same species)
+
+Keep the trainer's **vanilla species identity** (or current party slot species), but adjust **evolution stage** so the form is legal at the assigned level:
+
+- **Downgrade** when the natural line evolves above `ceiling` (e.g. Dragonite at cap 22 → Dratini or Dragonair).
+- **Upgrade** when a lower stage is below the intended level and a higher stage is legal (e.g. Pidgey at level 18 → Pidgeotto if cap allows).
+
+Still no random species swap. Stone/trade lines remain excluded until Phase 5.
+
+### Phase 4 — Randomize species
+
+Replace party species with **random eligible species** from the available dex, then apply Phase 3 rules so the chosen stage fits the level band. Levels still from Phase 1 band (Leaders still at cap once Phase 6 is in scope).
+
+### Phase 5 — Evolution exclusions (interim rules)
+
+Trainers do not receive stone- or trade-evolution lines until player-side rules exist ([§24](#24-evolution-methods-trade--stones)). Document exceptions (e.g. allow level-only final evos only).
+
+### Phase 6 — Gym trainers and Gym Leaders
+
+Apply scaling to **in-Gym trainer battles** and **Gym Leader battles**, on top of whichever species phase is active (Phase 1 alone is enough for a first Gym prototype):
+
+| Role | Level rule | Type rule |
+|---|---|---|
+| Gym trainer | `floor`–`ceiling` (same as routes) | ≥1 type matches Gym |
+| Gym Leader | **all at level cap** | ≥1 type matches Gym |
+
+Gym type matching applies to generated parties too (Phase 4 rolls from a Gym-type-filtered pool). Characterization exceptions (§6) remain manual/curated, not random off-type.
+
+### Phase 7 — Agreed battle size
+
+Trainer battles use a **symmetrical, agreed roster size** ([§11](#11-core-trainer-battle-philosophy)): same number of active slots for both sides (2v2 through 6v6). Who proposes or accepts the size (trainer, badge tier, player, mix) remains **TBD**.
+
+Phases 1–6 can keep vanilla party sizes until this lands. Exit criterion: a Route trainer and the player fight **3v3** (or chosen size) with roster-slot parity, still using fixed or generated parties from earlier phases.
+
+### Phase 8 — Dynamic rosters
+
+Replace “pick your party before battle” with **collection-as-bench** ([§12](#12-dynamic-battle-rosters)):
+
+- battle starts with one send-out per side;
+- each **new** Pokémon brought in consumes a roster slot until the agreed size is reached;
+- then the roster **locks**; fainted mons still occupy slots.
+
+**Depends on** universal PC / box access during trainer battles ([§14](#14-pc--collection-access)). Without that, Phase 8 is blocked.
+
+### Phase 9 — Counter-picking
+
+Opponents (and eventually AI) **respond to revealed player commitments** ([§13](#13-counter-picking-and-information)): unrevealed Pokémon may be generated or selected from a hidden pool when the trainer spends another slot. Strength of intentional counter-play remains **TBD** — should feel responsive, not omniscient.
+
+Builds on Phase 4 (generated species) and Phase 8 (slot commitment). Early stub: fixed party order; full vision: on-demand counters from generated collection.
+
+### Phase 10 — Held items
+
+Assign held items to trainer Pokémon (roadmap; none in Phases 1–9).
+
+### Phase 11 — TM moves
+
+Allow TM moves on trainer movesets beyond level-up sets (roadmap).
+
+### Phase 12 — Living trainers
+
+Field population, movement, and map-level trainer generation ([§8](#8-living-trainers), [§10](#10-trainer-interactions)) — distinct from battle-start scaling; location-weighted distributions and non-battle interactions.
+
+## Collection and counter-picking (design intent)
 
 A trainer may have a generated collection larger than the number of Pokémon ultimately used in a battle.
 
@@ -331,15 +465,11 @@ For example:
 >
 > During the battle she dynamically commits up to four Pokémon from that collection.
 
-However, persistent full collections are not mandatory.
+However, persistent full collections are not mandatory until **Phase 8+**; on-demand generation for **Phase 9** counter-picks is an alternative.
 
 Another possible implementation is to generate unrevealed Pokémon **on demand** as the trainer commits additional roster slots.
 
 This would allow trainer AI/difficulty logic to generate an appropriate response to what the player has revealed.
-
-For example, if the player reveals a Pokémon that strongly counters everything the opponent has shown, the trainer's next unrevealed Pokémon could be generated from an appropriate counter pool.
-
-The player cannot see the opponent's unused collection, so either implementation can produce the same visible behaviour.
 
 How strongly generation should intentionally counter the player remains TBD.
 
@@ -923,7 +1053,75 @@ Exact implementation remains TBD.
 
 ---
 
-# 24. Apricorn Economy & Poké Balls (addon)
+# 24. Evolution Methods (Trade & Stones)
+
+**Status: PARTIALLY DECIDED — stone expansion OPTIONAL / TBD**
+
+QoL changes to trade and stone evolution. **Not required** for the core open-world shell or trainer scaling; can ship on its own schedule. Placed before the Apricorn addon pointer because both touch items, but this section is **core Design 1**, not [`DESIGN2.md`](DESIGN2.md).
+
+## Trade evolutions — with held item
+
+Evolutions that normally require **trade while holding an item** should evolve when the item is **used on the Pokémon** — no trade required.
+
+Examples: Dragon Scale → Kingdra, Metal Coat → Scizor, Protector → Rhyperior, etc.
+
+## Trade evolutions — no item
+
+Evolutions that require **trade alone** need a substitute for multiplayer. **TBD — pick one (or combine):**
+
+### Option A: Link Cable item
+
+Add a **Link Cable** usable item that triggers the same evolution as trade (inventory convenience, no level gate).
+
+### Option B: Level-up evolution
+
+| Pokémon | Evolves at |
+|---|---:|
+| Graveler → Golem | 38 |
+| Machoke → Machamp | 38 |
+| Kadabra → Alakazam | 42 |
+| Haunter → Gengar | 42 |
+
+Other trade-only lines (e.g. Phantump, Pumpkaboo if in scope) need explicit rules when implemented.
+
+## Optional: expanded stone mechanics
+
+**Status: OPTIONAL — cool but not committed**
+
+Evolution stones become more flexible for the matching **elemental type** (Fire Stone on Fire-types, Water Stone on Water-types, etc.).
+
+### Pokémon that do not normally evolve with that stone
+
+Using the matching stone **lowers the next natural level-up evolution by ~5 levels** (one step toward the target stage). Exact stacking rules TBD.
+
+Example — Cyndaquil line (natural levels **16** / **36**):
+
+- Stone on Fire-type at **11+** / **31+** instead of waiting for 16 / 36.
+
+Example — Rapidash (natural level **40**):
+
+- Level **40** as today, **or** Fire Stone on Ponyta/Rapidash at **35+**.
+
+### Pokémon that normally evolve by stone only
+
+- **Stone at any level** (keep the classic convenience).
+- **Also** a **high level-up path** without the stone.
+
+| Stage pattern | Stone | Level without stone |
+|---|---|---:|
+| 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **35** |
+| 2nd stage, stone-only (e.g. Gloom, Poliwhirl) | matching stone at any level | **50** |
+
+### Open questions (stones)
+
+- Exact −5 behaviour: one-time per stage, permanent flag, or repeatable?
+- Dual-types: either type matches, or primary type only?
+- Using a stone on a Pokémon with no evolution in that line — no effect?
+- Interaction with [`§9`](#9-trainer-generation) Phase 5 (trainers exclude trade/stone lines until policy exists).
+
+---
+
+# 25. Apricorn Economy & Poké Balls (addon)
 
 **Status: ADDON — see [`DESIGN2.md`](DESIGN2.md)**
 
@@ -939,7 +1137,7 @@ Do not implement ball changes from DESIGN2 unless explicitly requested.
 
 ---
 
-# 25. Wild Encounters
+# 26. Wild Encounters
 
 **Status: PARTIALLY DECIDED**
 
@@ -966,7 +1164,7 @@ These should not be assumed without explicit design work.
 
 ---
 
-# 26. Pokémon Generations / Content Scope
+# 27. Pokémon Generations / Content Scope
 
 **Status: TBD / TECHNICAL INVESTIGATION**
 
@@ -1003,7 +1201,7 @@ This decision affects:
 
 ---
 
-# 27. Design Principles
+# 28. Design Principles
 
 When evaluating future ideas, prefer designs that support these principles.
 
@@ -1073,7 +1271,7 @@ This principle is not absolute; implementation and balance may require scaling s
 
 ---
 
-# 28. Major Technical Investigations
+# 29. Major Technical Investigations
 
 The following designs should receive dedicated technical investigation before implementation.
 
@@ -1119,16 +1317,28 @@ Questions include:
 
 **Priority investigation** — should precede level caps and broad starting-city rollout.
 
+**Phase 1 target:** hook trainer battle start → badge count → level band → rescale existing party levels ([§9 Phase 1](#phase-1--rescale-vanilla-teams-start-here)).
+
+**Phase 6 target:** Gym trainers (band + type filter); Gym Leaders (cap + type filter).
+
+**Phases 7–9 target:** symmetrical battle size → dynamic rosters (requires §14 PC) → counter-picking AI / hidden pools.
+
 Questions include:
 
+- where hg-engine assembles the trainer party at battle start;
+- reading badge count from battle code (field scripts already use `count_badges`);
 - identifying current badge count;
 - scaling wild-adjacent trainer levels and teams by badge tier;
-- dynamic trainer generation;
-- dynamic Gym generation;
+- dynamic trainer generation (phases 2–5);
+- dynamic Gym generation (Phase 6 type filter + Leader cap levels);
+- agreed battle size rules (Phase 7);
+- battle-time PC access and roster locking (Phase 8);
+- counter-pick generation and AI strength (Phase 9);
 - battle-size selection;
 - rematches;
 - TM rewards;
-- monotype generation with curated exceptions.
+- monotype generation with curated exceptions;
+- stone/trade evolution policy for generated teams.
 
 ## Universal PC
 
@@ -1173,7 +1383,7 @@ Questions include:
 
 ---
 
-# 29. Initial Development Philosophy
+# 30. Initial Development Philosophy
 
 The project should NOT begin by attempting its most ambitious systems.
 
@@ -1199,7 +1409,7 @@ The first implementation targets should preferably:
 
 ---
 
-# 30. Current Technical Baseline
+# 31. Current Technical Baseline
 
 As of August 2026:
 
@@ -1233,9 +1443,12 @@ Reusable recipes for badge gates, ferry NPCs, and story NPC removal live in **`d
 
 ### Not yet started (core design priorities)
 
-- Badge-scaled Gym and trainer difficulty (§§5–7).
+- **Trainer scaling phase 1** — rescale vanilla trainer levels by badge band (§9).
+- **Gym scaling phase 6** — Gym trainers + Leaders (type filter; Leaders at cap).
+- **Battle systems phases 7–9** — agreed size, dynamic rosters, counter-picking (after scaling).
 - Starting city selection (§4).
 - Living trainers, dynamic rosters, universal PC, collection-based HMs.
+- Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype.
 
 The basic development loop is proven:
 
@@ -1245,7 +1458,7 @@ Docker remains the known-good build path.
 
 ---
 
-# 31. Open Design Questions
+# 32. Open Design Questions
 
 The following are intentionally unresolved.
 
@@ -1256,7 +1469,6 @@ The following are intentionally unresolved.
 - How aggressively NPCs counter-pick.
 - Whether generated trainers have persistent full collections or generate unrevealed Pokémon on demand.
 - Exact Gym roster generation.
-- Exact badge-by-badge level-cap curve between Lv.10 and Lv.70.
 - Exact EXP formula.
 - Whether fainted Pokémon's lost EXP is redistributed.
 - Exact wild encounter scaling/gating model.
@@ -1266,6 +1478,9 @@ The following are intentionally unresolved.
 - Exact accelerated-time resting mechanics.
 - Included Pokémon generations/content.
 - Scope and structure of traditional story content.
+- Trade evolutions without items: Link Cable vs fixed levels ([§24](#24-evolution-methods-trade--stones)).
+- Whether expanded stone mechanics ([§24](#24-evolution-methods-trade--stones)) ship at all.
+- Special-trainer roster (Red ~100 / Pikachu buff, E4 first-clear levels) vs badge-tier cap at 80 ([§7](#7-badge-based-level-caps)).
 
 (Ball/Apricorn V2 questions: [`DESIGN2.md`](DESIGN2.md) §18. V3/V4 deferred scope also in DESIGN2.)
 
@@ -1273,7 +1488,7 @@ These questions should remain open until deliberately resolved.
 
 ---
 
-# 32. Deferred Scope (V2–V4)
+# 33. Deferred Scope (V2–V4)
 
 Features deliberately outside **core** scope are documented in [`DESIGN2.md`](DESIGN2.md):
 
@@ -1285,6 +1500,6 @@ These should not influence initial core architecture unless doing so is inexpens
 
 ---
 
-# 33. One-Sentence Game Identity
+# 34. One-Sentence Game Identity
 
 > **Pokémon Wandering Heart is an open-world HGSS journey where the player builds a collection rather than a fixed party, travels freely through Johto and Kanto, challenges all 16 scaling Gyms in any order, and encounters other trainers undertaking dynamic journeys of their own.**
