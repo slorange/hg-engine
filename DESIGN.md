@@ -141,6 +141,8 @@ Options under consideration include:
 
 Do not assume unrestricted starter selection until this is finalized.
 
+Story beats that assume a New Bark → Cherrygrove/Violet opening are removed — see [§34](#34-story-and-script-content).
+
 ---
 
 # 5. Gyms and Badges
@@ -830,7 +832,7 @@ Other useful trainer services can be added as systems develop.
 
 **Status: DECIDED conceptually**
 
-Most traditional story roadblocks should be removed.
+Most traditional story roadblocks should be removed ([§34](#34-story-and-script-content)).
 
 Transportation systems should allow broad world traversal from early in the game.
 
@@ -969,7 +971,7 @@ Vanilla HGSS exposes these from the party menu. Not all are HMs. Decide for each
 | Rock Smash encounters | Wild mons from smashing rocks | Own slots in `EncounterData` (2 slots) |
 | Surf / fishing encounters | Water wilds | Own tables per map |
 | Headbutt trees | Wild mons from trees | Own data files; good candidate for gated/high-value encounters |
-| Cut trees / smashable rocks / Strength boulders | Map obstacles | Script/map event gated today by badge + knowing the move |
+| Cut trees / smashable rocks / Strength boulders | Map obstacles | Script/map event gated today by badge + knowing the move; **Cut trees blocking Gym access** — Surge/Erika **removed** ([§34](#34-story-and-script-content), `HACK-NOTES.md`) |
 | Whirlpool / Waterfall / Rock Climb tiles | Traversal gates | Same |
 
 ### Design questions to resolve
@@ -1445,9 +1447,14 @@ As of August 2026:
 | Route 29→46 gate (2 badges) | PoC verified | Guard-style encounter gating template |
 | Route 36 Sudowoodo removed | Verified | 0-badge Violet ↔ Goldenrod path |
 | Route 32 badge gate removed | Verified | 0-badge path toward Union Cave |
-| Mahogany rocket arc skipped | Verified | Town accessible on load |
+| Mahogany rocket arc skipped | Verified | Town accessible on load; full Rocket removal per [§34](#34-story-and-script-content) |
+| Surge / Erika Cut trees removed | Verified | `2_051`, `2_052`, `2_352`; `patch_zone_event_gym_cut_trees.py` — [§34](#34-story-and-script-content) |
 
 Reusable recipes for badge gates, ferry NPCs, and story NPC removal live in **`documentation/HACK-NOTES.md`**.
+
+### Story and script policy
+
+See [§34](#34-story-and-script-content). Surge/Erika Cut trees verified; remaining gym rows (Bugsy, Jasmine, Clair, Misty, Blue) and rival arc still open.
 
 ### Not yet started (core design priorities)
 
@@ -1457,6 +1464,7 @@ Reusable recipes for badge gates, ferry NPCs, and story NPC removal live in **`d
 - Starting city selection (§4).
 - Living trainers, dynamic rosters, universal PC, collection-based HMs.
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype.
+- Story implementation pass ([§34](#34-story-and-script-content)) — Surge/Erika Cut trees done; opening skip, Rocket, remaining gym rows.
 
 The basic development loop is proven:
 
@@ -1485,7 +1493,9 @@ The following are intentionally unresolved.
 - Exact Pokémon Center service list.
 - Exact accelerated-time resting mechanics.
 - Included Pokémon generations/content.
-- Scope and structure of traditional story content.
+- Rival role ([§34](#34-story-and-script-content)).
+- Clair Dragon's Den: remove trial vs HM-free path ([§34](#34-story-and-script-content)).
+- Jasmine Lighthouse rewrite vs immediate availability ([§34](#34-story-and-script-content)).
 - Trade evolutions without items: Link Cable vs fixed levels ([§24](#24-evolution-methods-trade--stones)).
 - Whether expanded stone mechanics ([§24](#24-evolution-methods-trade--stones)) ship at all.
 - Special-trainer roster (Red ~100 / Pikachu buff, E4 first-clear levels) vs badge-tier cap at 80 ([§7](#7-badge-based-level-caps)).
@@ -1508,6 +1518,67 @@ These should not influence initial core architecture unless doing so is inexpens
 
 ---
 
-# 34. One-Sentence Game Identity
+# 34. Story and Script Content
+
+**Status: DECIDED (rival arc TBD)**
+
+Field scripts, NPCs, and map obstacles that assume vanilla story order or a New Bark start are removed or rewritten. Target: **any starting city**, **any-order Gyms**.
+
+## Opening and tutorial — remove
+
+- Elm errand, rival intro, Oak visit, Togepi egg, New Bark–specific Mom/house cutscenes
+- Cherrygrove guide (Town Map, running shoes); Route 30 Apricorn Box NPC (covered by `OPENWORLD_STARTING_ITEMS` / Mom grants — [§31](#31-current-technical-baseline))
+
+No replacement fetch quests at other cities unless optional flavour, not service gates.
+
+## Team Rocket — remove
+
+Rocket grunts, hideouts, Radio Tower arc, and related roadblocks must not gate travel, Gyms, or items. Mahogany post-clear on load is the verified pattern (`HACK-NOTES.md`); extend to Goldenrod basement, Radio Tower, etc.
+
+## Rival — TBD
+
+Role undecided (remove, optional encounters, badge-tier rematches, …). No rival story hooks until resolved.
+
+## Gyms — access and story policy
+
+**Rules (all Leaders):**
+
+1. **City-local events only** — pre/post-battle flavour OK if it stays in the Gym town; cut anything that sends the player elsewhere and expects a return.
+2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader when HMs come from badge count ([§21](#21-hms-and-field-moves)). Route/danger gating ([§20](#20-routes-and-content-gating)) still applies outside Gym access.
+3. **Internal Gym puzzles** — trash cans, maze, etc. stay unless they hard-require an HM.
+
+### Required changes
+
+| Leader | Change |
+|--------|--------|
+| **Bugsy** (Azalea) | Remove Team Rocket. |
+| **Jasmine** (Olivine) | Replace SecretPotion requirement with just any Potion, can be found locally. |
+| **Clair** (Blackthorn) | Drop 7-badge + Goldenrod Rocket gates. Drop or HM-free the Dragon's Den trial before the badge (Den currently needs Surf + Whirlpool). |
+| **Misty** (Cerulean) | Drop Power Plant / Machine Part / Route 25 chain; Leader available in Gym without leaving town. |
+| **Blue** (Viridian) | Drop “7 Kanto badges first” gate; challengeable at any badge tier. |
+
+### Verified
+
+| Leader | Notes |
+|--------|--------|
+| **Lt. Surge** (Vermilion) | Cut tree outside Gym removed (`2_051`); internal trash-can puzzle unchanged. |
+| **Erika** (Celadon) | City tree (`2_052`) + three Gym maze trees (`2_352`) removed; Leader reachable without Cut. |
+| **Pryce** (Mahogany) | Rocket skip on load (see above). |
+
+Implementation: `tools/patch_zone_event_gym_cut_trees.py` — verified in-game Aug 2026.
+
+### OK as-is (city-local or no external gate)
+
+Falkner, Whitney, Morty (Burned Tower is Ecruteak-local), Chuck, Sabrina, Janine, Brock, Blaine (once Seafoam is reachable).
+
+## Implementation
+
+- Prefer flag-on-load and script skips over deleting assets (`HACK-NOTES.md` recipes).
+- Starting-city selector ([§4](#4-starting-location)) must not depend on Elm/rival/New Bark flags.
+- Gym obstacles are **zone_event** objects (e.g. Cut trees), not Blender map edits — patch `zone_event` / `scr_seq` like Route 36 Sudowoodo.
+
+---
+
+# 35. One-Sentence Game Identity
 
 > **Pokémon Wandering Heart is an open-world HGSS journey where the player builds a collection rather than a fixed party, travels freely through Johto and Kanto, challenges all 16 scaling Gyms in any order, and encounters other trainers undertaking dynamic journeys of their own.**

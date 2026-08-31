@@ -711,6 +711,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r42_ferry.py $(ZONE_EVENT_DIR)/2_041
 	$(PYTHON) tools/patch_zone_event_r04_boost.py $(ZONE_EVENT_DIR)/2_009
 	$(PYTHON) tools/patch_zone_event_r32_badge.py $(ZONE_EVENT_DIR)/2_033
+	$(PYTHON) tools/patch_zone_event_gym_cut_trees.py $(ZONE_EVENT_DIR)/2_051 $(ZONE_EVENT_DIR)/2_052 $(ZONE_EVENT_DIR)/2_352
 	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rocket.py $(ZONE_EVENT_DIR)
 	$(NARCHIVE) create $@ $(ZONE_EVENT_DIR) -nf

@@ -209,6 +209,31 @@ Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,3
 
 ---
 
+## Remove Surge / Erika Cut trees — gym access
+
+**Status:** verified in-game (Aug 2026). 0 badges, no Cut — Vermilion Gym door, Celadon Gym door, and Erika inside Celadon Gym all reachable.
+
+**Goal:** reach Vermilion and Celadon Gyms (and Erika inside her Gym) without Cut — [DESIGN.md §34](DESIGN.md).
+
+| Map | zone_event member | Trees removed |
+|-----|-------------------|---------------|
+| Vermilion City | **051** → `2_051` | 1 outside Gym |
+| Celadon City | **052** → `2_052` | 1 outside Gym |
+| Celadon Gym | **352** → `2_352` | 3 inside maze |
+
+Cut trees are `SPRITE_TREE` (86) + `std_field_cut` (script 10000) objects — **not** Blender map geometry.
+
+| File | Role |
+|------|------|
+| `tools/patch_zone_event_gym_cut_trees.py` | Strip matching tree objects from the three members above |
+| `narcs.mk` | Hook after zone_event extract |
+
+Surge Gym interior keeps the trash-can puzzle (no cut trees there).
+
+**Verified:** new save, 0 badges, no Cut mon — walk to Vermilion Gym door; Celadon Gym door; inside Celadon Gym reach Erika without Cut.
+
+---
+
 ## Heal after every battle
 
 **Status:** verified (wild, trainer, flee, and catch tested in-game).
