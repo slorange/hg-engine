@@ -1552,7 +1552,7 @@ Role undecided (remove, optional encounters, badge-tier rematches, …). No riva
 | Leader | Change |
 |--------|--------|
 | **Bugsy** (Azalea) | Remove Team Rocket. |
-| **Jasmine** (Olivine) | Replace SecretPotion requirement with just any Potion, can be found locally. |
+| **Jasmine** (Olivine) | Secret Medicine in Olivine Poké Mart special clerk (¥500); `FLAG_GOT_SECRETPOTION` set when item enters bag. Cianwood pharmacy still works. |
 | **Clair** (Blackthorn) | Drop 7-badge + Goldenrod Rocket gates. Drop or HM-free the Dragon's Den trial before the badge (Den currently needs Surf + Whirlpool). |
 | **Misty** (Cerulean) | Drop Power Plant / Machine Part / Route 25 chain; Leader available in Gym without leaving town. |
 | **Blue** (Viridian) | Drop “7 Kanto badges first” gate; challengeable at any badge tier. |

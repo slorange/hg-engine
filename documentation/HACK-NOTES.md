@@ -561,3 +561,21 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 
 **Verify:** `make scr_seq_clean && make -j24`, then `python scripts/verify_r04_boost.py`.
 
+---
+
+## Olivine Secret Medicine (Jasmine)
+
+**Goal:** Heal Ampharos without a Cianwood fetch. Buy Secret Medicine locally, use it at the Lighthouse.
+
+**Mart:** Olivine Poké Mart **second clerk** (`std_special_mart`, `VAR_SPECIAL_x8004 = 10`) → repointed `sOlivineMart` in `src/field/mart.c`. With `MART_EXPANSION`, the first clerk uses badge-tier `ScrCmd_MartBuy` and ignores city extras.
+
+**Price:** `ITEM_SECRET_MEDICINE` buy price **¥500** in `data/itemdata/itemdata.c`. Cianwood pharmacy still gives it free via `giveitem`.
+
+**Lighthouse gate:** Vanilla `scr_seq` member **66** (`D27R0107`) only offers the medicine scene when **`FLAG_GOT_SECRETPOTION`** (185) is set — buying the item alone is not enough. **`Bag_AddItem`** sets that flag when `ITEM_SECRET_MEDICINE` (464) is added (mart purchase or pharmacy).
+
+**IDs:** map header `MAP_D27R0107` = 225; scr_seq member **66**; Olivine mart scr_seq **912** (`T26FS0101`).
+
+**Verify in-game:** Olivine Mart → second clerk → buy Secret Medicine → Lighthouse top → Jasmine uses medicine on Ampharos → Gym.
+
+**Text:** Lighthouse dialogue in `data/text/094.txt` (msg bank **094**, map `D27R0107`). Edits lines 0–1 (local mart hint) and 3 (item name).
+

@@ -16,6 +16,9 @@
 
 // file is directly from pokeheartgold but without the bag_cursor stuff + sPocketCounts right here
 
+// scr_seq FLAG_GOT_SECRETPOTION (armips/include/flags.s)
+#define FLAG_GOT_SECRETPOTION 185
+
 // straight from src/item.c in pokeheartgold
 const u16 sPocketCounts[8] = {
     NUM_BAG_ITEMS,
@@ -221,6 +224,9 @@ BOOL Bag_AddItem(BAG_DATA *bag, u16 itemId, u16 quantity, int heap_id)
         if (pocket_id == POCKET_TMHMS) {
             SortTMHMPocket(slot, count);
         }
+    }
+    if (itemId == ITEM_SECRET_MEDICINE) {
+        SetScriptFlag(FLAG_GOT_SECRETPOTION);
     }
     return TRUE;
 }
