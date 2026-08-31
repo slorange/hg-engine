@@ -141,7 +141,7 @@ Options under consideration include:
 
 Do not assume unrestricted starter selection until this is finalized.
 
-Story beats that assume a New Bark → Cherrygrove/Violet opening are removed — see [§34](#34-story-and-script-content).
+Story beats that assume a New Bark → Cherrygrove/Violet opening are removed — see [§35](#35-story-and-script-content).
 
 ---
 
@@ -286,6 +286,20 @@ Red and similar fights are **design exceptions**, not extensions of `10 + 4n`. I
 
 Victory Road and the Elite Four therefore operate within the level 70–80 endgame band (trainer/Gym scaling may use the full band; player cap is 80 until Champion).
 
+## Rare Candies and power spikes
+
+**Status: DECIDED**
+
+When level caps are enabled, **Rare Candies are not subject to the badge level cap** — they may raise a Pokémon **above** the current cap. Normal EXP (wild, trainer, EXP Share) still stops at the cap.
+
+**Implementation:** enable **`UNCAP_CANDIES_FROM_LEVEL_CAP`** alongside **`IMPLEMENT_LEVEL_CAP`** in `include/config.h`. Optionally **`ALLOW_LEVEL_CAP_EVOLVE`** so a Rare Candy on a capped Pokémon can still trigger a natural level-up evolution when the new level meets that evolution’s threshold.
+
+**Design intent:**
+
+- Candies are the **deliberate exception** to the cap, not a loophole on every mon at once — each use is a consumable choice.
+- Creates meaningful timing decisions: hoard Rare Candies for a hard Gym Leader, rival, or special trainer; spike one ace for a single fight to get an evolution or move early. 6 badges (34 level cap), 2 rare candies for early lv36 Typhlosion
+- Power spikes from candies should feel **earned and spent**, not a substitute for badge progression across the whole party.
+
 The hg-engine hook **`IMPLEMENT_LEVEL_CAP`** exists in `include/config.h` but remains disabled until trainer/Gym scaling is prototyped (see [Implementation order](#implementation-order)).
 
 ## Implementation order
@@ -414,7 +428,7 @@ Replace party species with **random eligible species** from the available dex, t
 
 ### Phase 5 — Evolution exclusions (interim rules)
 
-Trainers do not receive stone- or trade-evolution lines until player-side rules exist ([§24](#24-evolution-methods-trade--stones)). Document exceptions (e.g. allow level-only final evos only).
+Trainers do not receive stone- or trade-evolution lines until player-side rules exist ([§25](#25-evolution-methods-trade--stones)). Document exceptions (e.g. allow level-only final evos only).
 
 ### Phase 6 — Gym trainers and Gym Leaders
 
@@ -832,7 +846,7 @@ Other useful trainer services can be added as systems develop.
 
 **Status: DECIDED conceptually**
 
-Most traditional story roadblocks should be removed ([§34](#34-story-and-script-content)).
+Most traditional story roadblocks should be removed ([§35](#35-story-and-script-content)).
 
 Transportation systems should allow broad world traversal from early in the game.
 
@@ -969,10 +983,11 @@ Vanilla HGSS exposes these from the party menu. Not all are HMs. Decide for each
 | System | Role | Notes |
 |--------|------|-------|
 | Rock Smash encounters | Wild mons from smashing rocks | Own slots in `EncounterData` (2 slots) |
-| Surf / fishing encounters | Water wilds | Own tables per map |
+| Surf / fishing encounters | Water wilds | Own tables per map; **Rod tier** gates which species appear — see [§22](#22-fishing-rod-progression) |
 | Headbutt trees | Wild mons from trees | Own data files; good candidate for gated/high-value encounters |
-| Cut trees / smashable rocks / Strength boulders | Map obstacles | Script/map event gated today by badge + knowing the move; **Cut trees blocking Gym access** — Surge/Erika **removed** ([§34](#34-story-and-script-content), `HACK-NOTES.md`) |
+| Cut trees / smashable rocks / Strength boulders | Map obstacles | Script/map event gated today by badge + knowing the move; **Cut trees blocking Gym access** — Surge/Erika **removed** ([§35](#35-story-and-script-content), `HACK-NOTES.md`) |
 | Whirlpool / Waterfall / Rock Climb tiles | Traversal gates | Same |
+| Fishing Rods (Old / Good / Super) | Tiered fishing encounters | **Not badge-gated** — see [§22](#22-fishing-rod-progression) |
 
 ### Design questions to resolve
 
@@ -986,7 +1001,58 @@ Mark decisions here as they are made; do not invent unlock order without explici
 
 ---
 
-# 22. TMs
+# 22. Fishing Rod Progression
+
+**Status: DECIDED**
+
+Fishing Rod progression is based on the player's experience **catching Water-type Pokémon**, not badge count or geographic progression. This is a **separate progression track** from [§21](#21-hms-and-field-moves) HM unlocks.
+
+The historical Fishing Guru / Fishing Brother NPCs across Johto and Kanto should share the same progression. The player may return to **any one of them** for later Rod upgrades; progression does not require visiting the vanilla Rod locations in order.
+
+- **Old Rod** — given freely on first interaction.
+- **Good Rod** — awarded after catching Pokémon from **5 unique Water-type evolutionary families**.
+- **Super Rod** — awarded after catching Pokémon from **15 unique Water-type evolutionary families**.
+
+## Counting rules
+
+- Count **evolutionary families**, not individual species.
+- Catching multiple members of the same evolutionary family counts only once.
+  - Example: catching Poliwag, Poliwhirl and Poliwrath still counts as **1 family**.
+- A family qualifies if the player has caught at least one member that is **Water-type**.
+- Either primary or secondary Water typing qualifies.
+- Use Pokédex caught data rather than the player's current collection, so traded away or released Pokémon still count.
+- Branching evolutions remain a single family.
+- The progression should be shared globally between all Fishing Guru / Fishing Brother NPCs.
+
+This creates a self-contained fishing progression loop:
+
+**Old Rod → catch 5 Water families → Good Rod → access more fishing encounters → catch 15 Water families → Super Rod**
+
+## Fishing Guru locations
+
+**Target:** a **network** of interchangeable Fishing Guru / Fishing Brother NPCs spread across Johto and Kanto so the player is never far from the next Rod tier — any one of them can award whichever Rod is next.
+
+**Vanilla HGSS caveat:** HeartGold/SoulSilver does **not** mirror every historical Gen I–IV Rod-giver city. Confirmed or typical vanilla hooks include **Route 32** (Old Rod) and **Route 12 / Silence Bridge** (Super Rod); **Olivine** has a fishing NPC. **Vermilion and Fuchsia do not have Rod givers in vanilla HGSS** — if we want them on the network, we must **add new NPCs** (zone_event object + scr_seq + text).
+
+**Distribution goal:** avoid clustering every guru in mid-Johto / south Kanto. Where practical, place gurus at:
+
+| Region | Location | Notes |
+|--------|----------|--------|
+| South Johto | Route 32 Pokémon Center | Vanilla Old Rod area |
+| West Johto (coast) | Olivine City | Vanilla fishing NPC |
+| East Johto | **Blackthorn City** | **Likely new NPC** — gives Blackthorn a way to farm at lv5 since all connected routes are too high level |
+| West Kanto | **Viridian City or Pewter City** | **Likely new NPC** |
+| Mid Kanto (coast) | Vermilion City | **Likely new NPC** (not vanilla Rod giver) |
+| South Kanto | Fuchsia City | **Likely new NPC** (not vanilla Rod giver) |
+| East Kanto | Route 12 / Silence Bridge | Vanilla Super Rod area |
+
+Exact map and `(x, z)` per guru are implementation details; prefer towns the player already visits for other reasons (Mart, Gym, ferry) over dead-end-only cells.
+
+Any guru on this network reads the same global fishing-progression state and offers the appropriate Rod (Old on first talk, then Good / Super when family counts are met).
+
+---
+
+# 23. TMs
 
 **Status: DECIDED**
 
@@ -1025,7 +1091,7 @@ Gym TM farming is intentionally unlimited.
 
 ---
 
-# 23. Accelerated Day/Night Cycle
+# 24. Accelerated Day/Night Cycle
 
 **Status: DECIDED direction; exact timing subject to balance**
 
@@ -1063,7 +1129,7 @@ Exact implementation remains TBD.
 
 ---
 
-# 24. Evolution Methods (Trade & Stones)
+# 25. Evolution Methods (Trade & Stones)
 
 **Status: PARTIALLY DECIDED — stone expansion OPTIONAL / TBD**
 
@@ -1131,7 +1197,7 @@ Example — Rapidash (natural level **40**):
 
 ---
 
-# 25. Apricorn Economy & Poké Balls (addon)
+# 26. Apricorn Economy & Poké Balls (addon)
 
 **Status: ADDON — see [`DESIGN2.md`](DESIGN2.md)**
 
@@ -1139,7 +1205,7 @@ Apricorn tree refresh, shop ball rebalance, removed balls, and all Apricorn ball
 
 Core touchpoints only:
 
-- Accelerated clock ([§23](#23-accelerated-daynight-cycle)) — shared with addon tree refresh if implemented later.
+- Accelerated clock ([§24](#24-accelerated-daynight-cycle)) — shared with addon tree refresh if implemented later.
 - Auto-heal on capture ([§17](#17-healing-and-attrition)) — rationale for removing Heal Ball in the addon doc.
 - Mom's open-world Apricorn Box (`OPENWORLD_STARTING_ITEMS`) — inventory convenience only, not the full rebalance.
 
@@ -1147,7 +1213,7 @@ Do not implement ball changes from DESIGN2 unless explicitly requested.
 
 ---
 
-# 26. Wild Encounters
+# 27. Wild Encounters
 
 **Status: PARTIALLY DECIDED**
 
@@ -1174,7 +1240,7 @@ These should not be assumed without explicit design work.
 
 ---
 
-# 27. Pokémon Generations / Content Scope
+# 28. Pokémon Generations / Content Scope
 
 **Status: TBD / TECHNICAL INVESTIGATION**
 
@@ -1211,7 +1277,7 @@ This decision affects:
 
 ---
 
-# 28. Design Principles
+# 29. Design Principles
 
 When evaluating future ideas, prefer designs that support these principles.
 
@@ -1281,7 +1347,7 @@ This principle is not absolute; implementation and balance may require scaling s
 
 ---
 
-# 29. Major Technical Investigations
+# 30. Major Technical Investigations
 
 The following designs should receive dedicated technical investigation before implementation.
 
@@ -1393,7 +1459,7 @@ Questions include:
 
 ---
 
-# 30. Initial Development Philosophy
+# 31. Initial Development Philosophy
 
 The project should NOT begin by attempting its most ambitious systems.
 
@@ -1419,7 +1485,7 @@ The first implementation targets should preferably:
 
 ---
 
-# 31. Current Technical Baseline
+# 32. Current Technical Baseline
 
 As of August 2026:
 
@@ -1443,18 +1509,18 @@ As of August 2026:
 | Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified | scr_seq **845**; `OPENWORLD_STARTING_ITEMS` |
 | Magnet Train (Goldenrod ↔ Saffron) | Verified | No power-plant gate; scr_seq **893** / **834** |
 | Route 42 paid ferry | Verified | Reference recipe for paid bypass NPCs |
-| Route 4 ledge boost ($100 hiker) | Implemented | Coords may need in-game tuning |
+| Route 4 ledge boost ($100 hiker) | Verified | `2_009` / `2_178`; coords (1270,118)→(1270,116) |
 | Route 29→46 gate (2 badges) | PoC verified | Guard-style encounter gating template |
 | Route 36 Sudowoodo removed | Verified | 0-badge Violet ↔ Goldenrod path |
 | Route 32 badge gate removed | Verified | 0-badge path toward Union Cave |
-| Mahogany rocket arc skipped | Verified | Town accessible on load; full Rocket removal per [§34](#34-story-and-script-content) |
-| Surge / Erika Cut trees removed | Verified | `2_051`, `2_052`, `2_352`; `patch_zone_event_gym_cut_trees.py` — [§34](#34-story-and-script-content) |
+| Mahogany rocket arc skipped | Verified | Town accessible on load; full Rocket removal per [§35](#35-story-and-script-content) |
+| Surge / Erika Cut trees removed | Verified | `2_051`, `2_052`, `2_352`; `patch_zone_event_gym_cut_trees.py` — [§35](#35-story-and-script-content) |
 
 Reusable recipes for badge gates, ferry NPCs, and story NPC removal live in **`documentation/HACK-NOTES.md`**.
 
 ### Story and script policy
 
-See [§34](#34-story-and-script-content). Surge/Erika Cut trees verified; remaining gym rows (Bugsy, Jasmine, Clair, Misty, Blue) and rival arc still open.
+See [§35](#35-story-and-script-content). Surge/Erika Cut trees verified; remaining gym rows (Bugsy, Jasmine, Clair, Misty, Blue) and rival arc still open.
 
 ### Not yet started (core design priorities)
 
@@ -1464,7 +1530,7 @@ See [§34](#34-story-and-script-content). Surge/Erika Cut trees verified; remain
 - Starting city selection (§4).
 - Living trainers, dynamic rosters, universal PC, collection-based HMs.
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype.
-- Story implementation pass ([§34](#34-story-and-script-content)) — Surge/Erika Cut trees done; opening skip, Rocket, remaining gym rows.
+- Story implementation pass ([§35](#35-story-and-script-content)) — Surge/Erika Cut trees done; opening skip, Rocket, remaining gym rows.
 
 The basic development loop is proven:
 
@@ -1474,7 +1540,7 @@ Docker remains the known-good build path.
 
 ---
 
-# 32. Open Design Questions
+# 33. Open Design Questions
 
 The following are intentionally unresolved.
 
@@ -1493,11 +1559,11 @@ The following are intentionally unresolved.
 - Exact Pokémon Center service list.
 - Exact accelerated-time resting mechanics.
 - Included Pokémon generations/content.
-- Rival role ([§34](#34-story-and-script-content)).
-- Clair Dragon's Den: remove trial vs HM-free path ([§34](#34-story-and-script-content)).
-- Jasmine Lighthouse rewrite vs immediate availability ([§34](#34-story-and-script-content)).
-- Trade evolutions without items: Link Cable vs fixed levels ([§24](#24-evolution-methods-trade--stones)).
-- Whether expanded stone mechanics ([§24](#24-evolution-methods-trade--stones)) ship at all.
+- Rival role ([§35](#35-story-and-script-content)).
+- Clair Dragon's Den: remove trial vs HM-free path ([§35](#35-story-and-script-content)).
+- Jasmine Lighthouse rewrite vs immediate availability ([§35](#35-story-and-script-content)).
+- Trade evolutions without items: Link Cable vs fixed levels ([§25](#25-evolution-methods-trade--stones)).
+- Whether expanded stone mechanics ([§25](#25-evolution-methods-trade--stones)) ship at all.
 - Special-trainer roster (Red ~100 / Pikachu buff, E4 first-clear levels) vs badge-tier cap at 80 ([§7](#7-badge-based-level-caps)).
 
 (Ball/Apricorn V2 questions: [`DESIGN2.md`](DESIGN2.md) §18. V3/V4 deferred scope also in DESIGN2.)
@@ -1506,7 +1572,7 @@ These questions should remain open until deliberately resolved.
 
 ---
 
-# 33. Deferred Scope (V2–V4)
+# 34. Deferred Scope (V2–V4)
 
 Features deliberately outside **core** scope are documented in [`DESIGN2.md`](DESIGN2.md):
 
@@ -1518,7 +1584,7 @@ These should not influence initial core architecture unless doing so is inexpens
 
 ---
 
-# 34. Story and Script Content
+# 35. Story and Script Content
 
 **Status: DECIDED (rival arc TBD)**
 
@@ -1527,7 +1593,7 @@ Field scripts, NPCs, and map obstacles that assume vanilla story order or a New 
 ## Opening and tutorial — remove
 
 - Elm errand, rival intro, Oak visit, Togepi egg, New Bark–specific Mom/house cutscenes
-- Cherrygrove guide (Town Map, running shoes); Route 30 Apricorn Box NPC (covered by `OPENWORLD_STARTING_ITEMS` / Mom grants — [§31](#31-current-technical-baseline))
+- Cherrygrove guide (Town Map, running shoes); Route 30 Apricorn Box NPC (covered by `OPENWORLD_STARTING_ITEMS` / Mom grants — [§32](#32-current-technical-baseline))
 
 No replacement fetch quests at other cities unless optional flavour, not service gates.
 
@@ -1579,6 +1645,6 @@ Falkner, Whitney, Morty (Burned Tower is Ecruteak-local), Chuck, Sabrina, Janine
 
 ---
 
-# 35. One-Sentence Game Identity
+# 36. One-Sentence Game Identity
 
 > **Pokémon Wandering Heart is an open-world HGSS journey where the player builds a collection rather than a fixed party, travels freely through Johto and Kanto, challenges all 16 scaling Gyms in any order, and encounters other trainers undertaking dynamic journeys of their own.**

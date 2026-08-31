@@ -213,7 +213,7 @@ Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,3
 
 **Status:** verified in-game (Aug 2026). 0 badges, no Cut — Vermilion Gym door, Celadon Gym door, and Erika inside Celadon Gym all reachable.
 
-**Goal:** reach Vermilion and Celadon Gyms (and Erika inside her Gym) without Cut — [DESIGN.md §34](DESIGN.md).
+**Goal:** reach Vermilion and Celadon Gyms (and Erika inside her Gym) without Cut — [DESIGN.md §35](DESIGN.md#35-story-and-script-content).
 
 | Map | zone_event member | Trees removed |
 |-----|-------------------|---------------|
@@ -522,7 +522,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 ## Route 4 ledge boost (Cerulean → Mt Moon)
 
-**Status:** implemented; **NPC / landing coords are placeholders** — tune after in-game test.
+**Status:** **verified in-game** (Aug 2026). NPC **(1270, 118)** / landing **(1270, 116)** — no coordinate tuning needed.
 
 **Goal:** one-way paid bypass below the Cerulean-side ledge — fisherman boosts you up 2 tiles for **$100** (same flow as Route 42 ferry, single shore).
 
@@ -539,10 +539,10 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / Route 44).
 
-### Defaults (tune in patch tools)
+### Coordinates (verified)
 
-| Constant | Default | File |
-|----------|---------|------|
+| Constant | Value | File |
+|----------|-------|------|
 | NPC tile | **(1270, 118)** facing **south** (sprite **333** hiker) | `tools/patch_zone_event_r04_boost.py` |
 | Landing tile | **(1270, 116)** — 2 north of NPC | same + `armips/scr_seq/scr_seq_r04_boost.s` (`LAND_X` / `LAND_Z`) |
 | Object id | **4** | zone_event patch |

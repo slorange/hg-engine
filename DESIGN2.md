@@ -4,7 +4,7 @@
 >
 > **Parent doc:** [`DESIGN.md`](DESIGN.md) — core vision, progression, travel, battles, trainers.
 >
-> **Dependency (V2 only):** Apricorn tree refresh assumes an accelerated in-game clock ([`DESIGN.md` §23](DESIGN.md#23-accelerated-daynight-cycle)). That clock is core; the Apricorn economy is not.
+> **Dependency (V2 only):** Apricorn tree refresh assumes an accelerated in-game clock ([`DESIGN.md` §24](DESIGN.md#24-accelerated-daynight-cycle)). That clock is core; the Apricorn economy is not.
 
 ---
 
