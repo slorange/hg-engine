@@ -27,6 +27,17 @@ def openworld_enabled() -> bool:
     return re.search(r"^#define\s+OPENWORLD_STARTING_ITEMS\b", text, re.MULTILINE) is not None
 
 
+def config_flag(name: str) -> bool:
+    text = CONFIG.read_text(encoding="utf-8")
+    return re.search(rf"^#define\s+{name}\b", text, re.MULTILINE) is not None
+
+
+def armips_flags() -> list[str]:
+    if config_flag("OPENWORLD_TESTING_GRANTS"):
+        return ["-equ", "OPENWORLD_TESTING_GRANTS", "1"]
+    return ["-equ", "OPENWORLD_TESTING_GRANTS", "0"]
+
+
 def find_scrdef_end(data: bytes) -> tuple[int, int]:
     pos = 0
     count = 0
@@ -112,11 +123,30 @@ def load_vanilla_member() -> bytearray:
     return bytearray(VANILLA_MEMBER.read_bytes())
 
 
+def remap_vanilla_msg_indices(body: bytearray) -> None:
+    """545.txt inserts six starter strings at index 9; shift vanilla npc_msg ids >= 9 by +6."""
+    i = 0
+    while i + 2 < len(body):
+        if body[i] == 0x2D and body[i + 1] == 0x00:
+            mid = body[i + 2]
+            if mid >= 9:
+                body[i + 2] = mid + 6
+            i += 3
+            continue
+        i += 1
+
+
 def patch_script0(data: bytearray, script0: bytes) -> None:
     scripts = extract_scripts(data)
     if SCRIPT_SLOT >= len(scripts):
         raise ValueError(f"script slot {SCRIPT_SLOT} missing (only {len(scripts)} scripts)")
-    scripts[SCRIPT_SLOT] = script0
+    for idx in range(len(scripts)):
+        if idx == SCRIPT_SLOT:
+            scripts[idx] = script0
+        else:
+            remapped = bytearray(scripts[idx])
+            remap_vanilla_msg_indices(remapped)
+            scripts[idx] = bytes(remapped)
     rebuilt = build_scr_seq(scripts, scrdef_word(data))
     data[:] = rebuilt
 
@@ -134,7 +164,7 @@ def main(argv: list[str]) -> int:
         return 0
 
     SCRIPT0_BIN.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.check_call([str(ARMIPS), str(SCRIPT0_ASM)])
+    subprocess.check_call([str(ARMIPS), *armips_flags(), str(SCRIPT0_ASM)])
     script0 = SCRIPT0_BIN.read_bytes()
     if not script0:
         raise ValueError(f"empty script0 blob {SCRIPT0_BIN}")

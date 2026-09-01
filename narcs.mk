@@ -679,16 +679,18 @@ SCR_SEQ_DIR := $(BUILD)/a012
 SCR_SEQ_NARC := $(BUILD_NARC)/scr_seq.narc
 SCR_SEQ_TARGET := $(FILESYS)/a/0/1/2
 SCR_SEQ_DEPENDENCIES_DIR := armips/scr_seq
-SCR_SEQ_DEPENDENCIES := $(SCR_SEQ_DEPENDENCIES_DIR)/*
+SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s
+SCR_SEQ_DEPENDENCIES := $(filter-out $(SCR_SEQ_PATCH_ONLY),$(wildcard $(SCR_SEQ_DEPENDENCIES_DIR)/*.s))
 
-$(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES)
+$(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/extract_scr_seq_vanilla.py $(SCR_SEQ_DIR)
-	for file in $^; do $(ARMIPS) $$file; done
+	for file in $(SCR_SEQ_DEPENDENCIES); do $(ARMIPS) $$file; done
 	$(PYTHON) tools/patch_scr_seq_r36.py $(SCR_SEQ_DIR)/2_243
 	$(PYTHON) tools/patch_scr_seq_r32_badge.py $(SCR_SEQ_DIR)/2_232
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
 	$(PYTHON) tools/patch_scr_seq_t20_mom.py $(SCR_SEQ_DIR)/2_845
+	$(PYTHON) tools/patch_scr_seq_t20_bedroom.py $(SCR_SEQ_DIR)/2_846
 	$(PYTHON) tools/patch_scr_seq_train.py $(SCR_SEQ_DIR)/2_893 $(SCR_SEQ_DIR)/2_834
 	$(PYTHON) tools/patch_scr_seq_r04_boost.py $(SCR_SEQ_DIR)/2_178
 	$(NARCHIVE) create $@ $(SCR_SEQ_DIR) -nf

@@ -156,20 +156,17 @@ Long-term options (any non-legendary, curated pools, location-specific pools) re
 | 0–2 | Chikorita, Cyndaquil, Totodile |
 | 3–5 | Bulbasaur, Charmander, Squirtle |
 
-Six choices total; stored in `VAR_PLAYER_STARTER` (existing). `src/starters.c` must be extended from 3 → 6 slots.
+Six choices total; stored in `VAR_PLAYER_STARTER` (existing). **Implemented:** Johto vs Kanto YES/NO (`545.txt` string 2), then vanilla `choose_starter` 3-ball UI. Hook: scr_seq **845** script **0** at start of Mom cutscene (OnFrame trigger — same path that already grants items).
 
 ## Intro timing (v1)
 
 **Status: DECIDED (prototype)**
 
-Selection flow runs **after Professor Oak / name / gender**, **before** the player ends up in their bedroom:
+Selection flow runs **after Professor Oak / name / gender**, **before** the player walks downstairs from the bedroom:
 
-1. City picker (3 options)
-2. Starter picker (6 options)
-3. Grant starter to party
-4. Spawn in **player house 2F (bedroom)** regardless of chosen city — player walks downstairs and Mom’s cutscene runs (menu unlocks, Pass, Pokédex, etc.). Non–New Bark cities use the house-swap / dynamic-warp wiring so the same upstairs→downstairs flow works from the chosen city’s house door.
-
-**Open test:** whether the Pokémon menu unlocks correctly when the party already has a starter before Mom’s cutscene — may need an explicit flag if vanilla gating assumes Elm’s lab.
+1. City picker (3 options) — **not yet implemented**
+2. Starter picker — **implemented:** region YES/NO → 3-ball UI on map enter (before wake text); Oak-overlay picker deferred
+3. Spawn in **player house 2F (bedroom)** regardless of chosen city — player walks downstairs and Mom’s cutscene runs (menu unlocks, Pass, Pokédex, etc.). Non–New Bark cities use the house-swap / dynamic-warp wiring so the same upstairs→downstairs flow works from the chosen city’s house door.
 
 Story beats that assume a New Bark → Cherrygrove/Violet opening are removed — see [§35](#35-story-and-script-content).
 
@@ -1537,6 +1534,8 @@ As of August 2026:
 | Feature | Status | Notes |
 |---------|--------|-------|
 | Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified | scr_seq **845**; `OPENWORLD_STARTING_ITEMS` |
+| Bedroom starter pick (Johto/Kanto → 3-ball UI) | Implemented | scr_seq **845** Mom script **0**; `FLAG_GOT_BAG` before bag fanfare |
+| Dev-only testing grants (HM02 Fly from Mom) | Implemented | `OPENWORLD_TESTING_GRANTS` in `include/config.h` — **disable before builds for others or release candidates** |
 | Magnet Train (Goldenrod ↔ Saffron) | Verified | No power-plant gate; scr_seq **893** / **834** |
 | Route 42 paid ferry | Verified | Reference recipe for paid bypass NPCs |
 | Route 4 ledge boost ($100 hiker) | Verified | `2_009` / `2_178`; coords (1270,118)→(1270,116) |
@@ -1558,6 +1557,7 @@ See [§35](#35-story-and-script-content). Surge/Erika Cut trees verified; remain
 - **Gym scaling phase 6** — Gym trainers + Leaders (type filter; Leaders at cap).
 - **Battle systems phases 7–9** — agreed size, dynamic rosters, counter-picking (after scaling).
 - Starting city selection (§4).
+- Bedroom starter pick (§4) — **done**; city picker still open.
 - Living trainers, dynamic rosters, universal PC, collection-based HMs.
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype.
 - Story implementation pass ([§35](#35-story-and-script-content)) — Surge/Erika Cut trees done; opening skip, Rocket, remaining gym rows.
@@ -1574,7 +1574,7 @@ Docker remains the known-good build path.
 
 The following are intentionally unresolved.
 
-- Exact starter system.
+- Exact starter system — **v1 region pick + 3-ball UI implemented**; long-term pools TBD.
 - Exact selectable starting cities.
 - Who determines trainer battle size.
 - Exact trainer generation algorithms.

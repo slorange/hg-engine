@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from patch_scr_seq_t20_mom import extract_scripts  # noqa: E402
+from patch_scr_seq_t20_mom import extract_scripts, config_flag  # noqa: E402
 
 GIVE_ITEM = bytes.fromhex("f107")
 EARLY_SETVAR = bytes.fromhex("290006410100")
@@ -20,6 +20,25 @@ REGISTER_GEAR_MOM = bytes.fromhex("920000")
 REGISTER_GEAR_ELM = bytes.fromhex("920001")
 REGISTER_GEAR_OAK = bytes.fromhex("920002")
 HM02_ITEM_ID = bytes.fromhex("a501")  # ITEM_HM02 = 421
+GIVE_MON = bytes.fromhex("8900")  # give_mon (cmd 137)
+SHOW_LIST = bytes.fromhex("4700")  # ShowList (cmd 71)
+ADD_LIST_OPTION = bytes.fromhex("4600")  # AddListOption (cmd 70)
+NPC_MSG_STARTER = bytes.fromhex("2d0002")  # npc_msg 2 (starter prompt)
+MIN_STARTER_LIST_OPTIONS = 12
+
+
+def has_town_map_call(body: bytes) -> bool:
+    """Detect WorldMapScreen (cmd 157 / 0x009d), not the same bytes in goto offsets."""
+    i = 0
+    while True:
+        i = body.find(TOWN_MAP_SCREEN, i)
+        if i < 0:
+            return False
+        # goto_if_eq embeds a 32-bit offset after 0x001c 0x0001
+        if i >= 3 and body[i - 3 : i] == b"\x1c\x00\x01":
+            i += 2
+            continue
+        return True
 
 
 def main() -> None:
@@ -43,11 +62,14 @@ def main() -> None:
         raise SystemExit("script 0 missing early scene compare")
     if EARLY_SETVAR not in body[:32]:
         raise SystemExit("script 0 missing early setvar (OnFrame loop guard)")
-    if body.count(GIVE_ITEM) < 4:
-        raise SystemExit("script 0 missing giveitem_no_check grants (expect ticket/pass/apricorn/HM02)")
+    min_give_items = 4 if config_flag("OPENWORLD_TESTING_GRANTS") else 3
+    if body.count(GIVE_ITEM) < min_give_items:
+        raise SystemExit(
+            f"script 0 missing giveitem_no_check grants (expect at least {min_give_items})"
+        )
     if UPGRADE_POKEGEAR not in body:
         raise SystemExit("script 0 missing UpgradePokegear(1)")
-    if TOWN_MAP_SCREEN in body:
+    if has_town_map_call(body):
         raise SystemExit("script 0 must not call town_map/WorldMapScreen (cutscene softlock)")
     if REGISTER_GEAR_MOM not in body:
         raise SystemExit("script 0 missing register_gear_number Mom")
@@ -55,10 +77,23 @@ def main() -> None:
         raise SystemExit("script 0 missing register_gear_number Elm")
     if REGISTER_GEAR_OAK not in body:
         raise SystemExit("script 0 missing register_gear_number Oak")
-    if HM02_ITEM_ID not in body:
-        raise SystemExit("script 0 missing ITEM_HM02 (421) grant")
+    if GIVE_MON not in body:
+        raise SystemExit("script 0 missing give_mon (open-world starter pick)")
+    if SHOW_LIST not in body:
+        raise SystemExit("script 0 missing ShowList (starter menu)")
+    if body.count(ADD_LIST_OPTION) < MIN_STARTER_LIST_OPTIONS:
+        raise SystemExit(
+            f"script 0 missing AddListOption entries (expect at least {MIN_STARTER_LIST_OPTIONS})"
+        )
+    if NPC_MSG_STARTER not in body:
+        raise SystemExit("script 0 missing npc_msg 2 (starter prompt)")
+    if config_flag("OPENWORLD_TESTING_GRANTS"):
+        if HM02_ITEM_ID not in body:
+            raise SystemExit("script 0 missing ITEM_HM02 (421) grant (OPENWORLD_TESTING_GRANTS)")
+    elif HM02_ITEM_ID in body:
+        raise SystemExit("script 0 must not grant HM02 when OPENWORLD_TESTING_GRANTS is off")
 
-    print("ok: vanilla init header + script 0 open-world grants (pokegear, town map, phones, HM02)")
+    print("ok: vanilla init header + script 0 open-world grants (pokegear, phones, key items)")
 
 
 if __name__ == "__main__":

@@ -272,6 +272,10 @@
 // after Mom gives the bag / Trainer Card / save and settings (scr_seq member 845).
 #define OPENWORLD_STARTING_ITEMS
 
+// OPENWORLD_TESTING_GRANTS enables dev-only extras while prototyping (e.g. HM02 Fly from Mom).
+// Disable before builds for others or any release candidate.
+#define OPENWORLD_TESTING_GRANTS
+
 // Champions-specific move configurations. Set to 0 to use Scarlet/Violet values.
 #define CHAMPIONS_POWER_CHANGES         1
 #define CHAMPIONS_TYPE_CHANGES          1

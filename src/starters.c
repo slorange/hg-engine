@@ -1,26 +1,40 @@
 #include "../include/constants/species.h"
 #include "../include/pokemon.h"
+#include "../include/script.h"
 #include "../include/types.h"
 
 extern u32 space_for_setmondata;
 extern u32 sStarterChoiceCries[];
+extern FieldSystem *gFieldSysPtr;
 
 void LONG_CALL GetMonSpriteCharAndPlttNarcIdsEx(MON_PIC *picdata, u16 mons_no, u8 dir, u8 col, u8 form_no, u8 a5, u32 personality);
 
-// Use MON_WITH_FORM(SPECIES_NAME, form) to specify a starter
-// with a form.
-//
-// Keep in mind that these choices will impact Rival team
-// determination in the appropriate trigger-scripts.
-//
-// This will NOT update the text during the starter-selection
-// sequence. To update that text, modify text archive 190 in
-// DSPRE.
-static const u16 sStarterChoices[3] = {
+#define STARTER_COUNT 6
+#define VAR_PLAYER_STARTER 0x4030
+
+// Johto 0–2, Kanto 3–5. Before choose_starter, scripts set VAR_PLAYER_STARTER to 0 (Johto) or 3 (Kanto).
+static const u16 sStarterChoices[STARTER_COUNT] = {
     SPECIES_CHIKORITA,
     SPECIES_CYNDAQUIL,
     SPECIES_TOTODILE,
+    SPECIES_BULBASAUR,
+    SPECIES_CHARMANDER,
+    SPECIES_SQUIRTLE,
 };
+
+static u16 StarterChoiceBase(void)
+{
+    u16 base = 0;
+
+    if (gFieldSysPtr != NULL) {
+        u16 var = VarGet(gFieldSysPtr, VAR_PLAYER_STARTER);
+        if (var >= 3) {
+            base = 3;
+        }
+    }
+
+    return base;
+}
 
 /**
  *  @brief fills the given array with the species ids of the starter choices
@@ -29,9 +43,10 @@ static const u16 sStarterChoices[3] = {
  */
 void LONG_CALL CreateStarter_SetStarterSpecies(int *species)
 {
+    u16 base = StarterChoiceBase();
+
     for (int i = 0; i < 3; i++) {
-        // strip off form
-        species[i] = sStarterChoices[i] & 0x7FF;
+        species[i] = sStarterChoices[base + i] & 0x7FF;
     }
 }
 
@@ -40,14 +55,15 @@ void LONG_CALL CreateStarter_SetStarterSpecies(int *species)
  *
  *  @param mon the PartyPokemon pointer
  *  @param species the species id
- *  @param slot starter choice (0-2)
+ *  @param slot starter choice (0-2 within the active trio)
  */
 void LONG_CALL CreateStarter_CreateMon(struct PartyPokemon *mon, int species, int slot)
 {
     u32 form = 0;
+    u16 base = StarterChoiceBase();
 
     if (slot >= 0 && slot < 3) {
-        form = sStarterChoices[slot] >> 11;
+        form = sStarterChoices[base + slot] >> 11;
     }
 
     space_for_setmondata = form;
@@ -68,9 +84,10 @@ void LONG_CALL CreateStarter_CreateMon(struct PartyPokemon *mon, int species, in
 void LONG_CALL CreateMonSprites_HandleForm(MON_PIC *pic, u16 species, u8 gender, u8 shiny, int slot)
 {
     u32 form = 0;
+    u16 base = StarterChoiceBase();
 
     if (slot >= 0 && slot < 3) {
-        form = sStarterChoices[slot] >> 11;
+        form = sStarterChoices[base + slot] >> 11;
         sStarterChoiceCries[slot] = (form == 0) ? species : PokeOtherFormMonsNoGet(species, form);
     }
 

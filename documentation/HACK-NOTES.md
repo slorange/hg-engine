@@ -469,6 +469,8 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Toggle:** `OPENWORLD_STARTING_ITEMS` in `include/config.h` (on by default).
 
+**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). **Disable before builds for others** (`DESIGN.md` §32).
+
 **Hook:** Mom downstairs cutscene — scr_seq member **845** (`T20R0201`), script slot **0**.
 
 **Loop fix:** keep vanilla init header **618** (OnFrame `var==0`, like retail). Script **0** sets `VAR_SCENE_PLAYERS_HOUSE_1F = 1` on the first frame before any `wait`, so the cutscene cannot re-trigger. Do **not** move this cutscene to OnTransition — that runs too early and crashes on stairs.
@@ -485,22 +487,22 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 | Pokégear | `FLAG_GOT_POKEGEAR` + fanfare |
 | Town Map card | `UpgradePokegear(1)` only — **do not** use `town_map` / `WorldMapScreen` (cmd 157); it opens the map UI during `lockall` and softlocks on close |
 | Phone numbers | `register_gear_number` — Mom (0), Elm (1), Oak (2) |
-| HM02 Fly (testing) | `ITEM_HM02` (421) |
+| HM02 Fly (testing) | `ITEM_HM02` (421) when `OPENWORLD_TESTING_GRANTS` is defined |
 
 **Starting city / starter (v1 prototype — `DESIGN.md` §4):**
 
 | Step | When | What |
 |------|------|------|
 | 1 | After Oak / name / gender, before bedroom | 3-city menu → save `VAR_PLAYER_START_CITY` (TBD unused save var) |
-| 2 | Same sequence | 6-starter menu → `VAR_PLAYER_STARTER` + party mon |
+| 2 | Mom cutscene script **0** (downstairs, before greet) | Region YES/NO (`545.txt` string **2**) → vanilla `choose_starter` → party + `FLAG_GOT_BAG` |
 | 3 | End of intro | Spawn in **house 2F** at chosen city; walk down → Mom cutscene |
 | 4 | First visit home 1F | Mom cutscene (existing script **845** slot **0**) |
 
 **Cities (v1):** New Bark (0), Goldenrod (1), Saffron (2).
 
-**Starters (v1):** Johto trio + Kanto trio (6); extend `src/starters.c`.
+**Starters (v1):** Johto trio + Kanto trio via region pick + 3-ball UI; `src/starters.c` (6 species, trio selected by `VAR_PLAYER_STARTER` 0 or 3).
 
-**Pokémon menu:** unknown until tested with starter pre-Mom; may need explicit unlock flag.
+**Pokémon menu:** bedroom script sets `FLAG_GOT_BAG` after `choose_starter` so the party menu works before Mom’s bag fanfare.
 
 ### Home = bidirectional door + interior swap
 
@@ -521,6 +523,8 @@ Story hooks (Elm, rival) stay vanilla until separately stripped (`DESIGN.md` §3
 **Dialogue:** Mom’s intro greet is **msg bank 545**, strings **0–1** — moving-out joke only. **String 6** is her first post-cutscene talk (`Don’t come back!`; vanilla Elm errand line). Cutscene script skips bag/card/save/options `npc_msg`s; fanfares + flags still unlock the touch menu.
 
 **Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`, narcs.mk), `data/text/545.txt`. Init header **618** stays vanilla.
+
+**Bedroom starter:** not used — bedroom scr_seq **846** stays vanilla. Starter pick is in **Mom script 0** (`scr_seq_t20_mom_script0.s`) on the proven OnFrame trigger. Bedroom / OnTransition hooks did not run reliably or crashed too early.
 
 **Gotcha:** map header `MAP_T20R0201` = **63** ≠ scr_seq member **845** (same pattern as Route 32 / badge gates).
 

@@ -1,9 +1,18 @@
 {STRVAR_1 3, 0, 0}, are you finally moving\nout? Took you long enough!\rMake sure you take all your junk\nwith you.\r
 {STRVAR_1 3, 0, 0}, are you finally moving\nout? Took you long enough!\rMake sure you take all your junk\nwith you.\r
-\r
-\r
-\r
-\r
+Choose your starter Pokémon.
+Chikorita
+Cyndaquil
+Totodile
+Bulbasaur
+Charmander
+Squirtle
+Treecko
+Torchic
+Mudkip
+Turtwig
+Chimchar
+Piplup
 Don’t come back!
 Oh! {STRVAR_1 3, 0, 0}!\nThat’s a cute Pokémon you have.\rProfessor Elm must have given it\nto you?\rOh, Professor Elm has a task for you,\nyou say?\fWhat kind of task?\r...\rI see. That sounds a little difficult.\rBut when someone makes that kind of\nrequest of you, it must be important!\rOh, that’s right!\nI completely forgot!\rYour Pokégear came back from the\nrepair shop!\rHere you go!\r
 {STRVAR_1 3, 0, 0} received\nthe Pokégear!\r

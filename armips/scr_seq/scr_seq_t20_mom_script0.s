@@ -13,6 +13,33 @@
 
 .equ MSG_MOM_GREET_M, 0
 .equ MSG_MOM_GREET_F, 1
+.equ MSG_STARTER_PROMPT, 2
+.equ MSG_LIST_HIGHLIGHT, 254
+.equ MSG_MENU_CHIKORITA, 3
+.equ MSG_MENU_CYNDAQUIL, 4
+.equ MSG_MENU_TOTODILE, 5
+.equ MSG_MENU_BULBASAUR, 6
+.equ MSG_MENU_CHARMANDER, 7
+.equ MSG_MENU_SQUIRTLE, 8
+.equ MSG_MENU_TREECKO, 9
+.equ MSG_MENU_TORCHIC, 10
+.equ MSG_MENU_MUDKIP, 11
+.equ MSG_MENU_TURTWIG, 12
+.equ MSG_MENU_CHIMCHAR, 13
+.equ MSG_MENU_PIPLUP, 14
+
+.equ SPECIES_CHIKORITA, 152
+.equ SPECIES_CYNDAQUIL, 155
+.equ SPECIES_TOTODILE, 158
+.equ SPECIES_BULBASAUR, 1
+.equ SPECIES_CHARMANDER, 4
+.equ SPECIES_SQUIRTLE, 7
+.equ SPECIES_TREECKO, 252
+.equ SPECIES_TORCHIC, 255
+.equ SPECIES_MUDKIP, 258
+.equ SPECIES_TURTWIG, 387
+.equ SPECIES_CHIMCHAR, 390
+.equ SPECIES_PIPLUP, 393
 
 .equ OBJ_MOM, 0
 
@@ -22,6 +49,10 @@
     compare VAR_SCENE_PLAYERS_HOUSE_1F, 0
     goto_if_ne _already_done
     setvar VAR_SCENE_PLAYERS_HOUSE_1F, 1
+    goto_if_set FLAG_GOT_STARTER, _mom_begin
+    call _openworld_pick_starter
+_mom_begin:
+    lockall
     apply_movement obj_player, _mv_player_down
     apply_movement OBJ_MOM, _mv_mom_spot
     wait_movement
@@ -62,7 +93,9 @@
     giveitem_no_check ITEM_PASS, 1
     giveitem_no_check ITEM_APRICORN_BOX, 1
     setflag FLAG_GOT_APRICORN_BOX
+.if OPENWORLD_TESTING_GRANTS == 1
     giveitem_no_check ITEM_HM02, 1
+.endif
     closemsg
     apply_movement OBJ_MOM, _mv_mom_return
     wait_movement
@@ -94,5 +127,92 @@ _mv_mom_return:
     step WalkRightFast, 3
     step 0x0020, 1
     step_end
+
+_openworld_pick_starter:
+    touchscreen_menu_hide
+    npc_msg MSG_STARTER_PROMPT
+    // Touch menu (menu_init/menu_item_add) supports at most 6 boxes (slots 0–5).
+    // ListLocalText supports 12+ entries; cancel=1 adds a blank row and skews selection.
+    ListLocalText 1, 1, 0, 0, VAR_SPECIAL_RESULT
+    AddListOption MSG_MENU_CHIKORITA, MSG_LIST_HIGHLIGHT, 0
+    AddListOption MSG_MENU_CYNDAQUIL, MSG_LIST_HIGHLIGHT, 1
+    AddListOption MSG_MENU_TOTODILE, MSG_LIST_HIGHLIGHT, 2
+    AddListOption MSG_MENU_BULBASAUR, MSG_LIST_HIGHLIGHT, 3
+    AddListOption MSG_MENU_CHARMANDER, MSG_LIST_HIGHLIGHT, 4
+    AddListOption MSG_MENU_SQUIRTLE, MSG_LIST_HIGHLIGHT, 5
+    AddListOption MSG_MENU_TREECKO, MSG_LIST_HIGHLIGHT, 6
+    AddListOption MSG_MENU_TORCHIC, MSG_LIST_HIGHLIGHT, 7
+    AddListOption MSG_MENU_MUDKIP, MSG_LIST_HIGHLIGHT, 8
+    AddListOption MSG_MENU_TURTWIG, MSG_LIST_HIGHLIGHT, 9
+    AddListOption MSG_MENU_CHIMCHAR, MSG_LIST_HIGHLIGHT, 10
+    AddListOption MSG_MENU_PIPLUP, MSG_LIST_HIGHLIGHT, 11
+    ShowList
+    closemsg
+    copyvar VAR_PLAYER_STARTER, VAR_SPECIAL_RESULT
+    compare VAR_SPECIAL_RESULT, 0
+    goto_if_eq _give_chikorita
+    compare VAR_SPECIAL_RESULT, 1
+    goto_if_eq _give_cyndaquil
+    compare VAR_SPECIAL_RESULT, 2
+    goto_if_eq _give_totodile
+    compare VAR_SPECIAL_RESULT, 3
+    goto_if_eq _give_bulbasaur
+    compare VAR_SPECIAL_RESULT, 4
+    goto_if_eq _give_charmander
+    compare VAR_SPECIAL_RESULT, 5
+    goto_if_eq _give_squirtle
+    compare VAR_SPECIAL_RESULT, 6
+    goto_if_eq _give_treecko
+    compare VAR_SPECIAL_RESULT, 7
+    goto_if_eq _give_torchic
+    compare VAR_SPECIAL_RESULT, 8
+    goto_if_eq _give_mudkip
+    compare VAR_SPECIAL_RESULT, 9
+    goto_if_eq _give_turtwig
+    compare VAR_SPECIAL_RESULT, 10
+    goto_if_eq _give_chimchar
+    give_mon SPECIES_PIPLUP, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_chikorita:
+    give_mon SPECIES_CHIKORITA, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_cyndaquil:
+    give_mon SPECIES_CYNDAQUIL, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_totodile:
+    give_mon SPECIES_TOTODILE, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_bulbasaur:
+    give_mon SPECIES_BULBASAUR, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_charmander:
+    give_mon SPECIES_CHARMANDER, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_squirtle:
+    give_mon SPECIES_SQUIRTLE, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_treecko:
+    give_mon SPECIES_TREECKO, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_torchic:
+    give_mon SPECIES_TORCHIC, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_mudkip:
+    give_mon SPECIES_MUDKIP, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_turtwig:
+    give_mon SPECIES_TURTWIG, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_give_chimchar:
+    give_mon SPECIES_CHIMCHAR, 5, 0, 0, 0, VAR_SPECIAL_RESULT
+    goto _starter_done
+_starter_done:
+    setflag FLAG_GOT_STARTER
+    get_partymon_species 0, VAR_TEMP_x4001
+    set_starter_choice VAR_TEMP_x4001
+    play_fanfare SEQ_ME_POKEGET
+    wait_fanfare
+    touchscreen_menu_show
+    return
 
 .close
