@@ -114,11 +114,17 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 ## Starting city
 
-**Status: DECIDED**
+**Status: DECIDED (prototype scope locked for v1 testing)**
 
 The player chooses their starting city from locations throughout Johto and Kanto.
 
-The exact list of selectable starting locations is TBD, but the intention is broad freedom rather than a small set of traditional starting towns.
+Long-term intention is broad freedom rather than a small set of traditional starting towns. **v1 prototype list (functionality testing only — not final design):**
+
+| Index | City |
+|------:|------|
+| 0 | New Bark Town |
+| 1 | Goldenrod City |
+| 2 | Saffron City |
 
 Every available starting city must provide reasonable access to:
 
@@ -128,18 +134,42 @@ Every available starting city must provide reasonable access to:
 - transportation;
 - a viable first Gym challenge.
 
+### Home / house wiring (v1 approach)
+
+Not a simple “redirect the house exit.” Each city needs a **designated outdoor door** that is “home” in both directions:
+
+1. **Exit from home interior** → chosen city’s outdoor door tile.
+2. **Enter that outdoor door** → same home interior (Mom, grants, PC upstairs).
+
+**Interior swap (preferred v1 strategy):** keep **one canonical player house interior** (`T20R0201` / Mom scripts) for all starts. The outdoor door in the chosen city warps into it. On exit, `set_dynamic_warp` returns to that door. The **displaced vanilla house** (the one we repurposed as “home” in that city) becomes what New Bark’s player-house door leads into when the player did **not** start in New Bark — so walking into the old New Bark house does not dump the player into Mom’s cutscene by mistake.
+
+Exact door/interior pairs are documented in `documentation/HACK-NOTES.md` (pret zone_event recon). Final house picks TBD after in-game walk-through.
+
 ## Starter selection
 
-**Status: TBD**
+**Status: DECIDED (prototype scope locked for v1 testing)**
 
-Options under consideration include:
+Long-term options (any non-legendary, curated pools, location-specific pools) remain open. **v1 prototype:**
 
-- any non-legendary Pokémon;
-- a large curated starter pool;
-- location-specific starter pools;
-- some combination of the above.
+| Index | Species |
+|------:|---------|
+| 0–2 | Chikorita, Cyndaquil, Totodile |
+| 3–5 | Bulbasaur, Charmander, Squirtle |
 
-Do not assume unrestricted starter selection until this is finalized.
+Six choices total; stored in `VAR_PLAYER_STARTER` (existing). `src/starters.c` must be extended from 3 → 6 slots.
+
+## Intro timing (v1)
+
+**Status: DECIDED (prototype)**
+
+Selection flow runs **after Professor Oak / name / gender**, **before** the player ends up in their bedroom:
+
+1. City picker (3 options)
+2. Starter picker (6 options)
+3. Grant starter to party
+4. Spawn in **player house 2F (bedroom)** regardless of chosen city — player walks downstairs and Mom’s cutscene runs (menu unlocks, Pass, Pokédex, etc.). Non–New Bark cities use the house-swap / dynamic-warp wiring so the same upstairs→downstairs flow works from the chosen city’s house door.
+
+**Open test:** whether the Pokémon menu unlocks correctly when the party already has a starter before Mom’s cutscene — may need an explicit flag if vanilla gating assumes Elm’s lab.
 
 Story beats that assume a New Bark → Cherrygrove/Violet opening are removed — see [§35](#35-story-and-script-content).
 

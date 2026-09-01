@@ -9,6 +9,7 @@
 .equ ITEM_SS_TICKET, 456
 .equ ITEM_PASS, 480
 .equ ITEM_APRICORN_BOX, 468
+.equ ITEM_HM02, 421
 
 .equ MSG_MOM_GREET_M, 0
 .equ MSG_MOM_GREET_F, 1
@@ -31,6 +32,7 @@
     buffer_players_name 0
     gender_msgbox MSG_MOM_GREET_M, MSG_MOM_GREET_F
     closemsg
+    // Menu / UI unlocks first (touch screen, Pokédex, Pokégear — no item prompts)
     setflag FLAG_GOT_BAG
     play_fanfare SEQ_SE_PL_KIRAKIRA
     wait_fanfare
@@ -43,14 +45,25 @@
     setflag FLAG_GOT_OPTIONS_BUTTON
     play_fanfare SEQ_SE_PL_KIRAKIRA
     wait_fanfare
-    giveitem_no_check ITEM_SS_TICKET, 1
-    giveitem_no_check ITEM_PASS, 1
-    giveitem_no_check ITEM_APRICORN_BOX, 1
-    closemsg
-    setflag FLAG_GOT_APRICORN_BOX
     give_running_shoes
     setflag FLAG_GOT_POKEDEX
     GivePokedex
+    setflag FLAG_GOT_POKEGEAR
+    play_fanfare SEQ_ME_ITEM
+    wait_fanfare
+    UpgradePokegear 1
+    play_fanfare SEQ_ME_POKEGEAR_REGIST
+    wait_fanfare
+    register_gear_number PHONE_CONTACT_MOTHER
+    register_gear_number PHONE_CONTACT_PROF__ELM
+    register_gear_number PHONE_CONTACT_PROF__OAK
+    // Key items last (each uses std_give_item_verbose — waits for A)
+    giveitem_no_check ITEM_SS_TICKET, 1
+    giveitem_no_check ITEM_PASS, 1
+    giveitem_no_check ITEM_APRICORN_BOX, 1
+    setflag FLAG_GOT_APRICORN_BOX
+    giveitem_no_check ITEM_HM02, 1
+    closemsg
     apply_movement OBJ_MOM, _mv_mom_return
     wait_movement
     callstd std_fade_end_mom_music

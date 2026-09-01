@@ -473,7 +473,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Loop fix:** keep vanilla init header **618** (OnFrame `var==0`, like retail). Script **0** sets `VAR_SCENE_PLAYERS_HOUSE_1F = 1` on the first frame before any `wait`, so the cutscene cannot re-trigger. Do **not** move this cutscene to OnTransition — that runs too early and crashes on stairs.
 
-**Grants:** Rebuilt script **0** inserts items/shoes/dex after UI unlock fanfares. `std_give_item_verbose` already waits for A per item — do not add extra `wait_button` between grants; one `closemsg` after all three clears the window.
+**Grants:** Rebuilt script **0** inserts items/shoes/dex after UI unlock fanfares. `std_give_item_verbose` already waits for A per item — do not add extra `wait_button` between grants; one `closemsg` after **all** item grants (including HM02) clears the window.
 
 | Grant | Item / command |
 |-------|----------------|
@@ -482,8 +482,41 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 | Apricorn Box | `ITEM_APRICORN_BOX` (468) + flag 109 |
 | Running shoes | `give_running_shoes` |
 | Pokédex | `FLAG_GOT_POKEDEX` + `GivePokedex` |
+| Pokégear | `FLAG_GOT_POKEGEAR` + fanfare |
+| Town Map card | `UpgradePokegear(1)` only — **do not** use `town_map` / `WorldMapScreen` (cmd 157); it opens the map UI during `lockall` and softlocks on close |
+| Phone numbers | `register_gear_number` — Mom (0), Elm (1), Oak (2) |
+| HM02 Fly (testing) | `ITEM_HM02` (421) |
 
-**Starting city (design):** Same player house interior is viable. Zone event member **060** warps the front door to `MAP_NEW_BARK` today; redirect via script warp / dynamic warp + save var for chosen city (`DESIGN.md` §4). Story hooks (Elm, rival, Mom) stay New-Bark-specific until separately skipped or rewritten.
+**Starting city / starter (v1 prototype — `DESIGN.md` §4):**
+
+| Step | When | What |
+|------|------|------|
+| 1 | After Oak / name / gender, before bedroom | 3-city menu → save `VAR_PLAYER_START_CITY` (TBD unused save var) |
+| 2 | Same sequence | 6-starter menu → `VAR_PLAYER_STARTER` + party mon |
+| 3 | End of intro | Spawn in **house 2F** at chosen city; walk down → Mom cutscene |
+| 4 | First visit home 1F | Mom cutscene (existing script **845** slot **0**) |
+
+**Cities (v1):** New Bark (0), Goldenrod (1), Saffron (2).
+
+**Starters (v1):** Johto trio + Kanto trio (6); extend `src/starters.c`.
+
+**Pokémon menu:** unknown until tested with starter pre-Mom; may need explicit unlock flag.
+
+### Home = bidirectional door + interior swap
+
+Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Per-city **outdoor door** must warp in *and* receive dynamic warp on exit.
+
+| City | Outdoor door (pret `zone_event`) | Displaced interior (swap target for New Bark door) | Notes |
+|------|----------------------------------|-----------------------------------------------------|-------|
+| New Bark | **057** `T20.json` warp → `MAP_NEW_BARK_PLAYER_HOUSE_1F` at **(695, 396)** anchor **0** | *(none — vanilla)* | Interior **060** `T20R0201`; exit warp anchor **1** → New Bark |
+| Goldenrod | **073** `T25.json` → **`MAP_GOLDENROD_NORTHEAST_HOUSE`** **(376, 335)** anchor **0** | **198** `T25R0801` | **Confirmed in-game (Sep 2026):** small house **next to the Flower Shop / Squirtbottle house** (not the Friendship Checker — that is a different door at (373, 362) / `T25R0301`). Two flavour NPCs with **PP / “can’t use moves”** tips only. Single-floor interior — fine for v1. |
+| Saffron | **056** `T11.json` → **`MAP_SAFFRON_COPYCAT_HOUSE_1F`** **(1297, 218)** anchor **0** | **356** `T11R0501` (+ 2F) | **Preferred over Mr. Psychic (Sep 2026):** Copycat/Mimic Girl house is **two-story** like New Bark player house. Mr. Psychic house stays vanilla (Pass/train story less critical now that Mom grants Pass). Copycat story scripts TBD when we wire warps — not started yet. |
+
+**Swap rule:** if `VAR_PLAYER_START_CITY != 0`, patch New Bark player-house outdoor warp (**057**, **(695, 396)**) to the **displaced interior** for the chosen city instead of `T20R0201`. Chosen city’s door always warps to `T20R0201`. `T20R0201` front-door exit uses **`set_dynamic_warp`** (script cmd **240**) back to the saved outdoor coords.
+
+**Build order:** (1) Mom + Pokegear/town map/phone numbers/HM Fly, (2) intro city + starter menus + `starters.c` ×6, (3) zone_event warp patches + dynamic warp, (4) intro/story strip (Elm errand, rival).
+
+Story hooks (Elm, rival) stay vanilla until separately stripped (`DESIGN.md` §35).
 
 **Dialogue:** Mom’s intro greet is **msg bank 545**, strings **0–1** — moving-out joke only. **String 6** is her first post-cutscene talk (`Don’t come back!`; vanilla Elm errand line). Cutscene script skips bag/card/save/options `npc_msg`s; fanfares + flags still unlock the touch menu.
 

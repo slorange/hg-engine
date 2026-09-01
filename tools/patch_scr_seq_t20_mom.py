@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Patch New Bark player house scr_seq 845: inline open-world grants in script 0."""
+"""Patch New Bark player house scr_seq 845: open-world grants in script 0."""
 
 from __future__ import annotations
 
@@ -54,6 +54,33 @@ def extract_scripts(data: bytes) -> list[bytes]:
     return scripts
 
 
+def scrdef_word(data: bytes) -> int:
+    fd_pos, _ = find_scrdef_end(data)
+    return struct.unpack_from("<I", data, fd_pos)[0]
+
+
+def build_scr_seq(script_bodies: list[bytes], scrdef: int) -> bytes:
+    n = len(script_bodies)
+    table_bytes = (n + 1) * 4
+    script_start = table_bytes - 2
+
+    abs_starts: list[int] = []
+    pos = script_start
+    for body in script_bodies:
+        abs_starts.append(pos)
+        pos += len(body)
+
+    out = bytearray(table_bytes)
+    for i in range(n):
+        rel = abs_starts[i] - (i * 4 + 4)
+        struct.pack_into("<i", out, i * 4, rel)
+    struct.pack_into("<I", out, n * 4, scrdef)
+
+    body = b"".join(script_bodies)
+    out[script_start : script_start + len(body)] = body
+    return bytes(out)
+
+
 def load_vanilla_member() -> bytearray:
     if VANILLA_MEMBER.is_file():
         return bytearray(VANILLA_MEMBER.read_bytes())
@@ -86,15 +113,12 @@ def load_vanilla_member() -> bytearray:
 
 
 def patch_script0(data: bytearray, script0: bytes) -> None:
-    start = script_offset(data, SCRIPT_SLOT)
-    old = extract_scripts(data)[SCRIPT_SLOT]
-    if len(script0) > len(old):
-        raise ValueError(
-            f"script 0 grew from {len(old)} to {len(script0)} bytes; "
-            "in-place patch unsupported (would shift other scripts)"
-        )
-    padded = script0 + b"\x00" * (len(old) - len(script0))
-    data[start : start + len(old)] = padded
+    scripts = extract_scripts(data)
+    if SCRIPT_SLOT >= len(scripts):
+        raise ValueError(f"script slot {SCRIPT_SLOT} missing (only {len(scripts)} scripts)")
+    scripts[SCRIPT_SLOT] = script0
+    rebuilt = build_scr_seq(scripts, scrdef_word(data))
+    data[:] = rebuilt
 
 
 def main(argv: list[str]) -> int:
@@ -120,7 +144,7 @@ def main(argv: list[str]) -> int:
     target.write_bytes(data)
     print(
         f"patched Mom script 0 in {target} ({len(data)} bytes, "
-        f"{len(script0)}-byte script0 @ {script_offset(vanilla, SCRIPT_SLOT):#x})"
+        f"{len(script0)}-byte script0, rebuilt offset table)"
     )
     return 0
 

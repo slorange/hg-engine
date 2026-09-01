@@ -14,6 +14,12 @@ GIVE_ITEM = bytes.fromhex("f107")
 EARLY_SETVAR = bytes.fromhex("290006410100")
 COMPARE_SCENE = bytes.fromhex("110006410000")
 VANILLA_ONFRAME_LOOP = bytes.fromhex("064100000100")
+UPGRADE_POKEGEAR = bytes.fromhex("910001")  # UpgradePokegear 1
+TOWN_MAP_SCREEN = bytes.fromhex("9d00")  # WorldMapScreen — must NOT appear in script 0
+REGISTER_GEAR_MOM = bytes.fromhex("920000")
+REGISTER_GEAR_ELM = bytes.fromhex("920001")
+REGISTER_GEAR_OAK = bytes.fromhex("920002")
+HM02_ITEM_ID = bytes.fromhex("a501")  # ITEM_HM02 = 421
 
 
 def main() -> None:
@@ -37,12 +43,22 @@ def main() -> None:
         raise SystemExit("script 0 missing early scene compare")
     if EARLY_SETVAR not in body[:32]:
         raise SystemExit("script 0 missing early setvar (OnFrame loop guard)")
-    if body.count(GIVE_ITEM) < 3:
-        raise SystemExit("script 0 missing giveitem_no_check grants")
-    if body[-8:] != b"\x00" * 8:
-        raise SystemExit(f"script 0 tail not zero-padded ({body[-8:].hex()})")
+    if body.count(GIVE_ITEM) < 4:
+        raise SystemExit("script 0 missing giveitem_no_check grants (expect ticket/pass/apricorn/HM02)")
+    if UPGRADE_POKEGEAR not in body:
+        raise SystemExit("script 0 missing UpgradePokegear(1)")
+    if TOWN_MAP_SCREEN in body:
+        raise SystemExit("script 0 must not call town_map/WorldMapScreen (cutscene softlock)")
+    if REGISTER_GEAR_MOM not in body:
+        raise SystemExit("script 0 missing register_gear_number Mom")
+    if REGISTER_GEAR_ELM not in body:
+        raise SystemExit("script 0 missing register_gear_number Elm")
+    if REGISTER_GEAR_OAK not in body:
+        raise SystemExit("script 0 missing register_gear_number Oak")
+    if HM02_ITEM_ID not in body:
+        raise SystemExit("script 0 missing ITEM_HM02 (421) grant")
 
-    print("ok: vanilla init header + script 0 early setvar + inline grants")
+    print("ok: vanilla init header + script 0 open-world grants (pokegear, town map, phones, HM02)")
 
 
 if __name__ == "__main__":
