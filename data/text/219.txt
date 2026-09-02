@@ -1,0 +1,63 @@
+You know the drill.
+You know the drill.
+You know the drill.
+You know the drill.
+You know the drill.
+You know the drill.
+You know the drill.
+You know the drill.
+You know the drill.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+This is a world of Pokémon, bla bla bla.
+Are you a boy or a girl?
+Boy? {YESNO 0}
+Girl? {YESNO 0}
+What is your name?
+{STRVAR_1 3, 0, 0}? {YESNO 0}
+{STRVAR_1 3, 0, 0}? {YESNO 0}
+Good luck!{PAUSE 90}
+CONTROL INFO
+ADVENTURE INFO
+NO INFO NEEDED
+YES
+NO
+        
+   
+   
+   
+    
+   
+    
+   
+   
+       
+   
+Touch
+{ALN_CENTER}Yes
+{ALN_CENTER}No
