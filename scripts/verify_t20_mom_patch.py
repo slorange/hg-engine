@@ -23,7 +23,11 @@ HM02_ITEM_ID = bytes.fromhex("a501")  # ITEM_HM02 = 421
 GIVE_MON = bytes.fromhex("8900")  # give_mon (cmd 137)
 SHOW_LIST = bytes.fromhex("4700")  # ShowList (cmd 71)
 ADD_LIST_OPTION = bytes.fromhex("4600")  # AddListOption (cmd 70)
-NPC_MSG_STARTER = bytes.fromhex("2d0002")  # npc_msg 2 (starter prompt)
+NPC_MSG_CITY = bytes.fromhex("2d0002")  # npc_msg 2 (city prompt)
+NPC_MSG_STARTER = bytes.fromhex("2d0006")  # npc_msg 6 (starter prompt)
+COPYVAR_START_CITY = bytes.fromhex("2a0031400c80")  # copyvar VAR_PLAYER_START_CITY, VAR_SPECIAL_RESULT
+SET_DYNAMIC_WARP = bytes.fromhex("f000")  # set_dynamic_warp (cmd 240)
+MIN_CITY_LIST_OPTIONS = 3
 MIN_STARTER_LIST_OPTIONS = 12
 
 
@@ -79,14 +83,21 @@ def main() -> None:
         raise SystemExit("script 0 missing register_gear_number Oak")
     if GIVE_MON not in body:
         raise SystemExit("script 0 missing give_mon (open-world starter pick)")
-    if SHOW_LIST not in body:
-        raise SystemExit("script 0 missing ShowList (starter menu)")
-    if body.count(ADD_LIST_OPTION) < MIN_STARTER_LIST_OPTIONS:
+    if NPC_MSG_CITY not in body:
+        raise SystemExit("script 0 missing npc_msg 2 (city prompt)")
+    if COPYVAR_START_CITY not in body:
+        raise SystemExit("script 0 missing copyvar VAR_PLAYER_START_CITY")
+    if SET_DYNAMIC_WARP not in body:
+        raise SystemExit("script 0 missing set_dynamic_warp after city pick")
+    if body.count(SHOW_LIST) < 2:
+        raise SystemExit("script 0 missing ShowList (city + starter menus)")
+    if body.count(ADD_LIST_OPTION) < MIN_CITY_LIST_OPTIONS + MIN_STARTER_LIST_OPTIONS:
         raise SystemExit(
-            f"script 0 missing AddListOption entries (expect at least {MIN_STARTER_LIST_OPTIONS})"
+            f"script 0 missing AddListOption entries "
+            f"(expect at least {MIN_CITY_LIST_OPTIONS + MIN_STARTER_LIST_OPTIONS})"
         )
     if NPC_MSG_STARTER not in body:
-        raise SystemExit("script 0 missing npc_msg 2 (starter prompt)")
+        raise SystemExit("script 0 missing npc_msg 6 (starter prompt)")
     if config_flag("OPENWORLD_TESTING_GRANTS"):
         if HM02_ITEM_ID not in body:
             raise SystemExit("script 0 missing ITEM_HM02 (421) grant (OPENWORLD_TESTING_GRANTS)")

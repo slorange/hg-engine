@@ -13,20 +13,24 @@
 
 .equ MSG_MOM_GREET_M, 0
 .equ MSG_MOM_GREET_F, 1
-.equ MSG_STARTER_PROMPT, 2
+.equ MSG_CITY_PROMPT, 2
+.equ MSG_MENU_NEW_BARK, 3
+.equ MSG_MENU_GOLDENROD, 4
+.equ MSG_MENU_SAFFRON, 5
+.equ MSG_STARTER_PROMPT, 6
 .equ MSG_LIST_HIGHLIGHT, 254
-.equ MSG_MENU_CHIKORITA, 3
-.equ MSG_MENU_CYNDAQUIL, 4
-.equ MSG_MENU_TOTODILE, 5
-.equ MSG_MENU_BULBASAUR, 6
-.equ MSG_MENU_CHARMANDER, 7
-.equ MSG_MENU_SQUIRTLE, 8
-.equ MSG_MENU_TREECKO, 9
-.equ MSG_MENU_TORCHIC, 10
-.equ MSG_MENU_MUDKIP, 11
-.equ MSG_MENU_TURTWIG, 12
-.equ MSG_MENU_CHIMCHAR, 13
-.equ MSG_MENU_PIPLUP, 14
+.equ MSG_MENU_CHIKORITA, 7
+.equ MSG_MENU_CYNDAQUIL, 8
+.equ MSG_MENU_TOTODILE, 9
+.equ MSG_MENU_BULBASAUR, 10
+.equ MSG_MENU_CHARMANDER, 11
+.equ MSG_MENU_SQUIRTLE, 12
+.equ MSG_MENU_TREECKO, 13
+.equ MSG_MENU_TORCHIC, 14
+.equ MSG_MENU_MUDKIP, 15
+.equ MSG_MENU_TURTWIG, 16
+.equ MSG_MENU_CHIMCHAR, 17
+.equ MSG_MENU_PIPLUP, 18
 
 .equ SPECIES_CHIKORITA, 152
 .equ SPECIES_CYNDAQUIL, 155
@@ -43,19 +47,32 @@
 
 .equ OBJ_MOM, 0
 
+.equ MAP_T20, 60
+.equ MAP_T25, 76
+.equ MAP_T11, 59
+
+.equ START_CITY_NEW_BARK, 0
+.equ START_CITY_GOLDENROD, 1
+.equ START_CITY_SAFFRON, 2
+
+.equ NB_HOME_WARP, 1
+.equ GD_HOME_WARP, 14
+.equ SF_HOME_WARP, 14
+
 .create "build/t20_mom_script0.bin", 0
     scrcmd_609
     lockall
     compare VAR_SCENE_PLAYERS_HOUSE_1F, 0
     goto_if_ne _already_done
     setvar VAR_SCENE_PLAYERS_HOUSE_1F, 1
+    apply_movement obj_player, _mv_player_down
+    apply_movement OBJ_MOM, _mv_mom_spot
+    wait_movement
+    call _openworld_pick_city
     goto_if_set FLAG_GOT_STARTER, _mom_begin
     call _openworld_pick_starter
 _mom_begin:
     lockall
-    apply_movement obj_player, _mv_player_down
-    apply_movement OBJ_MOM, _mv_mom_spot
-    wait_movement
     callstd std_play_mom_music
     wait 30, VAR_SPECIAL_RESULT
     apply_movement OBJ_MOM, _mv_mom_approach
@@ -127,6 +144,49 @@ _mv_mom_return:
     step WalkRightFast, 3
     step 0x0020, 1
     step_end
+
+_openworld_pick_city:
+    touchscreen_menu_hide
+    npc_msg MSG_CITY_PROMPT
+    ListLocalText 1, 1, 0, 0, VAR_SPECIAL_RESULT
+    AddListOption MSG_MENU_NEW_BARK, MSG_LIST_HIGHLIGHT, 0
+    AddListOption MSG_MENU_GOLDENROD, MSG_LIST_HIGHLIGHT, 1
+    AddListOption MSG_MENU_SAFFRON, MSG_LIST_HIGHLIGHT, 2
+    ShowList
+    closemsg
+    copyvar VAR_PLAYER_START_CITY, VAR_SPECIAL_RESULT
+    call _set_home_dynamic_warp
+    touchscreen_menu_show
+    return
+
+_set_home_dynamic_warp:
+    compare VAR_PLAYER_START_CITY, START_CITY_NEW_BARK
+    goto_if_eq _dyn_new_bark
+    compare VAR_PLAYER_START_CITY, START_CITY_GOLDENROD
+    goto_if_eq _dyn_goldenrod
+    setvar VAR_TEMP_x4000, MAP_T11
+    setvar VAR_TEMP_x4001, SF_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_goldenrod:
+    setvar VAR_TEMP_x4000, MAP_T25
+    setvar VAR_TEMP_x4001, GD_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_new_bark:
+    setvar VAR_TEMP_x4000, MAP_T20
+    setvar VAR_TEMP_x4001, NB_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
 
 _openworld_pick_starter:
     touchscreen_menu_hide

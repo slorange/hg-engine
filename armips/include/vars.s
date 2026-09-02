@@ -58,6 +58,7 @@ VAR_OBJ_15 equ                         0x402F
 NUM_OBJ_GFX_VARS equ                   16
 
 VAR_PLAYER_STARTER equ                 0x4030
+VAR_PLAYER_START_CITY equ              0x4031
 VAR_UNK_4031 equ                       0x4031
 VAR_UNK_4032 equ                       0x4032
 VAR_BUENAS_PASSWORD_SET equ            0x4033

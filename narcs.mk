@@ -690,6 +690,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
 	$(PYTHON) tools/patch_scr_seq_t20_mom.py $(SCR_SEQ_DIR)/2_845
+	$(PYTHON) tools/patch_scr_seq_start_city.py $(SCR_SEQ_DIR)/2_845
 	$(PYTHON) tools/patch_scr_seq_t20_bedroom.py $(SCR_SEQ_DIR)/2_846
 	$(PYTHON) tools/patch_scr_seq_train.py $(SCR_SEQ_DIR)/2_893 $(SCR_SEQ_DIR)/2_834
 	$(PYTHON) tools/patch_scr_seq_r04_boost.py $(SCR_SEQ_DIR)/2_178
@@ -716,6 +717,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_gym_cut_trees.py $(ZONE_EVENT_DIR)/2_051 $(ZONE_EVENT_DIR)/2_052 $(ZONE_EVENT_DIR)/2_352
 	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rocket.py $(ZONE_EVENT_DIR)
+	$(PYTHON) tools/patch_zone_event_start_city.py $(ZONE_EVENT_DIR)
 	$(NARCHIVE) create $@ $(ZONE_EVENT_DIR) -nf
 
 .PHONY: $(ZONE_EVENT_NARC)

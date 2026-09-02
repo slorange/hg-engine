@@ -124,13 +124,14 @@ def load_vanilla_member() -> bytearray:
 
 
 def remap_vanilla_msg_indices(body: bytearray) -> None:
-    """545.txt inserts six starter strings at index 9; shift vanilla npc_msg ids >= 9 by +6."""
+    """545.txt inserts city + starter strings before vanilla index 9; shift npc_msg ids >= 9."""
+    msg_shift = 10  # 545.txt inserts 10 strings before vanilla index 9
     i = 0
     while i + 2 < len(body):
         if body[i] == 0x2D and body[i + 1] == 0x00:
             mid = body[i + 2]
             if mid >= 9:
-                body[i + 2] = mid + 6
+                body[i + 2] = mid + msg_shift
             i += 3
             continue
         i += 1

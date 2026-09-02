@@ -512,11 +512,12 @@ Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Per-city **outdo
 |------|----------------------------------|-----------------------------------------------------|-------|
 | New Bark | **057** `T20.json` warp → `MAP_NEW_BARK_PLAYER_HOUSE_1F` at **(695, 396)** anchor **0** | *(none — vanilla)* | Interior **060** `T20R0201`; exit warp anchor **1** → New Bark |
 | Goldenrod | **073** `T25.json` → **`MAP_GOLDENROD_NORTHEAST_HOUSE`** **(376, 335)** anchor **0** | **198** `T25R0801` | **Confirmed in-game (Sep 2026):** small house **next to the Flower Shop / Squirtbottle house** (not the Friendship Checker — that is a different door at (373, 362) / `T25R0301`). Two flavour NPCs with **PP / “can’t use moves”** tips only. Single-floor interior — fine for v1. |
-| Saffron | **056** `T11.json` → **`MAP_SAFFRON_COPYCAT_HOUSE_1F`** **(1297, 218)** anchor **0** | **356** `T11R0501` (+ 2F) | **Preferred over Mr. Psychic (Sep 2026):** Copycat/Mimic Girl house is **two-story** like New Bark player house. Mr. Psychic house stays vanilla (Pass/train story less critical now that Mom grants Pass). Copycat story scripts TBD when we wire warps — not started yet. |
+| Saffron | **056** `T11.json` → **`MAP_SAFFRON_COPYCAT_HOUSE_1F`** **(1323, 242)** anchor **0** | **356** `T11R0501` (+ 2F) | Copycat house (**warp 14** at 1323,242 — not warp 7 at 1297,218 / `T11R0801`). Copycat story scripts TBD when we wire warps — not started yet. |
 
-**Swap rule:** if `VAR_PLAYER_START_CITY != 0`, patch New Bark player-house outdoor warp (**057**, **(695, 396)**) to the **displaced interior** for the chosen city instead of `T20R0201`. Chosen city’s door always warps to `T20R0201`. `T20R0201` front-door exit uses **`set_dynamic_warp`** (script cmd **240**) back to the saved outdoor coords.
 
-**Build order:** (1) Mom + Pokegear/town map/phone numbers/HM Fly, (2) intro city + starter menus + `starters.c` ×6, (3) zone_event warp patches + dynamic warp, (4) intro/story strip (Elm errand, rival).
+**Swap rule:** chosen city's outdoor door warps to `T20R0201`. **Do not remove or reindex** zone_event **060** warps — bedroom **061** uses **anchor 1** (= warp slot **1**, the stairs at (3,3)); deleting slot 0 breaks going downstairs. Front-door exit: warp slot **0** at **(3,10)** retargeted to **header 0xFFF / anchor 0x100** (dynamic warp); Mom script **0** calls `set_dynamic_warp` via temp vars after city pick. New Bark door swap (displaced interior) is **deferred**.
+
+**Build order:** (1) Mom + Pokegear/town map/phone numbers/HM Fly, (2) intro city + starter menus + `starters.c` ×6, (3) zone_event warp patches + exit script, (4) intro/story strip (Elm errand, rival).
 
 Story hooks (Elm, rival) stay vanilla until separately stripped (`DESIGN.md` §35).
 

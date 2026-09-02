@@ -1,5 +1,9 @@
 {STRVAR_1 3, 0, 0}, are you finally moving\nout? Took you long enough!\rMake sure you take all your junk\nwith you.\r
 {STRVAR_1 3, 0, 0}, are you finally moving\nout? Took you long enough!\rMake sure you take all your junk\nwith you.\r
+Choose your starting city.
+New Bark Town
+Goldenrod City
+Saffron City
 Choose your starter Pokémon.
 Chikorita
 Cyndaquil
