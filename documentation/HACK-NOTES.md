@@ -69,11 +69,62 @@ Generated banks: prefer editing the **source data** (`data/Moves.c`, `data/Speci
 - **Most overworld NPC dialogue** — still in undumped msg banks
 - **Map scripts / events** — `armips/scr_seq/` and `data/zone_event/` (see **Badge gate blocks** below)
 
+## Build and verification
+
+**Agents are expected to run builds** when verifying implementation work — the user does not build manually for routine agent tasks.
+
+| File | Role |
+|------|------|
+| `rom.nds` | User-provided base ROM (input). **Never commit.** |
+| `test.nds` | Build output for DeSmuME / manual playtesting. **Never commit.** |
+| `build/` | Intermediate artifacts (NARCs, objects, extracted vanilla). Regenerated; do not commit. |
+
+### How to build (this fork)
+
+**Prefer Docker** on this machine — native MSYS2/UCRT64 linking has been unreliable with hg-engine’s dual linker scripts.
+
+1. **One-time:** `docker build . -t hg-engine`
+2. **Full ROM:** `./docker-makerom.cmd` (interactive shell that runs `make`), **or** non-interactive:
+
+```bat
+docker run --rm --mount "type=bind,source=<repo-path>,destination=/hg-engine" hg-engine bash -lc "cd /hg-engine && make -j24"
+```
+
+3. Load **`test.nds`** in DeSmuME. Use a **new save** after changes to intro scripts, starting city, or flags-on-load patches.
+
+Upstream native/WSL setup (without Docker): [README.md](../README.md).
+
+### Build types
+
+| Command | Use when | Output / notes |
+|---------|----------|----------------|
+| `make -j24` | Default — verify any change end-to-end | Full **`test.nds`**: C/asm (`src/`, `asm/`), `data/*.c`, armips, NARC rebuild, overlays |
+| `make build/narc/scr_seq.narc build/narc/zone_event.narc NOSCAN=1` | Iterating on scr_seq / zone_event only | NARCs only; still repack `test.nds` before in-game test |
+| `make scr_seq_clean && make -j24` | Suspect scr_seq corruption or duplicate NPCs after patch | Clears scr_seq build artifacts, then full rebuild |
+| `make clean_code && make -j24` | C/asm changed but objects seem stale | Drops compiled code objects only |
+| `make clean && make -j24` | Broken build state, tool rebuild, or “nothing makes sense” | Full clean (slow) |
+| `make AUTO_TEST=Y -j24` | Battle-engine automated tests | Same **`test.nds`** name, compiled with `DEBUG_BATTLE_SCENARIOS`; see [data/battle_tests/README.md](../data/battle_tests/README.md) |
+| `make restore_build` | Reset extracted `base/` from `rom.nds` then rebuild | Nuclear reset of extracted filesystem |
+
+**`NOSCAN=1`** skips dependency scanning — use for targeted NARC targets to save time; not a substitute for a full verify before calling something done.
+
+**Compile toggles** (`HEAL_AFTER_BATTLE`, trainer scaling, open-world grants, etc.) live in `include/config.h` and `armips/include/config.s` — documented in [CONFIG.md](../CONFIG.md) and [Index-2](DESIGN.md#index-2-current-technical-baseline).
+
+### What a full build covers (roughly)
+
+1. **Tools** — armips, nitrogfx, msgenc, ndstool, patch scripts, …
+2. **Generated data** — species/move/trainer text banks, learnsets, evo tables, …
+3. **NARCs** — encounters, scr_seq, zone_event, sprites, msgdata overrides from `data/text/`, …
+4. **Engine code** — `src/` + overlays linked into `base/`
+5. **Pack** — `test.nds` from `rom.nds` + modified `base/root/`
+
+Field-script recipes in this file often add Python **verify_*.py** scripts — run those after the relevant `make` when listed.
+
 ## Build workflow on this machine
 
 - Prefer **Docker** (UCRT64 + binutils 2.47 broke ARM linking with the dual linker scripts).
 - First time / dirty MSYS leftovers: clear Windows-built `tools/source/**/*.o` before Linux Docker builds.
-- Typical rebuild:
+- Typical rebuild (replace path with repo root):
 
 ```bat
 docker run --rm --mount "type=bind,source=C:\msys64\home\Sylvain\git\hg-engine,destination=/hg-engine" hg-engine bash -lc "cd /hg-engine && make -j24"
@@ -213,7 +264,7 @@ Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,3
 
 **Status:** verified in-game (Aug 2026). 0 badges, no Cut — Vermilion Gym door, Celadon Gym door, and Erika inside Celadon Gym all reachable.
 
-**Goal:** reach Vermilion and Celadon Gyms (and Erika inside her Gym) without Cut — [DESIGN.md §35](DESIGN.md#35-story-and-script-content).
+**Goal:** reach Vermilion and Celadon Gyms (and Erika inside her Gym) without Cut — [Story-1](DESIGN-STORY.md#story-1-story-and-script-content).
 
 | Map | zone_event member | Trees removed |
 |-----|-------------------|---------------|
@@ -238,7 +289,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 **Status:** verified (wild, trainer, flee, and catch tested in-game).
 
-**Design:** `DESIGN.md` §17 — full HP/PP/status restore after every battle (wild, trainer, flee; no special exclusions).
+**Design:** [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) — full HP/PP/status restore after every battle (wild, trainer, flee; no special exclusions).
 
 | What | Where |
 |------|--------|
@@ -254,7 +305,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 **Status:** verified in-game.
 
-**Design:** interim stand-in until `DESIGN.md` §16 battle-limit EXP share exists. Every non-fainted party member gets the **full** calculated EXP for each KO (not split). Fainted bench mons still get nothing. No Exp Share item required.
+**Design:** interim stand-in until [Battle-7](DESIGN-BATTLES.md#battle-7-exp-share) battle-limit EXP share exists. Every non-fainted party member gets the **full** calculated EXP for each KO (not split). Fainted bench mons still get nothing. No Exp Share item required.
 
 | What | Where |
 |------|--------|
@@ -469,7 +520,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Toggle:** `OPENWORLD_STARTING_ITEMS` in `include/config.h` (on by default).
 
-**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). **Disable before builds for others** (`DESIGN.md` §32).
+**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
 
 **Hook:** Mom downstairs cutscene — scr_seq member **845** (`T20R0201`), script slot **0**.
 
@@ -489,47 +540,115 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 | Phone numbers | `register_gear_number` — Mom (0), Elm (1), Oak (2) |
 | HM02 Fly (testing) | `ITEM_HM02` (421) when `OPENWORLD_TESTING_GRANTS` is defined |
 
-**Starting city / starter (v1 prototype — `DESIGN.md` §4):**
+**Starting city / starter (v1 prototype — [Vision-3](DESIGN-VISION.md#vision-3-starting-location)):**
+
+**Status: PoC verified in-game (Sep 2026)** — city pick → Mom cutscene → walk out front door → chosen city; re-enter home → exit again. Stairs bedroom ↔ 1F intact.
 
 | Step | When | What |
 |------|------|------|
-| 1 | After Oak / name / gender, before bedroom | 3-city menu → save `VAR_PLAYER_START_CITY` (TBD unused save var) |
-| 2 | Mom cutscene script **0** (downstairs, before greet) | Region YES/NO (`545.txt` string **2**) → vanilla `choose_starter` → party + `FLAG_GOT_BAG` |
-| 3 | End of intro | Spawn in **house 2F** at chosen city; walk down → Mom cutscene |
-| 4 | First visit home 1F | Mom cutscene (existing script **845** slot **0**) |
+| 1 | Mom cutscene, before starter menu | 3-city `ListLocalText` → `VAR_PLAYER_START_CITY` (**0x4031**) → `_set_home_dynamic_warp` |
+| 2 | Same cutscene | Starter **12-option text menu** → `give_mon` (not `choose_starter`) → `FLAG_GOT_STARTER` |
+| 3 | Same cutscene | Mom grants (bag, Pokédex, Pass, etc.) — **no post-cutscene teleport** |
+| 4 | Walk to front door **(3, 10)** on 1F | Dynamic exit warp → outdoor home door in chosen city |
 
 **Cities (v1):** New Bark (0), Goldenrod (1), Saffron (2).
 
-**Starters (v1):** Johto trio + Kanto trio via region pick + 3-ball UI; `src/starters.c` (6 species, trio selected by `VAR_PLAYER_STARTER` 0 or 3).
+### Starter selection — **not** `choose_starter`
 
-**Pokémon menu:** bedroom script sets `FLAG_GOT_BAG` after `choose_starter` so the party menu works before Mom’s bag fanfare.
+Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/starters.c`. Those are a **different, unused path** in this hack.
+
+| | **Open-world path (what we use)** | **Vanilla / legacy path (not used)** |
+|---|-----------------------------------|--------------------------------------|
+| Where | Mom scr_seq **845** script **0** (`scr_seq_t20_mom_script0.s`) | `choose_starter` script cmd → `CreateStarter_*` hooks |
+| UI | 12-row `ListLocalText` text menu | Three Poké Balls on a table |
+| Give Pokémon | `give_mon` per menu branch (Johto/Kanto/Gen 3/Gen 4) | Engine creates mon from `starters.c` trio |
+| Species count | **12** (hardcoded in script) | **6** in `sStarterChoices[]` (Johto 0–2 + Kanto 3–5 only) |
+| `VAR_PLAYER_STARTER` | Menu index **0–11** after pick | Was **0** or **3** (region base for which trio) |
+| Dex / phone register | `set_starter_choice` from **party slot 0 species** after `give_mon` | Same cmd, but after ball pick |
+
+**Implications for dev:**
+
+- Adding a starter → edit **`scr_seq_t20_mom_script0.s`** (+ string in **`data/text/545.txt`**). Do **not** expect `starters.c` changes to affect Mom’s menu.
+- **`src/starters.c`** + **`hooks`** (`CreateStarter_SetStarterSpecies`, `CreateStarter_CreateMon`) still ship with the engine but are **dead code** unless some other scr_seq calls `choose_starter`. Grep shows **no** open-world scr_seq does — bedroom **846** is vanilla and must stay that way (verify script rejects `choose_starter` there).
+- Old design docs ([Vision-3](DESIGN-VISION.md#vision-3-starting-location)) still describe Johto/Kanto YES/NO + 3-ball UI; **implementation superseded** that with the 12-option list.
+
+**Pokémon menu:** `FLAG_GOT_BAG` set during Mom cutscene (not bedroom).
+
+### ID cheat sheet (easy to mix up)
+
+| What | Value | pret / file |
+|------|-------|-------------|
+| `VAR_PLAYER_START_CITY` | **0x4031** | `armips/include/vars.s` |
+| `VAR_PLAYER_STARTER` | **0x4030** | same |
+| Map header `MAP_T20R0201` (Mom 1F) | **63** | ≠ scr_seq member |
+| Map header `MAP_T20R0202` (bedroom) | **64** | zone_event **061** |
+| Map header `MAP_T20` (New Bark outdoor) | **60** | zone_event **057** |
+| Map header `MAP_T25` (Goldenrod outdoor) | **76** | zone_event **073** |
+| Map header `MAP_T11` (Saffron outdoor) | **59** | zone_event **056** |
+| scr_seq Mom house | member **845** | script **0** = cutscene |
+| zone_event Mom 1F interior | member **060** | 2 warps — **do not reindex** |
+| zone_event bedroom 2F | member **061** | warp down uses **anchor 1** → 1F warp **slot 1** |
+| Goldenrod home door | **073** warp **14** at **(376, 335)** | was `T25R0801` (205) |
+| Saffron home door | **056** warp **14** at **(1323, 242)** | was `T11R0501` (399) |
+| New Bark player house door | **057** warp **1** at **(695, 396)** | vanilla → header 63 |
+| Text bank Mom dialogue | **545** | city strings 2–5, starters 6+ |
 
 ### Home = bidirectional door + interior swap
 
-Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Per-city **outdoor door** must warp in *and* receive dynamic warp on exit.
+Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Per-city **outdoor door** warps in; **dynamic warp** handles exit.
 
-| City | Outdoor door (pret `zone_event`) | Displaced interior (swap target for New Bark door) | Notes |
-|------|----------------------------------|-----------------------------------------------------|-------|
-| New Bark | **057** `T20.json` warp → `MAP_NEW_BARK_PLAYER_HOUSE_1F` at **(695, 396)** anchor **0** | *(none — vanilla)* | Interior **060** `T20R0201`; exit warp anchor **1** → New Bark |
-| Goldenrod | **073** `T25.json` → **`MAP_GOLDENROD_NORTHEAST_HOUSE`** **(376, 335)** anchor **0** | **198** `T25R0801` | **Confirmed in-game (Sep 2026):** small house **next to the Flower Shop / Squirtbottle house** (not the Friendship Checker — that is a different door at (373, 362) / `T25R0301`). Two flavour NPCs with **PP / “can’t use moves”** tips only. Single-floor interior — fine for v1. |
-| Saffron | **056** `T11.json` → **`MAP_SAFFRON_COPYCAT_HOUSE_1F`** **(1323, 242)** anchor **0** | **356** `T11R0501` (+ 2F) | Copycat house (**warp 14** at 1323,242 — not warp 7 at 1297,218 / `T11R0801`). Copycat story scripts TBD when we wire warps — not started yet. |
+| City | Outdoor door (zone_event) | Displaced interior (New Bark door swap) | Dynamic exit (`set_dynamic_warp`) |
+|------|---------------------------|----------------------------------------|-----------------------------------|
+| New Bark | **057** warp **1** at **(695, 396)** | *(none — vanilla)* | map **60**, warp **1** |
+| Goldenrod | **073** warp **14** at **(376, 335)** → hdr **63** | **198** `T25R0801` | map **76**, warp **14** |
+| Saffron | **056** warp **14** at **(1323, 242)** → hdr **63** | **356** `T11R0501` (+ 2F) | map **59**, warp **14** |
 
+Goldenrod door confirmed in-game: NE house by Flower Shop / Squirtbottle (**not** Friendship Checker at (373, 362) / `T25R0301`). Saffron: Copycat house warp **14** (**not** warp 7 at 1297,218 / `T11R0801`).
 
-**Swap rule:** chosen city's outdoor door warps to `T20R0201`. **Do not remove or reindex** zone_event **060** warps — bedroom **061** uses **anchor 1** (= warp slot **1**, the stairs at (3,3)); deleting slot 0 breaks going downstairs. Front-door exit: warp slot **0** at **(3,10)** retargeted to **header 0xFFF / anchor 0x100** (dynamic warp); Mom script **0** calls `set_dynamic_warp` via temp vars after city pick. New Bark door swap (displaced interior) is **deferred**.
+**Verified working pattern (do not simplify):**
 
-**Build order:** (1) Mom + Pokegear/town map/phone numbers/HM Fly, (2) intro city + starter menus + `starters.c` ×6, (3) zone_event warp patches + exit script, (4) intro/story strip (Elm errand, rival).
+1. **Outdoor doors only** — patch **073** / **056** destination header to **63** (`tools/patch_zone_event_start_city.py`).
+2. **Interior 060 warp slot 0** — change **(3, 10)** from `hdr=60, anchor=1` to **`hdr=0xFFF (4095), anchor=0x100 (256)`**. Keep warp slot **1** `(3,3)→64` untouched (stairs).
+3. **Mom script 0** — after city pick, `set_dynamic_warp` using **`VAR_TEMP_x4000`–`x4004`** (cmd **240** reads all five args via `ScriptGetVar`, not literals).
+4. **No post-cutscene `warp`** — player walks to the door.
+5. **No coord script at (3, 10)** and **no removing warp slot 0** — both break stairs (black void) or misfire.
 
-Story hooks (Elm, rival) stay vanilla until separately stripped (`DESIGN.md` §35).
+**Engine reference (pret `field/field_control.c`):** warp with `anchor == 0x100` and `header == 0xFFF` uses `LocalFieldData.dynamicWarp`. Vanilla examples: zone_event **396–402** (elevator exits).
 
-**Dialogue:** Mom’s intro greet is **msg bank 545**, strings **0–1** — moving-out joke only. **String 6** is her first post-cutscene talk (`Don’t come back!`; vanilla Elm errand line). Cutscene script skips bag/card/save/options `npc_msg`s; fanfares + flags still unlock the touch menu.
+### Failed approaches (save future dev time)
 
-**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`, narcs.mk), `data/text/545.txt`. Init header **618** stays vanilla.
+| Approach | Why it failed |
+|----------|----------------|
+| Remove interior exit warp + coord at (3,10) | Reindexes warps → bedroom **061** anchor **1** → wrong slot → **black void** on stairs |
+| `set_dynamic_warp` with literal map/x args | Args are var IDs; must `setvar VAR_TEMP_*` first |
+| `set_dynamic_warp` alone (vanilla exit warp) | Exit still hardwired to New Bark until slot 0 uses 0xFFF/0x100 |
+| Post-cutscene `warp` to outdoor door | Wrong UX |
+| New Bark door coord script / remove static warp | Cascading wrong warps, black screen |
+| `FLAG_OPENWORLD_HOME_EXIT` gate on exit | False premise — Mom does not walk player onto door tile |
+| scr_seq exit script + removed warp 0 | Same reindex bug as row 1 |
 
-**Bedroom starter:** not used — bedroom scr_seq **846** stays vanilla. Starter pick is in **Mom script 0** (`scr_seq_t20_mom_script0.s`) on the proven OnFrame trigger. Bedroom / OnTransition hooks did not run reliably or crashed too early.
+**Deferred:** New Bark door → displaced interior when start city ≠ New Bark; Copycat/swap-house story scripts.
 
-**Gotcha:** map header `MAP_T20R0201` = **63** ≠ scr_seq member **845** (same pattern as Route 32 / badge gates).
+**Build / verify:**
 
-**Note:** Existing saves are unchanged. Start a **new game**, go downstairs, and finish Mom’s intro. Ferry weekday / game-clear gates and ship interior are still TODO.
+```bash
+make build/narc/scr_seq.narc build/narc/zone_event.narc NOSCAN=1
+python scripts/verify_t20_mom_patch.py
+python scripts/verify_start_city_patch.py
+# repack test.nds
+```
+
+**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`), `tools/patch_zone_event_start_city.py` (`073`/`056`/`060`), `tools/patch_scr_seq_start_city.py` (no-op placeholder), `scripts/verify_start_city_patch.py`, `data/text/545.txt`, `armips/include/vars.s`. Init header **618** stays vanilla.
+
+**Bedroom starter:** not used — bedroom scr_seq **846** stays vanilla (**no** `choose_starter`, no OnTransition starter hook). All starter picking is in **Mom script 0** only. Bedroom / OnTransition hooks crashed or never ran reliably when tried.
+
+**Adding a 4th+ city:** recon outdoor door (member, warp index, x/z, old header) → add row to `patch_zone_event_start_city.py` → menu string + `AddListOption` + branch in `_set_home_dynamic_warp` → verify **060** still has exactly 2 warps.
+
+**Next (not started):** Phase 4 story strip (Elm errand, rival, Cherrygrove guide) — [Story-1](DESIGN-STORY.md#story-1-story-and-script-content); or more cities using recipe above.
+
+**Dialogue:** Mom intro greet **545** strings **0–1**. String **6** is post-cutscene talk (vanilla Elm errand line). Cutscene skips bag/card/save/options `npc_msg`s; fanfares + flags unlock touch menu.
+
+**Note:** Test with **new saves** after ROM changes. Story hooks (Elm, rival) still vanilla until Phase 4.
 
 ---
 

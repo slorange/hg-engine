@@ -1,14 +1,16 @@
-# Pokémon Wandering Heart — Apricorn, Balls & Deferred Systems
+# Pokémon Wandering Heart — Future & Addon Systems
 
-> **Scope:** Everything from [§2](#2-apricorn-economy) onward is **V2** unless marked otherwise. **V3** begins at [§15](#15-full-moon-system-v3). **V4** begins at [§16](#16-unlimited-learned-moves-v4). None of this is required for the core open-world ROM ([`DESIGN.md`](DESIGN.md)).
+> **V2–V4 scope:** Apricorn economy, ball rebalance, Full Moon, unlimited moves. Not required for the core ROM.
 >
-> **Parent doc:** [`DESIGN.md`](DESIGN.md) — core vision, progression, travel, battles, trainers.
+> **Index:** [`DESIGN.md`](DESIGN.md) · **Core vision:** [`DESIGN-VISION.md`](DESIGN-VISION.md)
 >
-> **Dependency (V2 only):** Apricorn tree refresh assumes an accelerated in-game clock ([`DESIGN.md` §24](DESIGN.md#24-accelerated-daynight-cycle)). That clock is core; the Apricorn economy is not.
+> **Scope:** Everything from [Future-2](#future-2-apricorn-economy) onward is **V2** unless marked otherwise. **V3** begins at [Future-15](#future-15-full-moon-system-v3). **V4** begins at [Future-16](#future-16-unlimited-learned-moves-v4). None of this is required for the core open-world ROM.
+>
+> **Dependency (V2 only):** Apricorn tree refresh assumes an accelerated in-game clock ([World-4](DESIGN-WORLD.md#world-4-accelerated-daynight-cycle)). That clock is core; the Apricorn economy is not.
 
 ---
 
-# 1. Instructions
+# Future-1. Instructions
 
 - Do **not** implement ball/Apricorn changes unless explicitly requested for the current task.
 - Prefer config-driven catch multipliers where hg-engine already supports them.
@@ -16,7 +18,7 @@
 
 ---
 
-# 2. Apricorn Economy
+# Future-2. Apricorn Economy
 
 **Status: DECIDED direction; numbers TBD — V2**
 
@@ -37,7 +39,7 @@ Pokémon Center crafting or another distributed crafting system is currently bei
 
 ---
 
-# 3. Poké Ball Design Philosophy
+# Future-3. Poké Ball Design Philosophy
 
 **Status: DECIDED**
 
@@ -65,7 +67,7 @@ The intended outcome is explicitly to avoid:
 
 ---
 
-# 4. Shop Balls
+# Future-4. Shop Balls
 
 **Status: DECIDED unless noted**
 
@@ -84,7 +86,7 @@ However, **Quick Ball and Dusk Ball are intentionally removed from normal shops*
 
 ---
 
-# 5. Removed / Replaced Balls
+# Future-5. Removed / Replaced Balls
 
 **Status: CURRENTLY DECIDED**
 
@@ -98,7 +100,7 @@ The following vanilla/special balls are currently removed or replaced:
 
 ## Heal Ball
 
-The Heal Ball is unnecessary because **all newly caught Pokémon are automatically healed** ([`DESIGN.md` §17](DESIGN.md#17-healing-and-attrition)).
+The Heal Ball is unnecessary because **all newly caught Pokémon are automatically healed** ([Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition)).
 
 ## Luxury Ball
 
@@ -116,7 +118,7 @@ These decisions can theoretically be revisited, but they are not currently part 
 
 ---
 
-# 6. Apricorn Balls (overview)
+# Future-6. Apricorn Balls (overview)
 
 **Status: DECIDED conceptually; some formulas TBD**
 
@@ -143,7 +145,7 @@ This immediately communicates to experienced HGSS players that the Apricorn syst
 
 ---
 
-# 7. Fast Ball
+# Future-7. Fast Ball
 
 **Status: DECIDED; exact intermediate curve TBD**
 
@@ -173,7 +175,7 @@ This is a deliberate thematic specialty.
 
 ---
 
-# 8. Heavy Ball
+# Future-8. Heavy Ball
 
 **Status: DECIDED; thresholds TBD**
 
@@ -187,7 +189,7 @@ The exact weight thresholds/formula remain TBD.
 
 ---
 
-# 9. Love Ball
+# Future-9. Love Ball
 
 **Status: DECIDED**
 
@@ -201,7 +203,7 @@ This intentionally makes Love Ball extremely strong when its narrower thematic c
 
 ---
 
-# 10. Friend Ball
+# Future-10. Friend Ball
 
 **Status: DECIDED**
 
@@ -227,7 +229,7 @@ This puts friendship-evolution Pokémon close to being ready to evolve.
 
 ---
 
-# 11. Level Ball
+# Future-11. Level Ball
 
 **Status: DECIDED conceptually**
 
@@ -247,7 +249,7 @@ Formula:
 
 ---
 
-# 12. Dream Ball
+# Future-12. Dream Ball
 
 **Status: DECIDED**
 
@@ -261,7 +263,7 @@ Because Sleep is already one of the strongest capture statuses, the bonus intent
 
 ---
 
-# 13. Quick Ball
+# Future-13. Quick Ball
 
 **Status: DECIDED**
 
@@ -275,7 +277,7 @@ Quick Ball is moved from normal shops into the Apricorn economy because an infin
 
 ---
 
-# 14. Dusk Ball
+# Future-14. Dusk Ball
 
 **Status: DECIDED conceptually; exact depth mapping TBD**
 
@@ -298,7 +300,7 @@ This gives Dusk Ball an unusually powerful ceiling while requiring increasingly 
 
 ---
 
-# 15. Full Moon System (V3)
+# Future-15. Full Moon System (V3)
 
 **Status: V3 / PARKING LOT**
 
@@ -332,7 +334,7 @@ Do not implement the Moon Ball independently unless the broader moon system is i
 
 ---
 
-# 16. Unlimited Learned Moves (V4)
+# Future-16. Unlimited Learned Moves (V4)
 
 **Status: V4 / TECHNICAL MOONSHOT**
 
@@ -365,7 +367,7 @@ Before implementation, a dedicated feasibility investigation is required.
 
 ---
 
-# 17. Technical investigation (when V2 is scheduled)
+# Future-17. Technical investigation (when V2 is scheduled)
 
 Questions to resolve before implementation:
 
@@ -379,7 +381,7 @@ Questions to resolve before implementation:
 
 ---
 
-# 18. Open design questions (V2–V4)
+# Future-18. Open design questions (V2–V4)
 
 - Exact Apricorn yield and refresh rate.
 - Exact Apricorn crafting mechanism and locations.

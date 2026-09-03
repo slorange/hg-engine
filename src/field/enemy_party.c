@@ -92,7 +92,7 @@ static u8 CountPlayerBadges(void)
 }
 
 /**
- *  @brief player level cap for current badge count (DESIGN.md §7)
+ *  @brief player level cap for current badge count (Battle-4)
  */
 static u8 GetPlayerLevelCapForBadges(u8 badgeCount)
 {
