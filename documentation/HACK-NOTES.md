@@ -8,6 +8,25 @@ Working notes for this fork so we don’t re-discover the text/data layout every
 
 **Read-only only.** Agents may run git commands that **inspect** state (`status`, `diff`, `log`, `show`, etc.). **Never commit, push, merge, rebase, reset, checkout, add, stash, or any other mutating git action** — the user handles all of that themselves. If they say they’re committing, they mean they will do it; don’t beat them to it.
 
+## Scripts layout
+
+Python helpers live under `scripts/` in three buckets. **Keep new scripts in the right bucket** so `scripts/local/` can stay gitignored.
+
+| Folder | Track in git? | When to use |
+|--------|---------------|-------------|
+| `scripts/build/` | Yes | Wired into `Makefile`, `narcs.mk`, `overlays.mk`, or `data/codetables.mk` |
+| `scripts/dev/` | Yes | Reusable inspect/verify helpers referenced from HACK-NOTES or wiki docs |
+| `scripts/local/` | **No** | One-off recon, session experiments, throwaway debugging |
+
+**Rules for agents:**
+
+- New recon or “figure this out once” scripts → `scripts/local/` (prefix with `_` when possible).
+- When a script becomes reusable, move it to `dev/` or `build/` and update Makefile/docs references.
+- Do **not** add Makefile hooks for `local/` scripts.
+- `scripts/fixed/` is unrelated metadata (monData numbering) — leave it alone.
+
+See `scripts/README.md` for the inventory.
+
 ## Agents: always build (user does not)
 
 **The user does not build this project.** They are not set up to run Docker, `make`, or MSYS2/WSL for day-to-day work. **You must build for them** whenever you change anything that affects the ROM.
@@ -182,7 +201,7 @@ Reusable pattern: walk-past coord trigger → script checks badge count → mess
 
 **Gotcha:** map header ID ≠ scr_seq index ≠ zone_event index. We once overwrote scr_seq **134** (`D52R0102`, a dungeon) instead of **226**; bad overrides can stick in `base/root/` until you restore `a/0/1/2` and/or `a/0/3/2` from a clean `rom.nds` extract.
 
-To find indices for another map: pret decomp names (`130_R29R0101.json`, `scr_seq_00226_R29R0101.s`) or `scripts/_scan_zone_events.py` on `base/root/a/0/3/2`.
+To find indices for another map: pret decomp names (`130_R29R0101.json`, `scr_seq_00226_R29R0101.s`) or `scripts/local/_scan_zone_events.py` on `base/root/a/0/3/2`.
 
 ### Recipe for a new gate
 
@@ -204,7 +223,7 @@ To find indices for another map: pret decomp names (`130_R29R0101.json`, `scr_se
 2. `tools/zone_event_enc.py` on each `data/zone_event/*.json`
 3. Repack → ROM as `a/0/3/2`
 
-Helper files: `tools/zone_event_enc.py`, `data/zone_event/events/event_<MAP>.h`, `scripts/test_zone_event_roundtrip.py`.
+Helper files: `tools/zone_event_enc.py`, `data/zone_event/events/event_<MAP>.h`, `scripts/dev/test_zone_event_roundtrip.py`.
 
 ### Route 46 gate (reference implementation)
 
@@ -356,7 +375,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | **zone_event** (`a/0/3/2`) | member **041** |
 | **Text bank** | **399** (`data/text/399.txt`) |
 
-Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/_scan_zone_events.py`.
+Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/local/_scan_zone_events.py`.
 
 **Facing constants (object `facingDirection`):** pret `DIR_NORTH=0`, `DIR_SOUTH=1`, `DIR_WEST=2`, `DIR_EAST=3` (`global_fieldmap.h`).
 
@@ -409,11 +428,11 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/_
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/inspect_zone_event.py build/a032/2_<NNN>` | bg events, objects, coords |
-| `scripts/inspect_scr_seq.py build/a012/2_<NNN>` | script slot offsets |
-| `scripts/dump_scr_seq_slots.py build/a012/2_<NNN>` | slot sizes + bytecode heads |
-| `scripts/verify_scr_seq_patch.py build/a012_vanilla/2_<NNN> build/a012/2_<NNN>` | confirm vanilla slots unchanged |
-| `scripts/decode_r42_objects.py` | quick object field dump (adapt member path) |
+| `scripts/dev/inspect_zone_event.py build/a032/2_<NNN>` | bg events, objects, coords |
+| `scripts/dev/inspect_scr_seq.py build/a012/2_<NNN>` | script slot offsets |
+| `scripts/dev/dump_scr_seq_slots.py build/a012/2_<NNN>` | slot sizes + bytecode heads |
+| `scripts/dev/verify_scr_seq_patch.py build/a012_vanilla/2_<NNN> build/a012/2_<NNN>` | confirm vanilla slots unchanged |
+| `scripts/dev/decode_r42_objects.py` | quick object field dump (adapt member path) |
 
 Vanilla scr_seq for recovery: `build/a012_vanilla/2_<NNN>` (extracted from `rom.nds` on first patch run).
 
@@ -423,7 +442,7 @@ Vanilla scr_seq for recovery: `build/a012_vanilla/2_<NNN>` (extracted from `rom.
 - **Healthy scr_seq size:** Route 42 member ~**1188 bytes** (8 scripts). Multi‑MB member = corrupt; patcher resets from vanilla when `count != VANILLA_SCRIPT_COUNT` or size > 8 KB.
 - **Duplicate NPCs on rebuild:** zone_event patcher must delete prior ferry objects by id before re-adding.
 - **Sign overlap:** bg-event signs and object NPCs on the same tile fight for interaction; offset NPC one tile from sign.
-- **land_data ≠ ferry:** walking on water still needs terrain edits; ferries only skip the gap via warp. Failed bridge exports live in `rawdata/changed_maps/route_42/failed attempt at bridge/`; apply manually via `scripts/apply_changed_maps.py` (not in Makefile). Matrix loads land_data member **44** for Route 42 chunks — DSPRE export indices 082–084 ≠ runtime member.
+- **land_data ≠ ferry:** walking on water still needs terrain edits; ferries only skip the gap via warp. Failed bridge exports live in `rawdata/changed_maps/route_42/failed attempt at bridge/`; apply manually via `scripts/dev/apply_changed_maps.py` (not in Makefile). Matrix loads land_data member **44** for Route 42 chunks — DSPRE export indices 082–084 ≠ runtime member.
 
 ### Route 42 bridges (abandoned)
 
@@ -506,7 +525,7 @@ Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TA
 3. **Scan all copies in vanilla:**
    ```bash
    # sprite + coords from inspect; search build/a032_vanilla/2_*
-   python3 scripts/inspect_zone_event.py build/a032_vanilla/2_<NNN>
+   python3 scripts/dev/inspect_zone_event.py build/a032_vanilla/2_<NNN>
    ```
    Grep all members for same `(x,z)` or sprite id near that area (see `tools/patch_zone_event_*` — object match is `(obj_id, script, x, z)`).
 4. **Static matrix copies** — script **65535** (`WARP_DOOR`) on an object usually means “display only, no talk” outdoor-layer duplicate.
@@ -522,10 +541,10 @@ Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TA
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/inspect_zone_event.py build/a032/2_<NNN>` | objects, warps, coords |
-| `scripts/inspect_zone_event.py build/a032_vanilla/2_<NNN>` | vanilla baseline before patch |
-| `scripts/dump_zone_objects.py` | bulk object dump (adapt path) |
-| `scripts/decode_clear_script.py build/a012/2_<NNN> <off> <end>` | OnLoad bytecode |
+| `scripts/dev/inspect_zone_event.py build/a032/2_<NNN>` | objects, warps, coords |
+| `scripts/dev/inspect_zone_event.py build/a032_vanilla/2_<NNN>` | vanilla baseline before patch |
+| `scripts/dev/dump_zone_objects.py` | bulk object dump (adapt path) |
+| `scripts/dev/decode_clear_script.py build/a012/2_<NNN> <off> <end>` | OnLoad bytecode |
 
 Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanilla.py`).
 
@@ -656,12 +675,12 @@ Goldenrod door confirmed in-game: NE house by Flower Shop / Squirtbottle (**not*
 
 ```bash
 make build/narc/scr_seq.narc build/narc/zone_event.narc NOSCAN=1
-python scripts/verify_t20_mom_patch.py
-python scripts/verify_start_city_patch.py
+python scripts/dev/verify_t20_mom_patch.py
+python scripts/dev/verify_start_city_patch.py
 # repack test.nds
 ```
 
-**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`), `tools/patch_zone_event_start_city.py` (`073`/`056`/`060`), `tools/patch_scr_seq_start_city.py` (no-op placeholder), `scripts/verify_start_city_patch.py`, `data/text/545.txt`, `armips/include/vars.s`. Init header **618** stays vanilla.
+**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`), `tools/patch_zone_event_start_city.py` (`073`/`056`/`060`), `tools/patch_scr_seq_start_city.py` (no-op placeholder), `scripts/dev/verify_start_city_patch.py`, `data/text/545.txt`, `armips/include/vars.s`. Init header **618** stays vanilla.
 
 **Bedroom starter:** not used — bedroom scr_seq **846** stays vanilla (**no** `choose_starter`, no OnTransition starter hook). All starter picking is in **Mom script 0** only. Bedroom / OnTransition hooks crashed or never ran reliably when tried.
 
@@ -692,9 +711,9 @@ python scripts/verify_start_city_patch.py
 
 **Patch style:** in-place bytecode (`checkflag 280` + `goto_if` → `goto`); no `build_scr_seq()` rebuild (table layout is non-sequential).
 
-**Files:** `tools/patch_scr_seq_train.py` (`2_893`, `2_834` in narcs.mk), `scripts/verify_train_patch.py`, `scripts/scan_train_power.py`.
+**Files:** `tools/patch_scr_seq_train.py` (`2_893`, `2_834` in narcs.mk), `scripts/dev/verify_train_patch.py`, `scripts/dev/scan_train_power.py`.
 
-**Verify:** `make scr_seq_clean && make -j24`, then `python scripts/verify_train_patch.py`. In-game: new save → Mom intro → Goldenrod or Saffron station → policeman allows platform → pass coord gate → board train.
+**Verify:** `make scr_seq_clean && make -j24`, then `python scripts/dev/verify_train_patch.py`. In-game: new save → Mom intro → Goldenrod or Saffron station → policeman allows platform → pass coord gate → board train.
 
 **Gotcha:** map header IDs ≠ scr_seq members (`MAP_T25R0501` / `MAP_T11R0601` vs **893** / **834**).
 
@@ -736,10 +755,10 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 | `tools/patch_scr_seq_r04_boost.py` | Append slot to **2_178** |
 | `tools/patch_zone_event_r04_boost.py` | Object on **2_009** |
 | `data/text/328.txt` | Trainer tips (0) + boost lines (1–4) |
-| `scripts/verify_r04_boost.py` | Post-build check |
-| `scripts/find_r04_coords.py` | Recon helper for world `(x,z)` |
+| `scripts/dev/verify_r04_boost.py` | Post-build check |
+| `scripts/dev/find_r04_coords.py` | Recon helper for world `(x,z)` |
 
-**Verify:** `make scr_seq_clean && make -j24`, then `python scripts/verify_r04_boost.py`.
+**Verify:** `make scr_seq_clean && make -j24`, then `python scripts/dev/verify_r04_boost.py`.
 
 ---
 
@@ -791,9 +810,9 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 - zone_event **086** — Blackthorn area (x≈661+).
 - pret filename `046_R44` ≠ outdoor-matrix member for the bridge.
 
-**ID discovery:** Headbutt tree envelope in `Headbutt.c`, in-game fisherman coords, pret `map_headers.h` (`scriptsBank` for `MAP_ROUTE_44` → **257**). Recon scripts: `scripts/list_r44_npcs.py`, `scripts/find_r44_by_coords.py`, `scripts/analyze_scr_seq_260.py` (why 260 is R47).
+**ID discovery:** Headbutt tree envelope in `Headbutt.c`, in-game fisherman coords, pret `map_headers.h` (`scriptsBank` for `MAP_ROUTE_44` → **257**). Recon scripts (local, not tracked): `scripts/local/list_r44_npcs.py`, `scripts/local/find_r44_by_coords.py`, `scripts/local/analyze_scr_seq_260.py` (why 260 is R47).
 
 **Patch:** `armips/scr_seq/scr_seq_r44_rod_guru.s` → `tools/patch_scr_seq_r44_rod_guru.py` (`2_257`). Zone: `tools/patch_zone_event_r44_rod_guru.py` on **`2_043`**. Text: `data/text/404.txt`.
 
-**Verify:** `python3 scripts/verify_r44_rod_guru_patch.py build/a012/2_257` + `python3 scripts/verify_r44_zone_event.py build/a032/2_043`. In-game: grass west of bridge fisherman **(576, 184)** → guru at **(568, 183)**.
+**Verify:** `python3 scripts/build/verify_r44_rod_guru_patch.py build/a012/2_257` + `python3 scripts/dev/verify_r44_zone_event.py build/a032/2_043`. In-game: grass west of bridge fisherman **(576, 184)** → guru at **(568, 183)**.
 

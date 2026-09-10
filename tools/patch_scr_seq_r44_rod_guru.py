@@ -112,7 +112,7 @@ def load_vanilla_member() -> bytearray:
 
 
 def validate_patch_body(body: bytes) -> None:
-    sys.path.insert(0, str(ROOT / "scripts"))
+    sys.path.insert(0, str(ROOT / "scripts" / "build"))
     from rod_guru_patch_checks import ValueExit, validate_rod_guru_body
 
     try:

@@ -70,7 +70,7 @@
  ``STATIC_HP_BAR`` (``include/config.h`` only) updates the HP bar to increase/decrease at a fixed rate like later generations.
 
 ### ``scripts\make.py`` and ``linker.ld``
- On line 13 of ``scripts/make.py``, change ``OFFSET_TO_START`` to be your location in overlay 129 with enough free space.  This is separate from the above one.  MAKE SURE THE OFFSETS DON'T OVERLAP.
+ On line 13 of ``scripts/build/make.py``, change ``OFFSET_TO_START`` to be your location in overlay 129 with enough free space.  This is separate from the above one.  MAKE SURE THE OFFSETS DON'T OVERLAP.
 
  Change the numbers at the beginning of ``linker.ld`` to be the same thing.
 

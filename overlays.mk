@@ -39,7 +39,7 @@ CODE_BUILD_DIRS += $(BUILD)/$(INDIVIDUAL)/
 
 $(BUILD)/rom_gen_battle.ld:$(battle_LINK) $(battle_OUTPUT) $(BUILD)/rom_gen.ld
 	cp $(BUILD)/rom_gen.ld $(BUILD)/rom_gen_battle.ld
-	$(PYTHON) scripts/generate_ld.py $(BUILD)/rom_gen_battle.ld $(battle_LINK)
+	$(PYTHON) scripts/build/generate_ld.py $(BUILD)/rom_gen_battle.ld $(battle_LINK)
 
 
 define INDIVIDUAL_OVERLAY_DEFINE

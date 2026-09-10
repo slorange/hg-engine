@@ -91,7 +91,7 @@ EGGLEARNSET_DEPENDENCIES := $(LEARNSET_OUTPUT_DIR)/EggLearnsets.c
 
 $(LEARNSETS_HEADER): $(LEARNSETS_INPUT) $(VENV_ACTIVATE) src/item.c
 	@echo "generating learnset data..."
-	$(PYTHON) scripts/build_learnsets.py \
+	$(PYTHON) scripts/build/build_learnsets.py \
 		--learnsets $(LEARNSETS_INPUT) \
 		--machineout $(MACHINELEARNSET_DEPENDENCIES) \
 		--levelupout $(LEVELUPLEARNSET_DEPENDENCIES) \
@@ -170,7 +170,7 @@ BATTLETESTS_OBJS := $(patsubst %.c,%.o,$(BATTLETESTS_DEPENDENCIES))
 BATTLETESTS_BIN := $(patsubst $(BATTLETESTS_OUTPUT_DIR)/%.c,$(BUILD)/%.bin,$(BATTLETESTS_DEPENDENCIES))
 
 $(BATTLETESTS_HEADER) $(BATTLETESTS_MANIFEST): $(BATTLETESTS_TEST_FILES) $(BATTLETESTS_FORCE_REGEN) $(VENV_ACTIVATE)
-	$(PYTHON) scripts/build_tests.py $(TEST_FILTER)
+	$(PYTHON) scripts/build/build_tests.py $(TEST_FILTER)
 
 $(BATTLETESTS_DEPENDENCIES): $(BATTLETESTS_HEADER) $(BATTLETESTS_MANIFEST)
 

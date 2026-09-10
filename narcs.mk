@@ -24,8 +24,8 @@ MSGDATA_COMPILETIME_DEPENDENCIES_DIR := $(BUILD)/rawtext
 CHARMAP := charmap.txt
 
 
-$(BUILD)/rawtext/%.txt: $(BUILD_NARC)/a011.narc $(BUILD_NARC)/a055.narc $(BUILD_NARC)/personal.narc $(BUILD_NARC)/trainer_text_map.narc scripts/msg_cat.py
-	$(PYTHON) scripts/msg_cat.py $(BUILD)/rawtext
+$(BUILD)/rawtext/%.txt: $(BUILD_NARC)/a011.narc $(BUILD_NARC)/a055.narc $(BUILD_NARC)/personal.narc $(BUILD_NARC)/trainer_text_map.narc scripts/build/msg_cat.py
+	$(PYTHON) scripts/build/msg_cat.py $(BUILD)/rawtext
 
 # actual msgdata rule at bottom to allow MSGDATA_COMPILETIME_DEPENDENCIES to be fully defined
 NARC_FILES += $(MSGDATA_NARC)
@@ -203,7 +203,7 @@ EVOS_DEPENDENCIES := data/Evolutions.c
 EVOS_OBJS := $(patsubst data/%.c,$(BUILD)/%.o,$(EVOS_DEPENDENCIES))
 LEVEL_UP_EVO_TABLES_C := src/field/level_up_evo_tables.c
 LEVEL_UP_EVO_TABLES_H := include/constants/generated/level_up_evo_tables.h
-LEVEL_UP_EVO_TABLES_SCRIPT := scripts/gen_level_up_evo_tables.py
+LEVEL_UP_EVO_TABLES_SCRIPT := scripts/build/gen_level_up_evo_tables.py
 
 $(LEVEL_UP_EVO_TABLES_C) $(LEVEL_UP_EVO_TABLES_H): $(EVOS_DEPENDENCIES) $(LEVEL_UP_EVO_TABLES_SCRIPT) include/constants/species.h
 	$(PYTHON) $(LEVEL_UP_EVO_TABLES_SCRIPT)
@@ -586,7 +586,7 @@ $(SDAT_BUILD):$(SDAT_SWAR_OBJS)
 	cp -rf $(SDAT_OBJ_DIR)/* $(SDAT_FILES_DIR)
 	@# trigger rebuild here
 	rm -rf $(SDAT_FILES_DIR)/WAVARC/*.swar
-	$(PYTHON) scripts/rebuild_json.py
+	$(PYTHON) scripts/build/rebuild_json.py
 	$(SDATTOOL) -b $@ $(SDAT_DIR)
 
 NARC_FILES += $(SDAT_BUILD)
@@ -689,7 +689,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/patch_scr_seq_r32_badge.py $(SCR_SEQ_DIR)/2_232
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
 	$(PYTHON) tools/patch_scr_seq_r44_rod_guru.py $(SCR_SEQ_DIR)/2_257
-	$(PYTHON) scripts/verify_r44_rod_guru_patch.py $(SCR_SEQ_DIR)/2_257
+	$(PYTHON) scripts/build/verify_r44_rod_guru_patch.py $(SCR_SEQ_DIR)/2_257
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
 	$(PYTHON) tools/patch_scr_seq_t20_mom.py $(SCR_SEQ_DIR)/2_845
 	$(PYTHON) tools/patch_scr_seq_start_city.py $(SCR_SEQ_DIR)/2_845
@@ -828,7 +828,7 @@ clean_trgfx:
 
 
 $(MSGDATA_NARC): $(MSGDATA_DEPENDENCIES) $(MSGDATA_COMPILETIME_DEPENDENCIES)
-	$(PYTHON) scripts/check_rod_guru_text.py
+	$(PYTHON) scripts/build/check_rod_guru_text.py
 	$(NARCHIVE) extract $(MSGDATA_TARGET) -o $(MSGDATA_DIR) -nf
 	for file in $(MSGDATA_DEPENDENCIES); do $(PYTHON) tools/source/dumptools/validate_text_archive.py $(CHARMAP) $$file || exit 1; done
 	for file in $^; do $(MSGENC) -e -c $(CHARMAP) $$file $(MSGDATA_DIR)/7_$$(basename $$file .txt); done

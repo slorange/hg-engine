@@ -12,7 +12,7 @@
 #define DYNAMIC_REGION_BYTEWIDE_SIZE 0x2F
 #define NEW_HEAP3_SIZE               0x110000
 
-// done this way so scripts/make.py can understand
+// done this way so scripts/build/make.py can understand
 #define SAVE_PAGE_MAX    0x2F
 #define SAVE_PAGE_MAX_3  0x32
 #define SAVE_PAGE_MAX_4  0x33

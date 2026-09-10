@@ -76,7 +76,7 @@ That defines the new species and new form.
 
 #### Graphics
 
-Now that you have added your defines, run `python3 scripts/reformat_sprite_data.py` from your WSL terminal opened such that you could build hg-engine.
+Now that you have added your defines, run `python3 scripts/dev/reformat_sprite_data.py` from your WSL terminal opened such that you could build hg-engine.
 
 This edits your `pokegra.mk` with the new defines automatically.  We will first copy from Bulbasaur to get the structure, renaming it to each of the new mons you used.  For me, this is copying Bulbasaur's folder and pasting it as `celestina` and `slugma_saisann`.
 

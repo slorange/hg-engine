@@ -140,4 +140,4 @@ jobs:
           make AUTO_TEST=Y -j$(nproc)
       - name: Run tests
         run: |
-          scripts/run_tests.sh -c -j $(nproc)
+          scripts/dev/run_tests.sh -c -j $(nproc)

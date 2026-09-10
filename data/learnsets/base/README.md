@@ -33,7 +33,7 @@ Alt forms of pokemon will inherit their sets from their base form. This is espec
 This would use pure HGSS learnsets meaning any newer mons would not have any learnable moves. Normally it will be better to simply take the hgss json file and copy that into `data/learnsets/learnsets.json`
 
 ```bash
-python3 scripts/build_learnsets.py --generate data/learnsets/learnsets.json --cutoff hgss
+python3 scripts/build/build_learnsets.py --generate data/learnsets/learnsets.json --cutoff hgss
 ```
 
 #### National Dex (Repo Default)
@@ -42,7 +42,7 @@ Takes the latest available maingame learnsets for each mon. For example, Raticat
 Note this ignores the Pokemon GO learnsets and Legends ZA.
 
 ```bash
-python3 scripts/build_learnsets.py --generate data/learnsets/learnsets.json --cutoff go --inherit-level --inherit-egg --inherit-machine --inherit-tutor --ignore-files 20_la.json 22_za.json 99_go.json
+python3 scripts/build/build_learnsets.py --generate data/learnsets/learnsets.json --cutoff go --inherit-level --inherit-egg --inherit-machine --inherit-tutor --ignore-files 20_la.json 22_za.json 99_go.json
 ```
 
 #### Custom
@@ -50,5 +50,5 @@ python3 scripts/build_learnsets.py --generate data/learnsets/learnsets.json --cu
 You can add your own customizations and fill in the rest using inheritance as well. If you just want to customize existing learnsets then it likely makes more sense to modify `data/learnsets/learnsets.json` directly.
 
 ```bash
-python3 scripts/build_learnsets.py --generate data/learnsets/learnsets.json --cutoff custom --inherit-level --inherit-egg --inherit-machine --inherit-tutor
+python3 scripts/build/build_learnsets.py --generate data/learnsets/learnsets.json --cutoff custom --inherit-level --inherit-egg --inherit-machine --inherit-tutor
 ```

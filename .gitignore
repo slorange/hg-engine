@@ -112,3 +112,8 @@ test_logs.txt
 dumped_armips/
 dumped_c/
 test_filter.txt
+build.log
+
+# one-off recon / session scripts (see scripts/local/README.md)
+scripts/local/**
+!scripts/local/README.md

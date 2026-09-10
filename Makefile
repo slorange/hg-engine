@@ -265,7 +265,7 @@ TOOLS += $(BTX)
 ####################### Build #######################
 $(BUILD)/rom_gen.ld:$(LINK) $(OUTPUT) rom.ld
 	cp rom.ld $(BUILD)/rom_gen.ld
-	$(PYTHON) scripts/generate_ld.py $(BUILD)/rom_gen.ld $(LINK)
+	$(PYTHON) scripts/build/generate_ld.py $(BUILD)/rom_gen.ld $(LINK)
 
 # create output folders if they do not exist
 $(CODE_BUILD_DIRS):
@@ -311,7 +311,7 @@ $(BASE)/arm9.bin: $(ROMNAME) $(NDSTOOL) $(VENV_ACTIVATE)
 all: $(OUTPUT) $(OVERLAY_OUTPUTS) $(TOOLS) $(BASE)/arm9.bin
 	@# find and delete macOS and windows files
 	find . \( -name "*.DS_Store" -o -name "*:Zone.Identifier" \) -delete
-	$(PYTHON) scripts/make.py $(CFLAGS)
+	$(PYTHON) scripts/build/make.py $(CFLAGS)
 # TODO: find a convenient way to not have this be a separate $(MAKE)
 	$(MAKE) move_narc
 	$(ARMIPS) armips/global.s $(ARMIPS_FLAGS)
@@ -552,7 +552,7 @@ move_narc: $(NARC_FILES)
 	cp $(HIDDEN_ITEM_PARAMS_BIN) $(HIDDEN_ITEM_PARAMS_TARGET)
 
 update_machine_moves: $(VENV_ACTIVATE)
-	$(PYTHON) scripts/update_machine_moves.py --descriptions --sprites
+	$(PYTHON) scripts/build/update_machine_moves.py --descriptions --sprites
 	@echo "Updated item descriptions and sprites. Double check formatting"
 
 
