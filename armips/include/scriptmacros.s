@@ -6751,6 +6751,8 @@ FORM_ROCKET_DISGUISE                    equ 1024
 
 // 208 has been reused for new script commands
 .equ NEW_COMMAND_QUEUE_NEW_REPEL, 0
+.equ NEW_COMMAND_FISHING_ROD_COUNT, 1
+.equ NEW_COMMAND_FISHING_ROD_REMAINING, 2
 
 .macro RunNewCommand,slot,unk
 DummyTextTrap slot, unk
@@ -6758,6 +6760,14 @@ DummyTextTrap slot, unk
 
 .macro QueueNewRepel
 RunNewCommand NEW_COMMAND_QUEUE_NEW_REPEL, 0x800C
+.endmacro
+
+.macro FishingRodCount,var
+RunNewCommand NEW_COMMAND_FISHING_ROD_COUNT, var
+.endmacro
+
+.macro FishingRodRemaining,var
+RunNewCommand NEW_COMMAND_FISHING_ROD_REMAINING, var
 .endmacro
 
 // Dummy

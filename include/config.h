@@ -305,4 +305,12 @@
 // Comment out this define if you want to disable this feature.
 // #define PLAY_MON_VICTORY_POSE
 
+// Fishing Rod guru progression: unique Water-type evolutionary families in the Pokédex.
+#ifndef FISHING_ROD_GOOD_FAMILIES
+#define FISHING_ROD_GOOD_FAMILIES 5
+#endif
+#ifndef FISHING_ROD_SUPER_FAMILIES
+#define FISHING_ROD_SUPER_FAMILIES 15
+#endif
+
 #endif

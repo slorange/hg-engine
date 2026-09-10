@@ -47,3 +47,7 @@ FAST_TEXT_PRINTING equ 1
 // NO_PARTNER_DOUBLE_BATTLES allows for setting trainers to double battles without setting up a partner trainer.  set to 0 to disable
 // note that the entry in `armips/data/trainers/trainertext.s` has to use `TEXT_DOUBLE_DEFEATED_IN_BATTLE_1`, but the overworld entries can remain the same.
 NO_PARTNER_DOUBLE_BATTLES equ 1
+
+// Fishing Rod guru progression (see include/config.h)
+FISHING_ROD_GOOD_FAMILIES equ 5
+FISHING_ROD_SUPER_FAMILIES equ 15

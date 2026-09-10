@@ -688,6 +688,8 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/patch_scr_seq_r36.py $(SCR_SEQ_DIR)/2_243
 	$(PYTHON) tools/patch_scr_seq_r32_badge.py $(SCR_SEQ_DIR)/2_232
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
+	$(PYTHON) tools/patch_scr_seq_r44_rod_guru.py $(SCR_SEQ_DIR)/2_257
+	$(PYTHON) scripts/verify_r44_rod_guru_patch.py $(SCR_SEQ_DIR)/2_257
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
 	$(PYTHON) tools/patch_scr_seq_t20_mom.py $(SCR_SEQ_DIR)/2_845
 	$(PYTHON) tools/patch_scr_seq_start_city.py $(SCR_SEQ_DIR)/2_845
@@ -717,6 +719,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_gym_cut_trees.py $(ZONE_EVENT_DIR)/2_051 $(ZONE_EVENT_DIR)/2_052 $(ZONE_EVENT_DIR)/2_352
 	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rocket.py $(ZONE_EVENT_DIR)
+	$(PYTHON) tools/patch_zone_event_r44_rod_guru.py $(ZONE_EVENT_DIR)/2_043
 	$(PYTHON) tools/patch_zone_event_start_city.py $(ZONE_EVENT_DIR)
 	$(NARCHIVE) create $@ $(ZONE_EVENT_DIR) -nf
 
@@ -825,6 +828,7 @@ clean_trgfx:
 
 
 $(MSGDATA_NARC): $(MSGDATA_DEPENDENCIES) $(MSGDATA_COMPILETIME_DEPENDENCIES)
+	$(PYTHON) scripts/check_rod_guru_text.py
 	$(NARCHIVE) extract $(MSGDATA_TARGET) -o $(MSGDATA_DIR) -nf
 	for file in $(MSGDATA_DEPENDENCIES); do $(PYTHON) tools/source/dumptools/validate_text_archive.py $(CHARMAP) $$file || exit 1; done
 	for file in $^; do $(MSGENC) -e -c $(CHARMAP) $$file $(MSGDATA_DIR)/7_$$(basename $$file .txt); done

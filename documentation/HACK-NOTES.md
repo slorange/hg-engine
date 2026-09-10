@@ -400,8 +400,8 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/_
 | `armips/scr_seq/scr_seq_r42_ferry_east.s` | Slot **7** (scriptId **8**) → warp to `(427, 178)` |
 | `tools/patch_scr_seq_r42_ferry.py` | Rebuild member **252** from vanilla + 2 scripts |
 | `tools/patch_zone_event_r42_ferry.py` | Objects **13** / **14** at `(429,177)` / `(502,172)` |
-| `data/text/399.txt` | Indices **10–13** (offer / aboard / decline / no money) |
-| `data/zone_event/events/event_R42.h` | Slot + object id defs |
+| `data/text/399.txt` | Ferry lines **10–13** |
+| `data/zone_event/events/event_R42.h` | Ferry slot + object id defs |
 
 **Fee:** $200. **Sprite:** fishing NPC (`347`).
 
@@ -758,4 +758,42 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 **Verify in-game:** Olivine Mart → second clerk → buy Secret Medicine → Lighthouse top → Jasmine uses medicine on Ampharos → Gym.
 
 **Text:** Lighthouse dialogue in `data/text/094.txt` (msg bank **094**, map `D27R0107`). Edits lines 0–1 (local mart hint) and 3 (item name).
+
+---
+
+## Fishing Rod guru NPCs
+
+**Goal:** One shared fisherman script gives Old → Good → Super Rod based on Pokédex caught Water-type evolutionary families (any catch source). Dialogue is region-agnostic for reuse across gurus.
+
+**Progression:** `FISHING_ROD_GOOD_FAMILIES` (default **5**) and `FISHING_ROD_SUPER_FAMILIES` (default **15**) in `include/config.h` / `armips/include/config.s`. Super Rod ownership is `hasitem(ITEM_SUPER_ROD)` — no save flag.
+
+**C:** `src/fishing_rod.c` counts families via union-find on evolution data + dex caught flags. Script hooks: `Script_RunNewCmd` cases **1** (count) and **2** (remaining until next tier) in `src/script_new_cmds.c`.
+
+**Flags:** `FLAG_GOT_OLD_ROD` (117), `FLAG_GOT_GOOD_ROD` (189).
+
+**Item grants:** Use `giveitem_no_check` (wraps `std_give_item_verbose`) — same flashy obtain UI + fanfare as Mom’s Pass/Ticket grants. Do **not** use bare `giveitem` (silent, no fanfare). **`npc_msg` does not wait for A** — before each grant use `wait_button_or_walk_away` + `closemsg`, then `giveitem_no_check` (obtain UI waits for A on its own). **After** the grant, `closemsg` again (Mom script 0 line 116) — otherwise the “put in pocket” line sticks and the touch menu stays locked. Still **no Yes/No** before the grant (unlike vanilla fisherman).
+
+**Text buffers:** Progress line uses `{STRVAR_1 52, 0, 0}` + script `TextNumber 0, var`. Do **not** use STRVAR type **50** (shows “GOLD” / points UI) or **51** (item names — “Good Rod” when buffer stale).
+
+**Route 44 reference (verified in-game Sep 2026 — copy this recipe for more gurus):**
+
+| Layer | ID | Notes |
+|-------|-----|--------|
+| Map header | `MAP_R44` = **46** | pret `scriptsBank` → scr_seq member **257** (not 260!) |
+| zone_event | member **043** (outdoor matrix) — obj **15**, sprite **347**, script **4**, **(568, 183)**, **`type=0`** | Bridge fisherman obj **1** at **(576, 184)** uses **`type=1`** + script **3124** (common script — not map scr_seq) |
+| scr_seq | member **257** — rod guru in **slot 3** (scriptId **4**) | Vanilla slots **0–2** = empty + two signposts; append guru after slot 2 |
+| msg bank | **404** | Vanilla signs **0–1**; guru lines **2–6** |
+
+**Wrong IDs (learned the hard way):**
+
+- scr_seq **260** = **Route 47** (Embedded Tower / Chuck), not Route 44 — sign text indices 0–1 match bank 404 only when misread out of context.
+- zone_event **046/090** — Ice Path junction chunk (z≈367–477), not walkable Route 44 body.
+- zone_event **086** — Blackthorn area (x≈661+).
+- pret filename `046_R44` ≠ outdoor-matrix member for the bridge.
+
+**ID discovery:** Headbutt tree envelope in `Headbutt.c`, in-game fisherman coords, pret `map_headers.h` (`scriptsBank` for `MAP_ROUTE_44` → **257**). Recon scripts: `scripts/list_r44_npcs.py`, `scripts/find_r44_by_coords.py`, `scripts/analyze_scr_seq_260.py` (why 260 is R47).
+
+**Patch:** `armips/scr_seq/scr_seq_r44_rod_guru.s` → `tools/patch_scr_seq_r44_rod_guru.py` (`2_257`). Zone: `tools/patch_zone_event_r44_rod_guru.py` on **`2_043`**. Text: `data/text/404.txt`.
+
+**Verify:** `python3 scripts/verify_r44_rod_guru_patch.py build/a012/2_257` + `python3 scripts/verify_r44_zone_event.py build/a032/2_043`. In-game: grass west of bridge fisherman **(576, 184)** → guru at **(568, 183)**.
 

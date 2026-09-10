@@ -203,7 +203,7 @@ Battle use: Flash and Headbutt remain normal learnable moves if the player wants
 | Headbutt trees                                  | Wild mons from trees          | Own data files; **requires Headbutt unlock** (badge-gated, see above)                                                        |
 | Cut trees / smashable rocks / Strength boulders | Map obstacles                 | Badge-gated collection field use                                                                                             |
 | Whirlpool / Waterfall / Rock Climb tiles        | Traversal gates               | Same                                                                                                                         |
-| Fishing Rods (Old / Good / Super)               | Tiered fishing encounters     | **Not badge-gated** — see [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression)                                         |
+| Fishing Rods (Old / Good / Super)               | Tiered fishing encounters     | **Not badge-gated** — dex Water-family counts; guru NPC network — see [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression). **Route 44** guru live; recipe in `documentation/HACK-NOTES.md` § Fishing Rod guru NPCs |
 | Flash-required dungeons                         | Dark Cave, Rock Tunnel, …     | **Traversal gate** until Flash unlock; list expandable                                                                       |
 
 

@@ -1,11 +1,14 @@
 #include "../include/config.h"
 #include "../include/constants/file.h"
+#include "../include/fishing_rod.h"
 #include "../include/repel.h"
 #include "../include/roamer.h"
 #include "../include/script.h"
 #include "../include/types.h"
 
-#define SCRIPT_NEW_CMD_REPEL_USE 0
+#define SCRIPT_NEW_CMD_REPEL_USE             0
+#define SCRIPT_NEW_CMD_FISHING_ROD_COUNT     1
+#define SCRIPT_NEW_CMD_FISHING_ROD_REMAINING 2
 
 #define SCRIPT_NEW_CMD_MAX 256
 
@@ -21,6 +24,14 @@ BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
         SetScriptVar(arg0, most_recent_repel);
         Repel_Use(most_recent_repel, HEAPID_MAIN_HEAP);
 #endif
+        break;
+
+    case SCRIPT_NEW_CMD_FISHING_ROD_COUNT:
+        SetScriptVar(arg0, CountCaughtWaterTypeFamilies(ctx->fsys->savedata));
+        break;
+
+    case SCRIPT_NEW_CMD_FISHING_ROD_REMAINING:
+        SetScriptVar(arg0, FishingRod_RemainingForNextTier(ctx->fsys->savedata));
         break;
 
     default:

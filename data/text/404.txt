@@ -1,0 +1,7 @@
+Ice Path\rCareful not to slip, fall over,\nfreeze, and get stuck on the ice.
+Rt. 44\nEast to Blackthorn City
+Here, take this Old Rod.\nAny body of water is worth a cast!
+You’ve caught lots of Water\nPokémon! You earned this Good Rod.
+Impressive! You really know the water.\nTake this Super Rod. You’ve earned it.
+If you catch {STRVAR_1 52, 0, 0} more types of fish,\nI’ll have something for you.
+You’ve got all my rods already.\nGood luck out there!

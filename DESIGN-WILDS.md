@@ -274,19 +274,22 @@ This creates a self-contained fishing progression loop:
 
 **Distribution goal:** avoid clustering every guru in mid-Johto / south Kanto. Where practical, place gurus at:
 
-| Region | Location | Notes |
-|--------|----------|--------|
-| South Johto | Route 32 Pokémon Center | Vanilla Old Rod area |
-| West Johto (coast) | Olivine City | Vanilla fishing NPC |
-| East Johto | **Blackthorn City** | **Likely new NPC** — gives Blackthorn a way to farm at lv5 since all connected routes are too high level |
-| West Kanto | **Viridian City or Pewter City** | **Likely new NPC** |
-| Mid Kanto (coast) | Vermilion City | **Likely new NPC** (not vanilla Rod giver) |
-| South Kanto | Fuchsia City | **Likely new NPC** (not vanilla Rod giver) |
-| East Kanto | Route 12 / Silence Bridge | Vanilla Super Rod area |
+| Region | Location | Status | Notes |
+|--------|----------|--------|--------|
+| East Johto | **Route 44** (bridge) | **Implemented** | `(568, 183)` west of bridge fisherman; scr_seq **257**, zone_event **043** — verified in-game Sep 2026 |
+| South Johto | Route 32 Pokémon Center | Planned | Vanilla Old Rod area |
+| West Johto (coast) | Olivine City | Planned | Vanilla fishing NPC |
+| East Johto | **Blackthorn City** | Planned | **Likely new NPC** — gives Blackthorn a way to farm at lv5 since all connected routes are too high level |
+| West Kanto | **Viridian City or Pewter City** | Planned | **Likely new NPC** |
+| Mid Kanto (coast) | Vermilion City | Planned | **Likely new NPC** (not vanilla Rod giver) |
+| South Kanto | Fuchsia City | Planned | **Likely new NPC** (not vanilla Rod giver) |
+| East Kanto | Route 12 / Silence Bridge | Planned | Vanilla Super Rod area |
 
 Exact map and `(x, z)` per guru are implementation details; prefer towns the player already visits for other reasons (Mart, Gym, ferry) over dead-end-only cells.
 
-Any guru on this network reads the same global fishing-progression state and offers the appropriate Rod (Old on first talk, then Good / Super when family counts are met).
+Any guru on this network reads the same global fishing-progression state and offers the appropriate Rod (Old on first talk, then Good / Super when family counts are met). Shared script: `armips/scr_seq/scr_seq_r44_rod_guru.s` (append via per-map patcher). Implementation recipe and ID-discovery notes: `documentation/HACK-NOTES.md` § **Fishing Rod guru NPCs**.
+
+**Outdoor-matrix maps** (Route 44 body uses zone_event member **043**, not the map-header zone index): place objects with **`type=0`** + low **scriptId** bound to that route’s **scr_seq** member (pret `scriptsBank` in `map_headers.h`). Vanilla walkable NPCs on the matrix often use **`type=1`** + scripts **3000+** instead.
 
 ---
 
