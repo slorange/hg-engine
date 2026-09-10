@@ -403,3 +403,65 @@ Questions to resolve before implementation:
 - Whether any intermediate design (remember-all, pick-four-per-battle) is acceptable as a stepping stone.
 
 ---
+
+# Future-19. Map Editing — World Connectivity Wishlist
+
+**Status: DEFERRED — requires reliable HGSS map/geometry editing**
+
+These changes are deferred until reliable HGSS map/geometry editing is possible.
+
+## Surface Fixes
+
+- Replace the Route 42 ferry NPC with a physical bridge.
+- Remove the Route 4 one-way ledge currently handled by the "ledge bump" NPC.
+
+## Johto Underground Network
+
+Expand the cave system into a connected underground travel network.
+
+- **Union Cave**
+  - Connect to Slowpoke Well.
+  - Connect to Dark Cave.
+  - Connect underground to Ruins of Alph.
+
+- **Dark Cave**
+  - Connect to Union Cave.
+  - Connect to Mt. Mortar.
+  - Connect to Mt. Silver.
+  - Connect to Ice Path.
+  - Connect to Tohjo Falls.
+
+- **Mt. Mortar**
+  - Connect to Ice Path.
+
+The intent is for Johto's caves to function as a genuine secondary transportation network rather than a collection of mostly isolated dungeons.
+
+Connections should still preserve dungeon identity and progression rather than turning every cave into one indistinguishable tunnel system.
+
+## New Surface / Water Connections
+
+- Add a water route connecting Route 40 / Whirl Islands to Goldenrod Harbor.
+- Add a route connecting Olivine to National Park.
+
+## Kanto Connections
+
+- Add a route from Viridian City to Route 16.
+- Add a route south of Mt. Moon:
+  - directly connect Route 3 to Route 4;
+  - branch south toward Celadon City.
+- Water route from Route 27 to Route 21
+
+## Design Goal
+
+Use new connections to create multiple legitimate paths through the world.
+
+The player should gradually discover that Johto and Kanto contain:
+
+- the obvious surface road network;
+- water routes;
+- an interconnected cave network;
+- fast travel between already discovered cities.
+
+The underground network should reward exploration and map knowledge without being required for basic city/Gym access.
+
+---

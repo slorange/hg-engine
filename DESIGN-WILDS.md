@@ -27,6 +27,7 @@ This is **not fully random**. Species and families must still appear in appropri
 - **Area identity** should remain coherent. If an area is intended to have a strong type / environment theme, generated families should preserve that theme.
 - **Global availability** matters more than equal regional distribution. There is no hard requirement that every type appear separately in both Johto and Kanto, since regional travel will be easy.
 - **Special encounters** — gifts, fossils, swarms, legendaries, Red Gyarados, static overworld Pokémon, etc. — need an explicit policy for how they interact with this system (**TBD** per category).
+- If there are any flags where there are more pokemon families than route spots to support them, Safari Zone and in game trades both work as backup catch-all options
 
 ## Persistence and seed
 

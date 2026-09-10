@@ -122,7 +122,7 @@ Reusable recipes for badge gates, ferry NPCs, and story NPC removal live in `doc
 
 ### Story and script policy
 
-See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jasmine verified; remaining gym rows (Bugsy, Clair, Misty, Blue, **Blaine**), opening/rival strip, and Rocket extension still open. **Cinnabar / Seafoam ferries:** [World-1](DESIGN-WORLD.md#kanto-island-ferries). Obsolete vanilla leftovers tracked in [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog).
+See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jasmine verified; remaining gym rows (Bugsy, Clair, Misty, Blue, **Blaine**), opening/rival strip, and Rocket extension still open. **Paid ferry NPCs:** [World-1](DESIGN-WORLD.md#paid-ferry-npcs). Obsolete vanilla leftovers tracked in [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog).
 
 ### Not yet started (core design priorities)
 
@@ -132,7 +132,7 @@ See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jas
 - Living trainers ([World-5](DESIGN-WORLD.md#world-5-living-trainers)), dynamic rosters, universal PC ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)), collection-based HMs ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
 - **Wild encounter systems** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)–[Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) — ecology seed, broad level range, distance caps (TBD).
-- **Kanto island ferries** (Cinnabar, Seafoam) — [World-1](DESIGN-WORLD.md#kanto-island-ferries).
+- **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
 - Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival, Rocket extension, remaining gym rows.
 - **Vanilla cleanup pass** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — strip superseded NPCs, quests, and HM-teaching scripts.
 

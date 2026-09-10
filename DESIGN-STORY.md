@@ -47,7 +47,7 @@ Role undecided (remove, optional encounters, badge-tier rematches, …). No riva
 | **Clair** (Blackthorn) | Drop 7-badge + Goldenrod Rocket gates. Drop or HM-free the Dragon's Den trial before the badge (Den currently needs Surf + Whirlpool). |
 | **Misty** (Cerulean) | Drop Power Plant / Machine Part / Route 25 chain; Leader available in Gym without leaving town. |
 | **Blue** (Viridian) | Drop “7 Kanto badges first” gate; challengeable at any badge tier. |
-| **Blaine** (Seafoam B4F) | Gym is **not** in a town — no story gates on the Leader once Seafoam is entered. Island reach: [World-1 — Kanto island ferries](DESIGN-WORLD.md#kanto-island-ferries). |
+| **Blaine** (Seafoam B4F) | Gym is **not** in a town — no story gates on the Leader once Seafoam is entered. Island reach: [World-1 — paid ferry NPCs](DESIGN-WORLD.md#paid-ferry-npcs). |
 
 ### Verified
 

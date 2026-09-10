@@ -2,9 +2,37 @@
 
 Working notes for this fork so we don’t re-discover the text/data layout every session.
 
+**New agent session?** Read **[Git (agents)](#git-agents)** and **[Agents: always build](#agents-always-build-user-does-not)** before changing game files.
+
 ## Git (agents)
 
 **Read-only only.** Agents may run git commands that **inspect** state (`status`, `diff`, `log`, `show`, etc.). **Never commit, push, merge, rebase, reset, checkout, add, stash, or any other mutating git action** — the user handles all of that themselves. If they say they’re committing, they mean they will do it; don’t beat them to it.
+
+## Agents: always build (user does not)
+
+**The user does not build this project.** They are not set up to run Docker, `make`, or MSYS2/WSL for day-to-day work. **You must build for them** whenever you change anything that affects the ROM.
+
+**Rule:** If you edited C/asm, armips scr_seq, `data/text/`, zone_event JSON, `include/config.h`, NARC patchers, or similar — **run a full build and produce `test.nds` before you finish.** Do not hand off source-only changes and expect the user to compile.
+
+**User testing workflow:** load **`test.nds`** (repo root) in DeSmuME. That file *is* the deliverable. Use a **new save** after intro/flag/starting-city changes.
+
+**Agent build command** (this machine, repo at `e:\Code\hg-engine`):
+
+```bat
+docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make -j24
+```
+
+**One-time Docker image** (only if `hg-engine` image is missing or Dockerfile changed):
+
+```bat
+docker build -t hg-engine e:\Code\hg-engine
+```
+
+Interactive shell (optional): run `docker-makerom.cmd` from the repo root, then `make -j24` inside the container.
+
+If the build fails, say so explicitly — do not imply the user can test your edits without a successful build.
+
+See **[Build and verification](#build-and-verification)** below for build types, outputs, and troubleshooting.
 
 ## Why the Mom line was hard to find
 
@@ -71,28 +99,36 @@ Generated banks: prefer editing the **source data** (`data/Moves.c`, `data/Speci
 
 ## Build and verification
 
-**Agents are expected to run builds** when verifying implementation work — the user does not build manually for routine agent tasks.
+Reference for agents (see **[Agents: always build](#agents-always-build-user-does-not)** for the mandatory handoff rule).
 
 | File | Role |
 |------|------|
 | `rom.nds` | User-provided base ROM (input). **Never commit.** |
-| `test.nds` | Build output for DeSmuME / manual playtesting. **Never commit.** |
+| `test.nds` | **Playable build output** — user loads this in DeSmuME. **Never commit.** Agents must regenerate it after ROM-affecting changes. |
 | `build/` | Intermediate artifacts (NARCs, objects, extracted vanilla). Regenerated; do not commit. |
 
 ### How to build (this fork)
 
-**Prefer Docker** on this machine — native MSYS2/UCRT64 linking has been unreliable with hg-engine’s dual linker scripts.
+**Use Docker on this machine** — native MSYS2/UCRT64 linking has been unreliable with hg-engine’s dual linker scripts.
 
-1. **One-time:** `docker build . -t hg-engine`
-2. **Full ROM:** `./docker-makerom.cmd` (interactive shell that runs `make`), **or** non-interactive:
+**Default (agents):** full ROM, non-interactive:
 
 ```bat
-docker run --rm --mount "type=bind,source=<repo-path>,destination=/hg-engine" hg-engine bash -lc "cd /hg-engine && make -j24"
+docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make -j24
 ```
 
-3. Load **`test.nds`** in DeSmuME. Use a **new save** after changes to intro scripts, starting city, or flags-on-load patches.
+**One-time image:** `docker build -t hg-engine e:\Code\hg-engine`
+
+**Interactive:** `./docker-makerom.cmd` from repo root, then `make -j24` inside the container.
 
 Upstream native/WSL setup (without Docker): [README.md](../README.md).
+
+**Notes:**
+
+- Do **not** commit `rom.nds` or `test.nds`.
+- First Docker build on a dirty tree can be slow; text-only rebuilds are faster.
+- If MSYS-built object files cause trouble, clear `tools/source/**/*.o` before Docker `make`.
+- After text/scr_seq/zone_event edits, close the emulator and reload **`test.nds`** — don’t reuse a stale file from an old build.
 
 ### Build types
 
@@ -119,19 +155,6 @@ Upstream native/WSL setup (without Docker): [README.md](../README.md).
 5. **Pack** — `test.nds` from `rom.nds` + modified `base/root/`
 
 Field-script recipes in this file often add Python **verify_*.py** scripts — run those after the relevant `make` when listed.
-
-## Build workflow on this machine
-
-- Prefer **Docker** (UCRT64 + binutils 2.47 broke ARM linking with the dual linker scripts).
-- First time / dirty MSYS leftovers: clear Windows-built `tools/source/**/*.o` before Linux Docker builds.
-- Typical rebuild (replace path with repo root):
-
-```bat
-docker run --rm --mount "type=bind,source=C:\msys64\home\Sylvain\git\hg-engine,destination=/hg-engine" hg-engine bash -lc "cd /hg-engine && make -j24"
-```
-
-- Do **not** commit `rom.nds`. `test.nds` is a build output.
-- After text-only edits, rebuilds are much faster than a cold first build.
 
 ## Quick “find this dialogue” checklist
 

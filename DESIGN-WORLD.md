@@ -32,24 +32,18 @@ Exact destinations/costs remain TBD.
 
 Likely only to cities that have already been visited.
 
-## Kanto island ferries
+## Paid ferry NPCs
 
-**Status: DECIDED — not implemented**
+**Status: DECIDED — Route 42 verified; rest not implemented**
 
-Vanilla reach to **Cinnabar** and **Seafoam** assumes Surf (HM03). Open-world rules require a **non-Surf path** until HM03 unlocks from badge count ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)). Blaine’s Gym is on **Seafoam B4F** — see [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) for story-gate removal only.
+**Route 42** (Blackthorn ↔ Mahogany water gaps) is the reference implementation — verified in [Index-2](DESIGN.md#index-2-current-technical-baseline); recipe in `documentation/HACK-NOTES.md`.
 
-Add **paid ferry NPCs** (Route 42 recipe — `documentation/HACK-NOTES.md`) for two destinations — separate services, same implementation pattern:
+Add more **paid ferry NPCs** (same Route 42 recipe) for:
 
-
-| Destination         | Why the player goes                                    | Design notes                                                                                                                                                        |
-| ------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Cinnabar Island** | Fire-type wilds, Mart/town services                    | Map work planned to **enable field encounters across the whole island** (not just the small vanilla grass patch). Ferry for pre-Surf travel from south Kanto coast. |
-| **Seafoam Islands** | **Blaine** Gym; Ice-type encounter options in the cave | Ferry to entrance (or agreed shore); internal puzzles stay. Surf remains the free route once HM03 is available.                                                     |
-
-
-Ferries are **transportation only** — no fetch chains, no badge gates on boarding. Price and shore NPC placement TBD; prefer routes the player already uses (Fuchsia, Vermilion, south Kanto coast) over dead-end-only cells.
-
-Related: mandatory-route bypass principle ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)); Route 42 ferry verified in [Index-2](DESIGN.md#index-2-current-technical-baseline).
+- Olivine ↔ Cianwood
+- Dark Cave (Blackthorn ↔ Violet)
+- Ice Path
+- Pallet / Cinnabar / Seafoam / Fuchsia
 
 ---
 
