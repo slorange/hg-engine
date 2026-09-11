@@ -85,22 +85,40 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 # Vision-3. Starting Location
 
-**Status: PARTIALLY IMPLEMENTED** — v1 three-city picker and twelve-starter menu verified in-game; broader city list and starter pools still TBD ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Status: PARTIALLY IMPLEMENTED** — twelve-starter menu verified in-game; **18-city list decided** for Wilds-3 distance matrix; Mom menu still **3-city PoC** until expanded ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
 
 ## Starting city
 
-**Status: DECIDED (prototype scope locked for v1 testing)**
+**Status: DECIDED**
 
 The player chooses their starting city from locations throughout Johto and Kanto.
 
-Long-term intention is broad freedom rather than a small set of traditional starting towns. **v1 prototype list (functionality testing only — not final design):**
+**Starting city list** (used for [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) graph / distance precomputation — source: `scripts/dev/Route Levels/starting_cities.txt`):
 
 
-| Index | City           |
-| ----- | -------------- |
-| 0     | New Bark Town  |
-| 1     | Goldenrod City |
-| 2     | Saffron City   |
+| Index | City           | Region |
+| ----- | -------------- | ------ |
+| 0     | New Bark Town  | Johto  |
+| 1     | Violet City    | Johto  |
+| 2     | Azalea Town    | Johto  |
+| 3     | Goldenrod City | Johto  |
+| 4     | Ecruteak City  | Johto  |
+| 5     | Olivine City   | Johto  |
+| 6     | Cianwood City  | Johto  |
+| 7     | Mahogany Town  | Johto  |
+| 8     | Blackthorn City | Johto |
+| 9     | Pallet Town    | Kanto  |
+| 10    | Viridian City  | Kanto  |
+| 11    | Pewter City    | Kanto  |
+| 12    | Cerulean City  | Kanto  |
+| 13    | Saffron City   | Kanto  |
+| 14    | Lavender Town  | Kanto  |
+| 15    | Celadon City   | Kanto  |
+| 16    | Vermilion City | Kanto  |
+| 17    | Fuchsia City   | Kanto  |
+
+
+**In-game picker (current ROM):** New Bark, Goldenrod, Saffron only — PoC wiring in Mom scr_seq **845**; expand menu + per-city home doors using the table above.
 
 
 Every available starting city must provide reasonable access to:
@@ -149,7 +167,7 @@ Twelve choices total; menu index stored in `VAR_PLAYER_STARTER` (**0x4030**). **
 
 Flow runs **after Professor Oak / name / gender**. Player still wakes in **player house 2F (bedroom)** regardless of chosen city, walks downstairs, and Mom’s cutscene runs:
 
-1. **City picker** (3 options) — **implemented** in Mom script **0**, before starter menu.
+1. **City picker** — **18 cities decided** ([Starting city](#starting-city)); **3 options implemented** in Mom script **0** (PoC), before starter menu.
 2. **Starter picker** (12 options) — **implemented** in same cutscene; bedroom scr_seq **846** stays vanilla (no starter hook there).
 3. **Mom grants** (bag, Pass, Pokédex, shoes, etc.) — same cutscene, after starter pick.
 4. **Exit** — player walks to front door; dynamic warp to chosen city. Non–New Bark cities use outdoor-door + dynamic-warp wiring documented in `HACK-NOTES.md`.

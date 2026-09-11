@@ -6,7 +6,7 @@
 
 # Story-1. Story and Script Content
 
-**Status: DECIDED (rival arc TBD)**
+**Status: DECIDED**
 
 Field scripts, NPCs, and map obstacles that assume vanilla story order or a New Bark start are removed or rewritten. Target: **any starting city**, **any-order Gyms**.
 
@@ -15,7 +15,7 @@ Field scripts, NPCs, and map obstacles that assume vanilla story order or a New 
 Mom cutscene ([Vision-3](DESIGN-VISION.md#vision-3-starting-location), [Index-2](DESIGN.md#index-2-current-technical-baseline)) **replaces** the vanilla New Bark opening for city pick, starter, and starting grants. **Vanilla leftovers still present** until cleaned up — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog):
 
 - Elm errand (Mom post-cutscene dialogue still references Elm; lab scripts active)
-- Rival intro, naming, and early battles
+- Rival intro, naming, and early battles ([Rival — remove](#rival--remove))
 - Oak visit chain
 - Togepi egg fetch from Mr. Pokémon
 - Cherrygrove guide (Town Map, running shoes tutorial)
@@ -27,16 +27,18 @@ No replacement fetch quests at other cities unless optional flavour, not service
 
 Rocket grunts, hideouts, Radio Tower arc, and related roadblocks must not gate travel, Gyms, or items. Mahogany post-clear on load is the verified pattern (`HACK-NOTES.md`); extend to Goldenrod basement, Radio Tower, etc.
 
-## Rival — TBD
+## Rival — remove
 
-Role undecided (remove, optional encounters, badge-tier rematches, …). No rival story hooks until resolved.
+**Status: DECIDED**
+
+Remove the rival entirely: no naming, no scripted intro, no mandatory early battles, no badge-tier rematch arc. Strip rival NPCs, battle triggers, and dialogue that assume a persistent rival companion. Optional one-off trainer NPCs may reuse rival-adjacent maps later, but there is **no rival character** in the open-world design.
 
 ## Gyms — access and story policy
 
 **Rules (all Leaders):**
 
 1. **City-local events only** — pre/post-battle flavour OK if it stays in the Gym town; cut anything that sends the player elsewhere and expects a return.
-2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader when HMs come from badge count ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)). HM/Flash/dungeon gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) still applies outside Gyms; wild-level guard gating is TBD vs [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps).
+2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader; HMs are granted by Gym Leaders per badge order ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). HM/Flash/dungeon gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) still applies outside Gyms; wild-level guard gating is TBD vs [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps).
 3. **Internal Gym puzzles** — trash cans, maze, etc. stay unless they hard-require an HM.
 
 ### Required changes
@@ -98,7 +100,7 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
 | Professor Elm lab errand and waiting NPCs | No linear New Bark opening | Flag-on-load or script skip in Elm lab scr_seq |
-| Rival intro, naming, Route 22/30 battles | Rival role undecided ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) | Remove or rewrite once rival policy chosen |
+| Rival intro, naming, Route 22/30 battles | Rival removed ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) | Strip rival NPCs, naming flow, and battle scripts |
 | Mr. Pokémon / Togepi egg quest | Not part of open-world start | Skip egg give; adjust Violet City references if needed |
 | Professor Oak visit chain | Superseded by direct bedroom wake | Skip Oak trigger scripts on Route 29 / lab |
 
@@ -120,14 +122,15 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 
 ## Superseded HM and progression teaching
 
-**Target design:** HMs unlock by badge count; field use from collection ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)). Until that ships, dev testing may use `OPENWORLD_TESTING_GRANTS` (HM02 from Mom).
+**Target design:** Gym Leaders grant badge + TM + **next HM in badge order** + family location hint ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)); field use from collection ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)). Until that ships, dev testing may use `OPENWORLD_TESTING_GRANTS` (HM02 from Mom).
 
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
-| Gym Leaders giving HMs after battle | Badge-count HM unlock replaces per-Leader gifts | Skip HM give in Leader defeat scripts once World-3 is implemented |
-| NPCs teaching Cut / Surf / etc. (Bill, HM tutors, story gates) | Collection-based field use | Remove teach scripts; keep obstacles that respect unlocked HM flags |
+| Vanilla per-Leader HM gifts (wrong move / wrong Leader) | Replaced by badge-order HM table ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) | Rewrite Leader defeat scripts to grant the correct HM for this badge count |
+| **HM fetch / delivery quests** (Bill's PC, SS Anne, etc.) | HMs come from Gym Leaders, not errands | Remove or skip fetch chains; no NPC should gate an HM behind a side quest |
+| NPCs teaching Cut / Surf / etc. (Bill, HM tutors, story gates) | Leaders grant HMs; collection-based field use | Remove teach scripts; keep obstacles that respect unlocked HM flags |
 | Whirlpool / Waterfall / Strength story gates on routes and dungeons | Badge-count unlock | Replace with badge checks or remove where travel must stay open |
-| Flash / Headbutt tutor & story acquisition | Badge-count unlock + collection field use like HMs ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) | Remove or skip vanilla tutor gates once World-3 is implemented |
+| Flash / Headbutt tutor & story acquisition | Unlocked via Gym badge order + collection field use ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) | Remove or skip vanilla tutor gates and Flash/Headbutt quest NPCs |
 
 ## Interior / warp leftovers (starting city)
 
@@ -140,5 +143,5 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 
 - When a feature in [Index-2](DESIGN.md#index-2-current-technical-baseline) or [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) is marked **verified**, check whether vanilla duplicates belong here.
 - When implementing a row here, note the scr_seq / zone_event member in `documentation/HACK-NOTES.md` (same as other field recipes).
-- Do **not** treat this as permission to implement [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) or rival policy — those remain design decisions elsewhere.
+- Do **not** treat this as permission to implement [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) — HM order is tentatively decided there; implementation still open.
 ---

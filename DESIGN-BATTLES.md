@@ -168,7 +168,7 @@ When level caps are enabled, **Rare Candies are not subject to the badge level c
 **Design intent:**
 
 - Candies are the **deliberate exception** to the cap, not a loophole on every mon at once — each use is a consumable choice.
-- Creates meaningful timing decisions: hoard Rare Candies for a hard Gym Leader, rival, or special trainer; spike one ace for a single fight to get an evolution or move early. Example: 6 badges (34 level cap), 2 rare candies for early lv36 Typhlosion
+- Creates meaningful timing decisions: hoard Rare Candies for a hard Gym Leader or special trainer; spike one ace for a single fight to get an evolution or move early. Example: 6 badges (34 level cap), 2 rare candies for early lv36 Typhlosion
 - Power spikes from candies should feel **earned and spent**, not a substitute for badge progression across the whole party.
 
 The hg-engine hook `IMPLEMENT_LEVEL_CAP` exists in `include/config.h` but likely does not do exactly what we need.
@@ -184,17 +184,21 @@ The hg-engine hook `IMPLEMENT_LEVEL_CAP` exists in `include/config.h` but likely
 
 Gym Leader battles use the same general dynamic-roster battle system as other trainer battles; they do NOT have one predetermined fixed party.
 
-Gyms (both trainers and leaders) are **monotype by default**, with some exceptions (listed below)
+Gyms (both trainers and leaders) are **monotype by default**, with some exceptions (listed below).
 
-Blue remains flexible. 
+**Gym type exceptions** (for roster generation, family-hint menus, and type filters):
 
-Other exceptions:
+| Leader | Gym type(s) for hints / filters | Roster notes |
+|--------|--------------------------------|--------------|
+| Whitney | **Normal** + **Fairy** | Keeps iconic Miltank |
+| Morty | **Ghost** + **Dark** | Dual-type family-hint menu |
+| Blue | **Ground** | Was flexible; now Ground-specialist |
+| Jasmine | Steel | Keeps iconic Ampharos line |
+| Brock | Rock | Keeps iconic Vulpix line |
+| Misty | Water | Keeps iconic Togepi line |
+| Blaine | Fire | Keeps iconic Rhydon line |
 
-- Jasmine Ampharos line
-- Brock Vulpix line
-- Whitney is changed to Fairy type but keeps her iconic Miltank
-- Misty Togepi line
-- Blaine Rhydon line
+All other Leaders use their vanilla Gym type only.
 
 ## Scaling (badge tier)
 
@@ -216,6 +220,38 @@ Rematches use the player's **current badge tier**, rather than repeating the dif
 Gym rematches are also a renewable source of that Gym's TM ([World-8](DESIGN-WORLD.md#world-8-tms)).
 
 There is no intended hard limit on the number of rematches/TM copies.
+
+## Gym Leader rewards (first defeat)
+
+**Status: DECIDED conceptually; family lists and hint text TBD**
+
+After a Gym Leader battle, the standard reward sequence is:
+
+1. **Badge**
+2. **HM** — the field ability for this badge count ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)); only on badge counts that grant a new unlock (not every badge grants an HM)
+3. **TM** — that Gym's TM ([World-8](DESIGN-WORLD.md#world-8-tms))
+4. **Family location hint** — optional menu after the above
+
+### Family location hint
+
+The Leader offers to point the player toward **one evolutionary family** matching the Gym's type(s) (see type exceptions above).
+
+Example flow (Lt. Surge, Electric):
+
+> *"As an extra reward, if there's any Electric-type you're looking for, I'll tell you where to look."*
+
+The player picks from a curated list of families for that Gym (e.g. Pikachu, Magnemite, Voltorb, Electabuzz, Chinchou, Mareep, Electrike, …). The Leader then names a **concrete location** from the player's **generated ecology** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)), including encounter method when relevant:
+
+> *"Chinchou can be found in Dark Cave using the Good Rod."*
+
+**Rules:**
+
+- One family choice per first Gym clear (not rematches unless redesigned later).
+- Hint data must come from the save's ecology tables, not hardcoded vanilla locations.
+- Multi-type Leaders (Whitney, Morty) offer families from **either** qualifying type.
+- Family lists are curated per Leader — not every species of that type in the dex.
+
+Rematches continue to award **TM copies** only ([Rematches](#rematches) above); family hints are a first-clear bonus.
 
 ---
 

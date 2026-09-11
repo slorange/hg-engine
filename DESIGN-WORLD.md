@@ -108,21 +108,39 @@ Wild **level** progression specifically may use [Wilds-3](DESIGN-WILDS.md#wilds-
 
 # World-3. HMs and Field Moves
 
-**Status: DECIDED conceptually; unlock order and eligibility lists TBD**
+**Status: DECIDED conceptually; tentative badge → unlock table below**
 
 HMs remain part of the game, but their overworld function is redesigned.
 
 ## HM progression
 
-HMs are associated with **badge count**, not with defeating a particular specific Gym Leader.
+Field abilities unlock by **badges earned**, not by which specific Gym Leader was defeated. Because Gyms can be completed in any order:
 
-Because Gyms can be completed in any order:
+> The **Nth badge** unlocks the **Nth row** in the progression table below.
 
-> Defeating the player's Nth Gym can unlock the Nth progression reward/HM.
+**Gym Leaders grant the HM** (along with badge and TM) when the player's new badge count crosses a row that grants a field ability ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). Badge counts with no row grant badge + TM only.
 
-The exact badge-count-to-HM mapping remains TBD.
+### Tentative badge → field ability order
 
-This allows new world content to become available at predictable progression milestones regardless of Gym order.
+| Badges earned | Unlock |
+| ------------- | ------ |
+| 1 | **Flash** |
+| 2 | **Cut** |
+| 3 | **Rock Smash** |
+| 4 | **Headbutt** |
+| 5 | **Fly** |
+| 6 | **Surf** |
+| 7 | **Strength** |
+| 8–9 | *(none — badge + TM only)* |
+| 10 | **Whirlpool** |
+| 11–12 | *(none)* |
+| 13 | **Waterfall** |
+| 14–15 | *(none)* |
+| 16 | **Rock Climb** |
+
+Gaps at 8–9, 11–12, and 14–15 are intentional — not every badge adds a new field ability. Subject to balance tuning; do not add unlocks at those slots without an explicit design change.
+
+Vanilla **HM fetch quests and tutor NPCs** are removed ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
 
 ## Field use
 
@@ -164,11 +182,11 @@ Vanilla HGSS exposes several party-menu field moves beyond HMs. Policy below.
 | HM08 | Rock Climb | Climb rocky walls                              |
 
 
-All eight use **badge-count unlock** + **collection-based field use** (see [Field use](#field-use) above). Exact badge → HM mapping TBD.
+All eight HMs use **badge-count unlock** (table above) + **collection-based field use** (see [Field use](#field-use) below).
 
 ### Badge-gated field moves (HM-adjacent)
 
-**Status: DECIDED** — **Flash** and **Headbutt** follow the **same rules as HMs**: unlock at a badge-count milestone (exact slot TBD), field use from any eligible species in the collection without teaching the move for overworld utility.
+**Status: DECIDED** — **Flash** and **Headbutt** follow the **same rules as HMs**: unlock at badge counts **1** and **4** respectively (table above); field use from any eligible species in the collection without teaching the move for overworld utility.
 
 
 | Move         | Field role                      | Notes                                                                                                                                                                                                                                                      |
@@ -211,11 +229,9 @@ Battle use: Flash and Headbutt remain normal learnable moves if the player wants
 
 ### Design questions to resolve
 
-- Which **badge count** unlocks each HM, **Flash**, and **Headbutt**?
 - Full list of **Flash-gated** dungeons and whether gating is map-wide or entrance-only.
 - Should **Headbutt** / **Rock Smash** encounter pools tie into early vs late progression tiers (similar to grass gating)?
-
-Mark HM/Flash/Headbutt unlock order here as decided; do not invent badge slots without explicit design.
+- Exact **giveitem / script** flow when a Gym victory skips an HM row (badges 8–9, 11–12, 14–15).
 
 ---
 
@@ -340,6 +356,8 @@ Possible rewards include:
 ### Encounter information
 
 Trainers may tell the player where Pokémon they have not yet discovered can be found (data from [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)).
+
+**Gym Leaders** provide a structured first-clear version of this: one chosen family + location hint per badge ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 
 This creates a social/information economy around exploration.
 

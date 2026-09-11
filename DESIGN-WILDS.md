@@ -155,7 +155,7 @@ Build a **directional graph** representing the explorable world:
 
 ## Build-time precomputation
 
-For **every valid starting city**:
+For **every valid starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location) — 18 cities; graph data in `scripts/dev/Route Levels/`):
 
 1. Run a shortest-path calculation across the world graph.
 2. Calculate the **exploration distance** from that starting city to every encounter area.
@@ -298,23 +298,13 @@ Any guru on this network reads the same global fishing-progression state and off
 
 # Wilds-5. Pokémon Generations / Content Scope
 
-**Status: TBD / TECHNICAL INVESTIGATION**
+**Status: PARTIALLY DECIDED — expand later**
 
-The final set of supported Pokémon generations has not been decided.
+**v1 scope:** treat the dex as **Gen I–IV plus the Volcarona line** (Larvesta, Volcarona). No broad Gen V+ rollout yet.
 
-The project is based on HG-Engine, which supports a number of mechanics, Pokémon/forms, moves, abilities and other features beyond vanilla Generation IV.
+**Long-term:** the full generation cutoff remains open. HG-Engine supports mechanics, Pokémon, forms, moves, and abilities well beyond vanilla Generation IV; additional families can be added incrementally once ecology, scaling, and content pipelines are stable.
 
-Do NOT currently assume:
-
-- Gen I–II only;
-- Gen I–IV only;
-- Gen I–VI;
-- Gen I–IX;
-- any other exact cutoff.
-
-The available HG-Engine capabilities should be investigated before making this decision.
-
-The project is open to later-generation Pokémon and mechanics where they work well with the game.
+Do NOT currently assume a fixed long-term cutoff (Gen I–VI, Gen I–IX, etc.) beyond the v1 rule above.
 
 This decision affects:
 

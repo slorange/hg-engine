@@ -90,7 +90,7 @@ As of September 2026:
 | Feature                                                      | Status         | Notes                                                                                                                               |
 | ------------------------------------------------------------ | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified       | scr_seq **845**; `OPENWORLD_STARTING_ITEMS`                                                                                         |
-| Starting city picker (New Bark / Goldenrod / Saffron)        | Verified (PoC) | Mom script **0**; `patch_zone_event_start_city.py`; dynamic home exit                                                               |
+| Starting city picker (18 cities decided; 3 in ROM PoC)       | Partial        | Full list: [Vision-3](DESIGN-VISION.md#vision-3-starting-location) / `scripts/dev/Route Levels/`; Mom menu still New Bark / Goldenrod / Saffron |
 | Starter pick (12-option text menu, gens 1–4)                 | Verified       | Mom script **0**; `give_mon` per branch; not `choose_starter`                                                                       |
 | Dev-only testing grants (HM02 Fly from Mom)                  | Implemented    | `OPENWORLD_TESTING_GRANTS` in `include/config.h` — **disable before builds for others or release candidates**                       |
 | Magnet Train (Goldenrod ↔ Saffron)                           | Verified       | No power-plant gate; scr_seq **893** / **834**                                                                                      |
@@ -122,19 +122,20 @@ Reusable recipes for badge gates, ferry NPCs, and story NPC removal live in `doc
 
 ### Story and script policy
 
-See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jasmine verified; remaining gym rows (Bugsy, Clair, Misty, Blue, **Blaine**), opening/rival strip, and Rocket extension still open. **Paid ferry NPCs:** [World-1](DESIGN-WORLD.md#paid-ferry-npcs). Obsolete vanilla leftovers tracked in [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog).
+See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jasmine verified; remaining gym rows (Bugsy, Clair, Misty, Blue, **Blaine**), opening strip, **rival removal**, HM quest cleanup, and Rocket extension still open. **Paid ferry NPCs:** [World-1](DESIGN-WORLD.md#paid-ferry-npcs). Obsolete vanilla leftovers tracked in [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog).
 
 ### Not yet started (core design priorities)
 
 - **Gym scaling phase 6 (remainder)** — Gym trainer type filter; Leader curated exceptions.
 - **Battle systems phases 7–9** — agreed size, dynamic rosters, counter-picking.
 - **New Bark door swap** when start city ≠ New Bark ([Vision-3](DESIGN-VISION.md#vision-3-starting-location), [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
-- Living trainers ([World-5](DESIGN-WORLD.md#world-5-living-trainers)), dynamic rosters, universal PC ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)), collection-based HMs ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+- Living trainers ([World-5](DESIGN-WORLD.md#world-5-living-trainers)), dynamic rosters, universal PC ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)), collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
+- **Gym Leader family location hints** ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — requires [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology).
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
 - **Wild encounter systems** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)–[Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) — ecology seed, broad level range, distance caps (TBD).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
-- Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival, Rocket extension, remaining gym rows.
-- **Vanilla cleanup pass** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — strip superseded NPCs, quests, and HM-teaching scripts.
+- Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival removal, Rocket extension, remaining gym rows.
+- **Vanilla cleanup pass** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — strip superseded NPCs, quests, HM fetch chains, and HM-teaching scripts.
 
 The basic development loop is proven:
 
@@ -153,7 +154,7 @@ Docker remains the known-good build path.
 The following are intentionally unresolved.
 
 - Exact starter system — **v1 twelve-option menu implemented**; long-term pools TBD.
-- Exact selectable starting cities — **v1 three-city picker implemented**; broader list TBD.
+- Per-city home door wiring for **15 of 18** starting cities (3-city PoC in ROM; full list in [Vision-3](DESIGN-VISION.md#vision-3-starting-location)).
 - Who determines trainer battle size.
 - Exact trainer generation algorithms.
 - How aggressively NPCs counter-pick.
@@ -164,13 +165,12 @@ The following are intentionally unresolved.
 - Wild ecology: habitat tags, family assignment algorithm, special/static encounter policy ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)).
 - Wild level distribution curves within area caps ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range)).
 - Wild level progression model: **Wilds-3 distance caps** vs **World-2 guard/tile gating** vs hybrid ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps), [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) — **likely Wilds-3 + light World-2** (Victory Road, HMs, endgame).
-- Exact HM progression order.
+- Gym Leader **family hint menus** — curated species lists per Leader ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 - Exact transportation prices.
 - Exact Pokémon Center service list ([World-7](DESIGN-WORLD.md#world-7-pokmon-centers)).
 - Per-mart shop inventories and held-item tiers ([World-10](DESIGN-WORLD.md#world-10-shops)).
 - Exact accelerated-time resting mechanics.
-- Included Pokémon generations/content.
-- Rival role ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
+- Long-term Pokémon generation cutoff beyond **Gen I–IV + Volcarona line** ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)).
 - Clair Dragon's Den: remove trial vs HM-free path ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
 - Trade evolutions without items: Link Cable vs fixed levels ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones)).
 - Whether expanded stone mechanics ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones)) ship at all.
