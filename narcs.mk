@@ -690,6 +690,8 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
 	$(PYTHON) tools/patch_scr_seq_r44_rod_guru.py $(SCR_SEQ_DIR)/2_257
 	$(PYTHON) scripts/build/verify_r44_rod_guru_patch.py $(SCR_SEQ_DIR)/2_257
+	$(PYTHON) tools/patch_scr_seq_olivine_rod_guru.py $(SCR_SEQ_DIR)/2_911
+	$(PYTHON) scripts/build/verify_olivine_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
 	$(PYTHON) tools/patch_scr_seq_t20_mom.py $(SCR_SEQ_DIR)/2_845
 	$(PYTHON) tools/patch_scr_seq_start_city.py $(SCR_SEQ_DIR)/2_845
@@ -720,6 +722,8 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rod_guru.py $(ZONE_EVENT_DIR)/2_043
+	$(PYTHON) tools/patch_zone_event_olivine_rod_guru.py $(ZONE_EVENT_DIR)/2_074
+	$(PYTHON) scripts/dev/verify_olivine_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_074
 	$(PYTHON) tools/patch_zone_event_start_city.py $(ZONE_EVENT_DIR)
 	$(NARCHIVE) create $@ $(ZONE_EVENT_DIR) -nf
 

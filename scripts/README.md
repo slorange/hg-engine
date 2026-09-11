@@ -23,6 +23,7 @@ Python helpers for hg-engine. See `documentation/HACK-NOTES.md` § **Scripts lay
 | `update_machine_moves.py` | `Makefile` |
 | `check_rod_guru_text.py` | `narcs.mk` |
 | `verify_r44_rod_guru_patch.py` | `narcs.mk` |
+| `verify_olivine_rod_guru_scr_seq.py` | `narcs.mk` |
 | `rod_guru_patch_checks.py` | imported by rod guru patcher + verify script |
 
 ## `dev/` highlights
@@ -36,7 +37,9 @@ python3 scripts/dev/dump_scr_seq_slots.py build/a012/2_<NNN>
 python3 scripts/dev/verify_scr_seq_patch.py build/a012_vanilla/2_<NNN> build/a012/2_<NNN>
 ```
 
-Feature-specific verify scripts: `verify_*_patch.py`, `verify_r44_zone_event.py`, etc.
+Feature-specific verify scripts: `verify_*_patch.py`, `verify_r44_zone_event.py`, `verify_olivine_rod_guru_zone_event.py`, etc.
+
+Placement / text recon: `find_zone_event_member.py`, `find_msg_text.py` (see HACK-NOTES § World placement).
 
 Test runner: `scripts/dev/run_tests.sh` (also used by CI).
 

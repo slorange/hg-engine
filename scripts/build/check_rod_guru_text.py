@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-FILES = (ROOT / "data/text/404.txt",)
+FILES = (ROOT / "data/text/404.txt", ROOT / "data/text/604.txt")
 
 
 def main() -> int:

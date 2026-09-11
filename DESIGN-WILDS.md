@@ -278,7 +278,7 @@ This creates a self-contained fishing progression loop:
 |--------|----------|--------|--------|
 | East Johto | **Route 44** (bridge) | **Implemented** | `(568, 183)` west of bridge fisherman; scr_seq **257**, zone_event **043** — verified in-game Sep 2026 |
 | South Johto | Route 32 Pokémon Center | Planned | Vanilla Old Rod area |
-| West Johto (coast) | Olivine City | Planned | Vanilla fishing NPC |
+| West Johto (coast) | Olivine City | **Implemented** | world `(273, 248)` by city sign; zone_event **074**, scr_seq **911**, msg **604** — verified in-game Sep 2026 |
 | East Johto | **Blackthorn City** | Planned | **Likely new NPC** — gives Blackthorn a way to farm at lv5 since all connected routes are too high level |
 | West Kanto | **Viridian City or Pewter City** | Planned | **Likely new NPC** |
 | Mid Kanto (coast) | Vermilion City | Planned | **Likely new NPC** (not vanilla Rod giver) |
@@ -287,7 +287,7 @@ This creates a self-contained fishing progression loop:
 
 Exact map and `(x, z)` per guru are implementation details; prefer towns the player already visits for other reasons (Mart, Gym, ferry) over dead-end-only cells.
 
-Any guru on this network reads the same global fishing-progression state and offers the appropriate Rod (Old on first talk, then Good / Super when family counts are met). Shared script: `armips/scr_seq/scr_seq_r44_rod_guru.s` (append via per-map patcher). Implementation recipe and ID-discovery notes: `documentation/HACK-NOTES.md` § **Fishing Rod guru NPCs**.
+Any guru on this network reads the same global fishing-progression state and offers the appropriate Rod (Old on first talk, then Good / Super when family counts are met). Shared bytecode: `armips/scr_seq/scr_seq_r44_rod_guru.s` / `scr_seq_olivine_rod_guru.s` (append via per-map patcher). Implementation recipe and ID-discovery notes: `documentation/HACK-NOTES.md` § **Fishing Rod guru NPCs**.
 
 **Outdoor-matrix maps** (Route 44 body uses zone_event member **043**, not the map-header zone index): place objects with **`type=0`** + low **scriptId** bound to that route’s **scr_seq** member (pret `scriptsBank` in `map_headers.h`). Vanilla walkable NPCs on the matrix often use **`type=1`** + scripts **3000+** instead.
 

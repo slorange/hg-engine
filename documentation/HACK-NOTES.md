@@ -780,6 +780,64 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 
 ---
 
+## World placement (DSPRE)
+
+Use **DSPRE’s map matrix** to estimate where something lives, then patch the **correct zone_event member** with the **correct coordinate system**.
+
+**Matrix tile → world origin (recon only)**
+
+- Each matrix cell is **32×32** world tiles.
+- Cell `(col, row)` → world range:
+  - **x:** `col × 32` … `(col + 1) × 32 − 1`
+  - **z:** `row × 32` … `(row + 1) × 32 − 1`
+- Example: matrix **(8, 7)** → x **256–287**, z **224–255** (z **256** is already the next row down — cell **(8, 8)**).
+
+**Within-cell offset → world (for scanning `build/a032_vanilla`)**
+
+- DSPRE map-editor coords are **local to that map cell**.
+- **World x** = `col × 32 + local_x`
+- **World z** = `row × 32 + local_z`
+- Example: door at local **(16, 25)** in cell **(8, 7)** → world **(272, 249)**.
+
+**Map header ID ≠ zone_event / scr_seq / msg index**
+
+`include/constants/maps.h` gives the **map header row** (e.g. `MAP_T26` = **77**, `MAP_R44` = **46**). Each row points at separate NARC members — look up pret [`src/data/map_headers.h`](https://github.com/pret/pokeheartgold/blob/master/src/data/map_headers.h):
+
+| Map | Header id | `eventsBank` | `scriptsBank` | `msgBank` | Coords in zone_event |
+|-----|-----------|--------------|---------------|-----------|----------------------|
+| Route 44 | **46** | **043** | **257** | **404** | **world** |
+| Olivine City | **77** | **074** | **911** | **604** | **world** |
+
+Headbutt index **074** = Azalea Town; zone_event **074** = Olivine outdoors — same number, unrelated namespaces.
+
+**Johto cities on the main matrix** (`map_matrix_0000_EVERYWHERE`) use **world `(x, z)`** in their `eventsBank` file, same as routes. Do **not** assume `eventsBank == map header id` (member **077** is Ecruteak Gym `077_T27GYM0101`, not Olivine).
+
+**Decision tree**
+
+1. Find `MAP_*` in `include/constants/maps.h` (header index).
+2. Read pret `map_headers.h` row → **`eventsBank`**, **`scriptsBank`**, **`msgBank`**.
+3. Patch **`build/a032/2_<eventsBank>`** using that file’s coord scale (world if max object x ≥ ~200).
+4. Append scr_seq script to **`build/a012/2_<scriptsBank>`**; text in **`data/text/<msgBank>.txt`**.
+5. Near a town/route boundary — may need **two** members (Mahogany **084** + matrix **043**).
+
+**Recon commands**
+
+```bash
+# Which world-scale members cover a tile?
+python3 scripts/dev/find_zone_event_member.py --world 273 248
+
+# Inspect pret eventsBank member (Olivine = 74, not 77)
+python3 scripts/dev/find_zone_event_member.py --member 74 --near 279 247
+python3 scripts/dev/inspect_zone_event.py build/a032_vanilla/2_074
+
+# Find which msg bank has a landmark string (needs base/root/a/0/2/7 extract)
+python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
+```
+
+**Script types:** `type=0` + map `scriptId` for scr_seq slots; `type=1` is for 3000+ common scripts on outdoor matrix NPCs.
+
+---
+
 ## Fishing Rod guru NPCs
 
 **Goal:** One shared fisherman script gives Old → Good → Super Rod based on Pokédex caught Water-type evolutionary families (any catch source). Dialogue is region-agnostic for reuse across gurus.
@@ -815,4 +873,27 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 **Patch:** `armips/scr_seq/scr_seq_r44_rod_guru.s` → `tools/patch_scr_seq_r44_rod_guru.py` (`2_257`). Zone: `tools/patch_zone_event_r44_rod_guru.py` on **`2_043`**. Text: `data/text/404.txt`.
 
 **Verify:** `python3 scripts/build/verify_r44_rod_guru_patch.py build/a012/2_257` + `python3 scripts/dev/verify_r44_zone_event.py build/a032/2_043`. In-game: grass west of bridge fisherman **(576, 184)** → guru at **(568, 183)**.
+
+**Olivine City (verified in-game Sep 2026):**
+
+| Layer | ID | Notes |
+|-------|-----|--------|
+| Map header | `MAP_T26` = **77** | pret `[MAP_OLIVINE]` |
+| zone_event | member **074** (`074_T26`) | **World** coords — pret `eventsBank` |
+| scr_seq | member **911** — guru in **slot 13** (scriptId **14**) | Vanilla slots **0–12** (signs, rival, Cameron, …) |
+| msg bank | **604** | Vanilla strings **0–8**; guru lines **9–13** |
+
+**How we found the IDs (Olivine)**
+
+1. **Msg bank:** `find_msg_text.py "Olivine City"` / `"Pokégear"` → bank **604** (confirmed in-game on sign + boy).
+2. **Map link 604 → 77:** pret `map_headers.h` — `[MAP_OLIVINE].msgBank = NARC_msg_msg_0604_T26_bin`.
+3. **zone_event / scr_seq:** same row → `eventsBank = 074`, `scriptsBank = 911` (not header **77**, not member **077**).
+4. **Landmarks on `2_074`:** city sign bg **(279, 247)** → scr_seq slot **5** → msg **5**; Pokégear boy **(280, 242)** → scriptId **10** → msg **2**; warps (Poké Center **272, 257**, Full Heal hidden item **285, 231**) confirmed in-game.
+5. **Failed attempt:** assumed zone_event member **077** (`MAP_T26` = 77) with **local** coords from a misidentified `2_077` parse — that NARC member is **Ecruteak Gym**, not Olivine. Sprite on **074** at **(277, 247)** was visible only after using the correct member.
+
+**Rod guru:** obj **8**, sprite **347**, world **(273, 248)** by city sign, **`type=0`**, scriptId **14**.
+
+**Patch:** `armips/scr_seq/scr_seq_olivine_rod_guru.s` → `tools/patch_scr_seq_olivine_rod_guru.py` (`2_911`). Zone: `tools/patch_zone_event_olivine_rod_guru.py` (`2_074`). Text: `data/text/604.txt`.
+
+**Verify:** `python3 scripts/build/verify_olivine_rod_guru_scr_seq.py build/a012/2_911` + `python3 scripts/dev/verify_olivine_rod_guru_zone_event.py build/a032/2_074`. In-game: talk to guru west of the “Olivine City” sign → Old Rod flow.
 
