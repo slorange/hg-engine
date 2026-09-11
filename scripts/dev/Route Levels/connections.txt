@@ -1,0 +1,118 @@
+Newbark	29	
+29	46	
+29	Cherrygrove	
+Cherrygrove	30	
+30	Dark Cave	
+30	31	
+31	Violet	
+Violet	32	
+Violet	Ruins of Alph	
+Violet	Bellsprout Tower	
+Violet	36	
+Ruins of Alph	32	
+Ruins of Alph	36	
+36	35	
+36	National Park	
+35	National Park	
+35	Goldenrod	
+Goldenrod	34	
+Goldenrod	Saffron	
+34	Ilex Forest	
+Ilex Forest	Azalea	
+Azalea	33	
+Azalea	Slowpoke Well	
+33	Union Cave	
+Union Cave	32	
+36	37	
+37	Ecruteak	
+Ecruteak	Burned Tower	
+Ecruteak	Bell Tower	
+Ecruteak	38	
+Ecruteak	42	
+38	39	
+39	Olivine	
+Olivine	Vermillion	
+Olivine	40	
+Olivine	Cianwood	
+40	41	
+41	Cianwood	
+41	Whirl Islands	
+Cianwood	Cliff Edge Gate	
+Cliff Edge Gate	47	
+47	Cliff Cave	
+47	48	
+48	Safari Zone	
+42	Mt. Mortar	
+42	Mahogany	
+Mahogany	43	
+Mahogany	44	
+43	Lake of Rage	
+44	Ice Path	
+44	Blackthorn	
+Ice Path	Blackthorn	
+Blackthorn	Dragon's Den	
+Blackthorn	45	
+45	Dark Cave	One way
+45	46	One way
+46	29	
+Newbark	Tohjo Falls	
+Tohjo Falls	27	
+27	26	
+26	23	
+26	28	
+26	22	
+22	28	
+28	23	
+22	23	
+23	Victory Road	
+22	Viridian	
+Viridian	1	
+Viridian	2
+1	Pallet	
+2	Viridian Forest	
+2	Diglett's Cave	
+2	Pewter	
+Pewter	3	
+3	Mt. Moon	
+Mt. Moon	4	
+4	Cerulean	
+Cerulean	24	
+Cerulean	5	
+Cerulean	9	
+24	Cerulean Cave	
+24	25	
+9	Rock Tunnel	
+9	Power Plant	
+Rock Tunnel	10	
+10	Lavender	
+Saffron	5	
+Saffron	6	
+Saffron	7	
+Saffron	8	
+6	Vermillion	
+8	Lavender	
+7	Celadon	
+Lavender	12	
+Vermillion	Diglett's Cave	
+Vermillion	11	
+11	12	
+12	13	
+13	14	
+14	15	
+15	Fuchsia	
+Fuchsia	18	
+16	17	
+17	18	
+Fuchsia	19	
+19	Seafoam Islands	
+Seafoam Islands	20	
+20	Cinnabar	
+Cinnabar	21	
+21	Pallet	
+Pallet	Cinnabar	
+Pallet	Seafoam Islands	
+Pallet	Fuchsia	
+Fuchsia	Seafoam Islands	
+Fuchsia	Cinnabar	
+Seafoam Islands	Cinnabar	
+28	Mt. Silver	
