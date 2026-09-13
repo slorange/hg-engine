@@ -343,6 +343,64 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 ---
 
+## Gym Leader HM rewards (Johto pilot)
+
+**Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass. **Whitney** and remaining Johto leaders not started.
+
+**Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only).
+
+| What | Where |
+|------|--------|
+| Toggle | `GYM_BADGE_COUNT_FIELD_REWARDS` in `include/config.h` |
+| Shared logic | `armips/include/gym_badge_hm_reward.inc` — level cap (`10 + 4×badges`, 80 at 16) + HM table |
+| Shared text | `data/text/854.txt` — level cap, HM names, TM intro |
+| Falkner | scr_seq **859** — slots **1–5** patched; zone_event **365** sprout gate obj removed (`tools/patch_zone_event_violet_gym.py`) |
+| Morty | member **922**, slot **1** — `scr_seq_morty_gym_slot1.s`, `data/text/614.txt` |
+| Pryce | member **932**, slot **1** — `scr_seq_pryce_gym_slot1.s`, `data/text/622.txt` |
+| Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, `data/text/606.txt` |
+| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine}.py` — Falkner uses shared `patch_script_slot()` from falkner module |
+| Verify | `scripts/build/verify_falkner_gym_hm_patch.py build/a012/2_859 build/a012/2_922 build/a012/2_932 build/a012/2_913` |
+| Recon | `scripts/dev/inspect_gym_slots.py` (after `build/a012_vanilla` exists) — leader trainer id per slot |
+
+**Text bank indexing:** `msgenc` treats every line as a message index, including blank lines. Vanilla dumps of `558.txt` / `614.txt` have a blank line between each string — leader scripts must use indices **0, 2, 4, 6, 8** for pre / post / badge / TM / already-beaten. **`622.txt` compacted (0–4).** `606.txt` keeps two placeholder lines at 3–4 so TM = 5 and already-beaten = 6 (Steelix trade strings stay at 7+). **Before editing any gym text bank, list indices** (`msgenc` line = index) — wrong indices cause blank lines or wrong dialogue (Pryce TM-after-blank, Morty post-battle blank, Falkner elevator TM preamble).
+
+**HM rows (badges earned → reward):** 2 Cut, 3 Rock Smash, 5 Fly, 6 Surf, 7 Strength, 10 Whirlpool, 13 Waterfall, 16 Rock Climb. All other counts: badge + TM only.
+
+**Flow:** win dialogue → `GiveBadge` → receipt → `SEQ_ME_BADGE` → shared level-cap line → **`count_badges`** → HM line (if row) + `SEQ_ME_WAZA` + silent `giveitem` → shared TM intro + fanfare + TM + Leader flavor text.
+
+**Test:** beat a Gym as **2nd** badge → Cut; as **5th** → Fly; badge **1** or **4** → no HM, TM only.
+
+### Falkner follow-ups (859 / zone_event 365)
+
+Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch slots you understand — other objects still reference them.
+
+| Slot | Role | Patch status |
+|------|------|----------------|
+| 0 | `violet_gym_init` OnLoad | **vanilla** — sets elevator NPC visibility from flags |
+| 1 | Falkner leader + HM table | **patched** |
+| 2 | Trainer hint NPC (script 2 on obj 3) | **patched** — no blank msg before badge |
+| 3 | Sprout gate talk (was obj 1 script 3) | **patched** — gate obj **removed** from zone_event |
+| 4 | Was empty; obj 2 script 4 | **stub** (`releaseall` / `end`) |
+| 5 | Elevator attendant (engine scripts 10201/10202 on objs 4–5) | **patched** — `violet_gym_elevator` only (vanilla opened with TM/Roost msg **6**) |
+
+**Known rough edges:** elevator attendant **sprites** may still appear (objs 4–5, hide flags 679/680); slot **0** OnLoad untouched; full open-world “no Sprout Tower” path not re-tested on every save state. Falkner recon scripts live in **`scripts/local/`** (`decode_falkner_gym.py`, `disasm_scr_seq.py`, `scan_violet_gym.py`).
+
+**Zone_event 365 (after patch):** 5 objects — Falkner obj0 script 1, trainer obj3 script 2, elevator objs script 10201/10202; **no** obj1 sprout blocker.
+
+### Next leaders
+
+| Leader | scr_seq | Leader slot | Notes |
+|--------|---------|-------------|--------|
+| **Whitney** | **886** | **0** (+ slots 1, 4) | **Hard** — sore-loser state machine (first win = cry, no badge; chase in slot 1; badge on second talk). Inject `.include` only on the badge-grant path; do not replace whole script. |
+| Bugsy | TBD | TBD | Run `inspect_gym_slots.py` after vanilla extract |
+| Chuck | TBD | TBD | |
+| Clair | TBD | TBD | |
+| Janine | TBD | TBD | Kanto |
+
+**Template for “easy” leaders (Falkner / Morty / Pryce / Jasmine pattern):** one leader slot, copy script skeleton, set badge + TM constants, fix **text indices** (blank-line banks vs compact), wire `narcs.mk` + patch py + verify member.
+
+---
+
 ## Full party EXP share (interim)
 
 **Status:** verified in-game.

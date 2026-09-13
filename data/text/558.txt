@@ -1,0 +1,20 @@
+Falkner: I’m Falkner, the Violet City\nPokémon Gym Leader!\rPeople say you can clip\nFlying-type Pokémon’s wings with a jolt\fof electricity...\rI won’t allow such insults to\nbird Pokémon!\rI’ll show you the real power of\nthe magnificent bird Pokémon!
+
+...For pity’s sake! My dad’s cherished\nbird Pokémon...\rBut a defeat is a defeat.\rAll right. Take this official\nPokémon League Badge.\fThis one is the Zephyr Badge.
+
+{STRVAR_1 3, 0, 0} received the\nZephyr Badge from Falkner!
+
+Falkner: By using a TM, a Pokémon will\ninstantly learn a new move.\rThink before you act--a TM can be\nused only once.\rTM51 contains Roost.\rIt restores half the max HP.\rThere are Pokémon Gyms in cities and\ntowns ahead. Make good use of them!\rAs for your next move...\fI would suggest Azalea Town.
+
+Falkner: There are Pokémon Gyms in\ncities and towns ahead.\rYou should test your skills at these\nGyms.\rAs for your next move...\fI would suggest Azalea Town.\rI’m going to train harder to become\nthe greatest Bird Keeper of all!
+
+Yo! Champ in the making!\rYou must be here to challenge\fFalkner, the Gym Leader, right?\rYou are quite welcome.\r...Almost!\rThis city has a tower called the\nSprout Tower where Trainers\fcome to train themselves.\rChallenging Falkner may be too\ndifficult if you haven’t gone through\ftheir training.\fHa ha ha!
+
+Yo, Champ in the making!\rI’m no Trainer, but I can give\fsome advice!\fBelieve me!\fIf you believe, then a Championship\fdream can come true.\rYou believe? Then listen.\rThe Grass type is weak against the\nFlying type.\rKeep this in mind.
+
+Nice battle! Keep it up, and you’ll\nbe the Champ in no time at all!
+
+Violet City Pokémon Gym
+
+Violet City Pokémon Gym\nGym Leader: Falkner\rCertified Trainer!\f{STRVAR_1 3, 0, 0}
+

@@ -679,7 +679,7 @@ SCR_SEQ_DIR := $(BUILD)/a012
 SCR_SEQ_NARC := $(BUILD_NARC)/scr_seq.narc
 SCR_SEQ_TARGET := $(FILESYS)/a/0/1/2
 SCR_SEQ_DEPENDENCIES_DIR := armips/scr_seq
-SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s
+SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot2.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot3.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot4.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot5.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_morty_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_jasmine_gym_slot0.s
 SCR_SEQ_DEPENDENCIES := $(filter-out $(SCR_SEQ_PATCH_ONLY),$(wildcard $(SCR_SEQ_DEPENDENCIES_DIR)/*.s))
 
 $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
@@ -698,6 +698,14 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/patch_scr_seq_t20_bedroom.py $(SCR_SEQ_DIR)/2_846
 	$(PYTHON) tools/patch_scr_seq_train.py $(SCR_SEQ_DIR)/2_893 $(SCR_SEQ_DIR)/2_834
 	$(PYTHON) tools/patch_scr_seq_r04_boost.py $(SCR_SEQ_DIR)/2_178
+	$(PYTHON) tools/patch_scr_seq_gym_falkner.py $(SCR_SEQ_DIR)/2_859
+	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_859
+	$(PYTHON) tools/patch_scr_seq_gym_morty.py $(SCR_SEQ_DIR)/2_922
+	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_922
+	$(PYTHON) tools/patch_scr_seq_gym_pryce.py $(SCR_SEQ_DIR)/2_932
+	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_932
+	$(PYTHON) tools/patch_scr_seq_gym_jasmine.py $(SCR_SEQ_DIR)/2_913
+	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_913
 	$(NARCHIVE) create $@ $(SCR_SEQ_DIR) -nf
 
 # for convenience, rebuild SCR_SEQ_NARC every build so that DSPRE changes are not overwritten
@@ -719,6 +727,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r04_boost.py $(ZONE_EVENT_DIR)/2_009
 	$(PYTHON) tools/patch_zone_event_r32_badge.py $(ZONE_EVENT_DIR)/2_033
 	$(PYTHON) tools/patch_zone_event_gym_cut_trees.py $(ZONE_EVENT_DIR)/2_051 $(ZONE_EVENT_DIR)/2_052 $(ZONE_EVENT_DIR)/2_352
+	$(PYTHON) tools/patch_zone_event_violet_gym.py $(ZONE_EVENT_DIR)/2_365
 	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rod_guru.py $(ZONE_EVENT_DIR)/2_043

@@ -1,0 +1,10 @@
+With this Badge, your level cap\nis now {STRVAR_1 52, 0, 0}.
+And you get HM01 Cut!
+And you get HM06 Rock Smash!
+And you get HM02 Fly!
+And you get HM03 Surf!
+And you get HM04 Strength!
+And you get HM05 Whirlpool!
+And you get HM07 Waterfall!
+And you get HM08 Rock Climb!
+And this TM is from me.

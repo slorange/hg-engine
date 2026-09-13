@@ -276,6 +276,9 @@
 // Disable before builds for others or any release candidate.
 #define OPENWORLD_TESTING_GRANTS
 
+// GYM_BADGE_COUNT_FIELD_REWARDS grants HMs / field unlocks from Gym Leaders by total badge count.
+#define GYM_BADGE_COUNT_FIELD_REWARDS
+
 // Champions-specific move configurations. Set to 0 to use Scarlet/Violet values.
 #define CHAMPIONS_POWER_CHANGES         1
 #define CHAMPIONS_TYPE_CHANGES          1
