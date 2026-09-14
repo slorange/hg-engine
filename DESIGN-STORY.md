@@ -4,9 +4,18 @@
 >
 > **Index:** [`DESIGN.md`](DESIGN.md) · **Implementation recipes:** [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md)
 
+## Sections
+
+| Section | Status |
+| ------- | ------ |
+| [Story-1. Story and Script Content](#story-1-story-and-script-content) | PARTIALLY IMPLEMENTED |
+| [Story-2. Vanilla Cleanup Backlog](#story-2-vanilla-cleanup-backlog) | PARTIALLY IMPLEMENTED |
+
+---
+
 # Story-1. Story and Script Content
 
-**Status: DECIDED**
+**Status: PARTIALLY IMPLEMENTED**
 
 Field scripts, NPCs, and map obstacles that assume vanilla story order or a New Bark start are removed or rewritten. Target: **any starting city**, **any-order Gyms**.
 
@@ -29,7 +38,7 @@ Rocket grunts, hideouts, Radio Tower arc, and related roadblocks must not gate t
 
 ## Rival — remove
 
-**Status: DECIDED**
+**Status: PARTIALLY IMPLEMENTED**
 
 Remove the rival entirely: no naming, no scripted intro, no mandatory early battles, no badge-tier rematch arc. Strip rival NPCs, battle triggers, and dialogue that assume a persistent rival companion. Optional one-off trainer NPCs may reuse rival-adjacent maps later, but there is **no rival character** in the open-world design.
 
@@ -75,7 +84,7 @@ After a row is **verified**, check [Story-2](DESIGN-STORY.md#story-2-vanilla-cle
 
 # Story-2. Vanilla Cleanup Backlog
 
-**Status: living checklist**
+**Status: PARTIALLY IMPLEMENTED**
 
 Track vanilla content that is **obsolete** because we replaced it elsewhere, granted it at game start, or changed the design. These are not new features — they are **removals or script skips** so players do not see duplicate or contradictory content.
 

@@ -4,6 +4,19 @@
 >
 > **Index:** [`DESIGN.md`](DESIGN.md) · **World:** [`DESIGN-WORLD.md`](DESIGN-WORLD.md) · **Battles:** [`DESIGN-BATTLES.md`](DESIGN-BATTLES.md)
 
+## Sections
+
+| Section | Status |
+| ------- | ------ |
+| [Wilds-1. Randomized Wild Pokémon Ecology](#wilds-1-randomized-wild-pokémon-ecology) | DECIDED conceptually; TECHNICAL UNKNOWN |
+| [Wilds-2. Increased Wild Pokémon Level Range](#wilds-2-increased-wild-pokémon-level-range) | IMPLEMENTED |
+| [Wilds-3. Starting-City Distance-Based Wild Level Caps](#wilds-3-starting-city-distance-based-wild-level-caps) | IMPLEMENTED (near complete) |
+| [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | PARTIALLY IMPLEMENTED |
+| [Wilds-5. Pokémon Generations / Content Scope](#wilds-5-pokémon-generations--content-scope) | PARTIALLY DECIDED |
+| [Wilds-6. Technical Investigations](#wilds-6-technical-investigations) | TECHNICAL UNKNOWN |
+
+---
+
 # Wilds-1. Randomized Wild Pokémon Ecology
 
 **Status: DECIDED conceptually; TECHNICAL UNKNOWN for implementation**
@@ -52,7 +65,7 @@ Conceptually:
 - **world seed** determines **where** Pokémon families live;
 - **progression systems** ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) determine **how strong / evolved** encountered Pokémon are.
 
-**Wild level progression:** [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) is **decided and implemented** (PoC verified Sep 2026). Badge / encounter-tile wild gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) is **not** the model for wild levels — kept in docs only for HM/League gates and the Route 46 template.
+**Wild level progression:** [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) is **implemented (near complete)**. Badge / encounter-tile wild gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) is **not** the model for wild levels — kept in docs only for HM/League gates and the Route 46 template.
 
 ---
 
@@ -148,7 +161,7 @@ Three independent inputs:
 
 # Wilds-3. Starting-City Distance-Based Wild Level Caps
 
-**Status: DECIDED and implemented — PoC verified in-game (Sep 2026)**
+**Status: IMPLEMENTED (near complete)** — distance caps verified in-game (Sep 2026). Remaining gaps: Safari Zone, Bug Catching Contest, roamers/scripted wilds, 18-city start menu wiring, balance tuning.
 
 **Decision:** distance-from-start-city caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) replace badge-guard / encounter-tile wild **level** progression. The alternative ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) wild gating) is **not pursued** for general wild levels; World-2 remains for HM/Flash/League and optional hard zones only.
 
@@ -209,7 +222,7 @@ Exact weighting should be tuned after generating and inspecting the distance mat
 
 ## Distance → level cap (PoC formula)
 
-**Status: implemented and verified.** Normal wild encounters use the cap + [Wilds-2 level distribution](#level-distribution). Roamers, Safari, and most scripted wilds are unchanged — see table above.
+Normal wild encounters use the cap + [Wilds-2 level distribution](#level-distribution). Roamers, Safari, and most scripted wilds are unchanged — see table above.
 
 Player badge level caps run up to **70–80** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use a lower ceiling (**3–60**) for balance:
 
@@ -264,7 +277,7 @@ The same seeded ecology can play very differently depending on where the player 
 
 # Wilds-4. Fishing Rod Progression
 
-**Status: DECIDED**
+**Status: PARTIALLY IMPLEMENTED** — Route 44 and Olivine gurus verified; full Johto/Kanto network not complete.
 
 Fishing Rod progression is based on the player's experience **catching Water-type Pokémon**, not badge count or geographic progression. This is a **separate progression track** from [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) HM unlocks.
 

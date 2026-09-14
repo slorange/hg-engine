@@ -17,6 +17,14 @@
 | `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)`                       | `Future-*` | V2–V4 addons (balls, Full Moon, unlimited moves)                 |
 | `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)` | —          | Implementation recipes, IDs, verified patches                    |
 
+## Sections in this document
+
+| Section |
+| ------- |
+| [Index-1. Instructions for Coding Agents](#index-1-instructions-for-coding-agents) |
+| [Index-2. Current Technical Baseline](#index-2-current-technical-baseline) |
+| [Index-3. Open Design Questions](#index-3-open-design-questions) |
+| [Index-4. Game Identity](#index-4-game-identity) |
 
 ---
 
@@ -78,8 +86,8 @@ As of September 2026:
 
 | Feature                         | Status   | Design ref |
 | ------------------------------- | -------- | ---------- |
-| Post-battle heal (HP/PP/status) | Verified | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
-| Full-party EXP share (interim)  | Verified | [Battle-7](DESIGN-BATTLES.md#battle-7-exp-share) |
+| Post-battle heal (HP/PP/status) | Verified (intermittent post-battle crash) | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
+| Full-party EXP share (interim)  | Partial | [Battle-7](DESIGN-BATTLES.md#battle-7-exp-share) |
 
 
 Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) (Heal after every battle, Full party EXP share).
@@ -135,7 +143,7 @@ See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jas
 - Living trainers ([World-5](DESIGN-WORLD.md#world-5-living-trainers)), dynamic rosters, universal PC ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)), collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 - **Gym Leader family location hints** ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — requires [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology).
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
-- **Wild ecology seed** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)) — not started; **Wilds-2** level range + **Wilds-3** distance caps implemented (PoC).
+- **Wild ecology seed** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)) — not started; **Wilds-2** + **Wilds-3** distance caps implemented (near complete).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
 - Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival removal, Rocket extension, remaining gym rows.
 - **Vanilla cleanup pass** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — strip superseded NPCs, quests, HM fetch chains, and HM-teaching scripts.

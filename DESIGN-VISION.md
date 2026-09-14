@@ -4,9 +4,19 @@
 >
 > **Index:** `[DESIGN.md](DESIGN.md)` · **World:** `[DESIGN-WORLD.md](DESIGN-WORLD.md)` · **Wilds:** `[DESIGN-WILDS.md](DESIGN-WILDS.md)` · **Battles:** `[DESIGN-BATTLES.md](DESIGN-BATTLES.md)` · **Story:** `[DESIGN-STORY.md](DESIGN-STORY.md)` · **Future:** `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)`
 
+## Sections
+
+| Section | Status |
+| ------- | ------ |
+| [Vision-1. Core Vision](#vision-1-core-vision) | PARTIALLY IMPLEMENTED |
+| [Vision-2. Open-World Philosophy](#vision-2-open-world-philosophy) | PARTIALLY IMPLEMENTED |
+| [Vision-3. Starting Location](#vision-3-starting-location) | PARTIALLY IMPLEMENTED |
+
+---
+
 # Vision-1. Core Vision
 
-**Status: DECIDED**
+**Status: PARTIALLY IMPLEMENTED**
 
 Base game:
 
@@ -41,7 +51,7 @@ A core goal is to preserve the identity and world of HGSS while substantially ch
 
 # Vision-2. Open-World Philosophy
 
-**Status: DECIDED**
+**Status: PARTIALLY IMPLEMENTED**
 
 The central rule is:
 
@@ -89,7 +99,7 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 ## Starting city
 
-**Status: DECIDED**
+**Status: PARTIALLY IMPLEMENTED**
 
 The player chooses their starting city from locations throughout Johto and Kanto.
 
@@ -144,7 +154,7 @@ Goldenrod and Saffron home doors verified in-game (Sep 2026). **New Bark door sw
 
 ## Starter selection
 
-**Status: DECIDED (prototype scope locked for v1 testing)**
+**Status: PARTIALLY IMPLEMENTED**
 
 Long-term options (any non-legendary, curated pools, location-specific pools) remain open. **v1 prototype:**
 
@@ -161,7 +171,7 @@ Long-term options (any non-legendary, curated pools, location-specific pools) re
 
 ## Intro timing (v1)
 
-**Status: DECIDED (prototype) — implemented in Mom cutscene**
+**Status: PARTIALLY IMPLEMENTED**
 
 Flow runs **after Professor Oak / name / gender**. Player still wakes in **player house 2F (bedroom)** regardless of chosen city, walks downstairs, and Mom’s cutscene runs:
 

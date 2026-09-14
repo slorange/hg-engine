@@ -8,6 +8,30 @@
 >
 > **Dependency (V2 only):** Apricorn tree refresh assumes an accelerated in-game clock ([World-4](DESIGN-WORLD.md#world-4-accelerated-daynight-cycle)). That clock is core; the Apricorn economy is not.
 
+## Sections
+
+| Section |
+| ------- |
+| [Future-1. Instructions](#future-1-instructions) |
+| [Future-2. Apricorn Economy](#future-2-apricorn-economy) |
+| [Future-3. Poké Ball Design Philosophy](#future-3-poké-ball-design-philosophy) |
+| [Future-4. Shop Balls](#future-4-shop-balls) |
+| [Future-5. Removed / Replaced Balls](#future-5-removed--replaced-balls) |
+| [Future-6. Apricorn Balls (overview)](#future-6-apricorn-balls-overview) |
+| [Future-7. Fast Ball](#future-7-fast-ball) |
+| [Future-8. Heavy Ball](#future-8-heavy-ball) |
+| [Future-9. Love Ball](#future-9-love-ball) |
+| [Future-10. Friend Ball](#future-10-friend-ball) |
+| [Future-11. Level Ball](#future-11-level-ball) |
+| [Future-12. Dream Ball](#future-12-dream-ball) |
+| [Future-13. Quick Ball](#future-13-quick-ball) |
+| [Future-14. Dusk Ball](#future-14-dusk-ball) |
+| [Future-15. Full Moon System (V3)](#future-15-full-moon-system-v3) |
+| [Future-16. Unlimited Learned Moves (V4)](#future-16-unlimited-learned-moves-v4) |
+| [Future-17. Technical investigation (when V2 is scheduled)](#future-17-technical-investigation-when-v2-is-scheduled) |
+| [Future-18. Open design questions (V2–V4)](#future-18-open-design-questions-v2v4) |
+| [Future-19. Map Editing — World Connectivity Wishlist](#future-19-map-editing--world-connectivity-wishlist) |
+
 ---
 
 # Future-1. Instructions
@@ -19,8 +43,6 @@
 ---
 
 # Future-2. Apricorn Economy
-
-**Status: DECIDED direction; numbers TBD — V2**
 
 Apricorns become a renewable crafting resource tied to the accelerated game clock.
 
@@ -40,8 +62,6 @@ Pokémon Center crafting or another distributed crafting system is currently bei
 ---
 
 # Future-3. Poké Ball Design Philosophy
-
-**Status: DECIDED**
 
 Poké Balls are being rebalanced around two broad categories.
 
@@ -69,8 +89,6 @@ The intended outcome is explicitly to avoid:
 
 # Future-4. Shop Balls
 
-**Status: DECIDED unless noted**
-
 | Ball | Maximum | Effect |
 |---|---:|---|
 | Poké Ball | 1× | Standard |
@@ -87,8 +105,6 @@ However, **Quick Ball and Dusk Ball are intentionally removed from normal shops*
 ---
 
 # Future-5. Removed / Replaced Balls
-
-**Status: CURRENTLY DECIDED**
 
 The following vanilla/special balls are currently removed or replaced:
 
@@ -120,8 +136,6 @@ These decisions can theoretically be revisited, but they are not currently part 
 
 # Future-6. Apricorn Balls (overview)
 
-**Status: DECIDED conceptually; some formulas TBD**
-
 New Apricorn colours may be introduced.
 
 Colours are chosen primarily to communicate the identity of the resulting Ball rather than to preserve vanilla Apricorn associations.
@@ -146,8 +160,6 @@ This immediately communicates to experienced HGSS players that the Apricorn syst
 ---
 
 # Future-7. Fast Ball
-
-**Status: DECIDED; exact intermediate curve TBD**
 
 Fast Ball scales according to the target species' **base Speed**.
 
@@ -177,8 +189,6 @@ This is a deliberate thematic specialty.
 
 # Future-8. Heavy Ball
 
-**Status: DECIDED; thresholds TBD**
-
 Heavy Ball scales according to target weight.
 
 Maximum:
@@ -191,8 +201,6 @@ The exact weight thresholds/formula remain TBD.
 
 # Future-9. Love Ball
 
-**Status: DECIDED**
-
 Love Ball:
 
 **3×** against an opposite-gender target.
@@ -204,8 +212,6 @@ This intentionally makes Love Ball extremely strong when its narrower thematic c
 ---
 
 # Future-10. Friend Ball
-
-**Status: DECIDED**
 
 Friend Ball combines capture specialization with its friendship utility.
 
@@ -231,8 +237,6 @@ This puts friendship-evolution Pokémon close to being ready to evolve.
 
 # Future-11. Level Ball
 
-**Status: DECIDED conceptually**
-
 Maximum:
 
 **8×**
@@ -251,8 +255,6 @@ Formula:
 
 # Future-12. Dream Ball
 
-**Status: DECIDED**
-
 Dream Ball receives:
 
 **4×**
@@ -265,8 +267,6 @@ Because Sleep is already one of the strongest capture statuses, the bonus intent
 
 # Future-13. Quick Ball
 
-**Status: DECIDED**
-
 Quick Ball receives:
 
 **5×**
@@ -278,8 +278,6 @@ Quick Ball is moved from normal shops into the Apricorn economy because an infin
 ---
 
 # Future-14. Dusk Ball
-
-**Status: DECIDED conceptually; exact depth mapping TBD**
 
 Dusk Ball receives:
 
@@ -301,8 +299,6 @@ This gives Dusk Ball an unusually powerful ceiling while requiring increasingly 
 ---
 
 # Future-15. Full Moon System (V3)
-
-**Status: V3 / PARKING LOT**
 
 A full-moon system is NOT part of the initial intended scope.
 
@@ -335,8 +331,6 @@ Do not implement the Moon Ball independently unless the broader moon system is i
 ---
 
 # Future-16. Unlimited Learned Moves (V4)
-
-**Status: V4 / TECHNICAL MOONSHOT**
 
 Long-term desired design:
 
@@ -405,8 +399,6 @@ Questions to resolve before implementation:
 ---
 
 # Future-19. Map Editing — World Connectivity Wishlist
-
-**Status: DEFERRED — requires reliable HGSS map/geometry editing**
 
 These changes are deferred until reliable HGSS map/geometry editing is possible.
 

@@ -4,10 +4,26 @@
 >
 > **Index:** `[DESIGN.md](DESIGN.md)` · **Vision:** `[DESIGN-VISION.md](DESIGN-VISION.md)` · **World:** `[DESIGN-WORLD.md](DESIGN-WORLD.md)` · **Wilds:** `[DESIGN-WILDS.md](DESIGN-WILDS.md)`
 
+## Sections
+
+| Section | Status |
+| ------- | ------ |
+| [Battle-1. Gyms and Badges](#battle-1-gyms-and-badges) | PARTIALLY IMPLEMENTED |
+| [Battle-2. Healing and Attrition](#battle-2-healing-and-attrition) | IMPLEMENTED (intermittent post-battle crash) |
+| [Battle-3. Core Trainer-Battle Philosophy](#battle-3-core-trainer-battle-philosophy) | DECIDED |
+| [Battle-4. Badge-Based Level Caps](#battle-4-badge-based-level-caps) | DECIDED |
+| [Battle-5. Gym Rosters](#battle-5-gym-rosters) | DECIDED |
+| [Battle-6. Dynamic Battle Rosters](#battle-6-dynamic-battle-rosters) | CORE FEATURE / DECIDED |
+| [Battle-7. EXP Share](#battle-7-exp-share) | PARTIALLY IMPLEMENTED |
+| [Battle-8. Implementation](#battle-8-implementation) | PARTIALLY IMPLEMENTED |
+| [Battle-9. Technical Investigations](#battle-9-technical-investigations) | TECHNICAL UNKNOWN |
+
+---
+
 # Battle-1. Gyms and Badges
 
 
-**Status: DECIDED**
+**Status: PARTIALLY IMPLEMENTED**
 
 All 16 Johto and Kanto Gyms can be challenged in any order.
 
@@ -30,7 +46,7 @@ This scaling may affect:
 # Battle-2. Healing and Attrition
 
 
-**Status: IMPLEMENTED** — verified wild, trainer, flee, and catch ([Index-2](DESIGN.md#index-2-current-technical-baseline)). Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**.
+**Status: IMPLEMENTED** — verified wild, trainer, flee, and catch ([Index-2](DESIGN.md#index-2-current-technical-baseline)). **Intermittent post-battle crash** reported — under investigation. Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**.
 
 Traditional long-term HP/PP attrition is intentionally removed.
 
@@ -388,7 +404,7 @@ A major design goal is:
 # Battle-7. EXP Share
 
 
-**Status: IMPLEMENTED (interim)** — verified in-game. Final battle-limit EXP recipient formula still **TBD** below. Recipe: `documentation/HACK-NOTES.md` § **Full party EXP share (interim)**.
+**Status: PARTIALLY IMPLEMENTED** — interim full-party share verified in-game; final battle-limit EXP recipient formula still **TBD** below. Recipe: `documentation/HACK-NOTES.md` § **Full party EXP share (interim)**.
 
 EXP Share is tied to the **battle's Pokémon limit**.
 

@@ -4,6 +4,42 @@ Working notes for this fork so we don’t re-discover the text/data layout every
 
 **New agent session?** Read **[Git (agents)](#git-agents)** and **[Agents: always build](#agents-always-build-user-does-not)** before changing game files.
 
+## Contents
+
+Implementation recipes and reference notes (no design-status column — see [DESIGN.md](../DESIGN.md) for `Vision-*` / `World-*` / `Battle-*` specs).
+
+| Topic | Section |
+| ----- | ------- |
+| Agent git rules | [Git (agents)](#git-agents) |
+| Repo script buckets | [Scripts layout](#scripts-layout) |
+| Build expectation | [Agents: always build](#agents-always-build-user-does-not) |
+| Mom dialogue discovery | [Why the Mom line was hard to find](#why-the-mom-line-was-hard-to-find) |
+| Text / msgenc | [How text editing works](#how-text-editing-works) |
+| Important msg banks | [Known `data/text` banks](#known-datatext-banks-tracked--important) |
+| What to patch first | [Easy wins vs awkward targets](#easy-wins-vs-awkward-targets) |
+| Docker / `make` | [Build and verification](#build-and-verification) → [How to build](#how-to-build-this-fork), [Build types](#build-types), [Full build scope](#what-a-full-build-covers-roughly) |
+| Find strings | [Quick “find this dialogue” checklist](#quick-find-this-dialogue-checklist) |
+| Upstream scope | [Scope reminder (upstream)](#scope-reminder-upstream) |
+| Badge coord gates | [Badge gate blocks](#badge-gate-blocks-field-scripting) → [Recipe](#recipe-for-a-new-gate), [Route 46 reference](#route-46-gate-reference-implementation) |
+| Route 36 Sudowoodo | [Remove Sudowoodo block (Route 36)](#remove-sudowoodo-block-route-36--verified-poc) |
+| Route 32 gate | [Remove Route 32 badge gate](#remove-route-32-badge-gate-south-of-violet--verified-pattern) |
+| Gym Cut trees | [Remove Surge / Erika Cut trees](#remove-surge--erika-cut-trees--gym-access) |
+| Post-battle heal | [Heal after every battle](#heal-after-every-battle) |
+| Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) |
+| Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
+| Trainer scaling | [Trainer level scaling](#trainer-level-scaling-battle-8-phases-13-6-partial) |
+| Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies-not-enabled-yet) |
+| Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42 reference](#route-42-reference-verified) |
+| Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
+| Story NPC removal | [Removing / skipping story NPCs](#removing--skipping-story-npcs-reusable-recipe) |
+| Mom intro / start city | [Open-world starting inventory](#open-world-starting-inventory-new-saves) → [Starter menu](#starter-selection--not-choose_starter), [Home warps](#home--bidirectional-door--interior-swap) |
+| Magnet Train | [Magnet Train (Goldenrod ↔ Saffron)](#magnet-train-goldenrod--saffron) |
+| Route 4 hiker boost | [Route 4 ledge boost](#route-4-ledge-boost-cerulean--mt-moon) |
+| Jasmine medicine | [Olivine Secret Medicine (Jasmine)](#olivine-secret-medicine-jasmine) |
+| Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
+| DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
+| Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
+
 ## Git (agents)
 
 **Read-only only.** Agents may run git commands that **inspect** state (`status`, `diff`, `log`, `show`, etc.). **Never commit, push, merge, rebase, reset, checkout, add, stash, or any other mutating git action** — the user handles all of that themselves. If they say they’re committing, they mean they will do it; don’t beat them to it.

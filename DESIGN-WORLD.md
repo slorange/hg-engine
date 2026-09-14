@@ -4,9 +4,27 @@
 >
 > **Index:** `[DESIGN.md](DESIGN.md)` · **Vision:** `[DESIGN-VISION.md](DESIGN-VISION.md)` · **Wilds:** `[DESIGN-WILDS.md](DESIGN-WILDS.md)`
 
+## Sections
+
+| Section | Status |
+| ------- | ------ |
+| [World-1. World Transportation](#world-1-world-transportation) | PARTIALLY IMPLEMENTED |
+| [World-2. Routes and Content Gating](#world-2-routes-and-content-gating) | PARTIALLY DECIDED |
+| [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | PARTIALLY IMPLEMENTED |
+| [World-4. Accelerated Day/Night Cycle](#world-4-accelerated-daynight-cycle) | DECIDED direction; TECHNICAL UNKNOWN |
+| [World-5. Living Trainers](#world-5-living-trainers) | DECIDED conceptually; TECHNICAL UNKNOWN |
+| [World-6. Trainer Interactions](#world-6-trainer-interactions) | DECIDED conceptually |
+| [World-7. Pokémon Centers](#world-7-pokémon-centers) | DECIDED direction |
+| [World-8. TMs](#world-8-tms) | DECIDED |
+| [World-9. Evolution Methods (Trade & Stones)](#world-9-evolution-methods-trade--stones) | PARTIALLY DECIDED |
+| [World-10. Shops](#world-10-shops) | DECIDED direction |
+| [World-11. Technical Investigations](#world-11-technical-investigations) | TECHNICAL UNKNOWN |
+
+---
+
 # World-1. World Transportation
 
-**Status: DECIDED conceptually**
+**Status: PARTIALLY IMPLEMENTED**
 
 Most traditional story roadblocks should be removed ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
 
@@ -34,7 +52,7 @@ Likely only to cities that have already been visited.
 
 ## Paid ferry NPCs
 
-**Status: DECIDED — Route 42 verified; rest not implemented**
+**Status: PARTIALLY IMPLEMENTED** — Route 42 verified; additional ferries planned
 
 **Route 42** (Blackthorn ↔ Mahogany water gaps) is the reference implementation — verified in [Index-2](DESIGN.md#index-2-current-technical-baseline); recipe in `documentation/HACK-NOTES.md`.
 
@@ -107,7 +125,7 @@ Wild **level** progression uses [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-
 
 # World-3. HMs and Field Moves
 
-**Status: DECIDED conceptually; tentative badge → unlock table below**
+**Status: PARTIALLY IMPLEMENTED** — badge-order table decided; Johto Gym HM pilot partial; collection-based field use and full Leader grant flow not complete.
 
 HMs remain part of the game, but their overworld function is redesigned.
 
@@ -240,7 +258,7 @@ Battle use: Flash and Headbutt remain normal learnable moves if the player wants
 
 # World-4. Accelerated Day/Night Cycle
 
-**Status: DECIDED direction; exact timing subject to balance**
+**Status: DECIDED direction; TECHNICAL UNKNOWN** — target ~30 real minutes per in-game day; RTC replacement and manual advance not implemented.
 
 HGSS's real-world clock should be replaced by an accelerated in-game clock.
 
@@ -286,7 +304,7 @@ Exact implementation remains TBD.
 
 # World-5. Living Trainers
 
-**Status: CORE FEATURE / DECIDED conceptually**
+**Status: DECIDED conceptually; TECHNICAL UNKNOWN**
 
 This is intended to be one of the project's most distinctive systems.
 
@@ -312,7 +330,7 @@ The player should generally battle trainers whose progression is reasonably comp
 
 ## Simulation requirements
 
-**Status: TBD / TECHNICAL**
+**Status: TECHNICAL UNKNOWN**
 
 The game does NOT necessarily need to permanently simulate hundreds of individual NPCs throughout the entire world.
 
