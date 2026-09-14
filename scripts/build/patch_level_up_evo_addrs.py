@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Patch overlay 129 with the runtime address of field-overlay level-up tables."""
+"""Patch overlay 129 with field-overlay addresses for stage-adjust tables."""
 
 import argparse
 import struct
@@ -10,8 +10,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 OVERLAY129_LOAD = 0x023D8000
 OVERLAY129_FILE_SKIP = 0x60
-TABLE_SYMBOL = "sLevelUpEvoTablesData"
-ADDR_SYMBOL = "LevelUpEvoTablesFieldAddr"
+LEVEL_UP_TABLE_SYMBOL = "sLevelUpEvoTablesData"
+LEVEL_UP_ADDR_SYMBOL = "LevelUpEvoTablesFieldAddr"
+SYNTHETIC_TABLE_SYMBOL = "sSyntheticEvoEdgesData"
+SYNTHETIC_ADDR_SYMBOL = "SyntheticEvoEdgesFieldAddr"
 
 
 def nm_address(elf: Path, symbol: str) -> int:
@@ -48,10 +50,24 @@ def main():
             print(f"Skip level-up table patch: missing {path}", file=sys.stderr)
             return
 
-    table_addr = nm_address(args.field_elf, TABLE_SYMBOL)
-    var_vma = nm_address(args.overlay_elf, ADDR_SYMBOL)
-    patch_overlay_bin(args.overlay_bin, var_vma, table_addr)
-    print(f"Patched {args.overlay_bin}: {ADDR_SYMBOL} @ 0x{var_vma:08X} = 0x{table_addr:08X}")
+    level_table_addr = nm_address(args.field_elf, LEVEL_UP_TABLE_SYMBOL)
+    level_var_vma = nm_address(args.overlay_elf, LEVEL_UP_ADDR_SYMBOL)
+    patch_overlay_bin(args.overlay_bin, level_var_vma, level_table_addr)
+    print(
+        f"Patched {args.overlay_bin}: {LEVEL_UP_ADDR_SYMBOL} @ 0x{level_var_vma:08X} = 0x{level_table_addr:08X}"
+    )
+
+    try:
+        synth_table_addr = nm_address(args.field_elf, SYNTHETIC_TABLE_SYMBOL)
+        synth_var_vma = nm_address(args.overlay_elf, SYNTHETIC_ADDR_SYMBOL)
+    except SystemExit:
+        print(f"Skip {SYNTHETIC_ADDR_SYMBOL}: symbol missing", file=sys.stderr)
+        return
+
+    patch_overlay_bin(args.overlay_bin, synth_var_vma, synth_table_addr)
+    print(
+        f"Patched {args.overlay_bin}: {SYNTHETIC_ADDR_SYMBOL} @ 0x{synth_var_vma:08X} = 0x{synth_table_addr:08X}"
+    )
 
 
 if __name__ == "__main__":

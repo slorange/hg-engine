@@ -426,7 +426,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 |-------|--------|--------|
 | 1 — Rescale levels | `TRAINER_LEVEL_SCALING` | `MakeTrainerPokemonParty()` in `src/field/enemy_party.c` — `CountPlayerBadges()`, `PickTrainerLevelInBand()` |
 | 2 — Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; `InitBoxMonMoveset()` after `ChangeToBattleForm` |
-| 3 — Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustSpeciesForLevel()` from `include/species_stage_for_level.h` (requires phase 1). Build tables: `scripts/build/gen_level_up_evo_tables.py` → `src/field/level_up_evo_tables.c`; `scripts/build/patch_level_up_evo_addrs.py` patches overlay 129 pointer (shared with [wild stage adjust](#runtime-pipeline)) |
+| 3 — Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires phase 1). Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)) |
 | 6 — Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires phase 1 |
 
 **Dependencies:** phase 2 requires phase 1; phase 3 requires phase 1; phase 6 requires phase 1.
@@ -873,7 +873,7 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 
 ## Wild level caps (distance-based) — verified PoC
 
-**Status: verified in-game Sep 2026** — grass, cave, Surf, rods, Headbutt, and Rock Smash all roll levels in `[3, cap]` from the precomputed table. **Stage adjust verified** (e.g. Mareep slot → Flaaffy / Ampharos by level): sprite, stats, moves, battle name, and caught mon match the adjusted species. Design: [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (decided over badge/tile wild gating — [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)).
+**Status: verified in-game Sep 2026** — distance level rolls ([Wilds-2 level distribution](DESIGN-WILDS.md#level-distribution)), level-up **and synthetic** stage adjust (e.g. Mareep → Flaaffy, Golbat → Crobat @ 30, trade/stone lines from TSV). Sprite, stats, moves, battle name, and caught mon match the final species. Design: [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps).
 
 **Toggle:** `IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS` in `include/config.h` (on by default). Comment out to restore vanilla wild levels.
 
@@ -903,7 +903,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 | Persist FieldSystem | `StoreFieldSysPtr` hook @ `0x0203E028` | Writes `gFieldSysPtr` → ARM9 scratch `sPersistFieldSysPtr` @ `0x021FF900` |
 | Cache cap (field) | `WildEncSingle` / `WildWaterEncSingle` in `src/pokemon.c` | `CacheWildLevelCapFromFieldSystem(fsys)` while FieldSystem is valid |
 | Apply level (battle) | `modify_species_encounter_data` in `asm/other_hook.s` (overlay 129) | `ApplyWildDistanceLevelCapToMon` **before** `InitBoxMonMoveset`; tail-calls vanilla stub `0x02247B4C` last |
-| Stage adjust | `include/species_stage_for_level.h` | `AdjustSpeciesForLevel` — tables in field overlay; overlay 129 reads via build-patched `LevelUpEvoTablesFieldAddr` → `sLevelUpEvoTablesData` (e.g. lv24 Rattata → Raticate) |
+| Stage adjust | `include/encounter_species_stage.h` | `AdjustEncounterSpeciesForLevel` = level-up `AdjustSpeciesForLevel` + synthetic edges (`data/synthetic_evolution_thresholds.tsv` → `sSyntheticEvoEdgesData` in field overlay). Overlay 129: patched `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` |
 | Species display | `ApplyWildSpeciesStageForLevel` in `src/wild_level_caps.c` | After `SetMonData(MON_DATA_SPECIES, …)`, call `SetMonData(MON_DATA_SPECIES_NAME, NULL)` — same as `PokeParaSet` — or battle/caught UI keeps the encounter-table name while sprite/stats use the new species |
 | Level write | `src/wild_level_caps.c` | Roll level → adjust species → set exp + `MON_DATA_LEVEL` → `RecalcPartyPokemonStats` |
 
@@ -911,7 +911,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 
 **Not hooked:** Safari Zone (`data/SafariEncounters.c`), Bug Catching Contest (verify in-game path), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`.
 
-**Stage adjust limits:** level-up evolution chains only — stone / trade / friendship branches not handled yet ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range)).
+**Stage adjust:** level-up chains (`data/Evolutions.c`) plus **synthetic edges** ([Wilds-2 § Synthetic evolution stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)) — trade, stone, friendship, move-known, etc. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution unchanged ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones)).
 
 ### ARM9 scratch (`armips/asm/wild_level_caps.s`, `rom.ld`)
 
@@ -922,11 +922,11 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 | `sWildCapCache` | `0x021FF930` | 8 |
 | *(reserved)* | `0x021FF940` | 4 |
 
-`0x021FF940` is zeroed in `armips/asm/wild_level_caps.s` but unused — wild stage adjust uses **`LevelUpEvoTablesFieldAddr`** in overlay 129 (patched at build time), not ARM9 scratch.
+`0x021FF940` is zeroed in `armips/asm/wild_level_caps.s` but unused — overlay 129 uses patched pointers into **field overlay rodata**, not ARM9 scratch.
 
-Level-up stage tables live in **contiguous field overlay rodata** (`sLevelUpEvoTablesData`). Do not pin them with a linker hole — that bloated the overlay binary past `0x023D8000` and clobbered overlay 129 (wild hook code / encounter assets).
+Stage tables live in **contiguous field overlay rodata** (`sLevelUpEvoTablesData`, `sSyntheticEvoEdgesData`). Do not pin them with a linker hole — that bloated the field overlay past `0x023D8000` and clobbered overlay 129.
 
-**Build-time patch:** `scripts/build/patch_level_up_evo_addrs.py` runs after `field_linked.o` + `linked.o` exist; it writes the field table VMA into overlay 129’s `LevelUpEvoTablesFieldAddr` in `build/output.bin` (also invoked from `scripts/build/make.py` before overlay 129 is inserted). Successful build logs e.g. `Patched build/output.bin: LevelUpEvoTablesFieldAddr @ … = 0x023CA388`. If the pointer is **0**, wild stage adjust is skipped safely (`LevelUpEvoTablesFieldAddr == 0` guard).
+**Build-time patch:** `scripts/build/patch_level_up_evo_addrs.py` runs after `field_linked.o` + `linked.o` exist; patches overlay 129 **`LevelUpEvoTablesFieldAddr`** and **`SyntheticEvoEdgesFieldAddr`** in `build/output.bin` (also from `scripts/build/make.py`). Example log: `LevelUpEvoTablesFieldAddr @ … = 0x023CA4A8` and `SyntheticEvoEdgesFieldAddr @ … = 0x023CC220`. If either pointer is **0**, wild stage adjust is skipped (`ApplyWildSpeciesStageForLevel` guard in `src/wild_level_caps.c`).
 
 Scratch survives overlay 129 reload; do not reuse these addresses for other features without updating `rom.ld`.
 
@@ -958,14 +958,24 @@ All tracked — nothing belongs in `scripts/local/`:
 |------|--------|------|
 | `scripts/build/gen_wild_level_caps.py` | build | Cap table → `src/wild_level_caps_data.c` (`narcs.mk`) |
 | `scripts/build/gen_level_up_evo_tables.py` | build | Stage tables → `src/field/level_up_evo_tables.c` + `include/constants/generated/level_up_evo_tables.h` |
-| `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
-| `include/species_stage_for_level.h` | include | Shared `AdjustSpeciesForLevel` (wild + trainer stage adjust) |
+| `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
+| `scripts/build/gen_synthetic_evo_edges.py` | build | TSV → `src/field/synthetic_evo_edges_data.c` + generated header (`narcs.mk`) |
+| `data/synthetic_evolution_thresholds.tsv` | data | Authoring source for synthetic stage edges (`from`, `to`, `min_level`, `branch`) |
+| `include/species_stage_for_level.h` | include | `AdjustSpeciesForLevel` (level-up chains only) |
+| `include/synthetic_evo_apply.h` | include | `ApplySyntheticEvolutionEdges` (inline; reads `gSyntheticEvoEdgesPtr`) |
+| `include/encounter_species_stage.h` | include | `AdjustEncounterSpeciesForLevel` — level-up then synthetic (wild + trainer) |
 | `scripts/dev/Route Levels/calculate_location_distances.py` | dev | Regenerate `location_distances.txt` after graph edits |
 | `scripts/dev/Route Levels/*.txt`, `encounter_area_graph.tsv` | dev | Source graph inputs |
 
-**Not in `scripts/local/`:** no one-off wild-cap recon scripts were kept — distance/graph tooling is all under `dev/Route Levels/` and `build/`. Session throwaways (e.g. `_scan_zone_events.py`) stay gitignored per § Scripts layout.
+**Not in `scripts/local/`:** wild-cap and synthetic-stage tooling is all under `data/`, `scripts/build/`, and `scripts/dev/Route Levels/`. Session throwaways stay gitignored per § Scripts layout.
 
-`src/wild_level_caps_data.c` is generated but may appear in git for convenience; `include/constants/generated/wild_level_caps.h` is gitignored and rebuilt every make. `wild_level_caps.o` is compiled with `-DOVERLAY129` so overlay 129 sees the patched table pointer header.
+**Generated (rebuilt every `make`):** `include/constants/generated/wild_level_caps.h`, `level_up_evo_tables.h`, `synthetic_evo_edges.h`. `.c` outputs may be committed for convenience (`wild_level_caps_data.c`, `level_up_evo_tables.c`, `synthetic_evo_edges_data.c`). `wild_level_caps.o` uses `-DOVERLAY129` for patched field pointers.
+
+### Editing synthetic stage edges
+
+1. Edit `data/synthetic_evolution_thresholds.tsv` (`branch`: empty or `random50`).
+2. Full `make` (or `python3 scripts/build/gen_synthetic_evo_edges.py`) regenerates field rodata.
+3. Rebuild `test.nds` — confirm both patch lines in the build log.
 
 ---
 

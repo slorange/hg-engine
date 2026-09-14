@@ -208,6 +208,14 @@ LEVEL_UP_EVO_TABLES_SCRIPT := scripts/build/gen_level_up_evo_tables.py
 $(LEVEL_UP_EVO_TABLES_C) $(LEVEL_UP_EVO_TABLES_H): $(EVOS_DEPENDENCIES) $(LEVEL_UP_EVO_TABLES_SCRIPT) include/constants/species.h
 	$(PYTHON) $(LEVEL_UP_EVO_TABLES_SCRIPT)
 
+SYNTHETIC_EVO_EDGES_C := src/field/synthetic_evo_edges_data.c
+SYNTHETIC_EVO_EDGES_H := include/constants/generated/synthetic_evo_edges.h
+SYNTHETIC_EVO_EDGES_SCRIPT := scripts/build/gen_synthetic_evo_edges.py
+SYNTHETIC_EVO_EDGES_TSV := data/synthetic_evolution_thresholds.tsv
+
+$(SYNTHETIC_EVO_EDGES_C) $(SYNTHETIC_EVO_EDGES_H): $(SYNTHETIC_EVO_EDGES_TSV) $(SYNTHETIC_EVO_EDGES_SCRIPT) include/constants/species.h
+	$(PYTHON) $(SYNTHETIC_EVO_EDGES_SCRIPT)
+
 WILD_LEVEL_CAPS_C := src/wild_level_caps_data.c
 WILD_LEVEL_CAPS_H := include/constants/generated/wild_level_caps.h
 WILD_LEVEL_CAPS_SCRIPT := scripts/build/gen_wild_level_caps.py

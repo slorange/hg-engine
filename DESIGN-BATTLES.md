@@ -525,9 +525,11 @@ Keep the trainer's **vanilla species identity** (or current party slot species),
 - **Downgrade** when the natural line evolves above `ceiling` (e.g. Dragonite at cap 22 → Dratini or Dragonair).
 - **Upgrade** when a lower stage is below the intended level and a higher stage is legal (e.g. Pidgey at level 18 → Pidgeotto if cap allows).
 
-Still no random species swap. Stone/trade lines remain excluded until Phase 5 (only `EVO_LEVEL` edges are used).
+Still no random species swap.
 
-**Stage rule:** walk the full level-up chain from base. Pick the stage whose **level window** contains the scaled level (min stage level through next evolution level − 1). Example: Dratini line (30 / 55) at **L22 → Dratini**, not Dragonair; Pidgey at **L18 → Pidgeotto**.
+**Stage rule (implemented):** `AdjustEncounterSpeciesForLevel()` — walk level-up chains from `Evolutions.c`, then **synthetic edges** from `data/synthetic_evolution_thresholds.tsv` (trade/stone/friendship/move-known at authored `min_level`; does not change player evolution). See [Wilds-2 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer). Example: Dratini @ **L22 → Dratini**; Golbat @ **L30 → Crobat**; Kadabra @ **L35 → Alakazam**.
+
+**Phase 5 note:** interim “exclude stone/trade species from trainer **party generation**” is separate from encounter-stage display above.
 
 ### Phase 4 — Randomize species
 

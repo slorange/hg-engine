@@ -151,7 +151,7 @@ static BOOL IsGymLeaderTrainerClass(u8 trainerClass)
 
 #if defined(TRAINER_SPECIES_STAGE_ADJUST)
 
-#include "species_stage_for_level.h"
+#include "encounter_species_stage.h"
 
 #endif // TRAINER_SPECIES_STAGE_ADJUST
 
@@ -269,7 +269,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
 #if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
         {
-            u16 adjusted = AdjustSpeciesForLevel(species, (u8)level);
+            u16 adjusted = AdjustEncounterSpeciesForLevel(species, (u8)level);
 
             if (adjusted != species) {
                 species = adjusted;

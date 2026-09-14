@@ -7,7 +7,7 @@
 #include "pokemon.h"
 #include "save.h"
 #include "script.h"
-#include "species_stage_for_level.h"
+#include "encounter_species_stage.h"
 #include "types.h"
 
 #define VAR_PLAYER_START_CITY 0x4031
@@ -52,6 +52,7 @@ extern const u8 sWildLevelCaps[WILD_LEVEL_CAP_NUM_START_CITIES][WILD_LEVEL_CAP_N
 extern FieldSystem *sPersistFieldSysPtr;
 // Runtime address of field-overlay sLevelUpEvoTablesData (patched in build/output.bin).
 u32 LevelUpEvoTablesFieldAddr = 0;
+u32 SyntheticEvoEdgesFieldAddr = 0;
 extern WildLevelCapDebug sWildLevelCapDebug;
 extern WildLevelCapCache sWildCapCache;
 
@@ -295,12 +296,12 @@ static void ApplyWildSpeciesStageForLevel(struct PartyPokemon *pp, u8 level)
     u16 adjusted;
     u32 formZero = 0;
 
-    if (LevelUpEvoTablesFieldAddr == 0) {
+    if (LevelUpEvoTablesFieldAddr == 0 || SyntheticEvoEdgesFieldAddr == 0) {
         return;
     }
 
     species = (u16)GetMonData(pp, MON_DATA_SPECIES, NULL);
-    adjusted = AdjustSpeciesForLevel(species, level);
+    adjusted = AdjustEncounterSpeciesForLevel(species, level);
 
     if (adjusted == species) {
         return;

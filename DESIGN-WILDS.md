@@ -61,7 +61,7 @@ Conceptually:
 
 # Wilds-2. Increased Wild Pokémon Level Range
 
-**Status: IMPLEMENTED** — distance caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)), [level distribution](#level-distribution) below, and same-line **stage adjust** by rolled level (level-up evolution chains only; shared with trainer battles). Runtime details: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
+**Status: IMPLEMENTED** — distance caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)), [level distribution](#level-distribution), **stage adjust** (level-up + [synthetic edges](#synthetic-evolution-stages-wild--trainer), shared with trainer battles). Details: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
 
 Replace narrow per-area wild level bands with a **broad range** from low levels up to an area-specific maximum.
 
@@ -105,16 +105,31 @@ One habitat can therefore naturally contain **multiple stages** of the same evol
 | Cap **≥ 10**, **15%** “baby” | Uniform **2–7** |
 | Cap **≥ 10**, **85%** “adult” | Uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 10 → **7–10**; cap 60 → **52–60**) |
 
-After rolling, evolution **stage** follows the family’s level-up chain for that level (stones / trade / friendship **TBD**).
+After rolling, evolution **stage** is chosen from level-up chains plus [synthetic edges](#synthetic-evolution-stages-wild--trainer).
 
-## Non-level evolution methods
+## Synthetic evolution stages (wild + trainer)
 
-Evolution methods that are not simple level thresholds need explicit handling (**TBD**):
+Encounter tables still list a base species (e.g. Poliwhirl, Exeggcute). After the rolled level is known, stage selection runs in order:
 
-- friendship;
-- stones / items;
-- branching evolutions;
-- trade replacements ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones)).
+1. **`AdjustSpeciesForLevel`** — linear **`EVO_LEVEL`** chains from `data/Evolutions.c` (implemented today).
+2. **Synthetic edges** — `data/synthetic_evolution_thresholds.tsv`: if level ≥ `min_level`, may step `from` → `to` (chained up to 8 steps). Runtime: `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h`; ROM data from `scripts/build/gen_synthetic_evo_edges.py` → `sSyntheticEvoEdgesData` in field overlay.
+
+Synthetic thresholds **do not** change how the player evolves Pokémon ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones) stays player-facing). Wild/trainer mons still get moves and stats from the **final** species (`PokeParaSet` / `InitBoxMonMoveset`), same as today.
+
+**Authoring tiers** (each TSV row has an explicit `min_level`; tiers are for filling the sheet, not runtime logic):
+
+| Vanilla method | Stage 1 | Stage 2 |
+|----------------|--------:|--------:|
+| Trade (incl. held item) | 20 | 35 |
+| Stone (incl. location-based — player uses stones; wild/trainer treat as stone tier) | 25 | 35 |
+| Friendship (incl. time-of-day variants) | 20 | 30 |
+| Move-known | HGSS learn level + 1 | — |
+
+**Special:** Piloswine → Mamoswine uses **34** (AncientPower is Lv1/relearner in HGSS; Swinub → Piloswine at 33).
+
+**Branches:** `branch` empty = single outcome; `random50` = pick one row at random for the same `from` + `min_level` (Gloom, Poliwhirl, Clamperl, **Wurmple**).
+
+**Deferred (not in TSV until later):** Eevee, Tyrogue, Shedinja, **gendered** evolutions (Burmy, Combee, Gallade, Froslass, etc.).
 
 ## Separation of concerns
 
@@ -124,7 +139,7 @@ Three independent inputs:
 |-------|------------|
 | Ecology ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)) | **Which family** can spawn |
 | Area maximum ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) | **Possible encounter levels** |
-| Rolled level + family rules | **Valid evolution stage** (level-up chains only — stones / trade / friendship **TBD**) |
+| Rolled level + stage rules | **Evolution stage** (level-up tables + synthetic edges) |
 
 ---
 
