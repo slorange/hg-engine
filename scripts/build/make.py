@@ -401,6 +401,15 @@ def hook():
                 rom2.close()
 
 def writeall():
+    patch_script = os.path.join(SOURCE, "scripts/build/patch_level_up_evo_addrs.py")
+    field_elf = os.path.join(BUILD, "field_linked.o")
+    overlay_elf = os.path.join(BUILD, "linked.o")
+    if os.path.isfile(patch_script) and os.path.isfile(field_elf) and os.path.isfile(overlay_elf) and os.path.isfile(OUTPUT):
+        subprocess.run(
+            [sys.executable, patch_script, "--field-elf", field_elf, "--overlay-elf", overlay_elf, "--overlay-bin", OUTPUT],
+            check=False,
+        )
+
     OFFECTSFILES = "base/overlay/overlay_0129.bin"
     with open(OFFECTSFILES, 'wb+') as rom:
         print("Inserting code.")

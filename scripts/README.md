@@ -26,6 +26,7 @@ Python helpers for hg-engine. See `documentation/HACK-NOTES.md` § **Scripts lay
 | `verify_olivine_rod_guru_scr_seq.py` | `narcs.mk` |
 | `rod_guru_patch_checks.py` | imported by rod guru patcher + verify script |
 | `gen_wild_level_caps.py` | `narcs.mk` → `src/wild_level_caps_data.c` |
+| `patch_level_up_evo_addrs.py` | `Makefile`, `make.py` — patch field table address into overlay 129 |
 
 ## `dev/` highlights
 

@@ -533,7 +533,7 @@ Still no random species swap. Stone/trade lines remain excluded until Phase 5 (o
 
 **Stage rule:** walk the full level-up chain from base using forward tables generated from `Evolutions.c`. Pick the stage whose **level window** contains the scaled level (min stage level through next evolution level − 1). Example: Dratini line (30 / 55) at **L22 → Dratini**, not Dragonair; Pidgey at **L18 → Pidgeotto**.
 
-**Implementation note (Phase 3):** `TRAINER_SPECIES_STAGE_ADJUST` — build-time tables via `scripts/build/gen_level_up_evo_tables.py` → `src/field/level_up_evo_tables.c` (regenerated when `Evolutions.c` changes). Runtime: O(chain depth) array lookups, no NARC scans.
+**Implementation note (Phase 3):** `TRAINER_SPECIES_STAGE_ADJUST` — build-time tables via `scripts/build/gen_level_up_evo_tables.py` → `src/field/level_up_evo_tables.c` (contiguous field overlay rodata; address patched when `Evolutions.c` changes). Runtime: `AdjustSpeciesForLevel()` in `include/species_stage_for_level.h` (trainers + wild encounters in [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range)). O(chain depth) array lookups, no NARC scans.
 
 ### Phase 4 — Randomize species
 

@@ -840,7 +840,7 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 
 ## Wild level caps (distance-based) — verified PoC
 
-**Status: verified in-game Sep 2026** — grass, cave, Surf, rods, Headbutt, and Rock Smash all roll levels in `[3, cap]` from the precomputed table. Design: [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (decided over badge/tile wild gating — [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)).
+**Status: verified in-game Sep 2026** — grass, cave, Surf, rods, Headbutt, and Rock Smash all roll levels in `[3, cap]` from the precomputed table. **Stage adjust verified** (e.g. Mareep slot → Flaaffy / Ampharos by level): sprite, stats, moves, battle name, and caught mon match the adjusted species. Design: [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (decided over badge/tile wild gating — [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)).
 
 **Toggle:** `IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS` in `include/config.h` (on by default). Comment out to restore vanilla wild levels.
 
@@ -849,7 +849,7 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 Build-time cap per `(starting city, encounter area id)`:
 
 ```
-levelCap = 67 × route_distance / max_route_distance + 3   // caps in [3, 70]
+levelCap = 57 × route_distance / max_route_distance + 3   // caps in [3, 60]
 ```
 
 - **Graph data:** `scripts/dev/Route Levels/connections.txt`, `starting_cities.txt`
@@ -870,11 +870,15 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 | Persist FieldSystem | `StoreFieldSysPtr` hook @ `0x0203E028` | Writes `gFieldSysPtr` → ARM9 scratch `sPersistFieldSysPtr` @ `0x021FF900` |
 | Cache cap (field) | `WildEncSingle` / `WildWaterEncSingle` in `src/pokemon.c` | `CacheWildLevelCapFromFieldSystem(fsys)` while FieldSystem is valid |
 | Apply level (battle) | `modify_species_encounter_data` in `asm/other_hook.s` (overlay 129) | `ApplyWildDistanceLevelCapToMon` **before** `InitBoxMonMoveset`; tail-calls vanilla stub `0x02247B4C` last |
-| Level write | `src/wild_level_caps.c` | Sets exp + `MON_DATA_LEVEL`, then `RecalcPartyPokemonStats` |
+| Stage adjust | `include/species_stage_for_level.h` | `AdjustSpeciesForLevel` — tables in field overlay; overlay 129 reads via build-patched `LevelUpEvoTablesFieldAddr` → `sLevelUpEvoTablesData` (e.g. lv24 Rattata → Raticate) |
+| Species display | `ApplyWildSpeciesStageForLevel` in `src/wild_level_caps.c` | After `SetMonData(MON_DATA_SPECIES, …)`, call `SetMonData(MON_DATA_SPECIES_NAME, NULL)` — same as `PokeParaSet` — or battle/caught UI keeps the encounter-table name while sprite/stats use the new species |
+| Level write | `src/wild_level_caps.c` | Roll level → adjust species → set exp + `MON_DATA_LEVEL` → `RecalcPartyPokemonStats` |
 
 **Map ID:** read from `SaveBlock2` → `LocalFieldData.currentPosition.mapId` (not `fsys->location`, which is often `MAP_EVERYWHERE` during encounters).
 
-**Not hooked:** `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`, Safari / Contest tables (separate NARCs — future work).
+**Not hooked:** Safari Zone (`data/SafariEncounters.c`), Bug Catching Contest (verify in-game path), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`.
+
+**Stage adjust limits:** level-up evolution chains only — stone / trade / friendship branches not handled yet ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range)).
 
 ### ARM9 scratch (`armips/asm/wild_level_caps.s`, `rom.ld`)
 
@@ -883,8 +887,17 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 | `sPersistFieldSysPtr` | `0x021FF900` | 4 |
 | `sWildLevelCapDebug` | `0x021FF910` | 32 |
 | `sWildCapCache` | `0x021FF930` | 8 |
+| *(reserved)* | `0x021FF940` | 4 |
+
+`0x021FF940` is zeroed in `armips/asm/wild_level_caps.s` but unused — wild stage adjust uses **`LevelUpEvoTablesFieldAddr`** in overlay 129 (patched at build time), not ARM9 scratch.
+
+Level-up stage tables live in **contiguous field overlay rodata** (`sLevelUpEvoTablesData`). Do not pin them with a linker hole — that bloated the overlay binary past `0x023D8000` and clobbered overlay 129 (wild hook code / encounter assets).
+
+**Build-time patch:** `scripts/build/patch_level_up_evo_addrs.py` runs after `field_linked.o` + `linked.o` exist; it writes the field table VMA into overlay 129’s `LevelUpEvoTablesFieldAddr` in `build/output.bin` (also invoked from `scripts/build/make.py` before overlay 129 is inserted). Successful build logs e.g. `Patched build/output.bin: LevelUpEvoTablesFieldAddr @ … = 0x023CA388`. If the pointer is **0**, wild stage adjust is skipped safely (`LevelUpEvoTablesFieldAddr == 0` guard).
 
 Scratch survives overlay 129 reload; do not reuse these addresses for other features without updating `rom.ld`.
+
+**Overlay 129 size:** must stay **≤ 32 KiB** (`0x8000`). It loads at startup @ `0x023D8000` and overlaps the field overlay reservation — do not link large rodata into overlay 129.
 
 ### Debug toggles (turn off for normal play)
 
@@ -910,11 +923,16 @@ All tracked — nothing belongs in `scripts/local/`:
 
 | Path | Bucket | Role |
 |------|--------|------|
-| `scripts/build/gen_wild_level_caps.py` | build | Makefile / `narcs.mk` |
-| `scripts/dev/Route Levels/calculate_location_distances.py` | dev | Regenerate distance matrix |
+| `scripts/build/gen_wild_level_caps.py` | build | Cap table → `src/wild_level_caps_data.c` (`narcs.mk`) |
+| `scripts/build/gen_level_up_evo_tables.py` | build | Stage tables → `src/field/level_up_evo_tables.c` + `include/constants/generated/level_up_evo_tables.h` |
+| `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
+| `include/species_stage_for_level.h` | include | Shared `AdjustSpeciesForLevel` (wild + trainer stage adjust) |
+| `scripts/dev/Route Levels/calculate_location_distances.py` | dev | Regenerate `location_distances.txt` after graph edits |
 | `scripts/dev/Route Levels/*.txt`, `encounter_area_graph.tsv` | dev | Source graph inputs |
 
-`src/wild_level_caps_data.c` is generated but may appear in git for convenience; `include/constants/generated/wild_level_caps.h` is gitignored and rebuilt every make.
+**Not in `scripts/local/`:** no one-off wild-cap recon scripts were kept — distance/graph tooling is all under `dev/Route Levels/` and `build/`. Session throwaways (e.g. `_scan_zone_events.py`) stay gitignored per § Scripts layout.
+
+`src/wild_level_caps_data.c` is generated but may appear in git for convenience; `include/constants/generated/wild_level_caps.h` is gitignored and rebuilt every make. `wild_level_caps.o` is compiled with `-DOVERLAY129` so overlay 129 sees the patched table pointer header.
 
 ---
 

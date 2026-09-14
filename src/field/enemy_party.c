@@ -151,69 +151,7 @@ static BOOL IsGymLeaderTrainerClass(u8 trainerClass)
 
 #if defined(TRAINER_SPECIES_STAGE_ADJUST)
 
-#include "constants/generated/level_up_evo_tables.h"
-
-/**
- *  @brief walk level-up prevo links to the base of the chain
- */
-static u16 FindLevelUpChainBase(u16 species)
-{
-    u16 prevo;
-
-    species = (u16)(species & 0x07FF);
-
-    while (species <= MAX_SPECIES_INCLUDING_FORMS) {
-        prevo = sLevelUpPrevo[species];
-        if (prevo == SPECIES_NONE) {
-            break;
-        }
-        species = prevo;
-    }
-
-    return species;
-}
-
-/**
- *  @brief pick the stage whose level window contains the target level
- *
- *  Example (Dratini line): L30 / L55 evolutions → L22 is Dratini (1–29).
- */
-static u16 AdjustTrainerSpeciesForLevel(u16 species, u8 level)
-{
-    u16 base;
-    u16 cur;
-    u16 best;
-    u16 next;
-    u8 minLv;
-    u8 maxLv;
-
-    species = (u16)(species & 0x07FF);
-    base = FindLevelUpChainBase(species);
-    cur = base;
-    best = base;
-
-    while (cur != SPECIES_NONE && cur <= MAX_SPECIES_INCLUDING_FORMS) {
-        minLv = sLevelUpMinStageLevel[cur];
-        maxLv = 100;
-        next = sLevelUpEvoTarget[cur];
-
-        if (next != SPECIES_NONE && next <= MAX_SPECIES_INCLUDING_FORMS) {
-            maxLv = (u8)(sLevelUpMinStageLevel[next] - 1);
-        }
-
-        if (level >= minLv && level <= maxLv) {
-            best = cur;
-        }
-
-        if (next == SPECIES_NONE) {
-            break;
-        }
-
-        cur = next;
-    }
-
-    return best;
-}
+#include "species_stage_for_level.h"
 
 #endif // TRAINER_SPECIES_STAGE_ADJUST
 
@@ -331,7 +269,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
 #if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
         {
-            u16 adjusted = AdjustTrainerSpeciesForLevel(species, (u8)level);
+            u16 adjusted = AdjustSpeciesForLevel(species, (u8)level);
 
             if (adjusted != species) {
                 species = adjusted;

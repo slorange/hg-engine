@@ -557,6 +557,7 @@ sSaveDataPtr = 0x021D2228;
 sPersistFieldSysPtr = 0x021FF900;
 sWildLevelCapDebug = 0x021FF910;
 sWildCapCache = 0x021FF930;
+sLevelUpEvoTablesRuntimePtr = 0x021FF940;
 Sys_SetSleepDisableFlag = 0x0201A4BC | 1;
 FlashClobberChunkFooter = 0x02027DF8 | 1;
 FlashWriteChunk = 0x02028758 | 1;

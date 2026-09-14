@@ -7,6 +7,7 @@
 #include "pokemon.h"
 #include "save.h"
 #include "script.h"
+#include "species_stage_for_level.h"
 #include "types.h"
 
 #define VAR_PLAYER_START_CITY 0x4031
@@ -49,6 +50,8 @@ typedef struct WildLevelCapDebug {
 
 extern const u8 sWildLevelCaps[WILD_LEVEL_CAP_NUM_START_CITIES][WILD_LEVEL_CAP_NUM_ENCOUNTER_AREAS];
 extern FieldSystem *sPersistFieldSysPtr;
+// Runtime address of field-overlay sLevelUpEvoTablesData (patched in build/output.bin).
+u32 LevelUpEvoTablesFieldAddr = 0;
 extern WildLevelCapDebug sWildLevelCapDebug;
 extern WildLevelCapCache sWildCapCache;
 
@@ -245,6 +248,28 @@ static u8 ChooseWildLevel(u8 failReason, u8 cap, u8 encBank, u8 usedCachedCap, u
 #endif
 }
 
+static void ApplyWildSpeciesStageForLevel(struct PartyPokemon *pp, u8 level)
+{
+    u16 species;
+    u16 adjusted;
+    u32 formZero = 0;
+
+    if (LevelUpEvoTablesFieldAddr == 0) {
+        return;
+    }
+
+    species = (u16)GetMonData(pp, MON_DATA_SPECIES, NULL);
+    adjusted = AdjustSpeciesForLevel(species, level);
+
+    if (adjusted == species) {
+        return;
+    }
+
+    SetMonData(pp, MON_DATA_SPECIES, &adjusted);
+    SetMonData(pp, MON_DATA_SPECIES_NAME, NULL);
+    SetMonData(pp, MON_DATA_FORM, &formZero);
+}
+
 static void SetWildMonLevel(struct PartyPokemon *pp, u8 level)
 {
     u16 species;
@@ -329,6 +354,8 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
     TouchWildLevelCapDebug();
     cap = GetWildLevelCapForCurrentMap(&usedCachedCap, &failReason, &encBank);
     level = ChooseWildLevel(failReason, cap, encBank, usedCachedCap, sWildLevelCapDebug.mapId);
+    // Stage adjust needs field-overlay rodata; skip safely if build-time patch missing.
+    ApplyWildSpeciesStageForLevel(pp, level);
     SetWildMonLevel(pp, level);
     RecalcPartyPokemonStats(pp);
 

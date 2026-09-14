@@ -18,8 +18,8 @@ OUT_C = ROOT / "src/wild_level_caps_data.c"
 OUT_H = ROOT / "include/constants/generated/wild_level_caps.h"
 
 WILD_LEVEL_MIN = 3
-WILD_LEVEL_MAX = 70
-WILD_LEVEL_NUMERATOR = WILD_LEVEL_MAX - WILD_LEVEL_MIN  # 67
+WILD_LEVEL_MAX = 60
+WILD_LEVEL_NUMERATOR = WILD_LEVEL_MAX - WILD_LEVEL_MIN  # 57
 
 
 def load_starting_cities(path: Path) -> list[str]:

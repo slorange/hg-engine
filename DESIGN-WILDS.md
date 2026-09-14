@@ -61,7 +61,7 @@ Conceptually:
 
 # Wilds-2. Increased Wild Pokémon Level Range
 
-**Status: DECIDED conceptually; TECHNICAL UNKNOWN for implementation**
+**Status: PARTIALLY IMPLEMENTED** — broad `[3, cap]` rolls ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) and **same-line stage adjust** (`AdjustSpeciesForLevel` in `include/species_stage_for_level.h`, shared with trainer battles) ship in PoC. Weighted level distribution curves remain TBD.
 
 Replace narrow per-area wild level bands with a **broad range** from low levels up to an area-specific maximum.
 
@@ -124,7 +124,7 @@ Three independent inputs:
 |-------|------------|
 | Ecology ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)) | **Which family** can spawn |
 | Area maximum ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) | **Possible encounter levels** |
-| Rolled level + family rules | **Valid evolution stage** |
+| Rolled level + family rules | **Valid evolution stage** (level-up chains only — stones / trade / friendship **TBD**) |
 
 ---
 
@@ -191,9 +191,10 @@ Do **not** perform graph traversal during gameplay unless there is a compelling 
 | Hoenn / Sinnoh Sound | **Hooked** | Same path after species swap |
 | Swarms | **Hooked** | Same path if normal `EncountParamSet` |
 | Roamers / `_rare` | **Vanilla** | `modify_species_encounter_data_rare` not hooked |
-| Safari Zone | Not yet | Separate NARC (`data/SafariEncounters.c`) |
-| Bug Catching Contest | Not yet | Uses contest map table; same hook may apply in-game — verify |
-| Scripted `wild_battle` | Not hooked | Explicit script levels unchanged |
+| Safari Zone | **Not yet** | Separate NARC (`data/SafariEncounters.c`) — no distance cap or stage adjust |
+| Bug Catching Contest | **Not yet** | Contest encounter table; verify whether it shares `modify_species_encounter_data` in-game |
+| Roamers / `_rare` | **Vanilla** | `modify_species_encounter_data_rare` not hooked |
+| Scripted `wild_battle` | **Not hooked** | Explicit script levels unchanged |
 
 ## Edge costs (tuning TBD)
 
@@ -216,16 +217,17 @@ Exact weighting should be tuned after generating and inspecting the distance mat
 
 Implementation reference: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
 
-Badge-tier player level caps run **3–70** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use the same endpoints for the PoC:
+Player badge level caps run **3–70** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use a lower ceiling for balance:
 
 ```
-levelCap = 67 × route_distance / max_route_distance + 3
+levelCap = 57 × route_distance / max_route_distance + 3
 ```
 
 - `route_distance` — shortest graph hops from the chosen starting city to the encounter area’s graph node (`scripts/dev/Route Levels/location_distances.txt`).
 - `max_route_distance` — farthest reachable distance for that starting city ( **`MaxDistance`** row in the same file, computed by `calculate_location_distances.py` ).
-- Integer division; at distance `0` → cap **3**; at `max_route_distance` → cap **70**.
+- Integer division; at distance `0` → cap **3**; at `max_route_distance` → cap **60**.
 - Within `[3, levelCap]`, PoC rolls **uniformly** (Wilds-2 weighted curve deferred).
+- After rolling, **`AdjustSpeciesForLevel`** picks the stage matching the level (EVO_LEVEL chains only; same helper as `TRAINER_SPECIES_STAGE_ADJUST`).
 
 **Build pipeline:**
 

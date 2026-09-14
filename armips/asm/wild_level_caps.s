@@ -15,4 +15,7 @@
 .org 0x021FF930
     .skip 0x8
 
+.org 0x021FF940
+    .word 0
+
 .close

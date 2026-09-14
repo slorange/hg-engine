@@ -285,6 +285,12 @@ ifneq (1,$(NOSCAN))
 $(foreach src, $(ALL_C_SRCS), $(eval $(call SRC_OBJ_INC_DEFINE,$(patsubst $(C_SUBDIR)/%.c,$(BUILD)/%.o, $(src)),$(src))))
 endif
 
+# Overlay 129 reads field-overlay tables via ARM9 scratch (filled from patched LevelUpEvoTablesFieldAddr).
+$(BUILD)/wild_level_caps.o: $(C_SUBDIR)/wild_level_caps.c $(LEVEL_UP_EVO_TABLES_H) $(LEARNSETS_HEADER) $(BATTLETESTS_HEADER) | $(dir $(BUILD)/wild_level_caps.o)
+	$(CC) -MMD -MF $(basename $(BUILD)/wild_level_caps.o).d $(CFLAGS) -DOVERLAY129 -c $(C_SUBDIR)/wild_level_caps.c -o $(BUILD)/wild_level_caps.o
+
+-include $(BUILD)/wild_level_caps.d
+
 define ASM_OBJ_INC_DEFINE
 # these should have similar dependency scanning, but we do not currently use them in a way conducive to it
 $1: $2 | $(dir $1)
@@ -298,8 +304,9 @@ endif
 $(LINK):$(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
-$(OUTPUT):$(LINK)
-	$(OBJCOPY) -O binary $< $@
+$(OUTPUT):$(LINK) $(BUILD)/field_linked.o
+	$(OBJCOPY) -O binary $(LINK) $@
+	$(PYTHON) scripts/build/patch_level_up_evo_addrs.py --field-elf $(BUILD)/field_linked.o --overlay-elf $(LINK) --overlay-bin $@
 
 # only reextract from the rom if the romname is newer than the extracted arm9.bin
 $(BASE)/arm9.bin: $(ROMNAME) $(NDSTOOL) $(VENV_ACTIVATE)
@@ -308,7 +315,7 @@ $(BASE)/arm9.bin: $(ROMNAME) $(NDSTOOL) $(VENV_ACTIVATE)
 	$(NDSTOOL) -x $(ROMNAME) -9 $(BASE)/arm9.bin -7 $(BASE)/arm7.bin -y9 $(BASE)/overarm9.bin -y7 $(BASE)/overarm7.bin -d $(FILESYS) -y $(BASE)/overlay -t $(BASE)/banner.bin -h $(BASE)/header.bin
 	$(NARCHIVE) extract $(FILESYS)/a/0/2/8 -o $(BUILD)/a028/ -nf
 
-all: $(OUTPUT) $(OVERLAY_OUTPUTS) $(WILD_LEVEL_CAPS_C) $(TOOLS) $(BASE)/arm9.bin
+all: $(OUTPUT) $(OVERLAY_OUTPUTS) $(WILD_LEVEL_CAPS_C) $(LEVEL_UP_EVO_TABLES_C) $(TOOLS) $(BASE)/arm9.bin
 	@# find and delete macOS and windows files
 	find . \( -name "*.DS_Store" -o -name "*:Zone.Identifier" \) -delete
 	$(PYTHON) scripts/build/make.py $(CFLAGS)
