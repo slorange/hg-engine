@@ -30,7 +30,7 @@ This scaling may affect:
 # Battle-2. Healing and Attrition
 
 
-**Status: IMPLEMENTED** — `HEAL_AFTER_BATTLE` in `include/config.h`; verified wild, trainer, flee, and catch ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Status: IMPLEMENTED** — verified wild, trainer, flee, and catch ([Index-2](DESIGN.md#index-2-current-technical-baseline)). Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**.
 
 Traditional long-term HP/PP attrition is intentionally removed.
 
@@ -163,15 +163,13 @@ Victory Road and the Elite Four therefore operate within the level 70–80 endga
 
 When level caps are enabled, **Rare Candies are not subject to the badge level cap** — they may raise a Pokémon **above** the current cap. Normal EXP (wild, trainer, EXP Share) still stops at the cap.
 
-**Implementation:** enable `UNCAP_CANDIES_FROM_LEVEL_CAP` alongside `IMPLEMENT_LEVEL_CAP` in `include/config.h`. 
-
 **Design intent:**
 
 - Candies are the **deliberate exception** to the cap, not a loophole on every mon at once — each use is a consumable choice.
 - Creates meaningful timing decisions: hoard Rare Candies for a hard Gym Leader or special trainer; spike one ace for a single fight to get an evolution or move early. Example: 6 badges (34 level cap), 2 rare candies for early lv36 Typhlosion
 - Power spikes from candies should feel **earned and spent**, not a substitute for badge progression across the whole party.
 
-The hg-engine hook `IMPLEMENT_LEVEL_CAP` exists in `include/config.h` but likely does not do exactly what we need.
+Player level cap hooks are **not enabled** in the ROM yet. When ready: `documentation/HACK-NOTES.md` § **Player badge level cap & Rare Candies**.
 
 ---
 
@@ -180,7 +178,7 @@ The hg-engine hook `IMPLEMENT_LEVEL_CAP` exists in `include/config.h` but likely
 # Battle-5. Gym Rosters
 
 
-**Status: DECIDED, implementation details TBD**
+**Status: DECIDED**
 
 Gym Leader battles use the same general dynamic-roster battle system as other trainer battles; they do NOT have one predetermined fixed party.
 
@@ -390,7 +388,7 @@ A major design goal is:
 # Battle-7. EXP Share
 
 
-**Status: IMPLEMENTED (interim)** — `FULL_PARTY_EXP_SHARE` verified in-game. Final battle-limit EXP recipient formula still **TBD** below.
+**Status: IMPLEMENTED (interim)** — verified in-game. Final battle-limit EXP recipient formula still **TBD** below. Recipe: `documentation/HACK-NOTES.md` § **Full party EXP share (interim)**.
 
 EXP Share is tied to the **battle's Pokémon limit**.
 
@@ -506,6 +504,8 @@ Longer term, a trainer may own a generated collection larger than battle size ([
 
 Work in order. Do not skip ahead unless a phase is blocked and the spike is explicitly scoped.
 
+Phases **1–3** and **6** (Gym Leader cap only) are implemented — see `documentation/HACK-NOTES.md` § **Trainer level scaling**. Phases **4–5** and **7–12** are not started.
+
 ### Phase 1 — Rescale vanilla teams
 
 On trainer battle start: read badge count, compute `floor`/`ceiling`, **keep the trainer's existing species and party size**, only **remap levels** into the band (e.g. uniform random per slot, or proportional offset — pick one and document in code).
@@ -514,13 +514,9 @@ No random species, no move changes, no items. This alone makes open-world travel
 
 **Exit criterion:** same Youngster on Route 30 fights at ~6–10 with 0 badges and ~18–22 with 3 badges; species unchanged.
 
-**Implementation note (Phase 1):** `TRAINER_LEVEL_SCALING` in `include/config.h` — `MakeTrainerPokemonParty()` in `src/field/enemy_party.c`. Uses badge count only; **does not** apply Champion uncap to trainers (max band 80 at 16 badges). Special-trainer overrides deferred.
-
 ### Phase 2 — Level-appropriate moves
 
 After levels are set, assign **last four level-up moves** at that level (wild-mon logic). Still fixed or rescaled species from vanilla data.
-
-**Implementation note (Phase 2):** `TRAINER_LEVEL_APPROPRIATE_MOVES` in `include/config.h` — skips NARC move sets, calls `InitBoxMonMoveset()` after `ChangeToBattleForm` in `MakeTrainerPokemonParty()`.
 
 ### Phase 3 — Downgrade / upgrade (same species)
 
@@ -531,9 +527,7 @@ Keep the trainer's **vanilla species identity** (or current party slot species),
 
 Still no random species swap. Stone/trade lines remain excluded until Phase 5 (only `EVO_LEVEL` edges are used).
 
-**Stage rule:** walk the full level-up chain from base using forward tables generated from `Evolutions.c`. Pick the stage whose **level window** contains the scaled level (min stage level through next evolution level − 1). Example: Dratini line (30 / 55) at **L22 → Dratini**, not Dragonair; Pidgey at **L18 → Pidgeotto**.
-
-**Implementation note (Phase 3):** `TRAINER_SPECIES_STAGE_ADJUST` — build-time tables via `scripts/build/gen_level_up_evo_tables.py` → `src/field/level_up_evo_tables.c` (contiguous field overlay rodata; address patched when `Evolutions.c` changes). Runtime: `AdjustSpeciesForLevel()` in `include/species_stage_for_level.h` (trainers + wild encounters in [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range)). O(chain depth) array lookups, no NARC scans.
+**Stage rule:** walk the full level-up chain from base. Pick the stage whose **level window** contains the scaled level (min stage level through next evolution level − 1). Example: Dratini line (30 / 55) at **L22 → Dratini**, not Dragonair; Pidgey at **L18 → Pidgeotto**.
 
 ### Phase 4 — Randomize species
 
@@ -555,8 +549,6 @@ Apply scaling to **in-Gym trainer battles** and **Gym Leader battles**, on top o
 
 
 Gym type matching applies to generated parties too (Phase 4 rolls from a Gym-type-filtered pool). Characterization exceptions (Battle-5) remain manual/curated, not random off-type.
-
-**Implementation note (Phase 6 — Gym Leader cap):** `TRAINER_GYM_LEADER_CAP_LEVEL` in `include/config.h` — `MakeTrainerPokemonParty()` in `src/field/enemy_party.c`. Detects Johto/Kanto Gym Leader trainer classes (`TRAINERCLASS_LEADER_`*); every party slot gets the badge cap exactly instead of a random level in the band. Gym trainer band + type filter still TBD.
 
 ### Phase 7 — Agreed battle size
 

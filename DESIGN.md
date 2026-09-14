@@ -68,54 +68,57 @@ As of September 2026:
 ### Build and toolchain
 
 - HG-Engine builds reliably via **Docker** (`make -j24` → `test.nds`; DeSmuME verification). See [Build and verification](documentation/HACK-NOTES.md#build-and-verification).
-- Field scripting workflow is established: **scr_seq**, **zone_event**, **text banks**, Python patch tools, and `narcs.mk` hooks.
-- Map identity pitfalls are documented (`map header ≠ scr_seq member ≠ zone_event member`) in `documentation/HACK-NOTES.md`.
+- Field scripting workflow is established (see HACK-NOTES).
+- Map identity pitfalls (`map header ≠ scr_seq member ≠ zone_event member`) are documented in HACK-NOTES.
 
 
 
 ### Core battle / QoL (verified in-game)
 
 
-| Feature                         | Toggle / hook          | Design ref |
-| ------------------------------- | ---------------------- | ---------- |
-| Post-battle heal (HP/PP/status) | `HEAL_AFTER_BATTLE`    | Battle-2  |
-| Full-party EXP share (interim)  | `FULL_PARTY_EXP_SHARE` | Battle-7  |
+| Feature                         | Status   | Design ref |
+| ------------------------------- | -------- | ---------- |
+| Post-battle heal (HP/PP/status) | Verified | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
+| Full-party EXP share (interim)  | Verified | [Battle-7](DESIGN-BATTLES.md#battle-7-exp-share) |
 
 
-
+Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) (Heal after every battle, Full party EXP share).
 
 ### Open-world shell (verified or implemented)
 
 
-| Feature                                                      | Status         | Notes                                                                                                                               |
-| ------------------------------------------------------------ | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified       | scr_seq **845**; `OPENWORLD_STARTING_ITEMS`                                                                                         |
-| Starting city picker (18 cities decided; 3 in ROM PoC)       | Partial        | Full list: [Vision-3](DESIGN-VISION.md#vision-3-starting-location) / `scripts/dev/Route Levels/`; Mom menu still New Bark / Goldenrod / Saffron |
-| Starter pick (12-option text menu, gens 1–4)                 | Verified       | Mom script **0**; `give_mon` per branch; not `choose_starter`                                                                       |
-| Dev-only testing grants (HM02 Fly from Mom)                  | Implemented    | `OPENWORLD_TESTING_GRANTS` in `include/config.h` — **disable before builds for others or release candidates**                       |
-| Magnet Train (Goldenrod ↔ Saffron)                           | Verified       | No power-plant gate; scr_seq **893** / **834**                                                                                      |
-| Route 42 paid ferry                                          | Verified       | Reference recipe for paid bypass NPCs                                                                                               |
-| Route 4 ledge boost ($100 hiker)                             | Verified       | `2_009` / `2_178`; coords (1270,118)→(1270,116)                                                                                     |
-| Route 29→46 gate (2 badges)                                  | PoC verified   | Guard-style encounter gating template                                                                                               |
-| Route 36 Sudowoodo removed                                   | Verified       | 0-badge Violet ↔ Goldenrod path                                                                                                     |
-| Route 32 badge gate removed                                  | Verified       | 0-badge path toward Union Cave                                                                                                      |
-| Mahogany rocket arc skipped                                  | Verified       | Town accessible on load; full Rocket removal per [Story-1](DESIGN-STORY.md#story-1-story-and-script-content)                        |
-| Surge / Erika Cut trees removed                              | Verified       | `2_051`, `2_052`, `2_352`; `patch_zone_event_gym_cut_trees.py` — [Story-1](DESIGN-STORY.md#story-1-story-and-script-content)        |
-| Jasmine / Olivine Lighthouse (Secret Medicine)               | Verified       | Olivine Mart special clerk (¥500); `FLAG_GOT_SECRETPOTION` on bag add — [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
+| Feature | Status | Design ref |
+| ------- | ------ | ---------- |
+| Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location) |
+| Starting city picker (18 decided; 3 in ROM PoC) | Partial | [Vision-3](DESIGN-VISION.md#vision-3-starting-location) |
+| Starter pick (12-option menu, gens 1–4) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location) |
+| Dev-only testing grants (e.g. Fly from Mom) | Implemented | Disable before release — see HACK-NOTES |
+| Magnet Train (Goldenrod ↔ Saffron) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
+| Route 42 paid ferry | Verified | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
+| Route 4 ledge boost ($100 hiker) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
+| Route 29→46 gate (2 badges) | PoC | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) — template only |
+| Route 36 Sudowoodo removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
+| Route 32 badge gate removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
+| Mahogany Rocket arc skipped | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
+| Surge / Erika Cut trees removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
+| Jasmine / Olivine Lighthouse (Secret Medicine) | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 
 
-Reusable recipes for badge gates, ferry NPCs, and story NPC removal live in `documentation/HACK-NOTES.md`.
+Field recipes: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md).
 
 ### Trainer scaling (verified or enabled)
 
 
-| Phase                                    | Status            | Toggle / hook                                                                                                    |
-| ---------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
-| 1 — Rescale vanilla levels by badge band | Verified          | `TRAINER_LEVEL_SCALING`                                                                                          |
-| 2 — Level-appropriate moves              | Verified          | `TRAINER_LEVEL_APPROPRIATE_MOVES`                                                                                |
-| 3 — Same-line stage adjust               | Verified          | `TRAINER_SPECIES_STAGE_ADJUST`                                                                                   |
-| 6 — Gym Leaders at level cap             | Enabled (partial) | `TRAINER_GYM_LEADER_CAP_LEVEL`; Gym trainer type filter still open                                               |
-| 4–5, 7–12                                | Not started       | Random species, evolution exclusions, battle size, dynamic rosters, counter-picking, items, TMs, living trainers |
+| Phase | Status | Design ref |
+| ----- | ------ | ---------- |
+| 1 — Rescale vanilla levels by badge band | Verified | [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) |
+| 2 — Level-appropriate moves | Verified | [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) |
+| 3 — Same-line stage adjust | Verified | [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) |
+| 6 — Gym Leaders at level cap | Partial | [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters) — Gym trainer type filter still open |
+| 4–5, 7–12 | Not started | [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) |
+
+
+Implementation: HACK-NOTES § **Trainer level scaling**.
 
 
 
@@ -132,7 +135,7 @@ See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jas
 - Living trainers ([World-5](DESIGN-WORLD.md#world-5-living-trainers)), dynamic rosters, universal PC ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)), collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 - **Gym Leader family location hints** ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — requires [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology).
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
-- **Wild encounter systems** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)–[Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) — ecology seed (TBD), broad level range (TBD), **distance caps implemented** (Wilds-3 PoC).
+- **Wild ecology seed** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)) — not started; **Wilds-2** level range + **Wilds-3** distance caps implemented (PoC).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
 - Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival removal, Rocket extension, remaining gym rows.
 - **Vanilla cleanup pass** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — strip superseded NPCs, quests, HM fetch chains, and HM-teaching scripts.

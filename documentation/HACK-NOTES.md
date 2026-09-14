@@ -416,6 +416,39 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 ---
 
+## Trainer level scaling (Battle-8 phases 1–3, 6 partial)
+
+**Status:** phases **1–3** verified in-game; phase **6** Gym Leader cap enabled — Gym trainer band + type filter still open ([Battle-8](DESIGN-BATTLES.md#battle-8-implementation)).
+
+**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps), [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) — badge count → player cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Special-trainer overrides deferred.
+
+| Phase | Toggle | Where |
+|-------|--------|--------|
+| 1 — Rescale levels | `TRAINER_LEVEL_SCALING` | `MakeTrainerPokemonParty()` in `src/field/enemy_party.c` — `CountPlayerBadges()`, `PickTrainerLevelInBand()` |
+| 2 — Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; `InitBoxMonMoveset()` after `ChangeToBattleForm` |
+| 3 — Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustSpeciesForLevel()` from `include/species_stage_for_level.h` (requires phase 1). Build tables: `scripts/build/gen_level_up_evo_tables.py` → `src/field/level_up_evo_tables.c`; `scripts/build/patch_level_up_evo_addrs.py` patches overlay 129 pointer (shared with [wild stage adjust](#runtime-pipeline)) |
+| 6 — Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires phase 1 |
+
+**Dependencies:** phase 2 requires phase 1; phase 3 requires phase 1; phase 6 requires phase 1.
+
+**Not started:** phases 4–5 (random species, stone/trade exclusions), 7–12 (battle size, dynamic rosters, items, living trainers).
+
+---
+
+## Player badge level cap & Rare Candies (not enabled yet)
+
+**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps) — EXP stops at badge cap; **Rare Candies may exceed the cap** when both hooks are enabled.
+
+| Toggle | Role |
+|--------|------|
+| `IMPLEMENT_LEVEL_CAP` | hg-engine level cap from `LEVEL_CAP_VARIABLE` (off in this fork by default) |
+| `UNCAP_CANDIES_FROM_LEVEL_CAP` | Rare Candies ignore the cap (use with `IMPLEMENT_LEVEL_CAP`) |
+| `ALLOW_LEVEL_CAP_EVOLVE` | Optional — evolve at cap via candy when evolution level matches |
+
+All three are commented out in `include/config.h`. Trainer scaling (`TRAINER_LEVEL_SCALING`) is independent and **on** by default. Verify hg-engine cap behaviour matches design before enabling `IMPLEMENT_LEVEL_CAP`.
+
+---
+
 ## Paid ferry / local bypass NPCs (reusable recipe)
 
 **Status:** Route 42 reference implementation **verified in-game** (Aug 2026).

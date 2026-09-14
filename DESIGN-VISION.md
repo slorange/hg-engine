@@ -93,7 +93,7 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 The player chooses their starting city from locations throughout Johto and Kanto.
 
-**Starting city list** (used for [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) graph / distance precomputation — source: `scripts/dev/Route Levels/starting_cities.txt`):
+**Starting city list** (used for [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) distance precomputation):
 
 
 | Index | City           | Region |
@@ -118,7 +118,7 @@ The player chooses their starting city from locations throughout Johto and Kanto
 | 17    | Fuchsia City   | Kanto  |
 
 
-**In-game picker (current ROM):** New Bark, Goldenrod, Saffron only — PoC wiring in Mom scr_seq **845**; expand menu + per-city home doors using the table above.
+**In-game picker (current ROM):** New Bark, Goldenrod, and Saffron only — expand to the full table above with per-city home doors ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
 
 
 Every available starting city must provide reasonable access to:
@@ -138,11 +138,9 @@ Not a simple “redirect the house exit.” Each city needs a **designated outdo
 1. **Exit from home interior** → chosen city’s outdoor door tile.
 2. **Enter that outdoor door** → same home interior (Mom, grants, PC upstairs).
 
-**Interior swap (preferred v1 strategy):** keep **one canonical player house interior** (`T20R0201` / Mom scripts) for all starts. The outdoor door in the chosen city warps into it. On exit, `set_dynamic_warp` returns to that door. The **displaced vanilla house** (the one we repurposed as “home” in that city) becomes what New Bark’s player-house door leads into when the player did **not** start in New Bark — so walking into the old New Bark house does not dump the player into Mom’s cutscene by mistake.
+**Interior swap (preferred v1 strategy):** keep **one canonical player house interior** (Mom, grants, PC) for all starts. The chosen city’s outdoor “home” door warps into it; leaving home returns to that outdoor door. The **displaced vanilla house** in that city should become what New Bark’s player-house door leads into when the player did **not** start in New Bark — so the old New Bark house does not replay Mom’s cutscene.
 
-Exact door/interior pairs are documented in `documentation/HACK-NOTES.md` (pret zone_event recon). Goldenrod and Saffron home doors verified in-game; **New Bark door swap** (displaced interior when start city ≠ New Bark) is deferred — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog).
-
-**Implemented (Sep 2026):** 3-city `ListLocalText` menu in Mom cutscene → `VAR_PLAYER_START_CITY` (**0x4031**) → `_set_home_dynamic_warp`. Player walks to front door **(3, 10)** on 1F; dynamic exit warp lands at the chosen city’s outdoor home door. No post-cutscene teleport.
+Goldenrod and Saffron home doors verified in-game (Sep 2026). **New Bark door swap** when start ≠ New Bark is deferred — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). Wiring recipe: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
 
 ## Starter selection
 
@@ -159,7 +157,7 @@ Long-term options (any non-legendary, curated pools, location-specific pools) re
 | 9–11  | Turtwig, Chimchar, Piplup       |
 
 
-Twelve choices total; menu index stored in `VAR_PLAYER_STARTER` (**0x4030**). **Implemented:** 12-row `ListLocalText` text menu in Mom scr_seq **845** script **0** (`scr_seq_t20_mom_script0.s`); each branch uses `give_mon` (not vanilla `choose_starter` / 3-ball UI). Strings in `data/text/545.txt`. `src/starters.c` **is unused** on this path — see `HACK-NOTES.md`.
+**Implemented (Sep 2026):** twelve-option **text menu** in the Mom cutscene (not vanilla three-ball `choose_starter`). Species table above. Details: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
 
 ## Intro timing (v1)
 
@@ -167,9 +165,9 @@ Twelve choices total; menu index stored in `VAR_PLAYER_STARTER` (**0x4030**). **
 
 Flow runs **after Professor Oak / name / gender**. Player still wakes in **player house 2F (bedroom)** regardless of chosen city, walks downstairs, and Mom’s cutscene runs:
 
-1. **City picker** — **18 cities decided** ([Starting city](#starting-city)); **3 options implemented** in Mom script **0** (PoC), before starter menu.
-2. **Starter picker** (12 options) — **implemented** in same cutscene; bedroom scr_seq **846** stays vanilla (no starter hook there).
+1. **City picker** — 18 cities decided ([Starting city](#starting-city)); **3** in the current ROM (PoC).
+2. **Starter picker** (12 options) — same Mom cutscene; bedroom wake stays vanilla.
 3. **Mom grants** (bag, Pass, Pokédex, shoes, etc.) — same cutscene, after starter pick.
-4. **Exit** — player walks to front door; dynamic warp to chosen city. Non–New Bark cities use outdoor-door + dynamic-warp wiring documented in `HACK-NOTES.md`.
+4. **Exit** — player walks out the front door to the chosen city (no post-cutscene teleport).
 
 Vanilla story beats that assume a New Bark → Cherrygrove/Violet opening are **not fully removed yet** — see [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) and [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog).

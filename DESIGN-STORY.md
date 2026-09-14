@@ -38,7 +38,7 @@ Remove the rival entirely: no naming, no scripted intro, no mandatory early batt
 **Rules (all Leaders):**
 
 1. **City-local events only** — pre/post-battle flavour OK if it stays in the Gym town; cut anything that sends the player elsewhere and expects a return.
-2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader; HMs are granted by Gym Leaders per badge order ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). HM/Flash/dungeon gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) still applies outside Gyms; wild-level guard gating is TBD vs [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps).
+2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader; HMs are granted by Gym Leaders per badge order ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). HM/Flash/dungeon gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) still applies outside Gyms. Wild **levels** use [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps), not badge guard tiles.
 3. **Internal Gym puzzles** — trash cans, maze, etc. stay unless they hard-require an HM.
 
 ### Required changes
@@ -55,23 +55,18 @@ Remove the rival entirely: no naming, no scripted intro, no mandatory early batt
 
 | Leader | Notes |
 |--------|--------|
-| **Jasmine** (Olivine) | Secret Medicine on Olivine Mart special clerk (¥500); `FLAG_GOT_SECRETPOTION` set when item enters bag (`src/bag.c`). Lighthouse scene works after purchase. **Cleanup:** remove redundant Cianwood pharmacy give — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). |
-| **Lt. Surge** (Vermilion) | Cut tree outside Gym removed (`2_051`); internal trash-can puzzle unchanged. |
-| **Erika** (Celadon) | City tree (`2_052`) + three Gym maze trees (`2_352`) removed; Leader reachable without Cut. |
+| **Jasmine** (Olivine) | Secret Medicine sold at Olivine Mart (¥500); Lighthouse works after purchase. **Cleanup:** redundant Cianwood pharmacy — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). |
+| **Lt. Surge** (Vermilion) | Cut tree outside Gym removed; internal trash-can puzzle unchanged. |
+| **Erika** (Celadon) | City + Gym maze Cut trees removed; Leader reachable without Cut. |
 | **Pryce** (Mahogany) | Rocket skip on load (see above). |
 
-Implementation: `tools/patch_zone_event_gym_cut_trees.py` — verified in-game Aug 2026.
+Verified in-game Aug–Sep 2026. Field recipes: `documentation/HACK-NOTES.md`.
 
 ### OK as-is (city-local or no external gate)
 
 Falkner, Whitney, Morty (Burned Tower is Ecruteak-local), Chuck, Sabrina, Janine, Brock.
 
-## Implementation
-
-- Prefer flag-on-load and script skips over deleting assets (`HACK-NOTES.md` recipes).
-- Starting-city selector ([Vision-3](DESIGN-VISION.md#vision-3-starting-location)) must not depend on Elm/rival/New Bark flags.
-- Gym obstacles are **zone_event** objects (e.g. Cut trees), not Blender map edits — patch `zone_event` / `scr_seq` like Route 36 Sudowoodo.
-- After a [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) row is verified, check [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) for redundant vanilla duplicates to strip.
+After a row is **verified**, check [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) for redundant vanilla content to strip. Implementation uses flag-on-load and script skips — same toolchain as HACK-NOTES field recipes; starting city ([Vision-3](DESIGN-VISION.md#vision-3-starting-location)) must not depend on Elm/rival/New Bark flags.
 
 ---
 

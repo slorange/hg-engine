@@ -215,9 +215,9 @@ Battle use: Flash and Headbutt remain normal learnable moves if the player wants
 
 | System                                          | Role                          | Notes                                                                                                                        |
 | ----------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Rock Smash encounters                           | Wild mons from smashing rocks | Own slots in `EncounterData` (2 slots); HM06-gated                                                                           |
-| Surf / fishing encounters                       | Water wilds                   | Own tables per map; **Rod tier** gates which species appear — see [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression) |
-| Headbutt trees                                  | Wild mons from trees          | Own data files; **requires Headbutt unlock** (badge-gated, see above)                                                        |
+| Rock Smash encounters                           | Wild mons from smashing rocks | Separate encounter slots; HM06-gated                                                                                         |
+| Surf / fishing encounters                       | Water wilds                   | Per-map tables; **Rod tier** gates species — [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression)                      |
+| Headbutt trees                                  | Wild mons from trees          | Separate Headbutt tables; **requires Headbutt unlock** (badge-gated, see above)                                              |
 | Cut trees / smashable rocks / Strength boulders | Map obstacles                 | Badge-gated collection field use                                                                                             |
 | Whirlpool / Waterfall / Rock Climb tiles        | Traversal gates               | Same                                                                                                                         |
 | Fishing Rods (Old / Good / Super)               | Tiered fishing encounters     | **Not badge-gated** — dex Water-family counts; guru NPC network — see [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression). **Route 44** guru live; recipe in `documentation/HACK-NOTES.md` § Fishing Rod guru NPCs |
@@ -594,7 +594,7 @@ Unlocked via Badge count, and sprinkled around the shops. Intentionally not cons
 | **Goldenrod / Celadon (department stores)** | Full ball range, **TMs**, **stones / Link Cable**, broad held selection |
 
 
-Vanilla per-map mart tables (`src/field/mart.c`, `data/mart/` or equivalent) need a **pass** — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) for obsolete entries (e.g. Secret Medicine only via Olivine special clerk, not random route shops).
+Vanilla per-map mart inventories need a **pass** when shop redesign ships — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) (e.g. Secret Medicine only via Olivine clerk, not random route shops).
 
 ## Living-trainer economy
 

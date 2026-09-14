@@ -61,7 +61,7 @@ Conceptually:
 
 # Wilds-2. Increased Wild Pokémon Level Range
 
-**Status: IMPLEMENTED** — distance caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)), **85/15 adult/baby level split** when `cap ≥ 10` ([Level distribution](#level-distribution)), and **same-line stage adjust** (`AdjustSpeciesForLevel` in `include/species_stage_for_level.h`, shared with trainer battles).
+**Status: IMPLEMENTED** — distance caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)), [level distribution](#level-distribution) below, and same-line **stage adjust** by rolled level (level-up evolution chains only; shared with trainer battles). Runtime details: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
 
 Replace narrow per-area wild level bands with a **broad range** from low levels up to an area-specific maximum.
 
@@ -97,15 +97,15 @@ One habitat can therefore naturally contain **multiple stages** of the same evol
 
 ## Level distribution
 
-**Implemented (Sep 2026)** in `RollWildLevel()` (`src/wild_level_caps.c`). Wild encounter level is never **1** (hard floor **2**).
+**Implemented (Sep 2026).** Wild levels are never **1** (minimum encounter level **2**).
 
 | Condition | Roll |
 |-----------|------|
-| `cap < 10` | Adult band only: uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 9 → **6–9**) |
-| `cap ≥ 10`, **15%** “baby” | Uniform **2–7** |
-| `cap ≥ 10`, **85%** “adult” | Uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 10 → **7–10**; cap 60 → **52–60**) |
+| Area cap below **10** | Adult band only: uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 9 → **6–9**) |
+| Cap **≥ 10**, **15%** “baby” | Uniform **2–7** |
+| Cap **≥ 10**, **85%** “adult” | Uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 10 → **7–10**; cap 60 → **52–60**) |
 
-After rolling, **`AdjustSpeciesForLevel`** still picks evolution stage for the family.
+After rolling, evolution **stage** follows the family’s level-up chain for that level (stones / trade / friendship **TBD**).
 
 ## Non-level evolution methods
 
@@ -155,50 +155,31 @@ Build a **directional graph** representing the explorable world:
 
 ## Build-time precomputation
 
-For **every valid starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location) — 18 cities; graph data in `scripts/dev/Route Levels/`):
+For **every valid starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location) — 18 cities):
 
-1. Run a shortest-path calculation across the world graph.
-2. Calculate the **exploration distance** from that starting city to every encounter area.
-3. Convert distance into a progression **tier** / **maximum wild level**.
-4. Precompute at **build time** (not during gameplay).
-5. Output a lookup table compiled into the ROM.
+1. Shortest-path **exploration distance** from that city to each encounter area on the world graph.
+2. Convert distance → **maximum wild level** (and optional tier for tuning).
+3. Precompute the full matrix **offline** and ship it as a ROM lookup table — **no graph traversal during gameplay**.
 
-**Desired runtime model:**
-
-```c
-WildAreaProgression[startingCity][encounterArea]
-```
-
-Potential stored values:
-
-```c
-struct EncounterAreaProgression
-{
-    u8 tier;
-    u8 levelCap;
-};
-```
-
-Do **not** perform graph traversal during gameplay unless there is a compelling reason. Generate the matrix offline and compile it into the ROM.
+Implementation (graph files, generators, runtime hooks): `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
 
 ## Encounter methods (PoC coverage)
 
-| Method | PoC status | Notes |
-|--------|------------|-------|
-| Grass / cave walking | **Verified** | `modify_species_encounter_data` |
-| Surf / rods / Rock Smash | **Verified** | Same `EncountParamSet` path |
-| Headbutt | **Verified** | Wild battle still uses `modify_species_encounter_data` |
-| Hoenn / Sinnoh Sound | **Hooked** | Same path after species swap |
-| Swarms | **Hooked** | Same path if normal `EncountParamSet` |
-| Roamers / `_rare` | **Vanilla** | `modify_species_encounter_data_rare` not hooked |
-| Safari Zone | **Not yet** | Separate NARC (`data/SafariEncounters.c`) — no distance cap or stage adjust |
-| Bug Catching Contest | **Not yet** | Contest encounter table; verify whether it shares `modify_species_encounter_data` in-game |
-| Roamers / `_rare` | **Vanilla** | `modify_species_encounter_data_rare` not hooked |
-| Scripted `wild_battle` | **Not hooked** | Explicit script levels unchanged |
+| Method | PoC status |
+|--------|------------|
+| Grass / cave walking | **Verified** |
+| Surf / rods / Rock Smash | **Verified** |
+| Headbutt | **Verified** |
+| Hoenn / Sinnoh Sound | **Hooked** (after species swap) |
+| Swarms | **Hooked** when using normal wild tables |
+| Roamers / rare table | **Vanilla levels** (not distance-scaled) |
+| Safari Zone | **Not yet** |
+| Bug Catching Contest | **Not yet** |
+| Scripted wild battles | **Not hooked** (script levels unchanged) |
 
 ## Edge costs (tuning TBD)
 
-PoC uses **uniform edge cost = 1** in `calculate_location_distances.py`. Possible future weighting:
+PoC uses **uniform edge cost = 1** per graph hop. Possible future weighting:
 
 | Connection type | Example cost |
 |-----------------|-------------:|
@@ -213,29 +194,18 @@ Exact weighting should be tuned after generating and inspecting the distance mat
 
 ## Distance → level cap (PoC formula)
 
-**Status: implemented and verified** — build-time tables + runtime hooks (`WildEncSingle` / `WildWaterEncSingle` cache + `modify_species_encounter_data` apply on overlay 129, normal wilds only). **`modify_species_encounter_data_rare` is untouched** (roamers / special encounters keep vanilla levels). Level rolls use the [Wilds-2 level distribution](#level-distribution).
+**Status: implemented and verified.** Normal wild encounters use the cap + [Wilds-2 level distribution](#level-distribution). Roamers, Safari, and most scripted wilds are unchanged — see table above.
 
-Implementation reference: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
-
-Player badge level caps run **3–70** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use a lower ceiling for balance:
+Player badge level caps run up to **70–80** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use a lower ceiling (**3–60**) for balance:
 
 ```
 levelCap = 57 × route_distance / max_route_distance + 3
 ```
 
-- `route_distance` — shortest graph hops from the chosen starting city to the encounter area’s graph node (`scripts/dev/Route Levels/location_distances.txt`).
-- `max_route_distance` — farthest reachable distance for that starting city ( **`MaxDistance`** row in the same file, computed by `calculate_location_distances.py` ).
-- Integer division; at distance `0` → cap **3**; at `max_route_distance` → cap **60**.
-- Within the area cap, levels follow [Wilds-2 level distribution](#level-distribution) (85% near cap, 15% babies 2–7 when `levelCap ≥ 10`; below 10, adult band only).
-- After rolling, **`AdjustSpeciesForLevel`** picks the stage matching the level (EVO_LEVEL chains only; same helper as `TRAINER_SPECIES_STAGE_ADJUST`).
-
-**Build pipeline:**
-
-1. `scripts/dev/Route Levels/calculate_location_distances.py` → `location_distances.txt` (includes `MaxDistance` row).
-2. `scripts/dev/Route Levels/encounter_area_graph.tsv` — static `EncounterAreaId` → graph node (caves: **one node per dungeon** for PoC; all floors share the parent cave’s cap).
-3. `scripts/build/gen_wild_level_caps.py` → `src/wild_level_caps_data.c` (compiled into ROM).
-
-**Runtime:** `MapHeader_GetWildEncounterBank(mapId)` → precomputed cap from `VAR_PLAYER_START_CITY` (**0x4031**; PoC remaps menu 0/1/2 → New Bark / Goldenrod / Saffron table rows until the 18-city menu ships).
+- `route_distance` — shortest graph distance from the chosen starting city to the encounter area.
+- `max_route_distance` — farthest reachable distance for that starting city on the same graph.
+- Integer division; at distance **0** → cap **3**; at max distance → cap **60**.
+- **PoC starting city:** Mom menu stores the choice; ROM still maps **3 menu options** to New Bark / Goldenrod / Saffron table rows until the full 18-city picker ships.
 
 ### Future level-cap overrides (not in PoC)
 
@@ -308,26 +278,22 @@ This creates a self-contained fishing progression loop:
 
 **Target:** a **network** of interchangeable Fishing Guru / Fishing Brother NPCs spread across Johto and Kanto so the player is never far from the next Rod tier — any one of them can award whichever Rod is next.
 
-**Vanilla HGSS caveat:** HeartGold/SoulSilver does **not** mirror every historical Gen I–IV Rod-giver city. Confirmed or typical vanilla hooks include **Route 32** (Old Rod) and **Route 12 / Silence Bridge** (Super Rod); **Olivine** has a fishing NPC. **Vermilion and Fuchsia do not have Rod givers in vanilla HGSS** — if we want them on the network, we must **add new NPCs** (zone_event object + scr_seq + text).
+**Vanilla HGSS caveat:** HeartGold/SoulSilver does **not** mirror every historical Gen I–IV Rod-giver city. Typical vanilla hooks include **Route 32** (Old Rod) and **Route 12 / Silence Bridge** (Super Rod); **Olivine** has a fishing NPC. **Vermilion and Fuchsia** have no Rod givers in vanilla — add new gurus there if they join the network.
 
-**Distribution goal:** avoid clustering every guru in mid-Johto / south Kanto. Where practical, place gurus at:
+**Distribution goal:** avoid clustering every guru in mid-Johto / south Kanto. Prefer towns the player already visits (Mart, Gym, ferry) over dead-end-only cells.
 
 | Region | Location | Status | Notes |
 |--------|----------|--------|--------|
-| East Johto | **Route 44** (bridge) | **Implemented** | `(568, 183)` west of bridge fisherman; scr_seq **257**, zone_event **043** — verified in-game Sep 2026 |
+| East Johto | **Route 44** (bridge) | **Implemented** | Verified in-game Sep 2026 |
+| West Johto (coast) | **Olivine City** | **Implemented** | Verified in-game Sep 2026 |
 | South Johto | Route 32 Pokémon Center | Planned | Vanilla Old Rod area |
-| West Johto (coast) | Olivine City | **Implemented** | world `(273, 248)` by city sign; zone_event **074**, scr_seq **911**, msg **604** — verified in-game Sep 2026 |
-| East Johto | **Blackthorn City** | Planned | **Likely new NPC** — gives Blackthorn a way to farm at lv5 since all connected routes are too high level |
-| West Kanto | **Viridian City or Pewter City** | Planned | **Likely new NPC** |
-| Mid Kanto (coast) | Vermilion City | Planned | **Likely new NPC** (not vanilla Rod giver) |
-| South Kanto | Fuchsia City | Planned | **Likely new NPC** (not vanilla Rod giver) |
+| East Johto | **Blackthorn City** | Planned | **Likely new NPC** — local Rod access when surrounding wild caps are high |
+| West Kanto | **Viridian or Pewter** | Planned | **Likely new NPC** |
+| Mid Kanto (coast) | Vermilion City | Planned | **Likely new NPC** |
+| South Kanto | Fuchsia City | Planned | **Likely new NPC** |
 | East Kanto | Route 12 / Silence Bridge | Planned | Vanilla Super Rod area |
 
-Exact map and `(x, z)` per guru are implementation details; prefer towns the player already visits for other reasons (Mart, Gym, ferry) over dead-end-only cells.
-
-Any guru on this network reads the same global fishing-progression state and offers the appropriate Rod (Old on first talk, then Good / Super when family counts are met). Shared bytecode: `armips/scr_seq/scr_seq_r44_rod_guru.s` / `scr_seq_olivine_rod_guru.s` (append via per-map patcher). Implementation recipe and ID-discovery notes: `documentation/HACK-NOTES.md` § **Fishing Rod guru NPCs**.
-
-**Outdoor-matrix maps** (Route 44 body uses zone_event member **043**, not the map-header zone index): place objects with **`type=0`** + low **scriptId** bound to that route’s **scr_seq** member (pret `scriptsBank` in `map_headers.h`). Vanilla walkable NPCs on the matrix often use **`type=1`** + scripts **3000+** instead.
+Any guru reads the same global progression and offers Old → Good → Super when family counts are met. **Implementation:** `documentation/HACK-NOTES.md` § **Fishing Rod guru NPCs**.
 
 ---
 

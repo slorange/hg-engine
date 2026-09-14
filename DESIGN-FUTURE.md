@@ -14,7 +14,7 @@
 
 - Do **not** implement ball/Apricorn changes unless explicitly requested for the current task.
 - Prefer config-driven catch multipliers where hg-engine already supports them.
-- Mom's open-world grant already includes an **Apricorn Box** (`OPENWORLD_STARTING_ITEMS`); that is inventory convenience, not this full rebalance.
+- Mom's starting grants already include an **Apricorn Box** for inventory convenience — not this full V2 rebalance.
 
 ---
 
