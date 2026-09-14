@@ -907,7 +907,7 @@ Scratch survives overlay 129 reload; do not reuse these addresses for other feat
 | `DEBUG_WILD_LEVEL_CAP_EXACT` | `include/config.h` | Level = cap exactly (no random roll) |
 | `DEBUG_WILD_LEVEL_CAPS` | `include/debug.h` | melonDS `debug_printf` on cache/apply |
 
-Production: all three **off**; levels roll uniformly in `[WILD_LEVEL_CAP_MIN, cap]` via `RollWildLevel()`.
+Production: all three **off**; `RollWildLevel(cap)` — adult band **`[⌊0.9×cap⌋−2, cap]`** always; if `cap ≥ 10`, **15%** uniform **2–7** else adult band (never level 1). See [Wilds-2 level distribution](DESIGN-WILDS.md#level-distribution).
 
 ### Editing caps
 

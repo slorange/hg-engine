@@ -61,7 +61,7 @@ Conceptually:
 
 # Wilds-2. Increased Wild Pokémon Level Range
 
-**Status: PARTIALLY IMPLEMENTED** — broad `[3, cap]` rolls ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) and **same-line stage adjust** (`AdjustSpeciesForLevel` in `include/species_stage_for_level.h`, shared with trainer battles) ship in PoC. Weighted level distribution curves remain TBD.
+**Status: IMPLEMENTED** — distance caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)), **85/15 adult/baby level split** when `cap ≥ 10` ([Level distribution](#level-distribution)), and **same-line stage adjust** (`AdjustSpeciesForLevel` in `include/species_stage_for_level.h`, shared with trainer battles).
 
 Replace narrow per-area wild level bands with a **broad range** from low levels up to an area-specific maximum.
 
@@ -97,15 +97,15 @@ One habitat can therefore naturally contain **multiple stages** of the same evol
 
 ## Level distribution
 
-Do **not** necessarily use a uniform probability over every level from 3 to cap.
+**Implemented (Sep 2026)** in `RollWildLevel()` (`src/wild_level_caps.c`). Wild encounter level is never **1** (hard floor **2**).
 
-Prefer weighting levels toward the **upper portion** of the range so late-game encounters remain relevant while low levels stay possible:
+| Condition | Roll |
+|-----------|------|
+| `cap < 10` | Adult band only: uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 9 → **6–9**) |
+| `cap ≥ 10`, **15%** “baby” | Uniform **2–7** |
+| `cap ≥ 10`, **85%** “adult” | Uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 10 → **7–10**; cap 60 → **52–60**) |
 
-- **low levels** — possible but uncommon;
-- **middle levels** — moderate frequency;
-- **levels near the area cap** — most common.
-
-Exact weighting curves remain **TBD** and should be balanceable (config or data tables).
+After rolling, **`AdjustSpeciesForLevel`** still picks evolution stage for the family.
 
 ## Non-level evolution methods
 
@@ -213,7 +213,7 @@ Exact weighting should be tuned after generating and inspecting the distance mat
 
 ## Distance → level cap (PoC formula)
 
-**Status: implemented and verified** — build-time tables + runtime hooks (`WildEncSingle` / `WildWaterEncSingle` cache + `modify_species_encounter_data` apply on overlay 129, normal wilds only). **`modify_species_encounter_data_rare` is untouched** (roamers / special encounters keep vanilla levels). PoC rolls **uniformly** in `[3, cap]`; Wilds-2 weighted curves and balance passes remain TBD.
+**Status: implemented and verified** — build-time tables + runtime hooks (`WildEncSingle` / `WildWaterEncSingle` cache + `modify_species_encounter_data` apply on overlay 129, normal wilds only). **`modify_species_encounter_data_rare` is untouched** (roamers / special encounters keep vanilla levels). Level rolls use the [Wilds-2 level distribution](#level-distribution).
 
 Implementation reference: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
 
@@ -226,7 +226,7 @@ levelCap = 57 × route_distance / max_route_distance + 3
 - `route_distance` — shortest graph hops from the chosen starting city to the encounter area’s graph node (`scripts/dev/Route Levels/location_distances.txt`).
 - `max_route_distance` — farthest reachable distance for that starting city ( **`MaxDistance`** row in the same file, computed by `calculate_location_distances.py` ).
 - Integer division; at distance `0` → cap **3**; at `max_route_distance` → cap **60**.
-- Within `[3, levelCap]`, PoC rolls **uniformly** (Wilds-2 weighted curve deferred).
+- Within the area cap, levels follow [Wilds-2 level distribution](#level-distribution) (85% near cap, 15% babies 2–7 when `levelCap ≥ 10`; below 10, adult band only).
 - After rolling, **`AdjustSpeciesForLevel`** picks the stage matching the level (EVO_LEVEL chains only; same helper as `TRAINER_SPECIES_STAGE_ADJUST`).
 
 **Build pipeline:**

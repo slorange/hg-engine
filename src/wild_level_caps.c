@@ -192,16 +192,57 @@ static u8 ComputeWildLevelCap(u8 *failReason)
     return cap;
 }
 
-static u8 RollWildLevel(u8 cap)
-{
-    u8 range;
+// Encounter levels never go below 2 (no wild level 1).
+#define WILD_ENCOUNTER_LEVEL_MIN 2
+#define WILD_LEVEL_BABY_SPLIT_MIN_CAP 10
+#define WILD_LEVEL_BABY_ROLL_PERCENT 15
+#define WILD_LEVEL_BABY_MAX 7
 
-    if (cap <= WILD_LEVEL_CAP_MIN) {
-        return WILD_LEVEL_CAP_MIN;
+static u8 RollWildLevelUniform(u8 lo, u8 hi)
+{
+    u8 span;
+
+    if (hi <= lo) {
+        return lo;
     }
 
-    range = cap - WILD_LEVEL_CAP_MIN + 1;
-    return WILD_LEVEL_CAP_MIN + (gf_rand() % range);
+    span = hi - lo + 1;
+    return lo + (u8)(gf_rand() % span);
+}
+
+static u8 RollWildLevelAdultBand(u8 cap)
+{
+    u8 adultLo;
+
+    adultLo = (u8)(((u16)cap * 9u) / 10u);
+    if (adultLo >= 2) {
+        adultLo = (u8)(adultLo - 2);
+    }
+    if (adultLo < WILD_ENCOUNTER_LEVEL_MIN) {
+        adultLo = WILD_ENCOUNTER_LEVEL_MIN;
+    }
+    if (adultLo > cap) {
+        adultLo = cap;
+    }
+
+    return RollWildLevelUniform(adultLo, cap);
+}
+
+static u8 RollWildLevel(u8 cap)
+{
+    if (cap <= WILD_ENCOUNTER_LEVEL_MIN) {
+        return WILD_ENCOUNTER_LEVEL_MIN;
+    }
+
+    if (cap < WILD_LEVEL_BABY_SPLIT_MIN_CAP) {
+        return RollWildLevelAdultBand(cap);
+    }
+
+    if ((gf_rand() % 100) < WILD_LEVEL_BABY_ROLL_PERCENT) {
+        return RollWildLevelUniform(WILD_ENCOUNTER_LEVEL_MIN, WILD_LEVEL_BABY_MAX);
+    }
+
+    return RollWildLevelAdultBand(cap);
 }
 
 #ifdef DEBUG_WILD_LEVEL_CAP_LEVELS
