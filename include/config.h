@@ -163,6 +163,14 @@
 // requires TRAINER_LEVEL_SCALING; ordinary trainers still use the [cap-4, cap] band
 #define TRAINER_GYM_LEADER_CAP_LEVEL
 
+// IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS replaces vanilla wild encounter levels with
+// distance-from-start-city caps precomputed from scripts/dev/Route Levels/.
+#define IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
+
+// DEBUG_WILD_LEVEL_CAP_EXACT sets wild level to the distance cap exactly (route testing).
+// Comment out for random levels in [WILD_LEVEL_CAP_MIN, cap].
+// #define DEBUG_WILD_LEVEL_CAP_EXACT
+
 // AI_CAN_GRAB_ITEMS allows to use Trick, Switcheroo, (Thief still todo) on the Player and actually grab items. This can result in lost items.
 #define AI_CAN_GRAB_ITEMS
 

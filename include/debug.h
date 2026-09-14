@@ -111,7 +111,22 @@
 // when enabled, skips the intro movie and title screen to immediately continue the loaded save
 // #define DEBUG_AUTO_CONTINUE_GAME
 
+// DEBUG_WILD_LEVEL_CAPS prints wild level cap cache/apply info to the melonDS console (requires NOCASH_GBA_PRINT)
+// #define DEBUG_WILD_LEVEL_CAPS
+
+// DEBUG_WILD_LEVEL_CAP_LEVELS encodes lookup stage in the wild mon's level (DeSmuME-safe).
+//   4 = mapId resolve failed
+//   5 = encBank NA (no wild table for this map)
+//   6 = encBank out of table range
+//   7 = start city index out of range
+//   8 = sWildLevelCaps[row][col] returned 0
+//   9 = table cap below WILD_LEVEL_CAP_MIN
+//   else = success: level is the table cap (e.g. Route 34 / New Bark -> 46)
+// #define DEBUG_WILD_LEVEL_CAP_LEVELS
+
+// DEBUG_WILD_LEVEL_CAP_EXACT lives in config.h (route cap testing toggle).
+
 // NOCASH_GBA_PRINT swaps from desmume prints with the syscall to NO$GBA-style prints for use with i.e. melonDS
-#define NOCASH_GBA_PRINT
+// #define NOCASH_GBA_PRINT
 
 #endif // DEBUG_H

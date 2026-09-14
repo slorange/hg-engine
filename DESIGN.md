@@ -132,7 +132,7 @@ See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jas
 - Living trainers ([World-5](DESIGN-WORLD.md#world-5-living-trainers)), dynamic rosters, universal PC ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)), collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 - **Gym Leader family location hints** ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — requires [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology).
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
-- **Wild encounter systems** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)–[Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) — ecology seed, broad level range, distance caps (TBD).
+- **Wild encounter systems** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)–[Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) — ecology seed (TBD), broad level range (TBD), **distance caps implemented** (Wilds-3 PoC).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
 - Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival removal, Rocket extension, remaining gym rows.
 - **Vanilla cleanup pass** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — strip superseded NPCs, quests, HM fetch chains, and HM-teaching scripts.
@@ -164,7 +164,7 @@ The following are intentionally unresolved.
 - Whether fainted Pokémon's lost EXP is redistributed.
 - Wild ecology: habitat tags, family assignment algorithm, special/static encounter policy ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)).
 - Wild level distribution curves within area caps ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range)).
-- Wild level progression model: **Wilds-3 distance caps** vs **World-2 guard/tile gating** vs hybrid ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps), [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) — **likely Wilds-3 + light World-2** (Victory Road, HMs, endgame).
+- Wild level progression: **Wilds-3 distance caps** — **decided / implemented**; World-2 guard/tile gating **not** used for wild levels ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps), [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)).
 - Gym Leader **family hint menus** — curated species lists per Leader ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 - Exact transportation prices.
 - Exact Pokémon Center service list ([World-7](DESIGN-WORLD.md#world-7-pokmon-centers)).

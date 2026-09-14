@@ -52,7 +52,7 @@ Conceptually:
 - **world seed** determines **where** Pokémon families live;
 - **progression systems** ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) determine **how strong / evolved** encountered Pokémon are.
 
-**Guard-style gating** ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) is an **alternative** to distance caps for wild levels — likely **minimal** if Wilds-3 ships (Victory Road, HM/Flash, endgame pockets only). Trainer and Gym scaling by badge tier ([Battle-8](DESIGN-BATTLES.md#battle-8-implementation)) should land before broad ecology implementation so starting-city balance does not depend entirely on static vanilla tables.
+**Wild level progression:** [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) is **decided and implemented** (PoC verified Sep 2026). Badge / encounter-tile wild gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) is **not** the model for wild levels — kept in docs only for HM/League gates and the Route 46 template.
 
 ---
 
@@ -133,11 +133,11 @@ Three independent inputs:
 
 # Wilds-3. Starting-City Distance-Based Wild Level Caps
 
-**Status: TBD — leading alternative to World-2 wild gating**
+**Status: DECIDED and implemented — PoC verified in-game (Sep 2026)**
 
-Primary alternative to badge-guard / encounter-tile wild progression ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)). **Undecided** which model ships; **likely:** Wilds-3 for wild levels **plus** a **small** amount of World-2 (Victory Road, HM/Flash gates, optional hard zones — not guard spam on every route).
+**Decision:** distance-from-start-city caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) replace badge-guard / encounter-tile wild **level** progression. The alternative ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) wild gating) is **not pursued** for general wild levels; World-2 remains for HM/Flash/League and optional hard zones only.
 
-If Wilds-3 is primary, the player can **enter** high-distance areas early but encounters scale from [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range) level ranges tied to graph distance — danger is in the fights, not a coord gate on the grass.
+The player can **enter** high-distance areas early; encounters scale from [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range) level ranges tied to graph distance — danger is in the fights, not a coord gate on the grass.
 
 Wild-area difficulty should depend on the player's **chosen starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location)) rather than one fixed world progression curve or badge-count encounter blocks.
 
@@ -181,9 +181,23 @@ struct EncounterAreaProgression
 
 Do **not** perform graph traversal during gameplay unless there is a compelling reason. Generate the matrix offline and compile it into the ROM.
 
+## Encounter methods (PoC coverage)
+
+| Method | PoC status | Notes |
+|--------|------------|-------|
+| Grass / cave walking | **Verified** | `modify_species_encounter_data` |
+| Surf / rods / Rock Smash | **Verified** | Same `EncountParamSet` path |
+| Headbutt | **Verified** | Wild battle still uses `modify_species_encounter_data` |
+| Hoenn / Sinnoh Sound | **Hooked** | Same path after species swap |
+| Swarms | **Hooked** | Same path if normal `EncountParamSet` |
+| Roamers / `_rare` | **Vanilla** | `modify_species_encounter_data_rare` not hooked |
+| Safari Zone | Not yet | Separate NARC (`data/SafariEncounters.c`) |
+| Bug Catching Contest | Not yet | Uses contest map table; same hook may apply in-game — verify |
+| Scripted `wild_battle` | Not hooked | Explicit script levels unchanged |
+
 ## Edge costs (tuning TBD)
 
-Costs do not necessarily equal one per map transition. Possible weighting:
+PoC uses **uniform edge cost = 1** in `calculate_location_distances.py`. Possible future weighting:
 
 | Connection type | Example cost |
 |-----------------|-------------:|
@@ -196,21 +210,43 @@ Costs do not necessarily equal one per map transition. Possible weighting:
 
 Exact weighting should be tuned after generating and inspecting the distance matrix.
 
-## Distance → tier → level cap
+## Distance → level cap (PoC formula)
 
-Convert graph distance to **progression tiers** rather than directly to level numbers.
+**Status: implemented and verified** — build-time tables + runtime hooks (`WildEncSingle` / `WildWaterEncSingle` cache + `modify_species_encounter_data` apply on overlay 129, normal wilds only). **`modify_species_encounter_data_rare` is untouched** (roamers / special encounters keep vanilla levels). PoC rolls **uniformly** in `[3, cap]`; Wilds-2 weighted curves and balance passes remain TBD.
 
-Conceptual example only (not final):
+Implementation reference: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
 
-| Distance from start | Tier |
-|--------------------:|-----:|
-| 0–1 | 0 |
-| 2 | 1 |
-| 3 | 2 |
-| … | … |
-| farthest areas | highest |
+Badge-tier player level caps run **3–70** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use the same endpoints for the PoC:
 
-Then map tier → wild maximum level for use by [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range).
+```
+levelCap = 67 × route_distance / max_route_distance + 3
+```
+
+- `route_distance` — shortest graph hops from the chosen starting city to the encounter area’s graph node (`scripts/dev/Route Levels/location_distances.txt`).
+- `max_route_distance` — farthest reachable distance for that starting city ( **`MaxDistance`** row in the same file, computed by `calculate_location_distances.py` ).
+- Integer division; at distance `0` → cap **3**; at `max_route_distance` → cap **70**.
+- Within `[3, levelCap]`, PoC rolls **uniformly** (Wilds-2 weighted curve deferred).
+
+**Build pipeline:**
+
+1. `scripts/dev/Route Levels/calculate_location_distances.py` → `location_distances.txt` (includes `MaxDistance` row).
+2. `scripts/dev/Route Levels/encounter_area_graph.tsv` — static `EncounterAreaId` → graph node (caves: **one node per dungeon** for PoC; all floors share the parent cave’s cap).
+3. `scripts/build/gen_wild_level_caps.py` → `src/wild_level_caps_data.c` (compiled into ROM).
+
+**Runtime:** `MapHeader_GetWildEncounterBank(mapId)` → precomputed cap from `VAR_PLAYER_START_CITY` (**0x4031**; PoC remaps menu 0/1/2 → New Bark / Goldenrod / Saffron table rows until the 18-city menu ships).
+
+### Future level-cap overrides (not in PoC)
+
+| Areas | Intended cap band |
+|-------|-------------------|
+| Routes **27**, **26**, **23** | **70–80** |
+| Route **28**, **Mt. Silver**, **Cerulean Cave** | **80–90** |
+
+Add as a post-processing step on the generated cap table once base distance scaling is validated in play.
+
+### Cave depth (future)
+
+PoC treats each cave dungeon as **one graph node** → one cap for every floor. Later, split dungeon subareas into separate graph nodes (or override rows) so deeper HM-gated sections can exceed entrance tiers without per-floor encounter tables.
 
 ## Interaction with ecology and level range
 
@@ -336,7 +372,7 @@ Open engineering questions for this area (from the former monolithic design doc)
 ## Open-world encounter structure
 
 
-Primary design: [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology) (ecology seed), [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range) (broad level bands), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (distance-based caps — TBD).
+Primary design: [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology) (ecology seed), [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range) (broad level bands), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (distance-based caps — **implemented**).
 
 Questions include:
 

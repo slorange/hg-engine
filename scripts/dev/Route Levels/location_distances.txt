@@ -1,4 +1,5 @@
 Location	Newbark	Violet	Azalea	Goldenrod	Ecruteak	Olivine	Cianwood	Mahogany	Blackthorn	Pallet	Viridian	Pewter	Cerulean	Saffron	Lavender	Celadon	Vermillion	Fuchsia
+MaxDistance	14	14	14	11	13	10	11	15	15	14	12	12	12	10	12	12	10	15
 Newbark	0	5	9	8	8	9	10	6	4	7	5	7	11	9	11	11	8	8
 29	1	4	8	7	7	10	11	5	3	8	6	8	10	8	10	10	9	9
 46	2	5	9	8	6	9	10	4	2	9	7	9	11	9	11	11	10	10

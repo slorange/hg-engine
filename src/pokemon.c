@@ -21,6 +21,7 @@
 #include "rtc.h"
 #include "save.h"
 #include "script.h"
+#include "wild_level_caps.h"
 #include "sound.h"
 
 extern u32 word_to_store_form_at;
@@ -1730,9 +1731,14 @@ extern u32 gTriggerDouble;
  *  @param encInfo
  *  @return TRUE if both were successful; FALSE otherwise
  */
-u32 WildEncSingle(FieldSystem *fsys UNUSED, struct PartyPokemon *pp, void *bw, void *encData UNUSED, void *encArea, void *encInfo)
+u32 WildEncSingle(FieldSystem *fsys, struct PartyPokemon *pp, void *bw, void *encData UNUSED, void *encArea, void *encInfo)
 {
     u32 ret;
+
+#ifdef IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
+    CacheWildLevelCapFromFieldSystem(fsys);
+#endif
+
     ret = SetEncountData(pp, 255, encInfo, encArea, 0, 1, bw);
 
 #ifdef IMPLEMENT_WILD_DOUBLE_BATTLES
@@ -1760,6 +1766,11 @@ u32 WildEncSingle(FieldSystem *fsys UNUSED, struct PartyPokemon *pp, void *bw, v
 u32 WildWaterEncSingle(FieldSystem *fsys, struct PartyPokemon *pp, void *bw, void *encArea, void *encInfo, BOOL smth)
 {
     u32 ret;
+
+#ifdef IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
+    CacheWildLevelCapFromFieldSystem(fsys);
+#endif
+
     if (smth) {
         ret = SetEncountDataSwarm_maybe(fsys, pp, 255, encInfo, 1, 1, bw);
 

@@ -554,6 +554,9 @@ Save_GetPCBoxModifiedFlags = 0x02027170 | 1;
 Save_CheckFrontierData = 0x020279EC | 1;
 //Save_InitDynamicRegion = 0x020274A8 | 1;
 sSaveDataPtr = 0x021D2228;
+sPersistFieldSysPtr = 0x021FF900;
+sWildLevelCapDebug = 0x021FF910;
+sWildCapCache = 0x021FF930;
 Sys_SetSleepDisableFlag = 0x0201A4BC | 1;
 FlashClobberChunkFooter = 0x02027DF8 | 1;
 FlashWriteChunk = 0x02028758 | 1;
@@ -770,6 +773,7 @@ BattleMessage_BufferBoxName = 0x0223CEE4 | 1;
 
 _GetNpcTradeName = 0x02259C1C | 1;
 MonSetTrainerMemo = 0x0208F260 | 1;
+MapHeader_GetWildEncounterBank = 0x0203B344 | 1;
 MapHeader_GetMapSec = 0x0203B36C | 1;
 ChooseStarter_LaunchApp = 0x0203F808 | 1;
 sub_0203E30C = 0x0203E30C | 1;

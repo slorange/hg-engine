@@ -3,6 +3,7 @@ Newbark	29
 29	Cherrygrove	
 Cherrygrove	30	
 30	Dark Cave	
+31	Dark Cave
 30	31	
 31	Violet	
 Violet	32	

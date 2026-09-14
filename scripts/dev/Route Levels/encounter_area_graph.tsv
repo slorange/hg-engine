@@ -1,0 +1,139 @@
+# EncounterAreaId (ENCDATA index) -> world-graph location name in connections.txt
+# One graph node per encounter area for PoC. Cave floors share the parent cave node.
+# Lines starting with # are ignored.
+
+0	Newbark
+1	29
+2	Cherrygrove
+3	30
+4	31
+5	Violet
+6	Bellsprout Tower
+7	Bellsprout Tower
+8	32
+9	Ruins of Alph
+10	Ruins of Alph
+11	Ruins of Alph
+12	Ruins of Alph
+13	Ruins of Alph
+14	Union Cave
+15	Union Cave
+16	Union Cave
+17	33
+18	Slowpoke Well
+19	Slowpoke Well
+20	Ilex Forest
+21	34
+22	35
+23	National Park
+24	National Park
+25	36
+26	37
+27	Ecruteak
+28	Burned Tower
+29	Burned Tower
+30	Bell Tower
+31	Bell Tower
+32	Bell Tower
+33	Bell Tower
+34	Bell Tower
+35	Bell Tower
+36	Bell Tower
+37	Bell Tower
+38	38
+39	39
+40	Olivine
+41	40
+42	41
+43	Whirl Islands
+44	Whirl Islands
+46	Whirl Islands
+48	Whirl Islands
+51	Cianwood
+52	42
+53	Mt. Mortar
+54	Mt. Mortar
+55	Mt. Mortar
+56	Mt. Mortar
+57	43
+58	Lake of Rage
+59	44
+60	Ice Path
+61	Ice Path
+62	Ice Path
+63	Ice Path
+65	Blackthorn
+66	Dragon's Den
+67	45
+68	46
+69	Dark Cave
+70	Dark Cave
+71	47
+72	Mt. Moon
+73	Mt. Moon
+74	Seafoam Islands
+75	Seafoam Islands
+76	Seafoam Islands
+77	Seafoam Islands
+78	Seafoam Islands
+79	Mt. Silver
+80	Mt. Silver
+81	Mt. Silver
+82	Cliff Edge Gate
+83	Cliff Cave
+84	Bell Tower
+85	Mt. Silver
+86	Mt. Silver
+87	Mt. Silver
+88	Mt. Silver
+89	Mt. Silver
+91	Safari Zone
+92	12
+93	19
+94	20
+95	Pallet
+96	Viridian
+97	Cerulean
+98	Vermillion
+99	Celadon
+100	Fuchsia
+101	Cinnabar
+102	48
+103	26
+104	27
+105	28
+106	Mt. Moon
+107	Mt. Moon
+108	Rock Tunnel
+109	Rock Tunnel
+110	Victory Road
+111	1
+112	2
+113	3
+114	4
+115	5
+116	6
+117	7
+118	8
+119	9
+120	10
+121	11
+122	13
+123	14
+124	15
+125	16
+126	17
+127	18
+128	21
+129	22
+130	24
+131	25
+132	Tohjo Falls
+133	Diglett's Cave
+134	Victory Road
+135	Victory Road
+136	2
+137	Viridian Forest
+139	Cerulean Cave
+140	Cerulean Cave
+141	Cerulean Cave

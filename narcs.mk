@@ -208,6 +208,14 @@ LEVEL_UP_EVO_TABLES_SCRIPT := scripts/build/gen_level_up_evo_tables.py
 $(LEVEL_UP_EVO_TABLES_C) $(LEVEL_UP_EVO_TABLES_H): $(EVOS_DEPENDENCIES) $(LEVEL_UP_EVO_TABLES_SCRIPT) include/constants/species.h
 	$(PYTHON) $(LEVEL_UP_EVO_TABLES_SCRIPT)
 
+WILD_LEVEL_CAPS_C := src/wild_level_caps_data.c
+WILD_LEVEL_CAPS_H := include/constants/generated/wild_level_caps.h
+WILD_LEVEL_CAPS_SCRIPT := scripts/build/gen_wild_level_caps.py
+WILD_LEVEL_CAPS_INPUTS := scripts/dev/Route\ Levels/location_distances.txt scripts/dev/Route\ Levels/starting_cities.txt scripts/dev/Route\ Levels/encounter_area_graph.tsv scripts/dev/Route\ Levels/calculate_location_distances.py include/constants/encounter_tables.h
+
+$(WILD_LEVEL_CAPS_C) $(WILD_LEVEL_CAPS_H): $(WILD_LEVEL_CAPS_INPUTS) $(WILD_LEVEL_CAPS_SCRIPT)
+	$(PYTHON) $(WILD_LEVEL_CAPS_SCRIPT)
+
 $(EVOS_NARC): $(EVOS_DEPENDENCIES) $(LEVEL_UP_EVO_TABLES_C)
 	$(CC) $(CFLAGS) -c $(EVOS_DEPENDENCIES) -o $(EVOS_OBJS)
 	$(O2NARC) $(EVOS_OBJS) $@ -n

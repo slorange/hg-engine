@@ -51,7 +51,7 @@ Add more **paid ferry NPCs** (same Route 42 recipe) for:
 
 # World-2. Routes and Content Gating
 
-**Status: PARTIALLY DECIDED** — open-travel principles are firm; **wild-level gating** here vs [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) is **undecided** (alternatives, or Wilds-3 primary with only light World-2).
+**Status: PARTIALLY DECIDED** — open-travel principles are firm. **Wild level progression** uses [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (implemented Sep 2026), **not** badge-guard / encounter-tile wild gating below.
 
 ## Open travel (DECIDED)
 
@@ -59,20 +59,19 @@ Cities should generally remain accessible regardless of badge count.
 
 Where geography makes a dangerous route **mandatory** for reaching another city, the player should have an alternative transportation option (ferries, paid bypass NPCs — [World-1](DESIGN-WORLD.md#world-1-world-transportation), `HACK-NOTES.md`).
 
-## Wild progression: World-2 vs Wilds-3 (TBD)
+## Wild progression: World-2 vs Wilds-3 (decided)
 
-Two competing models keep wild areas from being appropriate everywhere at once:
+Two models were considered for keeping wild areas from being appropriate everywhere at once:
 
 
-| Model                             | How it works                                                                                                             | Doc                                                                             |
+| Model                             | How it works                                                                                                             | Status                                                                          |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| **World-2** (badge / tile gating) | Block or warn on high-tier **grass, caves, routes** — guards, encounter-tile checks, badge counts                        | This section                                                                    |
-| **Wilds-3** (distance caps)       | **Starting city + graph distance** sets each area's wild level ceiling; player can enter but fights scale with geography | [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) |
+| **Wilds-3** (distance caps)       | **Starting city + graph distance** sets each area's wild level ceiling; player can enter but fights scale with geography | **Shipped** — [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps), verified Sep 2026 |
+| **World-2** (badge / tile gating) | Block or warn on high-tier **grass, caves, routes** — guards, encounter-tile checks, badge counts                        | **Not used for wild levels** — retained below for HM/League/optional hard zones |
 
+**Decision:** wild **levels** follow **Wilds-3** only. Walking into high-level grass is a risk choice, not a badge-gated tile block. We are **not** adding guard-style or encounter-tile wild level gates across the world.
 
-**Likely direction:** **Wilds-3 primary**, with **only a little World-2** where distance alone is not enough (see below). If Wilds-3 ships, **guard-style and encounter-tile wild gating see little use** — walking into high-level grass is a risk choice, not a hard block.
-
-**Route 29 → Route 46 gatehouse** (2-badge coord gate) remains a verified PoC and template, but is **not** the intended main progression tool if Wilds-3 wins.
+**Route 29 → Route 46 gatehouse** (2-badge coord gate) remains a verified PoC and scripting template, but is **not** the wild progression model — see [Always needed](#always-needed-regardless-of-wilds-3) for where World-2-style gating still applies.
 
 Gating methods when World-2 *is* used:
 
@@ -94,11 +93,11 @@ World-2-style gating **still applies** for non–wild-level concerns:
 - **Victory Road / Pokémon League** — 16 badges.
 - **Optional hard areas** — dungeons, postgame paths, or similar where distance caps alone are insufficient; light World-2 complements Wilds-3 here.
 
-Wild **level** progression specifically may use [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) instead of badge-gated encounter tiles across most of the world.
+Wild **level** progression uses [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) exclusively (not badge-gated encounter tiles).
 
 ## Proof of concept (implemented)
 
-**Route 29 → Route 46 gatehouse** — walk-past coord gate requiring **2 badges** (Zephyr + Hive). See `documentation/HACK-NOTES.md` § Route 46 gate. Template only if Wilds-3 is not the primary wild-progression model.
+**Route 29 → Route 46 gatehouse** — walk-past coord gate requiring **2 badges** (Zephyr + Hive). See `documentation/HACK-NOTES.md` § Route 46 gate. Scripting template only — **not** used for wild level progression ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) handles wild levels).
 
 ---
 

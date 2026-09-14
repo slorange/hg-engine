@@ -15,6 +15,7 @@
 .include "armips/asm/overworlds.s" // code for overworlds, specifically repointing gOWTagToFileNum and making dimorphism a byte instead of a halfword.
 
 .include "armips/asm/no_partner_double_battles.s" // allows no partner double battles
+.include "armips/asm/wild_level_caps.s" // arm9-persistent FieldSystem* for wild level caps
 
 .if FAIRY_TYPE_IMPLEMENTED == 1
 

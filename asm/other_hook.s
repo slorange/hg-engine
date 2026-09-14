@@ -245,10 +245,10 @@ bl call_setmondata
 mov r0, r4
 bl UpdatePassiveForms
 
-// hopefully with form set, this grabs everything correctly
 mov r0, r4
-ldr r3, =0x0206E250 | 1 //RecalcPartyPokemonStats(pp);
-bl call_via_r3
+bl ApplyWildDistanceLevelCapToMon
+
+// Level must be set before InitBoxMonMoveset; vanilla stub (02247B4C) runs last via tail call.
 mov r0, r4
 ldr r3, =0x020722D4 | 1 //ResetPartyPokemonAbility(pp);
 bl call_via_r3
@@ -256,6 +256,7 @@ mov r0, r4 // me when the boxmon is at offset 0 of the PartyPokemon structure so
 ldr r3, =0x020712D8 | 1 //InitBoxMonMoveset(ppp);
 bl call_via_r3
 
+// tail-call vanilla stub (02247B4C); must bx, not bl — it pops straight to EncountParamSet's caller
 ldr r0, [sp, #0x14]
 ldr r3, [sp, #0x40]
 mov r1, r7
@@ -341,6 +342,8 @@ bx r1
 .global StoreFieldSysPtr
 StoreFieldSysPtr:
 ldr r1, =gFieldSysPtr
+str r4, [r1]
+ldr r1, =sPersistFieldSysPtr
 str r4, [r1]
 
 mov r1, #0

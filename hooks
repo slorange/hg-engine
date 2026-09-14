@@ -324,11 +324,19 @@ arm9 WindowClose 02041190 0
 
 arm9 GrabCryNumSpeciesForm 02006A0C 2
 
+#ifdef IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
+# vanilla never passes FieldSystem* in r0 — branch via r3 so r0 is preserved for logging
+0002 WildEncSingle 02247424 3
+0002 WildWaterEncSingle 022474E0 3
+#endif
+
 #ifdef IMPLEMENT_WILD_DOUBLE_BATTLES
 
+#ifndef IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
 # r0 isn't used, can be burned
-0002 WildEncSingle 02247424 0
+0002 WildEncSingle 02247424 3
 0002 WildWaterEncSingle 022474E0
+#endif
 # can't modify SetFieldBattleParam since it is used for sweet scent and fishing and such
 #0002 TryTriggerWildDoubleBattle 02248284 0
 0002 TryTriggerWildDoubleBattle 02246E0E 0

@@ -94,6 +94,18 @@ def shortest_distances(graph: dict[str, set[str]], start: str) -> dict[str, int]
     return distances
 
 
+def max_reachable_distances(
+    distances_by_city: dict[str, dict[str, int]], starting_cities: list[str]
+) -> list[int]:
+    """Return the farthest reachable graph distance for each starting city."""
+    max_distances: list[int] = []
+    for city in starting_cities:
+        city_distances = distances_by_city[city].values()
+        reachable = [distance for distance in city_distances if distance >= 0]
+        max_distances.append(max(reachable) if reachable else 0)
+    return max_distances
+
+
 def write_distances(
     path: Path,
     graph: dict[str, set[str]],
@@ -109,10 +121,12 @@ def write_distances(
     distances_by_city = {
         city: shortest_distances(graph, city) for city in starting_cities
     }
+    max_distances = max_reachable_distances(distances_by_city, starting_cities)
 
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f, delimiter="\t", lineterminator="\n")
         writer.writerow(["Location", *starting_cities])
+        writer.writerow(["MaxDistance", *max_distances])
 
         for location in locations:
             writer.writerow(

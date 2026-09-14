@@ -838,6 +838,86 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 
 ---
 
+## Wild level caps (distance-based) — verified PoC
+
+**Status: verified in-game Sep 2026** — grass, cave, Surf, rods, Headbutt, and Rock Smash all roll levels in `[3, cap]` from the precomputed table. Design: [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (decided over badge/tile wild gating — [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)).
+
+**Toggle:** `IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS` in `include/config.h` (on by default). Comment out to restore vanilla wild levels.
+
+### Formula and table
+
+Build-time cap per `(starting city, encounter area id)`:
+
+```
+levelCap = 67 × route_distance / max_route_distance + 3   // caps in [3, 70]
+```
+
+- **Graph data:** `scripts/dev/Route Levels/connections.txt`, `starting_cities.txt`
+- **Distances:** `scripts/dev/Route Levels/calculate_location_distances.py` → `location_distances.txt` (includes `MaxDistance` row per city column)
+- **Enc area → graph node:** `scripts/dev/Route Levels/encounter_area_graph.tsv` (`ENCDATA_*` index → location name)
+- **ROM table:** `scripts/build/gen_wild_level_caps.py` → `src/wild_level_caps_data.c` + `include/constants/generated/wild_level_caps.h` (Makefile rule in `narcs.mk`)
+
+Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHeader_GetWildEncounterBank(mapId)`.
+
+**PoC start city:** Mom menu sets `VAR_PLAYER_START_CITY` (**0x4031**). Table row remap until 18-city menu ships: `{0→Newbark, 1→Goldenrod, 2→Saffron}` in `src/wild_level_caps.c`.
+
+**Example (Saffron start):** Route 37 → **29**, Violet → **29**, Route 31 → **36**, Dark Cave → **49**, Route 30 → **43**.
+
+### Runtime pipeline
+
+| Stage | Where | What |
+|-------|--------|------|
+| Persist FieldSystem | `StoreFieldSysPtr` hook @ `0x0203E028` | Writes `gFieldSysPtr` → ARM9 scratch `sPersistFieldSysPtr` @ `0x021FF900` |
+| Cache cap (field) | `WildEncSingle` / `WildWaterEncSingle` in `src/pokemon.c` | `CacheWildLevelCapFromFieldSystem(fsys)` while FieldSystem is valid |
+| Apply level (battle) | `modify_species_encounter_data` in `asm/other_hook.s` (overlay 129) | `ApplyWildDistanceLevelCapToMon` **before** `InitBoxMonMoveset`; tail-calls vanilla stub `0x02247B4C` last |
+| Level write | `src/wild_level_caps.c` | Sets exp + `MON_DATA_LEVEL`, then `RecalcPartyPokemonStats` |
+
+**Map ID:** read from `SaveBlock2` → `LocalFieldData.currentPosition.mapId` (not `fsys->location`, which is often `MAP_EVERYWHERE` during encounters).
+
+**Not hooked:** `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`, Safari / Contest tables (separate NARCs — future work).
+
+### ARM9 scratch (`armips/asm/wild_level_caps.s`, `rom.ld`)
+
+| Symbol | Address | Size |
+|--------|---------|------|
+| `sPersistFieldSysPtr` | `0x021FF900` | 4 |
+| `sWildLevelCapDebug` | `0x021FF910` | 32 |
+| `sWildCapCache` | `0x021FF930` | 8 |
+
+Scratch survives overlay 129 reload; do not reuse these addresses for other features without updating `rom.ld`.
+
+### Debug toggles (turn off for normal play)
+
+| Define | File | Effect |
+|--------|------|--------|
+| `DEBUG_WILD_LEVEL_CAP_LEVELS` | `include/debug.h` | Level = diagnostic code (4–9 fail) or exact table cap on success |
+| `DEBUG_WILD_LEVEL_CAP_EXACT` | `include/config.h` | Level = cap exactly (no random roll) |
+| `DEBUG_WILD_LEVEL_CAPS` | `include/debug.h` | melonDS `debug_printf` on cache/apply |
+
+Production: all three **off**; levels roll uniformly in `[WILD_LEVEL_CAP_MIN, cap]` via `RollWildLevel()`.
+
+### Editing caps
+
+1. Edit graph / distances / encounter mapping under `scripts/dev/Route Levels/`.
+2. Re-run `python3 scripts/build/gen_wild_level_caps.py` (or full `make` — `narcs.mk` regenerates the table).
+3. Rebuild `test.nds`.
+
+**C array gotcha:** `sWildLevelCaps[18][143]` must use **one `{ ... }` brace pair per city row**. Extra top-level `{ ... },` every N values become separate rows in C; columns past the first chunk zero-fill → cap **0** / diagnostic level **8**.
+
+### Scripts layout (this feature)
+
+All tracked — nothing belongs in `scripts/local/`:
+
+| Path | Bucket | Role |
+|------|--------|------|
+| `scripts/build/gen_wild_level_caps.py` | build | Makefile / `narcs.mk` |
+| `scripts/dev/Route Levels/calculate_location_distances.py` | dev | Regenerate distance matrix |
+| `scripts/dev/Route Levels/*.txt`, `encounter_area_graph.tsv` | dev | Source graph inputs |
+
+`src/wild_level_caps_data.c` is generated but may appear in git for convenience; `include/constants/generated/wild_level_caps.h` is gitignored and rebuilt every make.
+
+---
+
 ## World placement (DSPRE)
 
 Use **DSPRE’s map matrix** to estimate where something lives, then patch the **correct zone_event member** with the **correct coordinate system**.
