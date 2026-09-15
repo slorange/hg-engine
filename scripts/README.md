@@ -44,7 +44,7 @@ Feature-specific verify scripts: `verify_*_patch.py`, `verify_r44_zone_event.py`
 
 Placement / text recon: `find_zone_event_member.py`, `find_msg_text.py` (see HACK-NOTES § World placement).
 
-**Route Levels** (`dev/Route Levels/`): world graph + distance matrix for [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps). Run `calculate_location_distances.py` after editing `connections.txt`; `gen_wild_level_caps.py` (build/) consumes the outputs at make time.
+**Route Levels** (`dev/Route Levels/`): world graph + distance matrix for [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps). Run `calculate_location_distances.py` after editing `connections.txt`; `gen_wild_level_caps.py` (build/) consumes the outputs at make time.
 
 **Synthetic evolution stages:** `data/synthetic_evolution_thresholds.tsv` → `scripts/build/gen_synthetic_evo_edges.py` → `src/field/synthetic_evo_edges_data.c` (see `narcs.mk`).
 

@@ -11,14 +11,12 @@
 | [World-1. World Transportation](#world-1-world-transportation) | PARTIALLY IMPLEMENTED |
 | [World-2. Routes and Content Gating](#world-2-routes-and-content-gating) | PARTIALLY DECIDED |
 | [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | PARTIALLY IMPLEMENTED |
-| [World-4. Accelerated Day/Night Cycle](#world-4-accelerated-daynight-cycle) | DECIDED direction; TECHNICAL UNKNOWN |
-| [World-5. Living Trainers](#world-5-living-trainers) | DECIDED conceptually; TECHNICAL UNKNOWN |
-| [World-6. Trainer Interactions](#world-6-trainer-interactions) | DECIDED conceptually |
-| [World-7. Pokémon Centers](#world-7-pokémon-centers) | DECIDED direction |
-| [World-8. TMs](#world-8-tms) | DECIDED |
-| [World-9. Evolution Methods (Trade & Stones)](#world-9-evolution-methods-trade--stones) | PARTIALLY DECIDED |
-| [World-10. Shops](#world-10-shops) | DECIDED direction |
-| [World-11. Technical Investigations](#world-11-technical-investigations) | TECHNICAL UNKNOWN |
+| [World-4. Pokémon Centers](#world-4-pokémon-centers) | DECIDED direction |
+| [World-5. TMs](#world-5-tms) | DECIDED — **core release target** (renewable shop TMs) |
+| [World-6. Evolution Methods (Trade & Stones)](#world-6-evolution-methods-trade--stones) | PARTIALLY DECIDED |
+| [World-7. Shops](#world-7-shops) | DECIDED — **core release target** (TMs, evolution items) |
+| Accelerated day/night cycle | Moved — [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) |
+| Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
 
 ---
 
@@ -69,7 +67,7 @@ Add more **paid ferry NPCs** (same Route 42 recipe) for:
 
 # World-2. Routes and Content Gating
 
-**Status: PARTIALLY DECIDED** — open-travel principles are firm. **Wild level progression** uses [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (implemented Sep 2026), **not** badge-guard / encounter-tile wild gating below.
+**Status: PARTIALLY DECIDED** — open-travel principles are firm. **Wild level progression** uses [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) (implemented Sep 2026), **not** badge-guard / encounter-tile wild gating below.
 
 ## Open travel (DECIDED)
 
@@ -77,17 +75,17 @@ Cities should generally remain accessible regardless of badge count.
 
 Where geography makes a dangerous route **mandatory** for reaching another city, the player should have an alternative transportation option (ferries, paid bypass NPCs — [World-1](DESIGN-WORLD.md#world-1-world-transportation), `HACK-NOTES.md`).
 
-## Wild progression: World-2 vs Wilds-3 (decided)
+## Wild progression: World-2 vs Wilds-2 (decided)
 
 Two models were considered for keeping wild areas from being appropriate everywhere at once:
 
 
 | Model                             | How it works                                                                                                             | Status                                                                          |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| **Wilds-3** (distance caps)       | **Starting city + graph distance** sets each area's wild level ceiling; player can enter but fights scale with geography | **Shipped** — [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps), verified Sep 2026 |
+| **Wilds-2** (distance caps)       | **Starting city + graph distance** sets each area's wild level ceiling; player can enter but fights scale with geography | **Shipped** — [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps), verified Sep 2026 |
 | **World-2** (badge / tile gating) | Block or warn on high-tier **grass, caves, routes** — guards, encounter-tile checks, badge counts                        | **Not used for wild levels** — retained below for HM/League/optional hard zones |
 
-**Decision:** wild **levels** follow **Wilds-3** only. Walking into high-level grass is a risk choice, not a badge-gated tile block. We are **not** adding guard-style or encounter-tile wild level gates across the world.
+**Decision:** wild **levels** follow **Wilds-2** only. Walking into high-level grass is a risk choice, not a badge-gated tile block. We are **not** adding guard-style or encounter-tile wild level gates across the world.
 
 **Route 29 → Route 46 gatehouse** (2-badge coord gate) remains a verified PoC and scripting template, but is **not** the wild progression model — see [Always needed](#always-needed-regardless-of-wilds-3) for where World-2-style gating still applies.
 
@@ -103,19 +101,19 @@ Where guards would feel heavy-handed, encounter-tile gating is lighter: traverse
 
 Some routes may contain both low- and high-progression encounter areas simultaneously (more relevant in a World-2-heavy design).
 
-## Always needed (regardless of Wilds-3)
+## Always needed (regardless of Wilds-2)
 
 World-2-style gating **still applies** for non–wild-level concerns:
 
 - **HM / Flash / Headbutt** milestone locks ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) — Surf routes, Flash dungeons (Dark Cave, Rock Tunnel), etc.
 - **Victory Road / Pokémon League** — 16 badges.
-- **Optional hard areas** — dungeons, postgame paths, or similar where distance caps alone are insufficient; light World-2 complements Wilds-3 here.
+- **Optional hard areas** — dungeons, postgame paths, or similar where distance caps alone are insufficient; light World-2 complements Wilds-2 here.
 
-Wild **level** progression uses [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) exclusively (not badge-gated encounter tiles).
+Wild **level** progression uses [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) exclusively (not badge-gated encounter tiles).
 
 ## Proof of concept (implemented)
 
-**Route 29 → Route 46 gatehouse** — walk-past coord gate requiring **2 badges** (Zephyr + Hive). See `documentation/HACK-NOTES.md` § Route 46 gate. Scripting template only — **not** used for wild level progression ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) handles wild levels).
+**Route 29 → Route 46 gatehouse** — walk-past coord gate requiring **2 badges** (Zephyr + Hive). See `documentation/HACK-NOTES.md` § Route 46 gate. Scripting template only — **not** used for wild level progression ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) handles wild levels).
 
 ---
 
@@ -125,130 +123,32 @@ Wild **level** progression uses [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-
 
 # World-3. HMs and Field Moves
 
-**Status: PARTIALLY IMPLEMENTED** — badge-order table decided; Johto Gym HM pilot partial; collection-based field use and full Leader grant flow not complete.
+**Status: PARTIALLY IMPLEMENTED** — unlock order below decided; Johto Gym HM pilot partial; **collection-based field use** and full Leader grant flow not complete.
 
-HMs remain part of the game, but their overworld function is redesigned.
+Field abilities unlock by **badges earned** (any Gym order): when badge count hits a row below, the defeating Gym Leader grants that unlock with badge + TM ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). Vanilla HM fetch quests and tutors are removed ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
 
-## HM progression
+**Field use:** eligible species **anywhere in the collection** (party or box) can perform the overworld action — the Pokémon need not know the move. **Battle use:** HMs (and Flash / Headbutt) remain teachable moves if the player wants them in combat.
 
-Field abilities unlock by **badges earned**, not by which specific Gym Leader was defeated. Because Gyms can be completed in any order:
-
-> The **Nth badge** unlocks the **Nth row** in the progression table below.
-
-**Gym Leaders grant the HM** (along with badge and TM) when the player's new badge count crosses a row that grants a field ability ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). Badge counts with no row grant badge + TM only.
-
-### Tentative badge → field ability order
-
-| Badges earned | Unlock |
-| ------------- | ------ |
-| 1 | **Flash** |
-| 2 | **Cut** |
-| 3 | **Rock Smash** |
-| 4 | **Headbutt** |
-| 5 | **Fly** |
-| 6 | **Surf** |
-| 7 | **Strength** |
-| 8–9 | *(none — badge + TM only)* |
-| 10 | **Whirlpool** |
-| 11–12 | *(none)* |
-| 13 | **Waterfall** |
-| 14–15 | *(none)* |
-| 16 | **Rock Climb** |
-
-Gaps at 8–9, 11–12, and 14–15 are intentional — not every badge adds a new field ability. Subject to balance tuning; do not add unlocks at those slots without an explicit design change.
-
-Vanilla **HM fetch quests and tutor NPCs** are removed ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
-
-## Field use
-
-A Pokémon does **not** need to know the HM move to use its field ability.
-
-Instead:
-
-> If an eligible Pokémon species exists anywhere in the player's collection, the unlocked HM field ability can be used.
-
-The Pokémon may be:
-
-- in the field party; or
-- stored in the box.
+## Badge → field abilities (single reference)
 
 
+| Badges | Unlock | Field role | Notes |
+| ------ | ------ | ---------- | ----- |
+| 1 | **Flash** | Light dark dungeons | **Traversal gate** until unlocked (Cannot enter Dark Cave, Rock Tunnel). Not an HM item. |
+| 2 | **Cut** (HM01) | Trees / obstacles | |
+| 3 | **Rock Smash** (HM06) | Break rocks | Separate **Rock Smash** encounter slots when smashing |
+| 4 | **Headbutt** | Tree encounters | `data/Headbutt.c` — not grass table; not an HM item |
+| 5 | **Fly** (HM02) | Fast travel between visited cities | |
+| 6 | **Surf** (HM03) | Water routes + Surf encounters | |
+| 7 | **Strength** (HM04) | Push boulders | |
+| 10 | **Whirlpool** (HM05) | Clear whirlpools | |
+| 13 | **Waterfall** (HM07) | Climb waterfalls | |
+| 16 | **Rock Climb** (HM08) | Climb rock walls | |
 
-## Battle use
+Badge counts not in the table get Badge + TM only
 
-HMs still exist as moves.
+**Unchanged vanilla** (learn move, party menu — not badge-gated, not collection-field): Sweet Scent, Dig, Teleport.
 
-The player can teach an HM normally if they actually want that move for combat.
-
-## Inventory of field abilities (for design decisions)
-
-Vanilla HGSS exposes several party-menu field moves beyond HMs. Policy below.
-
-### Official HMs (HM01–HM08)
-
-
-| Item | Move       | Typical field role                             |
-| ---- | ---------- | ---------------------------------------------- |
-| HM01 | Cut        | Remove small trees / grass obstacles           |
-| HM02 | Fly        | Fast travel between visited cities             |
-| HM03 | Surf       | Traverse water; water encounters               |
-| HM04 | Strength   | Push boulders                                  |
-| HM05 | Whirlpool  | Clear whirlpools on water routes               |
-| HM06 | Rock Smash | Break rocks; can trigger Rock Smash encounters |
-| HM07 | Waterfall  | Climb waterfalls                               |
-| HM08 | Rock Climb | Climb rocky walls                              |
-
-
-All eight HMs use **badge-count unlock** (table above) + **collection-based field use** (see [Field use](#field-use) below).
-
-### Badge-gated field moves (HM-adjacent)
-
-**Status: DECIDED** — **Flash** and **Headbutt** follow the **same rules as HMs**: unlock at badge counts **1** and **4** respectively (table above); field use from any eligible species in the collection without teaching the move for overworld utility.
-
-
-| Move         | Field role                      | Notes                                                                                                                                                                                                                                                      |
-| ------------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Flash**    | Light dark caves / dungeons     | Without Flash unlocked, certain **dark dungeons are gated** — player cannot enter (or cannot progress past entrance) until the ability is unlocked. **Examples:** Dark Cave, Rock Tunnel. Exact map list and gate style (full block vs entrance-only) TBD. |
-| **Headbutt** | Shake trees for wild encounters | Unlocks the **Headbutt encounter method** — separate tables (`data/Headbutt.c`), not the grass table. Trees remain a distinct ecology / progression tier alongside grass, fishing, Rock Smash, etc.                                                        |
-
-
-Battle use: Flash and Headbutt remain normal learnable moves if the player wants them in combat; overworld utility does not require a moveslot (same principle as HMs).
-
-### Other field moves (vanilla — no change planned)
-
-**Status: DECIDED** — **not** badge-gated and **not** part of the HM/collection-field redesign. Leave vanilla behaviour (learn the move, use from party menu) unless a future task explicitly targets them.
-
-
-| Move            | Vanilla field role               |
-| --------------- | -------------------------------- |
-| **Sweet Scent** | Force a wild encounter           |
-| **Dig**         | Escape to previous cave entrance |
-| **Teleport**    | Return to last Pokémon Center    |
-
-
-
-
-### Related encounter / traversal systems (not party “field moves,” but same design bucket)
-
-
-| System                                          | Role                          | Notes                                                                                                                        |
-| ----------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Rock Smash encounters                           | Wild mons from smashing rocks | Separate encounter slots; HM06-gated                                                                                         |
-| Surf / fishing encounters                       | Water wilds                   | Per-map tables; **Rod tier** gates species — [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression)                      |
-| Headbutt trees                                  | Wild mons from trees          | Separate Headbutt tables; **requires Headbutt unlock** (badge-gated, see above)                                              |
-| Cut trees / smashable rocks / Strength boulders | Map obstacles                 | Badge-gated collection field use                                                                                             |
-| Whirlpool / Waterfall / Rock Climb tiles        | Traversal gates               | Same                                                                                                                         |
-| Fishing Rods (Old / Good / Super)               | Tiered fishing encounters     | **Not badge-gated** — dex Water-family counts; guru NPC network — see [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression). **Route 44** guru live; recipe in `documentation/HACK-NOTES.md` § Fishing Rod guru NPCs |
-| Flash-required dungeons                         | Dark Cave, Rock Tunnel, …     | **Traversal gate** until Flash unlock; list expandable                                                                       |
-
-
-
-
-### Design questions to resolve
-
-- Full list of **Flash-gated** dungeons and whether gating is map-wide or entrance-only.
-- Should **Headbutt** / **Rock Smash** encounter pools tie into early vs late progression tiers (similar to grass gating)?
-- Exact **giveitem / script** flow when a Gym victory skips an HM row (badges 8–9, 11–12, 14–15).
 
 ---
 
@@ -256,157 +156,11 @@ Battle use: Flash and Headbutt remain normal learnable moves if the player wants
 
 
 
-# World-4. Accelerated Day/Night Cycle
-
-**Status: DECIDED direction; TECHNICAL UNKNOWN** — target ~30 real minutes per in-game day; RTC replacement and manual advance not implemented.
-
-HGSS's real-world clock should be replaced by an accelerated in-game clock.
-
-Current target:
-
-> **Approximately 30 real-world minutes = one complete in-game day.**
-
-This number may be tuned.
-
-The accelerated clock affects systems including:
-
-- day/night encounters;
-- evolutions;
-- NPC behaviour;
-- events;
-- potentially other systems (including Apricorn refresh if `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)` is implemented);
-
-
-
-## Time advancement
-
-The player should be able to deliberately advance time rather than waiting.
-
-Likely mechanisms include both:
-
-### Resting at Pokémon Centers / hotels
-
-Allows controlled advancement of time ([World-7](DESIGN-WORLD.md#world-7-pokmon-centers)).
-
-### Portable resting
-
-A tent, sleeping bag, camping system, or similar mechanic can potentially allow resting outside towns.
-
-Exact implementation remains TBD.
-
----
-
----
-
----
-
-
-
-# World-5. Living Trainers
-
-**Status: DECIDED conceptually; TECHNICAL UNKNOWN**
-
-This is intended to be one of the project's most distinctive systems.
-
-Ordinary Pokémon trainers should not primarily exist as static NPCs permanently staring at a single tile waiting for the player.
-
-Trainers are intended to create the illusion of a population travelling through Johto and Kanto on Pokémon journeys of their own.
-
-They can:
-
-- move around cities;
-- travel between locations;
-- appear on routes;
-- walk through grass;
-- have different levels of progression;
-- interact with the player in multiple ways;
-- appear to be battling each other.
-
-Each trainer has or represents a badge progression level.
-
-Trainer progression distributions may be influenced by location.
-
-The player should generally battle trainers whose progression is reasonably comparable to their own.
-
-## Simulation requirements
-
-**Status: TECHNICAL UNKNOWN**
-
-The game does NOT necessarily need to permanently simulate hundreds of individual NPCs throughout the entire world.
-
-A technically simpler system may generate or populate trainers when maps load while maintaining the **illusion** of a persistent travelling trainer population.
-
-The experiential goal matters more than literally simulating every trainer off-screen.
-
----
-
-
-
-# World-6. Trainer Interactions
-
-**Status: DECIDED conceptually**
-
-Living trainers are not exclusively battle dispensers.
-
-Potential interactions include:
-
-### Pokémon location requests
-
-A trainer may ask:
-
-> "Do you know where I can find a Heracross?"
-
-If the player has encountered the requested Pokémon in the wild, they can provide a known encounter location from the **generated ecology** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)).
-
-The trainer provides a reward.
-
-Possible rewards include:
-
-- items;
-- money;
-- another Pokémon's encounter information;
-- TMs;
-- other useful information.
-
-
-
-### Encounter information
-
-Trainers may tell the player where Pokémon they have not yet discovered can be found (data from [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)).
-
-**Gym Leaders** provide a structured first-clear version of this: one chosen family + location hint per badge ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
-
-This creates a social/information economy around exploration.
-
-### Pokémon trades
-
-Some trainers request trades.
-
-### Item trading
-
-Trainers may buy or sell items.
-
-### TMs
-
-Some trainers provide renewable access to otherwise rare TMs ([World-8](DESIGN-WORLD.md#world-8-tms)).
-
-### Gym advice
-
-Trainers may provide information about nearby undefeated Gyms or their current scaled teams.
-
-### Other quests
-
-Additional lightweight interactions and quests can be added later.
-
----
-
-
-
-# World-7. Pokémon Centers
+# World-4. Pokémon Centers
 
 **Status: DECIDED direction; exact services expandable**
 
-Because healing is automatic ([Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition)) and PC access is universal ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)), Pokémon Centers no longer need to function primarily as healing/PC locations.
+Because healing is automatic ([Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition)), Pokémon Centers no longer need to function primarily as healing stations. Universal PC everywhere / in battle is [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc); vanilla PC locations remain for initial release.
 
 They instead become **trainer service hubs**.
 
@@ -418,11 +172,11 @@ A trainer/Abra service can transport the player to other locations for a fee ([W
 
 ### Resting
 
-The player can rest to intentionally advance the accelerated in-game clock ([World-4](DESIGN-WORLD.md#world-4-accelerated-daynight-cycle)).
+The player can rest to intentionally advance the accelerated in-game clock when [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) is implemented.
 
 ### Apricorn crafting
 
-If the `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)` addon is implemented, Pokémon Centers may provide distributed Apricorn Ball crafting. **Not core scope.**
+If [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) is implemented, Pokémon Centers may provide distributed Apricorn Ball crafting. **Not core scope.**
 
 ### Additional services
 
@@ -432,9 +186,9 @@ Other useful trainer services can be added as systems develop.
 
 
 
-# World-8. TMs
+# World-5. TMs
 
-**Status: DECIDED**
+**Status: DECIDED — core release target** (not implemented as designed; mart pass still open — [KB-4](DESIGN.md#index-5-known-bugs)).
 
 TMs remain **consumable**.
 
@@ -448,7 +202,7 @@ Different TMs have different renewable sources.
 
 ## Common TMs
 
-Available from shops — see [World-10](DESIGN-WORLD.md#world-10-shops) (major hubs: Goldenrod, Celadon).
+Available from shops — see [World-7](DESIGN-WORLD.md#world-7-shops) (major hubs: Goldenrod, Celadon).
 
 ## Game Corner TMs
 
@@ -456,7 +210,7 @@ Some TMs remain Game Corner rewards.
 
 ## Rare / overworld TMs
 
-Rare TMs that would traditionally exist as one overworld copy can also become obtainable through [living-trainer interactions](DESIGN-WORLD.md#world-6-trainer-interactions).
+Rare TMs that would traditionally exist as one overworld copy can also become obtainable through [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) living-trainer interactions; **initial release** relies on [World-7](DESIGN-WORLD.md#world-7-shops) hub shelves.
 
 ## Gym TMs
 
@@ -470,7 +224,7 @@ Gym TM farming is intentionally unlimited.
 
 
 
-# World-9. Evolution Methods (Trade & Stones)
+# World-6. Evolution Methods (Trade & Stones)
 
 **Status: PARTIALLY DECIDED — stone expansion OPTIONAL / TBD**
 
@@ -538,17 +292,19 @@ Example — Rapidash (natural level **40**):
 - Exact −5 behaviour: one-time per stage, permanent flag, or repeatable?
 - Dual-types: either type matches, or primary type only?
 - Using a stone on a Pokémon with no evolution in that line — no effect?
-- Interaction with [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) Phase 5 (trainers exclude trade/stone lines until policy exists).
+- Interaction with [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) evolution exclusions for generated trainer teams.
 
-Shop availability for stones and Link Cables: [World-10](DESIGN-WORLD.md#world-10-shops).
+Shop availability for stones and Link Cables: [World-7](DESIGN-WORLD.md#world-7-shops).
 
 ---
 
 
 
-# World-10. Shops
+# World-7. Shops
 
-**Status: DECIDED direction; per-mart inventories TBD**
+**Status: DECIDED — core release target** — especially **renewable TMs** ([World-5](DESIGN-WORLD.md#world-5-tms)) and **evolution items** (stones, Link Cable, trade held items when [World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) ships). Per-mart inventories TBD.
+
+**Known bug:** current ROM mart stock is wrong ([KB-4](DESIGN.md#index-5-known-bugs)) — treat shop redesign below as target, not what ships today.
 
 Marts are redesigned around [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) (post-battle full restore) and [Battle-3](DESIGN-BATTLES.md#battle-3-core-trainer-battle-philosophy) (no bag items in trainer battles). Most vanilla consumables no longer have a job.
 
@@ -576,15 +332,15 @@ HP, PP, and status are restored after every battle (including wild). Healing ite
 
 ### Poké Balls
 
-Standard balls remain in marts across the region (Great / Ultra / Premier as progression unlocks). Specialty balls follow [DESIGN-FUTURE.md](DESIGN-FUTURE.md) Apricorn policy when that addon ships — **Quick Ball** and **Dusk Ball** stay out of normal shops even in core design notes.
+Standard balls remain in marts across the region (Great / Ultra / Premier as progression unlocks). Specialty balls follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) when that ships — **Quick Ball** and **Dusk Ball** stay out of normal shops even in core design notes.
 
 ### TMs
 
-Renewable TM stock at **department-store hubs** — primarily **Goldenrod** and **Celadon** ([World-8](DESIGN-WORLD.md#world-8-tms)). Smaller towns do not need full TM shelves.
+Renewable TM stock at **department-store hubs** — primarily **Goldenrod** and **Celadon** ([World-5](DESIGN-WORLD.md#world-5-tms)). Smaller towns do not need full TM shelves.
 
 ### Evolution items
 
-When [World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones) ships:
+When [World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) ships:
 
 - **Evolution stones** (Fire, Water, Thunder, Leaf, Moon, Sun, Dusk, Dawn, Shiny, Ice if used) at Goldenrod / Celadon, and sprinkled throughout.
 - **Link Cable** (trade-evolution substitute) at the same hubs;
@@ -598,7 +354,7 @@ Unlocked via Badge count, and sprinkled around the shops. Intentionally not cons
 
 ### Field / utility (keep)
 
-- **Repel**, Super Repel, Max Repel — wild-level risk remains ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps));
+- **Repel**, Super Repel, Max Repel — wild-level risk remains ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps));
 - **Escape Rope**
 - **Vitamins** (Protein, Iron, etc.) — EV training unchanged in vanilla; still sold if EVs matter.
 
@@ -616,7 +372,7 @@ Vanilla per-map mart inventories need a **pass** when shop redesign ships — se
 
 ## Living-trainer economy
 
-[World-6](DESIGN-WORLD.md#world-6-trainer-interactions) trainers may **buy and sell** items — good sink for duplicates and source for rare TMs / held gear without putting everything in static marts.
+[Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions): trainers may **buy and sell** items — sink for duplicates and source for rare TMs / held gear. **Not initial release scope**; hub marts carry the renewable economy first.
 
 ## Open questions
 
@@ -625,105 +381,3 @@ Vanilla per-map mart inventories need a **pass** when shop redesign ships — se
 - Game Corner: coins for TMs / held items only — no battle boosters?
 - Badge-gated shop tiers (e.g. Ultra Balls, late held items)?
 - Ability Patch / Capsule, mints, mega stones — if ever added, likely **not** general marts.
-
----
-
-
-
-# World-11. Technical Investigations
-
-Open engineering questions for this area (from the former monolithic design doc). Battle-system investigations live in [Battle-9](DESIGN-BATTLES.md#battle-9-technical-investigations).
-
-## Accelerated clock
-
-Questions include:
-
-- replacing RTC dependencies;
-- event compatibility;
-- day/night rendering;
-- encounter tables;
-- evolutions;
-- manual time advancement.
-
-(Apricorn refresh: `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)` addon.)
-
-## HM progression
-
-Questions include:
-
-- decoupling field use from learned moves;
-- checking eligible species across party + boxes;
-- badge-count unlocks;
-- existing scripts expecting specific badges/HMs.
-
-
-
-## Living trainers
-
-Questions include:
-
-- map spawning;
-- movement;
-- persistence;
-- generated identities;
-- badge counts;
-- generated collections;
-- map transitions;
-- save-state requirements.
-
-
-
-## Trainer interactions
-
-Questions include:
-
-- ecology-linked location requests ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology));
-- reward economy;
-- trade and item-exchange UI;
-- TM distribution hooks ([World-8](DESIGN-WORLD.md#world-8-tms)).
-
-
-
-## Pokémon Centers
-
-Questions include:
-
-- Abra fast-travel integration ([World-1](DESIGN-WORLD.md#world-1-world-transportation));
-- resting / time advancement ([World-4](DESIGN-WORLD.md#world-4-accelerated-daynight-cycle));
-- which vanilla Center scripts to repurpose once healing/PC are automatic.
-
-
-
-## TMs
-
-Questions include:
-
-- Game Corner integration;
-- Gym TM rematch rewards ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters));
-- renewable rare-TM sources via living trainers.
-
-(Shop shelves and pricing: [World-10](DESIGN-WORLD.md#world-10-shops).)
-
-## Evolution methods (trade & stones)
-
-Questions include:
-
-- Link Cable vs level-up trade substitutes ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones));
-- held-item-on-use evolutions;
-- optional expanded stone mechanics;
-- stone/trade evolution policy for generated trainer teams ([Battle-8](DESIGN-BATTLES.md#battle-8-implementation) Phase 5).
-
-
-
-## Shops
-
-Questions include:
-
-- rewriting `mart.c` / per-map inventories vs one global table;
-- Goldenrod vs Celadon department-store layout;
-- held-item tier gating by badge or city;
-- Game Corner prize roster;
-- removing obsolete healing / X-item entries without breaking scripts that `giveitem` them.
-
----
-

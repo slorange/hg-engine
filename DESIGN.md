@@ -1,6 +1,6 @@
 # Pokémon Wandering Heart — Design Index
 
-> Source of truth for **Pokémon Wandering Heart** core design. Detailed specs live in sub-documents with prefixed section IDs (`Vision-1`, `World-2`, `Battle-8`, …).
+> Source of truth for **Pokémon Wandering Heart** core design. Detailed specs live in sub-documents with prefixed section IDs (`Vision-1`, `World-2`, `Battle-4`, …).
 >
 > **This index is NOT permission to implement everything described in the sub-docs.**
 
@@ -14,7 +14,7 @@
 | `[DESIGN-WILDS.md](DESIGN-WILDS.md)`                         | `Wilds-*`  | Ecology seed, wild levels, fishing, content scope                |
 | `[DESIGN-BATTLES.md](DESIGN-BATTLES.md)`                     | `Battle-*` | Gyms, level caps, trainer generation, battle rosters, EXP, QoL  |
 | `[DESIGN-STORY.md](DESIGN-STORY.md)`                         | `Story-*`  | Story policy, vanilla cleanup backlog                            |
-| `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)`                       | `Future-*` | V2–V4 addons (balls, Full Moon, unlimited moves)                 |
+| `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)`                       | `Future-*` | Deferred addons (balls/Apricorns, Full Moon, moves, maps, …)     |
 | `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)` | —          | Implementation recipes, IDs, verified patches                    |
 
 ## Sections in this document
@@ -25,6 +25,7 @@
 | [Index-2. Current Technical Baseline](#index-2-current-technical-baseline) |
 | [Index-3. Open Design Questions](#index-3-open-design-questions) |
 | [Index-4. Game Identity](#index-4-game-identity) |
+| [Index-5. Known Bugs](#index-5-known-bugs) |
 
 ---
 
@@ -61,7 +62,9 @@ The design statuses used in this document are:
 
 **PARTIALLY IMPLEMENTED** — Some of the design ships today (often a v1/PoC or phased milestone); the section or Index-2 notes what remains.
 
-**V2 / PARKING LOT** — Interesting idea explicitly excluded from initial scope.
+**FUTURE / PARKING LOT** — Deferred to [`DESIGN-FUTURE.md`](DESIGN-FUTURE.md) (`Future-*`); not initial core scope.
+
+Broken or incorrect behaviour in the current ROM is tracked in [Index-5](#index-5-known-bugs), not as design status or incomplete features.
 
 ---
 
@@ -86,8 +89,8 @@ As of September 2026:
 
 | Feature                         | Status   | Design ref |
 | ------------------------------- | -------- | ---------- |
-| Post-battle heal (HP/PP/status) | Verified (intermittent post-battle crash) | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
-| Full-party EXP share (interim)  | Partial | [Battle-7](DESIGN-BATTLES.md#battle-7-exp-share) |
+| Post-battle heal (HP/PP/status) | Verified — [known crash bug](DESIGN.md#index-5-known-bugs) | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
+| Full-party EXP share (interim)  | Partial | [Battle-6](DESIGN-BATTLES.md#battle-6-exp-share) |
 
 
 Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) (Heal after every battle, Full party EXP share).
@@ -97,15 +100,15 @@ Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) 
 
 | Feature | Status | Design ref |
 | ------- | ------ | ---------- |
-| Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location) |
-| Starting city picker (18 decided; 3 in ROM PoC) | Partial | [Vision-3](DESIGN-VISION.md#vision-3-starting-location) |
-| Starter pick (12-option menu, gens 1–4) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location) |
+| Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
+| Starting city picker (18 decided; 3 in ROM PoC) | Partial | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
+| Starter pick (12-option menu, gens 1–4) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
 | Dev-only testing grants (e.g. Fly from Mom) | Implemented | Disable before release — see HACK-NOTES |
 | Magnet Train (Goldenrod ↔ Saffron) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
 | Route 42 paid ferry | Verified | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
 | Route 4 ledge boost ($100 hiker) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
 | Route 29→46 gate (2 badges) | PoC | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) — template only |
-| Route 36 Sudowoodo removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
+| Route 36 Sudowoodo removed | Verified after re-enter — [first-visit bug](DESIGN.md#index-5-known-bugs) | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 | Route 32 badge gate removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 | Mahogany Rocket arc skipped | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 | Surge / Erika Cut trees removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
@@ -116,17 +119,15 @@ Field recipes: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md).
 
 ### Trainer scaling (verified or enabled)
 
+| Feature | Status | Design ref |
+| ------- | ------ | ---------- |
+| Badge-band trainer levels | Verified | [Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented) |
+| Level-appropriate moves | Verified | [Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented) |
+| Same-line stage adjust | Verified | [Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented) |
+| Gym Leaders at level cap | Partial | [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters) — Gym trainer type filter → [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) |
+| Random species / dynamic battles / living trainers | Deferred | [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc), [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
 
-| Phase | Status | Design ref |
-| ----- | ------ | ---------- |
-| 1 — Rescale vanilla levels by badge band | Verified | [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) |
-| 2 — Level-appropriate moves | Verified | [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) |
-| 3 — Same-line stage adjust | Verified | [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) |
-| 6 — Gym Leaders at level cap | Partial | [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters) — Gym trainer type filter still open |
-| 4–5, 7–12 | Not started | [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) |
-
-
-Implementation: HACK-NOTES § **Trainer level scaling**.
+Implementation: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) § **Trainer level scaling**.
 
 
 
@@ -135,18 +136,20 @@ Implementation: HACK-NOTES § **Trainer level scaling**.
 
 See [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Surge/Erika/Jasmine verified; remaining gym rows (Bugsy, Clair, Misty, Blue, **Blaine**), opening strip, **rival removal**, HM quest cleanup, and Rocket extension still open. **Paid ferry NPCs:** [World-1](DESIGN-WORLD.md#paid-ferry-npcs). Obsolete vanilla leftovers tracked in [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog).
 
-### Not yet started (core design priorities)
+### Initial release scope (finish PoCs + polish)
 
-- **Gym scaling phase 6 (remainder)** — Gym trainer type filter; Leader curated exceptions.
-- **Battle systems phases 7–9** — agreed size, dynamic rosters, counter-picking.
-- **New Bark door swap** when start city ≠ New Bark ([Vision-3](DESIGN-VISION.md#vision-3-starting-location), [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
-- Living trainers ([World-5](DESIGN-WORLD.md#world-5-living-trainers)), dynamic rosters, universal PC ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)), collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
-- **Gym Leader family location hints** ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — requires [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology).
+Work toward a shippable ROM without [DESIGN-FUTURE.md](DESIGN-FUTURE.md) north-star systems (generated parties, [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc), [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle), [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions), etc.).
+
+- **Gym trainer type filter** (remainder of release scaling) — [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties); Leader cap done ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented)).
+- **New Bark door swap** when start city ≠ New Bark ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon), [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
+- Collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — HM pilot partial.
+- **Shop pass** — renewable **TMs** and **evolution items** ([World-5](DESIGN-WORLD.md#world-5-tms), [World-7](DESIGN-WORLD.md#world-7-shops)); fix [KB-4](DESIGN.md#index-5-known-bugs).
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
-- **Wild ecology seed** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)) — not started; **Wilds-2** + **Wilds-3** distance caps implemented (near complete).
+- **Wilds-1** + **Wilds-2** — near complete; remaining hooks (Safari, Contest, etc.).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
 - Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival removal, Rocket extension, remaining gym rows.
 - **Vanilla cleanup pass** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — strip superseded NPCs, quests, HM fetch chains, and HM-teaching scripts.
+- Known bugs [Index-5](#index-5-known-bugs).
 
 The basic development loop is proven:
 
@@ -165,29 +168,15 @@ Docker remains the known-good build path.
 The following are intentionally unresolved.
 
 - Exact starter system — **v1 twelve-option menu implemented**; long-term pools TBD.
-- Per-city home door wiring for **15 of 18** starting cities (3-city PoC in ROM; full list in [Vision-3](DESIGN-VISION.md#vision-3-starting-location)).
-- Who determines trainer battle size.
-- Exact trainer generation algorithms.
-- How aggressively NPCs counter-pick.
-- Whether generated trainers have persistent full collections or generate unrevealed Pokémon on demand.
-- Exact Gym roster generation.
-- Exact EXP formula.
-- Whether fainted Pokémon's lost EXP is redistributed.
-- Wild ecology: habitat tags, family assignment algorithm, special/static encounter policy ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)).
-- Wild level distribution curves within area caps ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range)).
-- Wild level progression: **Wilds-3 distance caps** — **decided / implemented**; World-2 guard/tile gating **not** used for wild levels ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps), [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)).
-- Gym Leader **family hint menus** — curated species lists per Leader ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
-- Exact transportation prices.
-- Exact Pokémon Center service list ([World-7](DESIGN-WORLD.md#world-7-pokmon-centers)).
-- Per-mart shop inventories and held-item tiers ([World-10](DESIGN-WORLD.md#world-10-shops)).
-- Exact accelerated-time resting mechanics.
-- Long-term Pokémon generation cutoff beyond **Gen I–IV + Volcarona line** ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)).
+- Per-city home door wiring for **15 of 18** starting cities (3-city PoC in ROM; full list in [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)).
+- Exact Pokémon Center service list ([World-4](DESIGN-WORLD.md#world-4-pokmon-centers)).
+- Per-mart shop inventories and held-item tiers ([World-7](DESIGN-WORLD.md#world-7-shops)).
 - Clair Dragon's Den: remove trial vs HM-free path ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
-- Trade evolutions without items: Link Cable vs fixed levels ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones)).
-- Whether expanded stone mechanics ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones)) ship at all.
+- Trade evolutions without items: Link Cable vs fixed levels ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
+- Whether expanded stone mechanics ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)) ship.
 - Special-trainer roster (Red ~100 / Pikachu buff, E4 first-clear levels) vs badge-tier cap at 80 ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)).
 
-(Ball/Apricorn V2+ questions: [`DESIGN-FUTURE.md`](DESIGN-FUTURE.md) — V2 balls, V3 Full Moon, V4 unlimited moves.)
+(Deferred systems and addons: [`DESIGN-FUTURE.md`](DESIGN-FUTURE.md) — [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) through [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions).)
 
 These questions should remain open until deliberately resolved.
 
@@ -195,9 +184,26 @@ These questions should remain open until deliberately resolved.
 
 # Index-4. Game Identity
 
-**Pokémon Wandering Heart** is an open-world HeartGold/SoulSilver journey: build a **collection**, not a fixed party of six; travel freely across Johto and Kanto; challenge all **16 scaling Gyms** in any order; and meet trainers who feel like they are on journeys of their own.
+**Pokémon Wandering Heart** is HeartGold and SoulSilver reimagined as a trainer’s road trip: you are one of many travelers, not the center of a scripted plot—free to roam Johto and Kanto, grow a roster far beyond six Pokémon, and take on all sixteen Gyms when you are ready, in an order that fits your route.
 
-**Battles** are deliberately fair — the same number of Pokémon on each side, **no bag items**, and rosters that form during the fight as you commit slots from your **entire PC**, not just the six in your party. **Wild Pokémon** use a **per-save randomized ecology** (families stay in sensible habitats, but locations shuffle); encounter **levels scale with your chosen starting city** and how far you have travelled from it, so the same map can be early-game or late-game depending on where you began.
+**Initial Release:** Pick a starting city and a starter, then play through a stripped-down HGSS where major story gates and fetch quests are gone or shortened. Wild levels scale with distance from the starting city, and trainer levels scale with your badge progress. Post-battle healing and no items from either side for fair battles, EXP Share to reduce grinding, and badge-based level caps to ensure difficulty. HMs awarded by Gym leaders rather than quests. Shops sell renewable TMs and evolution items. The playable dex is Generations I–IV plus a few additions.
+
+**Future Plans:** Per-save **wild ecology** so runs feel different; **generated trainer and Gym parties** and smarter Gym scaling; **living trainers** who move and rematch; **dynamic battles** where you pull from the full PC instead of a fixed party of six; a faster **day/night clock** and **Apricorn crafting** economy; **unlimited moves** and **map connectivity** edits
+
+---
+
+# Index-5. Known Bugs
+
+Regressions and incorrect behaviour in the **current ROM**. This is not [Index-2](#index-2-current-technical-baseline) incomplete work, [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) cleanup, or open design in [Index-3](#index-3-open-design-questions).
+
+When a bug is fixed, remove its row here and note the fix in [`CHANGELOG.md`](CHANGELOG.md) if player-visible.
+
+| ID | Symptom | Notes |
+| -- | ------- | ----- |
+| **KB-1** | **Route 36 Sudowoodo** still blocks the road the **first** time you enter the route after load. Leaving and re-entering hides the tree as intended. | Hide flag runs on map load (`scr_seq_R36_010` / `FLAG_HIDE_ROUTE_36_SUDOWOODO`); object visibility likely applies one visit late. Recipe: `documentation/HACK-NOTES.md` § **Remove Sudowoodo block (Route 36)**. |
+| **KB-2** | **Intermittent crash** after battles (~2–5% of the time) when returning to the field. | Tied to post-battle full heal (`HEAL_AFTER_BATTLE`). Under investigation. Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**. Design: [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition). |
+| **KB-3** | **Wrong home interior** — entering a city’s player house when that city is **not** your starting city still warps to the **canonical Mom house** (starting interior) instead of that city’s displaced vanilla interior. | Related design: [Vision-3 home wiring](DESIGN-VISION.md#vision-3-starting-location-and-pokémon). Goldenrod/Saffron “home” doors intentionally use the canonical interior; other cities’ houses should not. Recipe: `documentation/HACK-NOTES.md` § [Home = bidirectional door + interior swap](documentation/HACK-NOTES.md#home--bidirectional-door--interior-swap). |
+| **KB-4** | **Poké Mart inventories wrong** — shops skew toward **Great Ball / Ultra Ball** (and similar); **Poké Balls** and expected baseline stock often missing across marts. | Likely interaction with `MART_EXPANSION` / badge-tier `ScrCmd_MartBuy` vs per-city extras (`src/field/mart.c`). Intended direction: [World-7](DESIGN-WORLD.md#world-7-shops). Olivine second clerk (Secret Medicine) is a separate, intentional override. |
 
 ---
 

@@ -1,6 +1,6 @@
 # Pokémon Wandering Heart — Battles, Trainers & Progression
 
-> Gyms, badges, level caps, battle systems, implementation phases, and QoL.
+> Gyms, badges, level caps, trainer scaling, and QoL.
 >
 > **Index:** `[DESIGN.md](DESIGN.md)` · **Vision:** `[DESIGN-VISION.md](DESIGN-VISION.md)` · **World:** `[DESIGN-WORLD.md](DESIGN-WORLD.md)` · **Wilds:** `[DESIGN-WILDS.md](DESIGN-WILDS.md)`
 
@@ -9,14 +9,12 @@
 | Section | Status |
 | ------- | ------ |
 | [Battle-1. Gyms and Badges](#battle-1-gyms-and-badges) | PARTIALLY IMPLEMENTED |
-| [Battle-2. Healing and Attrition](#battle-2-healing-and-attrition) | IMPLEMENTED (intermittent post-battle crash) |
+| [Battle-2. Healing and Attrition](#battle-2-healing-and-attrition) | IMPLEMENTED — [KB-2](DESIGN.md#index-5-known-bugs) |
 | [Battle-3. Core Trainer-Battle Philosophy](#battle-3-core-trainer-battle-philosophy) | DECIDED |
 | [Battle-4. Badge-Based Level Caps](#battle-4-badge-based-level-caps) | DECIDED |
 | [Battle-5. Gym Rosters](#battle-5-gym-rosters) | DECIDED |
-| [Battle-6. Dynamic Battle Rosters](#battle-6-dynamic-battle-rosters) | CORE FEATURE / DECIDED |
-| [Battle-7. EXP Share](#battle-7-exp-share) | PARTIALLY IMPLEMENTED |
-| [Battle-8. Implementation](#battle-8-implementation) | PARTIALLY IMPLEMENTED |
-| [Battle-9. Technical Investigations](#battle-9-technical-investigations) | TECHNICAL UNKNOWN |
+| [Battle-6. EXP Share](#battle-6-exp-share) | PARTIALLY IMPLEMENTED |
+| Dynamic battle rosters & universal PC | Moved — [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) |
 
 ---
 
@@ -46,7 +44,7 @@ This scaling may affect:
 # Battle-2. Healing and Attrition
 
 
-**Status: IMPLEMENTED** — verified wild, trainer, flee, and catch ([Index-2](DESIGN.md#index-2-current-technical-baseline)). **Intermittent post-battle crash** reported — under investigation. Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**.
+**Status: IMPLEMENTED** — verified wild, trainer, flee, and catch ([Index-2](DESIGN.md#index-2-current-technical-baseline)). Known bug: intermittent post-battle crash ([KB-2](DESIGN.md#index-5-known-bugs)). Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**.
 
 Traditional long-term HP/PP attrition is intentionally removed.
 
@@ -87,27 +85,9 @@ This restriction applies to **both sides**.
 
 Held items remain legal.
 
-## Battle size
+Note, this might have already been implemented in HG-Engine as a feature flag.
 
-Trainer battles use an agreed number of Pokémon.
-
-Examples:
-
-- 1v1
-- 3v3
-- 6v6
-
-Exactly who determines battle size is:
-
-**TBD**
-
-Possibilities include:
-
-- trainer preference;
-- badge progression;
-- encounter type;
-- player choice;
-- some combination.
+Symmetrical agreed battle size (2v2–6v6): [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) / [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties). Initial release uses vanilla party sizes.
 
 ---
 
@@ -157,7 +137,7 @@ Formula (badges 0–15): `cap = 10 + 4 × badges_earned`
 These ladders are **not the same thing**:
 
 - **Player level cap** — badge ladder above, then **uncapped after Champion** (toward 100 in postgame). Champion status is a **player-only** unlock; it does not raise the badge-tier formula.
-- **Ordinary trainer scaling** — badge band from [Battle-8](DESIGN-BATTLES.md#battle-8-implementation); **hard ceiling 80** even if the player is Champion. Route trainers, Gym trainers, and rematches should not creep past 80 without an explicit exception.
+- **Ordinary trainer scaling** — badge level band below ([Trainer scaling](#trainer-scaling-implemented)); **hard ceiling 80** even if the player is Champion. Route trainers, Gym trainers, and rematches should not creep past 80 without an explicit exception.
 
 **Special trainers** (scripted bosses, postgame fights) may override the band. Candidates need a curated list — not badge-tier random levels.
 
@@ -187,6 +167,31 @@ When level caps are enabled, **Rare Candies are not subject to the badge level c
 
 Player level cap hooks are **not enabled** in the ROM yet. When ready: `documentation/HACK-NOTES.md` § **Player badge level cap & Rare Candies**.
 
+## Trainer scaling (implemented)
+
+**Status: PARTIALLY IMPLEMENTED** — level band, moves, and stage adjust verified; Gym Leader at cap partial; Gym in-Gym type filter still open ([Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties)). Implementation: `documentation/HACK-NOTES.md` § **Trainer level scaling**.
+
+When the player has `n` **badges earned**, trainer Pokémon use the same cap formula as the player (`10 + 4n`, **80** at 16 badges). **Ordinary trainers:** uniform random level in **`[cap − 4, cap]`** (`floor = cap − 4`, `ceiling = cap`). **Gym Leaders:** every slot at **cap** exactly ([Battle-5](#battle-5-gym-rosters)).
+
+| Badges earned | Player cap | Trainer level range |
+| ------------- | ---------- | ------------------- |
+| 0             | 10         | 6–10                |
+| 1             | 14         | 10–14               |
+| 2             | 18         | 14–18               |
+| 3             | 22         | 18–22               |
+| …             | …          | …                   |
+| 15            | 70         | 66–70               |
+| 16            | 80         | 76–80 (ordinary); E4 band TBD |
+
+On trainer battle start (release behaviour):
+
+1. **Species** — vanilla party (random species: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties)).
+2. **Levels** — band above; Leaders at cap.
+3. **Moves** — last four level-up moves at assigned level (same rule as wild Pokémon).
+4. **Stage** — `AdjustEncounterSpeciesForLevel()` — level-up chains + synthetic edges ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)); `data/synthetic_evolution_thresholds.tsv`.
+
+Generated parties, dynamic rosters, and living trainers: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc), [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions).
+
 ---
 
 ---
@@ -194,29 +199,11 @@ Player level cap hooks are **not enabled** in the ROM yet. When ready: `document
 # Battle-5. Gym Rosters
 
 
-**Status: DECIDED**
-
-Gym Leader battles use the same general dynamic-roster battle system as other trainer battles; they do NOT have one predetermined fixed party.
-
-Gyms (both trainers and leaders) are **monotype by default**, with some exceptions (listed below).
-
-**Gym type exceptions** (for roster generation, family-hint menus, and type filters):
-
-| Leader | Gym type(s) for hints / filters | Roster notes |
-|--------|--------------------------------|--------------|
-| Whitney | **Normal** + **Fairy** | Keeps iconic Miltank |
-| Morty | **Ghost** + **Dark** | Dual-type family-hint menu |
-| Blue | **Ground** | Was flexible; now Ground-specialist |
-| Jasmine | Steel | Keeps iconic Ampharos line |
-| Brock | Rock | Keeps iconic Vulpix line |
-| Misty | Water | Keeps iconic Togepi line |
-| Blaine | Fire | Keeps iconic Rhydon line |
-
-All other Leaders use their vanilla Gym type only.
+**Status: DECIDED** (release) — vanilla Leader species at scaled levels. Generated rosters, type filters, and family hints: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties).
 
 ## Scaling (badge tier)
 
-Gym battles use the same badge-tier ladder as ordinary trainers ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps), [Battle-8](DESIGN-BATTLES.md#battle-8-implementation)).
+Gym battles use the same badge-tier ladder as ordinary trainers ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps) [Trainer scaling](#trainer-scaling-implemented)).
 
 - **Gym trainers** (inside the Gym): levels in the current band (`floor`–`ceiling`)
 - **Gym Leaders:** **every Pokémon is exactly at level cap** 
@@ -231,7 +218,7 @@ Gym Leaders can be rematched.
 
 Rematches use the player's **current badge tier**, rather than repeating the difficulty at which the Gym was originally defeated.
 
-Gym rematches are also a renewable source of that Gym's TM ([World-8](DESIGN-WORLD.md#world-8-tms)).
+Gym rematches are also a renewable source of that Gym's TM ([World-5](DESIGN-WORLD.md#world-5-tms)).
 
 There is no intended hard limit on the number of rematches/TM copies.
 
@@ -243,165 +230,17 @@ After a Gym Leader battle, the standard reward sequence is:
 
 1. **Badge**
 2. **HM** — the field ability for this badge count ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)); only on badge counts that grant a new unlock (not every badge grants an HM)
-3. **TM** — that Gym's TM ([World-8](DESIGN-WORLD.md#world-8-tms))
-4. **Family location hint** — optional menu after the above
+3. **TM** — that Gym's TM ([World-5](DESIGN-WORLD.md#world-5-tms))
 
-### Family location hint
+Optional **family location hint** (first clear): [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) (requires [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle)).
 
-The Leader offers to point the player toward **one evolutionary family** matching the Gym's type(s) (see type exceptions above).
-
-Example flow (Lt. Surge, Electric):
-
-> *"As an extra reward, if there's any Electric-type you're looking for, I'll tell you where to look."*
-
-The player picks from a curated list of families for that Gym (e.g. Pikachu, Magnemite, Voltorb, Electabuzz, Chinchou, Mareep, Electrike, …). The Leader then names a **concrete location** from the player's **generated ecology** ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)), including encounter method when relevant:
-
-> *"Chinchou can be found in Dark Cave using the Good Rod."*
-
-**Rules:**
-
-- One family choice per first Gym clear (not rematches unless redesigned later).
-- Hint data must come from the save's ecology tables, not hardcoded vanilla locations.
-- Multi-type Leaders (Whitney, Morty) offer families from **either** qualifying type.
-- Family lists are curated per Leader — not every species of that type in the dex.
-
-Rematches continue to award **TM copies** only ([Rematches](#rematches) above); family hints are a first-clear bonus.
+Rematches continue to award **TM copies** only ([Rematches](#rematches) above).
 
 ---
 
 ---
 
-# Battle-6. Dynamic Battle Rosters
-
-
-**Status: CORE FEATURE / DECIDED**
-
-Trainer battles do **not** use a fixed pre-battle team. The player's **full collection** is the bench; roster slots commit dynamically as Pokémon enter. Counter-picking and information asymmetry are intentional. The six-member field party still matters for EXP overflow and presentation.
-
-## Dynamic roster rules
-
-Trainer battles do NOT use your party as a fixed team.
-
-Instead:
-
-> **Each trainer's entire collection is their bench. The actual battle roster forms dynamically as Pokémon are revealed.**
-
-Suppose a battle is 4v4.
-
-The player does not choose four Pokémon before battle.
-
-They initially choose one Pokémon to send out.
-
-The opponent does the same.
-
-Whenever the player would normally be allowed to send out or switch Pokémon, they may select:
-
-1. a Pokémon already committed to this battle; or
-2. an unused Pokémon from their entire collection.
-
-The first time a unique Pokémon enters the battle, that Pokémon permanently consumes one of the player's roster slots.
-
-In a 4v4:
-
-- first unique Pokémon = slot 1;
-- second unique Pokémon = slot 2;
-- third unique Pokémon = slot 3;
-- fourth unique Pokémon = slot 4.
-
-After four unique Pokémon have entered:
-
-> **The roster is locked.**
-
-The player may continue switching among those Pokémon, but cannot introduce a fifth.
-
-Fainted Pokémon continue to occupy their roster slots.
-
-The opponent follows the same rules.
-
-## Counter-picking and information
-
-**Status: DECIDED / INTENTIONAL**
-
-Dynamic counter-picking is an intentional part of the battle system.
-
-The player does not know the opponent's complete available collection.
-
-The opponent does not initially know which Pokémon the player will commit.
-
-If an opponent reveals Gyarados, the player may respond by introducing an Electric Pokémon.
-
-However, doing so permanently spends another roster slot.
-
-The opponent can then respond to the newly revealed Electric Pokémon, but doing so may require committing another one of their own limited slots.
-
-Therefore:
-
-> **Revealing a counter is both an advantage and a commitment.**
-
-This creates an information-management/drafting layer inside normal Pokémon battles.
-
-NPC AI should eventually understand this concept rather than simply selecting Pokémon independently.
-
-## PC / collection access
-
-**Status: DECIDED**
-
-The player's Pokémon storage is accessible anywhere.
-
-This includes:
-
-- overworld;
-- trainer battles;
-- wild battles.
-
-There is no requirement to physically visit a Pokémon Center PC to reorganize the player's collection.
-
-### Trainer battles
-
-The full collection serves as the player's dynamic battle bench.
-
-### Wild battles
-
-PC access remains available during wild encounters as well.
-
-Exact wild-battle UI/selection behaviour is a technical design problem to investigate.
-
-## Field party vs full collection
-
-**Status: DECIDED conceptually**
-
-The six-member field party remains meaningful even though the player's collection is universally accessible.
-
-### Field Party
-
-The six field Pokémon:
-
-- determine the player's following Pokémon;
-- receive unused trainer-battle EXP slots ([Battle-7](DESIGN-BATTLES.md#battle-7-exp-share));
-- can be prioritized for overworld presentation/mechanics;
-- provide convenient default Pokémon ordering.
-
-
-
-### Full Collection
-
-The entire collection:
-
-- is accessible anywhere;
-- can be accessed during battle;
-- serves as the trainer-battle bench;
-- can satisfy HM field requirements ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves));
-- allows the game to encourage development of significantly more than six Pokémon.
-
-A major design goal is:
-
-> **The player's collection is their team.**
-
----
-
----
-
-# Battle-7. EXP Share
+# Battle-6. EXP Share
 
 
 **Status: PARTIALLY IMPLEMENTED** — interim full-party share verified in-game; final battle-limit EXP recipient formula still **TBD** below. Recipe: `documentation/HACK-NOTES.md` § **Full party EXP share (interim)**.
@@ -467,218 +306,3 @@ The system should be configurable so that we can tune:
 - badge progression pacing.
 
 Do not hard-code an assumed EXP formula unnecessarily.
-
----
-
----
-
-# Battle-8. Implementation
-
-
-**Status: PARTIALLY IMPLEMENTED** — Phases **1–3** verified; **Phase 6** (Gym Leader level cap) verified; Phases 4–5, 7–12 not started. See [Index-2](DESIGN.md#index-2-current-technical-baseline).
-
-## Trainer level band (same badge ladder as Battle-4)
-
-When the player has `n` **badges earned**, their level cap is `10 + 4n` (max **70** while `n < 16`; **80** with all 16 badges).
-
-**Ordinary trainers** draw Pokémon levels from the current **4-level band** ending at that cap:
-
-
-| Badges earned | Player cap | Trainer level range             |
-| ------------- | ---------- | ------------------------------- |
-| 0             | 10         | 6–10                            |
-| 1             | 14         | 10–14                           |
-| 2             | 18         | 14–18                           |
-| 3             | 22         | 18–22                           |
-| …             | …          | …                               |
-| 15            | 70         | 66–70                           |
-| 16            | 80         | 70–75 regi;ar trainers 76-80 E4 |
-
-
-Formula: `floor = cap − 4`, `ceiling = cap` (inclusive), using the cap for the player's current badge count.
-
-**Trainer ceiling:** ordinary scaled trainers **never exceed level 80**, regardless of Champion status. Postgame badge-tier fights stay in the **70–80** band at 16 badges. Fights above 80 require a **special-trainer** flag ([Battle-4 player cap vs trainer levels](#player-cap-vs-trainer-levels)).
-
-Example: **3 badges** → cap **22** → ordinary trainer Pokémon at levels **18–22** (the band since the last +4 step).
-
-**Gym Leaders** are an exception: all party Pokémon are at **level cap** exactly ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
-
-## Target behaviour (full system)
-
-When a battle starts, the opponent's party is built for the player's current badge tier:
-
-1. **Level** — ordinary trainers: each Pokémon in the current band (`floor`–`ceiling`). Gym Leaders: **all at cap** (Battle-5).
-2. **Species (later phases)** — Phases 3–4 below. Stone and trade evolutions are **excluded for now** (Phase 5).
-3. **Moves (Phase 2)** — last **four level-up moves** the species would know at its assigned level (same rule as wild Pokémon). No bespoke move sets yet.
-4. **Held items** — **none for now** (roadmap).
-5. **TMs** — **none for now** (roadmap).
-6. **Gym type filter (Phase 6)** — every Pokémon on **Gym trainers and Gym Leaders** must have **at least one type matching the Gym** (Battle-5).
-
-Longer term, a trainer may own a generated collection larger than battle size ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters) dynamic rosters), with on-demand generation and optional counter-picking — unchanged from prior design intent.
-
-## Implementation phases
-
-Work in order. Do not skip ahead unless a phase is blocked and the spike is explicitly scoped.
-
-Phases **1–3** and **6** (Gym Leader cap only) are implemented — see `documentation/HACK-NOTES.md` § **Trainer level scaling**. Phases **4–5** and **7–12** are not started.
-
-### Phase 1 — Rescale vanilla teams
-
-On trainer battle start: read badge count, compute `floor`/`ceiling`, **keep the trainer's existing species and party size**, only **remap levels** into the band (e.g. uniform random per slot, or proportional offset — pick one and document in code).
-
-No random species, no move changes, no items. This alone makes open-world travel viable.
-
-**Exit criterion:** same Youngster on Route 30 fights at ~6–10 with 0 badges and ~18–22 with 3 badges; species unchanged.
-
-### Phase 2 — Level-appropriate moves
-
-After levels are set, assign **last four level-up moves** at that level (wild-mon logic). Still fixed or rescaled species from vanilla data.
-
-### Phase 3 — Downgrade / upgrade (same species)
-
-Keep the trainer's **vanilla species identity** (or current party slot species), but adjust **evolution stage** so the form is legal at the assigned level:
-
-- **Downgrade** when the natural line evolves above `ceiling` (e.g. Dragonite at cap 22 → Dratini or Dragonair).
-- **Upgrade** when a lower stage is below the intended level and a higher stage is legal (e.g. Pidgey at level 18 → Pidgeotto if cap allows).
-
-Still no random species swap.
-
-**Stage rule (implemented):** `AdjustEncounterSpeciesForLevel()` — walk level-up chains from `Evolutions.c`, then **synthetic edges** from `data/synthetic_evolution_thresholds.tsv` (trade/stone/friendship/move-known at authored `min_level`; does not change player evolution). See [Wilds-2 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer). Example: Dratini @ **L22 → Dratini**; Golbat @ **L30 → Crobat**; Kadabra @ **L35 → Alakazam**.
-
-**Phase 5 note:** interim “exclude stone/trade species from trainer **party generation**” is separate from encounter-stage display above.
-
-### Phase 4 — Randomize species
-
-Replace party species with **random eligible species** from the available dex, then apply Phase 3 rules so the chosen stage fits the level band. Levels still from Phase 1 band (Leaders still at cap once Phase 6 is in scope).
-
-### Phase 5 — Evolution exclusions (interim rules)
-
-Trainers do not receive stone- or trade-evolution lines until player-side rules exist ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones)). Document exceptions (e.g. allow level-only final evos only).
-
-### Phase 6 — Gym trainers and Gym Leaders
-
-Apply scaling to **in-Gym trainer battles** and **Gym Leader battles**, on top of whichever species phase is active (Phase 1 alone is enough for a first Gym prototype):
-
-
-| Role        | Level rule                         | Type rule           |
-| ----------- | ---------------------------------- | ------------------- |
-| Gym trainer | `floor`–`ceiling` (same as routes) | ≥1 type matches Gym |
-| Gym Leader  | **all at level cap**               | ≥1 type matches Gym |
-
-
-Gym type matching applies to generated parties too (Phase 4 rolls from a Gym-type-filtered pool). Characterization exceptions (Battle-5) remain manual/curated, not random off-type.
-
-### Phase 7 — Agreed battle size
-
-Trainer battles use a **symmetrical, agreed roster size** ([Battle-3](DESIGN-BATTLES.md#battle-3-core-trainer-battle-philosophy)): same number of active slots for both sides (2v2 through 6v6). Who proposes or accepts the size (trainer, badge tier, player, mix) remains **TBD**.
-
-Phases 1–6 can keep vanilla party sizes until this lands. Exit criterion: a Route trainer and the player fight **3v3** (or chosen size) with roster-slot parity, still using fixed or generated parties from earlier phases.
-
-### Phase 8 — Dynamic rosters
-
-Replace “pick your party before battle” with **collection-as-bench** ([Battle-6](DESIGN-BATTLES.md#battle-6-dynamic-battle-rosters)):
-
-- battle starts with one send-out per side;
-- each **new** Pokémon brought in consumes a roster slot until the agreed size is reached;
-- then the roster **locks**; fainted mons still occupy slots.
-
-**Depends on** universal PC / box access during trainer battles ([Battle-6 — PC / collection access](#pc--collection-access)). Without that, Phase 8 is blocked.
-
-### Phase 9 — Counter-picking
-
-Opponents (and eventually AI) **respond to revealed player commitments** ([Battle-6 — Counter-picking](#counter-picking-and-information)): unrevealed Pokémon may be generated or selected from a hidden pool when the trainer spends another slot. Strength of intentional counter-play remains **TBD** — should feel responsive, not omniscient.
-
-Builds on Phase 4 (generated species) and Phase 8 (slot commitment). Early stub: fixed party order; full vision: on-demand counters from generated collection.
-
-### Phase 10 — Held items
-
-Assign held items to trainer Pokémon (roadmap; none in Phases 1–9).
-
-### Phase 11 — TM moves
-
-Allow TM moves on trainer movesets beyond level-up sets (roadmap).
-
-### Phase 12 — Living trainers
-
-Field population, movement, and map-level trainer generation ([World-5](DESIGN-WORLD.md#world-5-living-trainers), [World-6](DESIGN-WORLD.md#world-6-trainer-interactions)) — distinct from battle-start scaling; location-weighted distributions and non-battle interactions.
-
-## Collection and counter-picking (design intent)
-
-A trainer may have a generated collection larger than the number of Pokémon ultimately used in a battle.
-
-For example:
-
-> Trainer Maya owns 12 relevant Pokémon.
->
-> The battle is 4v4.
->
-> During the battle she dynamically commits up to four Pokémon from that collection.
-
-However, persistent full collections are not mandatory until **Phase 8+**; on-demand generation for **Phase 9** counter-picks is an alternative.
-
-Another possible implementation is to generate unrevealed Pokémon **on demand** as the trainer commits additional roster slots.
-
-This would allow trainer AI/difficulty logic to generate an appropriate response to what the player has revealed.
-
-How strongly generation should intentionally counter the player remains TBD.
-
-The system should feel strategically responsive without feeling obviously omniscient or unfair.
-
----
-
----
-
-# Battle-9. Technical Investigations
-
-
-Open engineering questions for **battle systems** (world/trainer-population topics moved to [World-11](DESIGN-WORLD.md#world-11-technical-investigations)).
-
-## Dynamic battle rosters
-
-Questions include:
-
-- accessing boxed Pokémon from battle;
-- introducing a boxed Pokémon into an active battle;
-- tracking committed roster slots;
-- dynamically generated opponent collections;
-- opponent counter-picking AI;
-- wild-battle PC access;
-- battle UI.
-
-
-
-## Badge-scaled Gyms and trainers
-
-**Priority investigation** — should precede level caps and broad starting-city rollout.
-
-**Phase 1 target:** hook trainer battle start → badge count → level band → rescale existing party levels ([Battle-8 Phase 1](#phase-1)).
-
-**Phase 6 target:** Gym trainers (band + type filter); Gym Leaders (cap + type filter).
-
-**Phases 7–9 target:** symmetrical battle size → dynamic rosters (requires [Battle-6 PC access](#pc--collection-access)) → counter-picking AI / hidden pools.
-
-Questions include:
-
-- where hg-engine assembles the trainer party at battle start;
-- reading badge count from battle code (field scripts already use `count_badges`);
-- identifying current badge count;
-- scaling wild-adjacent trainer levels and teams by badge tier;
-- dynamic trainer generation (phases 2–5);
-- dynamic Gym generation (Phase 6 type filter + Leader cap levels);
-- agreed battle size rules (Phase 7);
-- battle-time PC access and roster locking (Phase 8);
-- counter-pick generation and AI strength (Phase 9);
-- battle-size selection;
-- rematches;
-- monotype generation with curated exceptions.
-
-
-
-## Universal PC
-
-Questions include:
-
-- overworld access;
-- trainer battle access;
-- wild battle access;
-- interaction with party assumptions in vanilla HGSS.

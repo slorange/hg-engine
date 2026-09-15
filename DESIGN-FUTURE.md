@@ -1,308 +1,152 @@
 # Pokémon Wandering Heart — Future & Addon Systems
 
-> **V2–V4 scope:** Apricorn economy, ball rebalance, Full Moon, unlimited moves. Not required for the core ROM.
+Deferred systems and wishlist items. **Sections are not listed in intended implementation order**
 >
 > **Index:** [`DESIGN.md`](DESIGN.md) · **Core vision:** [`DESIGN-VISION.md`](DESIGN-VISION.md)
 >
-> **Scope:** Everything from [Future-2](#future-2-apricorn-economy) onward is **V2** unless marked otherwise. **V3** begins at [Future-15](#future-15-full-moon-system-v3). **V4** begins at [Future-16](#future-16-unlimited-learned-moves-v4). None of this is required for the core open-world ROM.
->
-> **Dependency (V2 only):** Apricorn tree refresh assumes an accelerated in-game clock ([World-4](DESIGN-WORLD.md#world-4-accelerated-daynight-cycle)). That clock is core; the Apricorn economy is not.
 
 ## Sections
 
 | Section |
 | ------- |
-| [Future-1. Instructions](#future-1-instructions) |
-| [Future-2. Apricorn Economy](#future-2-apricorn-economy) |
-| [Future-3. Poké Ball Design Philosophy](#future-3-poké-ball-design-philosophy) |
-| [Future-4. Shop Balls](#future-4-shop-balls) |
-| [Future-5. Removed / Replaced Balls](#future-5-removed--replaced-balls) |
-| [Future-6. Apricorn Balls (overview)](#future-6-apricorn-balls-overview) |
-| [Future-7. Fast Ball](#future-7-fast-ball) |
-| [Future-8. Heavy Ball](#future-8-heavy-ball) |
-| [Future-9. Love Ball](#future-9-love-ball) |
-| [Future-10. Friend Ball](#future-10-friend-ball) |
-| [Future-11. Level Ball](#future-11-level-ball) |
-| [Future-12. Dream Ball](#future-12-dream-ball) |
-| [Future-13. Quick Ball](#future-13-quick-ball) |
-| [Future-14. Dusk Ball](#future-14-dusk-ball) |
-| [Future-15. Full Moon System (V3)](#future-15-full-moon-system-v3) |
-| [Future-16. Unlimited Learned Moves (V4)](#future-16-unlimited-learned-moves-v4) |
-| [Future-17. Technical investigation (when V2 is scheduled)](#future-17-technical-investigation-when-v2-is-scheduled) |
-| [Future-18. Open design questions (V2–V4)](#future-18-open-design-questions-v2v4) |
-| [Future-19. Map Editing — World Connectivity Wishlist](#future-19-map-editing--world-connectivity-wishlist) |
+| [Future-1. Apricorn economy & Poké Ball rebalance](#future-1-apricorn-economy--poké-ball-rebalance) |
+| [Future-2. Full Moon system](#future-2-full-moon-system) |
+| [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
+| [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
+| [Future-5. Per-save wild ecology shuffle](#future-5-per-save-wild-ecology-shuffle) |
+| [Future-6. Expanded Pokédex / generations](#future-6-expanded-pokédex--generations) |
+| [Future-7. Generated trainer & Gym parties](#future-7-generated-trainer--gym-parties) |
+| [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
+| [Future-9. Accelerated day/night cycle](#future-9-accelerated-daynight-cycle) |
+| [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 
 ---
 
-# Future-1. Instructions
+# Future-1. Apricorn economy & Poké Ball rebalance
 
-- Do **not** implement ball/Apricorn changes unless explicitly requested for the current task.
-- Prefer config-driven catch multipliers where hg-engine already supports them.
-- Mom's starting grants already include an **Apricorn Box** for inventory convenience — not this full V2 rebalance.
+Apricorn harvesting, crafting, and a two-tier ball roster (shop vs Apricorn). Tree refresh assumes [Future-9](#future-9-accelerated-daynight-cycle) (accelerated in-game clock).
 
----
-
-# Future-2. Apricorn Economy
+## Apricorn economy
 
 Apricorns become a renewable crafting resource tied to the accelerated game clock.
-
-Current target:
 
 - trees refresh approximately once per in-game day;
 - each tree yields approximately **3–5 Apricorns**.
 
-With the current ~30-minute day target, this creates a much faster renewable economy than vanilla HGSS.
+With the ~30-minute day target, this is a faster renewable economy than vanilla HGSS. Exact quantities and refresh timing remain subject to balance testing.
 
-Exact quantities and refresh timing remain subject to balance testing.
+The player should not need to repeatedly return to Azalea Town merely to craft Apricorn Balls. Pokémon Center crafting or another distributed crafting system is under consideration ([World-4](DESIGN-WORLD.md#world-4-pokémon-centers) notes).
 
-The player should not need to repeatedly return to Azalea Town merely to craft Apricorn Balls.
+### More Apricorn trees
 
-Pokémon Center crafting or another distributed crafting system is currently being considered.
+We would like **additional Apricorn trees** across Johto and Kanto so harvesting is not tied to vanilla placement alone. That has **not** been technically investigated yet — see [Technical investigation](#technical-investigation) below.
 
----
+## Ball design philosophy
 
-# Future-3. Poké Ball Design Philosophy
+**Shop balls** — readily available, generally weaker or reliable bonuses; useful without one infinitely purchasable ball dominating every capture.
 
-Poké Balls are being rebalanced around two broad categories.
+**Apricorn balls** — renewable but resource-limited, with stronger specialized bonuses. 
 
-## Shop Balls
+Intended to avoid: *"Buy 99 Quick Balls and throw one at everything."*
 
-> **Readily available, generally weaker/reliable bonuses.**
+## Shop balls
 
-The player can purchase these in quantity.
+<!-- HTML table: pipe tables cannot set column width; colgroup gives a wider effect column in IDE preview -->
+<table>
+<colgroup>
+<col style="width:16%">
+<col style="width:10%">
+<col style="width:74%">
+</colgroup>
+<thead>
+<tr><th>Ball</th><th align="right">Maximum</th><th>Effect</th></tr>
+</thead>
+<tbody>
+<tr><td>Poké Ball</td><td align="right">1×</td><td>Standard</td></tr>
+<tr><td>Great Ball</td><td align="right">1.5×</td><td>Standard</td></tr>
+<tr><td>Ultra Ball</td><td align="right">2×</td><td>Standard</td></tr>
+<tr><td>Timer Ball</td><td align="right">4×</td><td>Increasing bonus during long battles</td></tr>
+<tr><td>Repeat Ball</td><td align="right">3×</td><td>Bonus against previously caught species</td></tr>
+<tr><td>Net Ball</td><td align="right">3×</td><td>Bonus against Water or Bug Pokémon</td></tr>
+</tbody>
+</table>
 
-They should be useful without one infinitely purchasable ball becoming the obvious solution to nearly every encounter.
 
-## Apricorn Balls
+## Balls removed from the roster
 
-> **Renewable but resource-limited, with stronger and more specialized bonuses.**
+<table>
+<colgroup>
+<col style="width:22%">
+<col style="width:78%">
+</colgroup>
+<thead>
+<tr><th>Ball</th><th>Why dropped</th></tr>
+</thead>
+<tbody>
+<tr><td>Heal Ball</td><td>Unnecessary — newly caught Pokémon are auto-healed (<a href="DESIGN-BATTLES.md#battle-2-healing-and-attrition">Battle-2</a>).</td></tr>
+<tr><td>Luxury Ball</td><td>Role absorbed by redesigned Friend Ball.</td></tr>
+<tr><td>Nest Ball</td><td>Overlaps Level Ball conceptually.</td></tr>
+<tr><td>Dive Ball</td><td>Water-capture overlap with Net ball.</td></tr>
+<tr><td>Lure Ball</td><td>Water-capture overlap with Net ball.</td></tr>
+</tbody>
+</table>
 
-Apricorn harvesting/crafting limits availability enough that these balls can have substantially stronger effects.
 
-The player should have reasons to carry and select different balls for different encounters.
+## Apricorn balls
 
-The intended outcome is explicitly to avoid:
+New Apricorn colours may be introduced. Colours signal ball identity rather than vanilla Apricorn associations. **Grey** and **Purple** are intentionally new — a signal to HGSS veterans that the system changed. Shipping new colours needs separate investigation (items, harvest, art) — see [Technical investigation](#technical-investigation).
 
-> "Buy 99 Quick Balls and throw one at everything."
+<table>
+<colgroup>
+<col style="width:10%">
+<col style="width:14%">
+<col style="width:12%">
+<col style="width:64%">
+</colgroup>
+<thead>
+<tr><th>Apricorn</th><th>Ball</th><th align="right">Maximum</th><th>Proposed effect</th></tr>
+</thead>
+<tbody>
+<tr><td>🔴 Red</td><td>Fast Ball</td><td align="right">5× / 10× beasts</td><td>~1–5× by base Speed; <strong>10×</strong> vs Johto roaming beasts (Raikou, Entei, Suicune where implemented). Speed/weight curves TBD.</td></tr>
+<tr><td>🩶 Grey</td><td>Heavy Ball</td><td align="right">5×</td><td>~1–5× by weight. Thresholds TBD.</td></tr>
+<tr><td>🩷 Pink</td><td>Love Ball</td><td align="right">8×</td><td>3× opposite gender; 8× opposite gender + compatible Egg Group.</td></tr>
+<tr><td>🟢 Green</td><td>Friend Ball</td><td align="right">8×</td><td>8× vs families with a friendship evolution (whole family qualifies); caught mon starts at <strong>200</strong> friendship.</td></tr>
+<tr><td>🟡 Yellow</td><td>Level Ball</td><td align="right">8×</td><td>Scales with player's level advantage (vanilla concept, possibly smoother curve). Formula TBD.</td></tr>
+<tr><td>🟣 Purple</td><td>Dream Ball</td><td align="right">4×</td><td>Sleeping target (lower cap because Sleep is already strong).</td></tr>
+<tr><td>🔵 Blue</td><td>Quick Ball</td><td align="right">5×</td><td>First turn only.</td></tr>
+<tr><td>⚫ Black</td><td>Dusk Ball</td><td align="right">~7×</td><td>~4× at night; in caves, scales with depth (~4× shallow → ~7× deepest). Floor mapping TBD.</td></tr>
+</tbody>
+</table>
 
----
+## Technical investigation
 
-# Future-4. Shop Balls
+Before implementation:
 
-| Ball | Maximum | Effect |
-|---|---:|---|
-| Poké Ball | 1× | Standard |
-| Great Ball | 1.5× | Standard |
-| Ultra Ball | 2× | Standard |
-| Timer Ball | 4× | Increasing bonus during long battles |
-| Repeat Ball | 3× | Bonus against previously caught species |
-| Net Ball | 3× | Bonus against Water or Bug Pokémon |
+- inventory/data representation;
+- crafting UI and locations;
+- tree objects and refresh logic;
+- custom Ball formulas in hg-engine;
+- cave-depth detection for Dusk Ball;
+- compatibility with existing item data and shops.
 
-Additional shop balls may exist later.
+**More trees (existing colours):** map authoring is **very difficult** ([Future-4](#future-4-map-editing--world-connectivity-wishlist)). Unknown whether Apricorns are baked into map assets or placed as field objects after load.
 
-However, **Quick Ball and Dusk Ball are intentionally removed from normal shops**.
+**New Apricorn colours:** item IDs, pick/harvest flow, Kurt or replacement crafting, ball data, UI strings, and **overworld art we do not have** (trees, Apricorn icons, ball graphics).
 
----
+**Refresh economy** ties to [Future-9](#future-9-accelerated-daynight-cycle) once tree representation is understood.
 
-# Future-5. Removed / Replaced Balls
+## Open design questions
 
-The following vanilla/special balls are currently removed or replaced:
-
-- Heal Ball
-- Dive Ball
-- Luxury Ball
-- Nest Ball
-- Lure Ball
-
-## Heal Ball
-
-The Heal Ball is unnecessary because **all newly caught Pokémon are automatically healed** ([Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition)).
-
-## Luxury Ball
-
-Its conceptual role is replaced by the redesigned Friend Ball.
-
-## Nest Ball
-
-Removed due to conceptual overlap with Level Ball.
-
-## Dive / Lure
-
-Removed because the ball roster otherwise contains excessive overlap between Water-oriented capture bonuses.
-
-These decisions can theoretically be revisited, but they are not currently part of the intended ball roster.
-
----
-
-# Future-6. Apricorn Balls (overview)
-
-New Apricorn colours may be introduced.
-
-Colours are chosen primarily to communicate the identity of the resulting Ball rather than to preserve vanilla Apricorn associations.
-
-Current mapping:
-
-| Apricorn | Ball | Maximum | Proposed Effect |
-|---|---|---:|---|
-| 🔴 Red | Fast Ball | 5× / 10× beasts | Scales roughly 1–5× according to base Speed; 10× against roaming legendary beasts |
-| 🩶 Grey | Heavy Ball | 5× | Scales roughly 1–5× according to weight |
-| 🩷 Pink | Love Ball | 8× | 3× opposite gender; 8× opposite gender + compatible Egg Group |
-| 🟢 Green | Friend Ball | 8× | 8× against qualifying friendship-evolution families; caught Pokémon starts at 200 friendship |
-| 🟡 Yellow | Level Ball | 8× | Scales according to player's level advantage |
-| 🟣 Purple | Dream Ball | 4× | Sleeping target |
-| 🔵 Blue | Quick Ball | 5× | First turn |
-| ⚫ Black | Dusk Ball | ~7× | 4× at night; increasingly powerful with cave depth |
-
-Grey and Purple are intentionally new Apricorn colours.
-
-This immediately communicates to experienced HGSS players that the Apricorn system has changed.
-
----
-
-# Future-7. Fast Ball
-
-Fast Ball scales according to the target species' **base Speed**.
-
-Target range:
-
-**~1× to 5×**
-
-Exact thresholds/formula remain TBD.
-
-## Roaming beasts
-
-Fast Ball receives:
-
-**10×**
-
-against the roaming legendary beasts.
-
-The intended targets are specifically the Johto roaming beasts such as:
-
-- Raikou;
-- Entei;
-- Suicune, where relevant to encounter implementation.
-
-This is a deliberate thematic specialty.
+- Exact Apricorn yield and refresh rate.
+- Exact Apricorn crafting mechanism and locations.
+- Fast Ball Speed curve; Heavy Ball weight thresholds; Level Ball formula; Dusk Ball depth mapping.
+- Whether any removed shop balls return in a revised roster.
 
 ---
 
-# Future-8. Heavy Ball
+# Future-2. Full Moon system
 
-Heavy Ball scales according to target weight.
-
-Maximum:
-
-**5×**
-
-The exact weight thresholds/formula remain TBD.
-
----
-
-# Future-9. Love Ball
-
-Love Ball:
-
-**3×** against an opposite-gender target.
-
-**8×** if the target is opposite gender AND shares a compatible Egg Group.
-
-This intentionally makes Love Ball extremely strong when its narrower thematic condition is fully satisfied.
-
----
-
-# Future-10. Friend Ball
-
-Friend Ball combines capture specialization with its friendship utility.
-
-## Capture modifier
-
-**8×**
-
-against a Pokémon belonging to an evolutionary family that contains a friendship evolution.
-
-The bonus applies to the **entire evolutionary family**, not only the exact species that evolves through friendship.
-
-For example, if a family contains a friendship evolution, other catchable members of that family can also qualify.
-
-## Friendship
-
-Pokémon caught in a Friend Ball begin at:
-
-**200 friendship**
-
-This puts friendship-evolution Pokémon close to being ready to evolve.
-
----
-
-# Future-11. Level Ball
-
-Maximum:
-
-**8×**
-
-The Ball becomes stronger based on the player's level advantage over the target.
-
-The vanilla concept is retained.
-
-The exact progression may become more gradual than vanilla.
-
-Formula:
-
-**TBD**
-
----
-
-# Future-12. Dream Ball
-
-Dream Ball receives:
-
-**4×**
-
-against sleeping Pokémon.
-
-Because Sleep is already one of the strongest capture statuses, the bonus intentionally remains lower than the most specialized Apricorn Balls.
-
----
-
-# Future-13. Quick Ball
-
-Quick Ball receives:
-
-**5×**
-
-on the first turn.
-
-Quick Ball is moved from normal shops into the Apricorn economy because an infinitely purchasable 5× first-turn ball otherwise risks becoming the default capture strategy.
-
----
-
-# Future-14. Dusk Ball
-
-Dusk Ball receives:
-
-**3× at night.**
-
-In caves, its strength increases according to cave depth.
-
-Current concept:
-
-- shallow cave → approximately 4×;
-- deeper floor → approximately 5×;
-- deeper still → approximately 6×;
-- deepest areas → approximately 7×.
-
-Exact mapping between map/floor depth and modifier remains TBD.
-
-This gives Dusk Ball an unusually powerful ceiling while requiring increasingly specialized conditions.
-
----
-
-# Future-15. Full Moon System (V3)
-
-A full-moon system is NOT part of the initial intended scope.
-
-If implemented later, it should be a meaningful world system rather than existing solely to justify Moon Ball mechanics.
+A full-moon system should be a meaningful world feature — not only a hook for Moon Ball mechanics.
 
 Possible system:
 
@@ -312,148 +156,323 @@ Possible system:
 - NPC dialogue/world changes;
 - quests/events;
 - potentially special legendary/mythical content;
-- Darkrai/Lunala-related content depending on available generations.
+- Darkrai/Lunala-related content depending on generation scope.
 
-Do not implement Moon Ball capture rules without this broader world system.
+Do not implement Moon Ball capture rules without this broader system.
 
-## Moon Ball
+### Moon Ball
 
 **8×** against every member of an evolutionary family containing a Moon Stone evolution.
 
-During a full moon:
+During a full moon: **8× against all Pokémon** — niche normally, strong general-purpose ball during the event.
 
-**8× against all Pokémon.**
-
-Therefore the Moon Ball is normally niche but temporarily becomes a powerful general-purpose Ball during the event.
-
-Do not implement the Moon Ball independently unless the broader moon system is intentionally brought into scope.
-
----
-
-# Future-16. Unlimited Learned Moves (V4)
-
-Long-term desired design:
-
-> **Pokémon retain every move they learn rather than being restricted to four moves.**
-
-The inspiration is closer to the Pokémon anime: learning a fifth move does not require permanently forgetting one of the previous four.
-
-This means genuinely having access to more than four learned moves, NOT merely selecting four moves before each battle from a larger remembered list.
-
-This is expected to be technically difficult.
-
-Potentially affected systems include:
-
-- Pokémon data structures;
-- save format;
-- box storage;
-- battle UI;
-- move-selection UI;
-- AI;
-- move learning;
-- evolution;
-- scripts;
-- compatibility assumptions throughout HGSS/HG-Engine.
-
-This should NOT be attempted as part of initial development.
-
-Before implementation, a dedicated feasibility investigation is required.
-
----
-
-# Future-17. Technical investigation (when V2 is scheduled)
-
-Questions to resolve before implementation:
-
-- additional Apricorn colours;
-- inventory/data representation;
-- crafting UI and locations;
-- tree objects and refresh logic;
-- custom Ball formulas in hg-engine;
-- cave-depth detection for Dusk Ball;
-- compatibility with existing item data and shops.
-
----
-
-# Future-18. Open design questions (V2–V4)
-
-- Exact Apricorn yield and refresh rate.
-- Exact Apricorn crafting mechanism and locations.
-- Fast Ball intermediate Speed curve.
-- Heavy Ball weight thresholds.
-- Level Ball scaling formula.
-- Dusk Ball cave-depth mapping.
-- Whether any removed shop balls return in a revised roster.
-
-**V3 (Full Moon / Moon Ball):**
+### Open design questions
 
 - Full-moon calendar cadence and duration.
 - Which encounters, NPCs, and quests change during the event.
 - Moon Ball crafting source (Apricorn colour TBD).
 
-**V4 (unlimited moves):**
+---
 
-- Feasibility of expanding move storage in save data and battle UI.
-- Whether any intermediate design (remember-all, pick-four-per-battle) is acceptable as a stepping stone.
+# Future-3. Unlimited learned moves
+
+Long-term desired design:
+
+> **Pokémon retain every move they learn rather than being restricted to four moves.**
+
+Learning a fifth move does not require permanently forgetting a previous one — genuinely more than four stored moves, not merely picking four before each battle from a larger list.
+
+Expected to be technically difficult. Potentially affected: Pokémon data structures, save format, box storage, battle and move-selection UI, AI, move learning, evolution, scripts, and HGSS/HG-Engine assumptions.
 
 ---
 
-# Future-19. Map Editing — World Connectivity Wishlist
+# Future-4. Map editing — world connectivity wishlist
 
-These changes are deferred until reliable HGSS map/geometry editing is possible.
+Deferred until reliable HGSS map/geometry editing is possible.
 
-## Surface Fixes
+## Surface fixes
 
 - Replace the Route 42 ferry NPC with a physical bridge.
 - Remove the Route 4 one-way ledge currently handled by the "ledge bump" NPC.
 
-## Johto Underground Network
+## Johto underground network
 
-Expand the cave system into a connected underground travel network.
+Expand caves into a connected underground travel network.
 
-- **Union Cave**
-  - Connect to Slowpoke Well.
-  - Connect to Dark Cave.
-  - Connect underground to Ruins of Alph.
+- **Union Cave** — Slowpoke Well; Dark Cave; Ruins of Alph (underground).
+- **Dark Cave** — Union Cave; Mt. Mortar; Mt. Silver; Ice Path; Tohjo Falls.
+- **Mt. Mortar** — Ice Path.
 
-- **Dark Cave**
-  - Connect to Union Cave.
-  - Connect to Mt. Mortar.
-  - Connect to Mt. Silver.
-  - Connect to Ice Path.
-  - Connect to Tohjo Falls.
+Johto caves should function as a secondary transportation network, not isolated one-off dungeons. Preserve dungeon identity — not one indistinguishable tunnel system.
 
-- **Mt. Mortar**
-  - Connect to Ice Path.
+## New surface / water connections
 
-The intent is for Johto's caves to function as a genuine secondary transportation network rather than a collection of mostly isolated dungeons.
+- Water route: Route 40 / Whirl Islands ↔ Goldenrod Harbor.
+- Route: Olivine ↔ National Park.
 
-Connections should still preserve dungeon identity and progression rather than turning every cave into one indistinguishable tunnel system.
+## Kanto connections
 
-## New Surface / Water Connections
+- Viridian City ↔ Route 16.
+- South of Mt. Moon: Route 3 ↔ Route 4; branch south toward Celadon City.
+- Water route: Route 27 ↔ Route 21.
 
-- Add a water route connecting Route 40 / Whirl Islands to Goldenrod Harbor.
-- Add a route connecting Olivine to National Park.
+## Design goal
 
-## Kanto Connections
+Multiple legitimate paths through the world: surface roads, water routes, interconnected caves, and fast travel between discovered cities. The underground network rewards exploration without being required for basic city/Gym access.
 
-- Add a route from Viridian City to Route 16.
-- Add a route south of Mt. Moon:
-  - directly connect Route 3 to Route 4;
-  - branch south toward Celadon City.
-- Water route from Route 27 to Route 21
+---
 
-## Design Goal
+# Future-5. Per-save wild ecology shuffle
 
-Use new connections to create multiple legitimate paths through the world.
+At new-game creation, generate a **stable per-save wild Pokémon ecology** instead of using fixed vanilla species locations.
 
-The player should gradually discover that Johto and Kanto contain:
+This is **not fully random**. Species and families must still appear in appropriate habitats and encounter methods.
 
-- the obvious surface road network;
-- water routes;
-- an interconnected cave network;
-- fast travel between already discovered cities.
+## Core rules
 
-The underground network should reward exploration and map knowledge without being required for basic city/Gym access.
+- **Families stay together geographically.** If the Zubat family is assigned to Dark Cave, Zubat / Golbat / Crobat all belong to that same habitat rather than being independently scattered.
+- **Every obtainable family** must be available in at least one location.
+- **Duplicate family locations** are allowed and desirable for common / generalist species.
+- **Habitat compatibility** must be respected:
+  - aquatic / fish families → Surf, fishing, water habitats;
+  - cave species → strongly prefer caves;
+  - Ice species → icy / snowy areas;
+- Habitat compatibility should often be **weighted** rather than strictly binary. Some families can plausibly live in several environments.
+- **Encounter method compatibility** remains meaningful: fishing, Surf, grass / cave encounters, Headbutt, Rock Smash, etc.
+- **Area identity** should remain coherent. If an area is intended to have a strong type / environment theme, generated families should preserve that theme.
+- No considerations for regional distribution. There is no requirement that every type appear separately in both Johto and Kanto, since regional travel will be easy.
+- **Special encounters** — gifts, fossils, swarms, legendaries, Red Gyarados, static overworld Pokémon, etc. — need an explicit policy for how they interact with this system (**TBD** per category).
+- If there are more Pokémon families than route spots to support them, Safari Zone and in-game trades both work as backup catch-all options.
+
+## Persistence and seed
+
+Generation must be **deterministic from a save-specific world seed**:
+
+1. generate ecology once when starting a new game;
+2. save / store the seed or generated mapping;
+3. **never reshuffle** species locations during the same playthrough.
+
+
+## Gym Leader family location hint
+
+After first Gym clear (alongside badge, HM, TM — see [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)):
+
+The Leader offers to point the player toward **one evolutionary family** matching the Gym's type(s).
+
+Example flow (Lt. Surge, Electric):
+
+> *"As an extra reward, if there's any Electric-type you're looking for, I'll tell you where to look."*
+
+The player picks from a curated list of families for that Gym. The Leader names a **concrete location** from the player's **generated ecology**, including encounter method when relevant:
+
+> *"Chinchou can be found in Dark Cave using the Good Rod."*
+
+**Rules:**
+- One family choice per first Gym clear (not rematches unless redesigned later).
+- Hint data must come from the save's ecology tables, not hardcoded vanilla locations.
+- Multi-type Leaders (Whitney, Morty) offer families from **either** qualifying type.
+- Family lists are curated per Leader — not every species of that type in the dex.
+- Blue has no type and will need special handling. Consider giving him a curated list of rare mons unavailable by other gym leaders
+
+## Technical investigation
+- per-save ecology generation and persistence (`data/Encounters.c` replacement or overlay);
+- family / habitat tagging data format;
+- Pokédex and trainer hint integration;
+- special / static / legendary encounter policy;
+- grass-tile-specific encounter sets (if used alongside distance caps).
+
+---
+
+# Future-6. Expanded Pokédex / generations
+
+**Current scope is:** [Wilds-4](DESIGN-WILDS.md#wilds-4-pokémon-generations--content-scope) — **Gen I–IV plus the Volcarona line**
+
+But HG-Engine supports up to gen 9 minus Paradox and DLC.
+
+---
+
+# Future-7. Generated trainer & Gym parties
+
+### Randomize species
+
+Replace party species with **random eligible species** from the available dex ([Wilds-4](DESIGN-WILDS.md#wilds-4-pokémon-generations--content-scope)), then apply the same stage rules as release scaling ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented)) so the chosen form fits the level band.
+
+## Gym rosters
+Gyms (both trainers and leaders) are **monotype by default**, with exceptions:
+
+| Leader | Gym type(s) for hints / filters | Roster notes |
+|--------|--------------------------------|--------------|
+| Whitney | **Normal** + **Fairy** | |
+| Morty | **Ghost** + **Dark** | |
+| Brock | **Rock** / **Ground** | Vulpix line |
+| Blue | **Flexible** | No Specialty |
+| Jasmine | Steel | Ampharos line |
+| Misty | Water | Togepi line |
+| Blaine | Fire | Rhydon line |
+
+All other Leaders use their vanilla Gym type only.
+
+## TMs and Held Items
+Once a trainer's team is generated, we also give the trainer some TMs randomly, and teach them to their team where appropriate. TM list will need to be curated so no useless TMs are taught. Number and Quality of TMs should increase as Badge count increases. Gym trainers should have more of that Gym's type of TMs. Gym Leaders should get an additional boost of Number and Quality of TMs.
+
+## Technical investigation
+
+- random species for generated teams;
+- monotype generation with curated exceptions.
+- tms and held items
+
+---
+
+# Future-8. Dynamic battle rosters & universal PC
+
+## Dynamic roster rules
+
+**Each trainer's entire collection is their bench. The actual battle roster forms dynamically as Pokémon are revealed.**
+
+Suppose a battle is 4v4. The player does not choose four Pokémon before battle. They initially choose one send-out; the opponent does the same.
+
+Whenever the player may send out or switch, they may select:
+
+1. a Pokémon already committed to this battle; or
+2. an unused Pokémon from their entire collection.
+
+The first time a unique Pokémon enters, it **permanently consumes one roster slot**. After the agreed number of unique Pokémon have entered, **the roster is locked**. Fainted Pokémon continue to occupy slots. The opponent follows the same rules.
+
+## Counter-picking and information
+
+Dynamic counter-picking is intentional. Neither side initially knows the other's full collection. Revealing a counter spends a roster slot — **advantage and commitment**. NPC AI should eventually understand this rather than selecting independently.
+
+## PC / collection access
+
+The player's storage is accessible anywhere: overworld, trainer battles, wild battles. No requirement to visit a Center PC to reorganize.
+
+Exact wild-battle UI/selection behaviour is a technical design problem.
+
+## Field party vs full collection
+
+The six field Pokémon: following mon, EXP defaults ([Battle-6](DESIGN-BATTLES.md#battle-6-exp-share)), overworld presentation, convenient ordering.
+
+The entire collection: accessible anywhere including in battle; trainer-battle bench; can satisfy HM field requirements ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+
+> **The player's collection is their team.**
+
+## Technical investigation
+
+- accessing boxed Pokémon from battle;
+- introducing a boxed Pokémon into an active battle;
+- tracking committed roster slots;
+- dynamically generated opponent collections;
+- opponent counter-picking AI;
+- wild-battle PC access;
+- battle UI;
+- overworld / trainer / wild battle access vs vanilla party assumptions.
+
+---
+
+# Future-9. Accelerated day/night cycle
+
+**Not required for initial release.**
+
+HGSS's real-world clock should be replaced by an accelerated in-game clock.
+
+Current target:
+
+> **Approximately 30 real-world minutes = one complete in-game day.**
+
+This number may be tuned.
+
+The accelerated clock affects systems including:
+
+- day/night encounters;
+- evolutions;
+- NPC behaviour;
+- events;
+- potentially other systems (including Apricorn refresh if [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) is implemented).
+
+## Time advancement
+
+The player should be able to deliberately advance time rather than waiting.
+
+### Resting at Pokémon Centers / hotels
+
+Allows controlled advancement of time ([World-4](DESIGN-WORLD.md#world-4-pokémon-centers)).
+
+### Portable resting
+
+A tent, sleeping bag, camping system, or similar mechanic can potentially allow resting outside towns. Exact implementation TBD.
+
+## Technical investigation
+
+- replacing RTC dependencies;
+- event compatibility;
+- day/night rendering;
+- encounter tables;
+- evolutions;
+- manual time advancement.
+
+---
+
+# Future-10. Living trainers & interactions
+
+**Not required for initial release.** Initial release: static vanilla trainers with [Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented) scaling. Renewable TMs via [World-5](DESIGN-WORLD.md#world-5-tms) / [World-7](DESIGN-WORLD.md#world-7-shops), not trainer buy/sell economy.
+
+## Living trainers
+
+Ordinary Pokémon trainers should not primarily exist as static NPCs permanently staring at a single tile waiting for the player.
+
+Trainers are intended to create the illusion of a population travelling through Johto and Kanto on Pokémon journeys of their own.
+
+They can:
+
+- move around cities;
+- travel between locations;
+- appear on routes;
+- walk through grass;
+- have different levels of progression;
+- interact with the player in multiple ways;
+- appear to be battling each other.
+
+Each trainer has or represents a badge progression level. Trainer progression distributions may be influenced by location. The player should generally battle trainers whose progression is reasonably comparable to their own.
+
+### Simulation requirements
+
+The game does NOT necessarily need to permanently simulate hundreds of individual NPCs throughout the entire world.
+
+A technically simpler system may generate or populate trainers when maps load while maintaining the **illusion** of a persistent travelling trainer population.
+
+The experiential goal matters more than literally simulating every trainer off-screen.
+
+## Trainer interactions
+
+Living trainers are not exclusively battle dispensers.
+
+### Pokémon location requests
+
+A trainer may ask for a species location. If the player has encountered the requested Pokémon, they can provide a location from **generated ecology** ([Future-5](#future-5-per-save-wild-ecology-shuffle)). Rewards: items, money, encounter info, TMs, etc.
+
+### Encounter information
+
+Trainers may tell the player where undiscovered species can be found (ecology data). **Gym Leaders:** structured first-clear hint — [Future-7](#future-7-generated-trainer--gym-parties).
+
+### Pokémon trades / item trading
+
+Some trainers request trades or buy/sell items (sink for duplicates; source for rare TMs / held gear).
+
+### TMs
+
+Some trainers provide renewable access to otherwise rare TMs ([World-5](DESIGN-WORLD.md#world-5-tms)) — alternative to putting everything in static marts.
+
+### Gym advice / other quests
+
+Information about nearby undefeated Gyms or scaled teams; additional lightweight interactions TBD.
+
+## Field population (living trainers)
+
+Map-level trainer generation, movement, and placement — distinct from [Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented) battle-start scaling; location-weighted distributions and non-battle interactions.
+
+## Technical investigation
+
+- map spawning; movement; persistence; generated identities; badge counts; generated collections; map transitions; save-state requirements;
+- ecology-linked location requests; reward economy; trade and item-exchange UI; TM distribution hooks.
 
 ---

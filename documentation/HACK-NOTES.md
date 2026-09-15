@@ -6,7 +6,7 @@ Working notes for this fork so we don’t re-discover the text/data layout every
 
 ## Contents
 
-Implementation recipes and reference notes (no design-status column — see [DESIGN.md](../DESIGN.md) for `Vision-*` / `World-*` / `Battle-*` specs).
+Implementation recipes and reference notes (no design-status column — see [DESIGN.md](../DESIGN.md) for `Vision-*` / `World-*` / `Battle-*` specs). **Known bugs:** [DESIGN.md § Index-5](../DESIGN.md#index-5-known-bugs).
 
 | Topic | Section |
 | ----- | ------- |
@@ -27,7 +27,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Post-battle heal | [Heal after every battle](#heal-after-every-battle) |
 | Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) |
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
-| Trainer scaling | [Trainer level scaling](#trainer-level-scaling-battle-8-phases-13-6-partial) |
+| Trainer scaling | [Trainer level scaling](#trainer-level-scaling) |
 | Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies-not-enabled-yet) |
 | Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42 reference](#route-42-reference-verified) |
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
@@ -291,7 +291,7 @@ Vanilla had no coord events on this map; slots `_001`/`_002` keep their NPC talk
 
 ## Remove Sudowoodo block (Route 36) — verified PoC
 
-**Goal:** walk Violet ↔ Goldenrod / Ecruteak with **0 badges**; Sudowoodo never blocks the path. **Tested in-game:** tree gone, no collision, existing save OK.
+**Goal:** walk Violet ↔ Goldenrod / Ecruteak with **0 badges**; Sudowoodo never blocks the path. **Tested in-game:** tree gone after re-entering the route, no collision, existing save OK. **Known bug [KB-1](../DESIGN.md#index-5-known-bugs):** Sudowoodo may still appear on the **first** visit until you leave and return.
 
 ### Wiring (pret decomp)
 
@@ -377,6 +377,8 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 **Verified:** wild, trainer, flee, and catch all restore HP/PP/status on return to field.
 
+**Known bug [KB-2](../DESIGN.md#index-5-known-bugs):** ~2–5% crash rate after battles when heal runs; under investigation.
+
 ---
 
 ## Gym Leader HM rewards (Johto pilot)
@@ -441,7 +443,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 **Status:** verified in-game.
 
-**Design:** interim stand-in until [Battle-7](DESIGN-BATTLES.md#battle-7-exp-share) battle-limit EXP share exists. Every non-fainted party member gets the **full** calculated EXP for each KO (not split). Fainted bench mons still get nothing. No Exp Share item required.
+**Design:** interim stand-in until [Battle-6](DESIGN-BATTLES.md#battle-6-exp-share) battle-limit EXP share exists. Every non-fainted party member gets the **full** calculated EXP for each KO (not split). Fainted bench mons still get nothing. No Exp Share item required.
 
 | What | Where |
 |------|--------|
@@ -452,22 +454,20 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 ---
 
-## Trainer level scaling (Battle-8 phases 1–3, 6 partial)
+## Trainer level scaling
 
-**Status:** phases **1–3** verified in-game; phase **6** Gym Leader cap enabled — Gym trainer band + type filter still open ([Battle-8](DESIGN-BATTLES.md#battle-8-implementation)).
+**Status:** level band, moves, and stage adjust verified in-game; Gym Leader cap enabled — Gym trainer band + type filter still open ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 
-**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps), [Battle-8](DESIGN-BATTLES.md#battle-8-implementation) — badge count → player cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Special-trainer overrides deferred.
+**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps) — badge count → cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Special-trainer overrides deferred. Generated parties / dynamic battles: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc).
 
-| Phase | Toggle | Where |
-|-------|--------|--------|
-| 1 — Rescale levels | `TRAINER_LEVEL_SCALING` | `MakeTrainerPokemonParty()` in `src/field/enemy_party.c` — `CountPlayerBadges()`, `PickTrainerLevelInBand()` |
-| 2 — Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; `InitBoxMonMoveset()` after `ChangeToBattleForm` |
-| 3 — Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires phase 1). Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)) |
-| 6 — Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires phase 1 |
+| Feature | Toggle | Where |
+|---------|--------|--------|
+| Rescale levels | `TRAINER_LEVEL_SCALING` | `MakeTrainerPokemonParty()` in `src/field/enemy_party.c` — `CountPlayerBadges()`, `PickTrainerLevelInBand()` |
+| Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; `InitBoxMonMoveset()` after `ChangeToBattleForm` |
+| Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires level scaling). Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)) |
+| Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires level scaling |
 
-**Dependencies:** phase 2 requires phase 1; phase 3 requires phase 1; phase 6 requires phase 1.
-
-**Not started:** phases 4–5 (random species, stone/trade exclusions), 7–12 (battle size, dynamic rosters, items, living trainers).
+**Dependencies:** moves and stage adjust require `TRAINER_LEVEL_SCALING`; Gym Leader cap requires level scaling.
 
 ---
 
@@ -709,7 +709,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 | Phone numbers | `register_gear_number` — Mom (0), Elm (1), Oak (2) |
 | HM02 Fly (testing) | `ITEM_HM02` (421) when `OPENWORLD_TESTING_GRANTS` is defined |
 
-**Starting city / starter (v1 prototype — [Vision-3](DESIGN-VISION.md#vision-3-starting-location)):**
+**Starting city / starter (v1 prototype — [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)):**
 
 **Status: PoC verified in-game (Sep 2026)** — city pick → Mom cutscene → walk out front door → chosen city; re-enter home → exit again. Stairs bedroom ↔ 1F intact.
 
@@ -739,7 +739,7 @@ Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/s
 
 - Adding a starter → edit **`scr_seq_t20_mom_script0.s`** (+ string in **`data/text/545.txt`**). Do **not** expect `starters.c` changes to affect Mom’s menu.
 - **`src/starters.c`** + **`hooks`** (`CreateStarter_SetStarterSpecies`, `CreateStarter_CreateMon`) still ship with the engine but are **dead code** unless some other scr_seq calls `choose_starter`. Grep shows **no** open-world scr_seq does — bedroom **846** is vanilla and must stay that way (verify script rejects `choose_starter` there).
-- Old design docs ([Vision-3](DESIGN-VISION.md#vision-3-starting-location)) still describe Johto/Kanto YES/NO + 3-ball UI; **implementation superseded** that with the 12-option list.
+- Old design docs ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) still describe Johto/Kanto YES/NO + 3-ball UI; **implementation superseded** that with the 12-option list.
 
 **Pokémon menu:** `FLAG_GOT_BAG` set during Mom cutscene (not bedroom).
 
@@ -797,6 +797,8 @@ Goldenrod door confirmed in-game: NE house by Flower Shop / Squirtbottle (**not*
 | scr_seq exit script + removed warp 0 | Same reindex bug as row 1 |
 
 **Deferred:** New Bark door → displaced interior when start city ≠ New Bark; Copycat/swap-house story scripts.
+
+**Known bug [KB-3](../DESIGN.md#index-5-known-bugs):** player houses in cities other than your start (and non–home-door entries) can still warp to the canonical Mom interior instead of the displaced vanilla house.
 
 **Build / verify:**
 
@@ -909,7 +911,7 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 
 ## Wild level caps (distance-based) — verified PoC
 
-**Status: verified in-game Sep 2026** — distance level rolls ([Wilds-2 level distribution](DESIGN-WILDS.md#level-distribution)), level-up **and synthetic** stage adjust (e.g. Mareep → Flaaffy, Golbat → Crobat @ 30, trade/stone lines from TSV). Sprite, stats, moves, battle name, and caught mon match the final species. Design: [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps).
+**Status: verified in-game Sep 2026** — distance level rolls ([Wilds-1 level distribution](DESIGN-WILDS.md#level-distribution)), level-up **and synthetic** stage adjust (e.g. Mareep → Flaaffy, Golbat → Crobat @ 30, trade/stone lines from TSV). Sprite, stats, moves, battle name, and caught mon match the final species. Design: [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps).
 
 **Toggle:** `IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS` in `include/config.h` (on by default). Comment out to restore vanilla wild levels.
 
@@ -947,7 +949,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 
 **Not hooked:** Safari Zone (`data/SafariEncounters.c`), Bug Catching Contest (verify in-game path), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`.
 
-**Stage adjust:** level-up chains (`data/Evolutions.c`) plus **synthetic edges** ([Wilds-2 § Synthetic evolution stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)) — trade, stone, friendship, move-known, etc. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution unchanged ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones)).
+**Stage adjust:** level-up chains (`data/Evolutions.c`) plus **synthetic edges** ([Wilds-1 § Synthetic evolution stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)) — trade, stone, friendship, move-known, etc. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution unchanged ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
 
 ### ARM9 scratch (`armips/asm/wild_level_caps.s`, `rom.ld`)
 
@@ -976,7 +978,7 @@ Scratch survives overlay 129 reload; do not reuse these addresses for other feat
 | `DEBUG_WILD_LEVEL_CAP_EXACT` | `include/config.h` | Level = cap exactly (no random roll) |
 | `DEBUG_WILD_LEVEL_CAPS` | `include/debug.h` | melonDS `debug_printf` on cache/apply |
 
-Production: all three **off**; `RollWildLevel(cap)` — adult band **`[⌊0.9×cap⌋−2, cap]`** always; if `cap ≥ 10`, **15%** uniform **2–7** else adult band (never level 1). See [Wilds-2 level distribution](DESIGN-WILDS.md#level-distribution).
+Production: all three **off**; `RollWildLevel(cap)` — adult band **`[⌊0.9×cap⌋−2, cap]`** always; if `cap ≥ 10`, **15%** uniform **2–7** else adult band (never level 1). See [Wilds-1 level distribution](DESIGN-WILDS.md#level-distribution).
 
 ### Editing caps
 

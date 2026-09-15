@@ -8,73 +8,18 @@
 
 | Section | Status |
 | ------- | ------ |
-| [Wilds-1. Randomized Wild Pokémon Ecology](#wilds-1-randomized-wild-pokémon-ecology) | DECIDED conceptually; TECHNICAL UNKNOWN |
-| [Wilds-2. Increased Wild Pokémon Level Range](#wilds-2-increased-wild-pokémon-level-range) | IMPLEMENTED |
-| [Wilds-3. Starting-City Distance-Based Wild Level Caps](#wilds-3-starting-city-distance-based-wild-level-caps) | IMPLEMENTED (near complete) |
-| [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | PARTIALLY IMPLEMENTED |
-| [Wilds-5. Pokémon Generations / Content Scope](#wilds-5-pokémon-generations--content-scope) | PARTIALLY DECIDED |
-| [Wilds-6. Technical Investigations](#wilds-6-technical-investigations) | TECHNICAL UNKNOWN |
+| [Wilds-1. Increased Wild Pokémon Level Range](#wilds-1-increased-wild-pokémon-level-range) | IMPLEMENTED |
+| [Wilds-2. Starting-City Distance-Based Wild Level Caps](#wilds-2-starting-city-distance-based-wild-level-caps) | IMPLEMENTED (near complete) |
+| [Wilds-3. Fishing Rod Progression](#wilds-3-fishing-rod-progression) | PARTIALLY IMPLEMENTED |
+| [Wilds-4. Pokémon Generations / Content Scope](#wilds-4-pokémon-generations--content-scope) | DECIDED (release scope) |
+| Per-save ecology shuffle | Moved — [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) |
+| Expanded Pokédex / generations | Moved — [Future-6](DESIGN-FUTURE.md#future-6-expanded-pokédex--generations) |
 
 ---
 
-# Wilds-1. Randomized Wild Pokémon Ecology
+# Wilds-1. Increased Wild Pokémon Level Range
 
-**Status: DECIDED conceptually; TECHNICAL UNKNOWN for implementation**
-
-At new-game creation, generate a **stable per-save wild Pokémon ecology** instead of using fixed vanilla species locations.
-
-This is **not fully random**. Species and families must still appear in appropriate habitats and encounter methods.
-
-## Core rules
-
-- **Families stay together geographically.** If the Zubat family is assigned to Dark Cave, Zubat / Golbat / Crobat all belong to that same habitat rather than being independently scattered.
-- **Every obtainable family** must be available in at least one location.
-- **Duplicate family locations** are allowed and desirable for common / generalist species.
-- **Habitat compatibility** must be respected:
-  - aquatic / fish families → Surf, fishing, water habitats;
-  - cave species → strongly prefer caves;
-  - Ice species → icy / snowy areas;
-  - forest, mountain, grassland, coastal, etc. → their own compatibility tags.
-- Habitat compatibility should often be **weighted** rather than strictly binary. Some families can plausibly live in several environments.
-- **Encounter method compatibility** remains meaningful: fishing, Surf, grass / cave encounters, Headbutt, Rock Smash, etc. ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression)).
-- **Area identity** should remain coherent. If an area is intended to have a strong type / environment theme, generated families should preserve that theme.
-- **Global availability** matters more than equal regional distribution. There is no hard requirement that every type appear separately in both Johto and Kanto, since regional travel will be easy.
-- **Special encounters** — gifts, fossils, swarms, legendaries, Red Gyarados, static overworld Pokémon, etc. — need an explicit policy for how they interact with this system (**TBD** per category).
-- If there are any flags where there are more pokemon families than route spots to support them, Safari Zone and in game trades both work as backup catch-all options
-
-## Persistence and seed
-
-Generation must be **deterministic from a save-specific world seed**:
-
-1. generate ecology once when starting a new game;
-2. save / store the seed or generated mapping;
-3. **never reshuffle** species locations during the same playthrough.
-
-## Downstream consumers
-
-All location-aware systems should query the generated ecology rather than hardcoded vanilla locations:
-
-- Pokédex habitat / location data;
-- trainers asking where a Pokémon has been seen ([World-6](DESIGN-WORLD.md#world-6-trainer-interactions));
-- trainers giving location hints ([World-6](DESIGN-WORLD.md#world-6-trainer-interactions)).
-
-## Relationship to progression
-
-Conceptually:
-
-- **world seed** determines **where** Pokémon families live;
-- **progression systems** ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) determine **how strong / evolved** encountered Pokémon are.
-
-**Wild level progression:** [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) is **implemented (near complete)**. Badge / encounter-tile wild gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) is **not** the model for wild levels — kept in docs only for HM/League gates and the Route 46 template.
-
----
-
-
----
-
-# Wilds-2. Increased Wild Pokémon Level Range
-
-**Status: IMPLEMENTED** — distance caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)), [level distribution](#level-distribution), **stage adjust** (level-up + [synthetic edges](#synthetic-evolution-stages-wild--trainer), shared with trainer battles). Details: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
+**Status: IMPLEMENTED** — distance caps ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)), [level distribution](#level-distribution), **stage adjust** (level-up + [synthetic edges](#synthetic-evolution-stages-wild--trainer), shared with trainer battles). Details: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
 
 Replace narrow per-area wild level bands with a **broad range** from low levels up to an area-specific maximum.
 
@@ -127,7 +72,7 @@ Encounter tables still list a base species (e.g. Poliwhirl, Exeggcute). After th
 1. **`AdjustSpeciesForLevel`** — linear **`EVO_LEVEL`** chains from `data/Evolutions.c` (implemented today).
 2. **Synthetic edges** — `data/synthetic_evolution_thresholds.tsv`: if level ≥ `min_level`, may step `from` → `to` (chained up to 8 steps). Runtime: `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h`; ROM data from `scripts/build/gen_synthetic_evo_edges.py` → `sSyntheticEvoEdgesData` in field overlay.
 
-Synthetic thresholds **do not** change how the player evolves Pokémon ([World-9](DESIGN-WORLD.md#world-9-evolution-methods-trade--stones) stays player-facing). Wild/trainer mons still get moves and stats from the **final** species (`PokeParaSet` / `InitBoxMonMoveset`), same as today.
+Synthetic thresholds **do not** change how the player evolves Pokémon ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) stays player-facing). Wild/trainer mons still get moves and stats from the **final** species (`PokeParaSet` / `InitBoxMonMoveset`), same as today.
 
 **Authoring tiers** (each TSV row has an explicit `min_level`; tiers are for filling the sheet, not runtime logic):
 
@@ -150,8 +95,8 @@ Three independent inputs:
 
 | Input | Determines |
 |-------|------------|
-| Ecology ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)) | **Which family** can spawn |
-| Area maximum ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) | **Possible encounter levels** |
+| Ecology ([Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle); vanilla tables today) | **Which family** can spawn |
+| Area maximum ([Wilds-1](DESIGN-WILDS.md#wilds-1-increased-wild-pokémon-level-range), [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)) | **Possible encounter levels** |
 | Rolled level + stage rules | **Evolution stage** (level-up tables + synthetic edges) |
 
 ---
@@ -159,15 +104,15 @@ Three independent inputs:
 
 ---
 
-# Wilds-3. Starting-City Distance-Based Wild Level Caps
+# Wilds-2. Starting-City Distance-Based Wild Level Caps
 
 **Status: IMPLEMENTED (near complete)** — distance caps verified in-game (Sep 2026). Remaining gaps: Safari Zone, Bug Catching Contest, roamers/scripted wilds, 18-city start menu wiring, balance tuning.
 
-**Decision:** distance-from-start-city caps ([Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps)) replace badge-guard / encounter-tile wild **level** progression. The alternative ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) wild gating) is **not pursued** for general wild levels; World-2 remains for HM/Flash/League and optional hard zones only.
+**Decision:** distance-from-start-city caps ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)) replace badge-guard / encounter-tile wild **level** progression. The alternative ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) wild gating) is **not pursued** for general wild levels; World-2 remains for HM/Flash/League and optional hard zones only.
 
-The player can **enter** high-distance areas early; encounters scale from [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range) level ranges tied to graph distance — danger is in the fights, not a coord gate on the grass.
+The player can **enter** high-distance areas early; encounters scale from [Wilds-1](DESIGN-WILDS.md#wilds-1-increased-wild-pokémon-level-range) level ranges tied to graph distance — danger is in the fights, not a coord gate on the grass.
 
-Wild-area difficulty should depend on the player's **chosen starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location)) rather than one fixed world progression curve or badge-count encounter blocks.
+Wild-area difficulty should depend on the player's **chosen starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) rather than one fixed world progression curve or badge-count encounter blocks.
 
 ## World graph
 
@@ -183,7 +128,7 @@ Build a **directional graph** representing the explorable world:
 
 ## Build-time precomputation
 
-For **every valid starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location) — 18 cities):
+For **every valid starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) — 18 cities):
 
 1. Shortest-path **exploration distance** from that city to each encounter area on the world graph.
 2. Convert distance → **maximum wild level** (and optional tier for tuning).
@@ -222,7 +167,7 @@ Exact weighting should be tuned after generating and inspecting the distance mat
 
 ## Distance → level cap (PoC formula)
 
-Normal wild encounters use the cap + [Wilds-2 level distribution](#level-distribution). Roamers, Safari, and most scripted wilds are unchanged — see table above.
+Normal wild encounters use the cap + [Wilds-1 level distribution](#level-distribution). Roamers, Safari, and most scripted wilds are unchanged — see table above.
 
 Player badge level caps run up to **70–80** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use a lower ceiling (**3–60**) for balance:
 
@@ -251,8 +196,8 @@ PoC treats each cave dungeon as **one graph node** → one cap for every floor. 
 ## Interaction with ecology and level range
 
 - **starting city + graph distance** → area maximum level;
-- **encounters** range from ~Lv 3 to that maximum ([Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range));
-- **family assignment** remains fixed by the world seed ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)).
+- **encounters** range from ~Lv 3 to that maximum ([Wilds-1](DESIGN-WILDS.md#wilds-1-increased-wild-pokémon-level-range));
+- **family assignment** uses vanilla tables today; per-save shuffle is [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle).
 
 ## Overrides and validation
 
@@ -263,19 +208,15 @@ Still needed:
 
 ## Replayability
 
-Two independent axes:
-
-- **world seed** changes where Pokémon families live;
-- **starting city** changes the world's difficulty gradient.
-
-The same seeded ecology can play very differently depending on where the player begins.
+- **Starting city** changes the world's difficulty gradient on vanilla species (**implemented** via distance caps).
+- **World seed** / ecology shuffle — [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) adds a second axis when implemented.
 
 ---
 
 
 ---
 
-# Wilds-4. Fishing Rod Progression
+# Wilds-3. Fishing Rod Progression
 
 **Status: PARTIALLY IMPLEMENTED** — Route 44 and Olivine gurus verified; full Johto/Kanto network not complete.
 
@@ -328,59 +269,10 @@ Any guru reads the same global progression and offers Old → Good → Super whe
 
 ---
 
-# Wilds-5. Pokémon Generations / Content Scope
+# Wilds-4. Pokémon Generations / Content Scope
 
-**Status: PARTIALLY DECIDED — expand later**
+**Status: DECIDED (release scope)**
 
-**v1 scope:** treat the dex as **Gen I–IV plus the Volcarona line** (Larvesta, Volcarona). No broad Gen V+ rollout yet.
+**Ship scope:** **Gen I–IV plus the Volcarona line** (Larvesta, Volcarona). No broad Gen V+ rollout in the first release.
 
-**Long-term:** the full generation cutoff remains open. HG-Engine supports mechanics, Pokémon, forms, moves, and abilities well beyond vanilla Generation IV; additional families can be added incrementally once ecology, scaling, and content pipelines are stable.
-
-Do NOT currently assume a fixed long-term cutoff (Gen I–VI, Gen I–IX, etc.) beyond the v1 rule above.
-
-This decision affects:
-
-- encounters ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology));
-- starters;
-- evolutions;
-- Gym pools;
-- trainer generation;
-- friendship evolution families;
-- types;
-- abilities;
-- moves;
-- items;
-- legendaries;
-- postgame content.
-
----
-
-
----
-
-
----
-
-# Wilds-6. Technical Investigations
-
-Open engineering questions for this area (from the former monolithic design doc).
-
-## Open-world encounter structure
-
-
-Primary design: [Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology) (ecology seed), [Wilds-2](DESIGN-WILDS.md#wilds-2-increased-wild-pokémon-level-range) (broad level bands), [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) (distance-based caps — **implemented**).
-
-Questions include:
-
-- per-save ecology generation and persistence (`data/Encounters.c` replacement or overlay);
-- family / habitat tagging data format;
-- evolution-stage selection at rolled wild level;
-- build-time graph matrix for starting-city distance caps;
-- Pokédex and trainer hint integration;
-- special / static / legendary encounter policy;
-- badge-gated encounter tiles vs distance-only caps ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating));
-- grass-tile-specific encounter sets;
-- map scripting;
-- guards (PoC: Route 29→46);
-- doors;
-- HM gates.
+Broader dex / generations: [Future-6](DESIGN-FUTURE.md#future-6-expanded-pokédex--generations).

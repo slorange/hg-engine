@@ -10,7 +10,7 @@
 | ------- | ------ |
 | [Vision-1. Core Vision](#vision-1-core-vision) | PARTIALLY IMPLEMENTED |
 | [Vision-2. Open-World Philosophy](#vision-2-open-world-philosophy) | PARTIALLY IMPLEMENTED |
-| [Vision-3. Starting Location](#vision-3-starting-location) | PARTIALLY IMPLEMENTED |
+| [Vision-3. Starting Location and Pokémon](#vision-3-starting-location-and-pokémon) | PARTIALLY IMPLEMENTED |
 
 ---
 
@@ -35,8 +35,8 @@ The game should emphasize:
 - building a large roster rather than only six Pokémon;
 - flexible progression;
 - replayability;
-- a living population of trainers;
-- strategically fair trainer battles;
+- a living population of trainers ([Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) — deferred);
+- strategically fair trainer battles ([Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) — deferred);
 - reduced tedious resource management;
 - meaningful individual battles rather than attrition;
 - freedom to travel without making all content equally accessible from the beginning.
@@ -93,9 +93,9 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 
 
-# Vision-3. Starting Location
+# Vision-3. Starting Location and Pokémon
 
-**Status: PARTIALLY IMPLEMENTED** — twelve-starter menu verified in-game; **18-city list decided** for Wilds-3 distance matrix; Mom menu still **3-city PoC** until expanded ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Status: PARTIALLY IMPLEMENTED** — twelve-starter menu verified in-game; **18-city list decided** for Wilds-2 distance matrix; Mom menu still **3-city PoC** until expanded ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
 
 ## Starting city
 
@@ -103,7 +103,7 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 The player chooses their starting city from locations throughout Johto and Kanto.
 
-**Starting city list** (used for [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps) distance precomputation):
+**Starting city list** (used for [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) distance precomputation):
 
 
 | Index | City           | Region |
@@ -131,16 +131,6 @@ The player chooses their starting city from locations throughout Johto and Kanto
 **In-game picker (current ROM):** New Bark, Goldenrod, and Saffron only — expand to the full table above with per-city home doors ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
 
 
-Every available starting city must provide reasonable access to:
-
-- appropriately levelled encounters ([Wilds-1](DESIGN-WILDS.md#wilds-1-randomized-wild-pokémon-ecology)–[Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps));
-- early trainer content;
-- necessary services;
-- transportation;
-- a viable first Gym challenge.
-
-
-
 ### Home / house wiring (v1 approach)
 
 Not a simple “redirect the house exit.” Each city needs a **designated outdoor door** that is “home” in both directions:
@@ -150,7 +140,7 @@ Not a simple “redirect the house exit.” Each city needs a **designated outdo
 
 **Interior swap (preferred v1 strategy):** keep **one canonical player house interior** (Mom, grants, PC) for all starts. The chosen city’s outdoor “home” door warps into it; leaving home returns to that outdoor door. The **displaced vanilla house** in that city should become what New Bark’s player-house door leads into when the player did **not** start in New Bark — so the old New Bark house does not replay Mom’s cutscene.
 
-Goldenrod and Saffron home doors verified in-game (Sep 2026). **New Bark door swap** when start ≠ New Bark is deferred — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). Wiring recipe: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
+Goldenrod and Saffron home doors verified in-game (Sep 2026). **New Bark door swap** when start ≠ New Bark is deferred — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). Wrong interior on other cities’ player houses: [KB-3](DESIGN.md#index-5-known-bugs). Wiring recipe: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
 
 ## Starter selection
 

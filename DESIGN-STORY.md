@@ -21,7 +21,7 @@ Field scripts, NPCs, and map obstacles that assume vanilla story order or a New 
 
 ## Opening and tutorial — remove
 
-Mom cutscene ([Vision-3](DESIGN-VISION.md#vision-3-starting-location), [Index-2](DESIGN.md#index-2-current-technical-baseline)) **replaces** the vanilla New Bark opening for city pick, starter, and starting grants. **Vanilla leftovers still present** until cleaned up — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog):
+Mom cutscene ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon), [Index-2](DESIGN.md#index-2-current-technical-baseline)) **replaces** the vanilla New Bark opening for city pick, starter, and starting grants. **Vanilla leftovers still present** until cleaned up — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog):
 
 - Elm errand (Mom post-cutscene dialogue still references Elm; lab scripts active)
 - Rival intro, naming, and early battles ([Rival — remove](#rival--remove))
@@ -47,7 +47,7 @@ Remove the rival entirely: no naming, no scripted intro, no mandatory early batt
 **Rules (all Leaders):**
 
 1. **City-local events only** — pre/post-battle flavour OK if it stays in the Gym town; cut anything that sends the player elsewhere and expects a return.
-2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader; HMs are granted by Gym Leaders per badge order ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). HM/Flash/dungeon gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) still applies outside Gyms. Wild **levels** use [Wilds-3](DESIGN-WILDS.md#wilds-3-starting-city-distance-based-wild-level-caps), not badge guard tiles.
+2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader; HMs are granted by Gym Leaders per badge order ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). HM/Flash/dungeon gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) still applies outside Gyms. Wild **levels** use [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps), not badge guard tiles.
 3. **Internal Gym puzzles** — trash cans, maze, etc. stay unless they hard-require an HM.
 
 ### Required changes
@@ -75,7 +75,7 @@ Verified in-game Aug–Sep 2026. Field recipes: `documentation/HACK-NOTES.md`.
 
 Falkner, Whitney, Morty (Burned Tower is Ecruteak-local), Chuck, Sabrina, Janine, Brock.
 
-After a row is **verified**, check [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) for redundant vanilla content to strip. Implementation uses flag-on-load and script skips — same toolchain as HACK-NOTES field recipes; starting city ([Vision-3](DESIGN-VISION.md#vision-3-starting-location)) must not depend on Elm/rival/New Bark flags.
+After a row is **verified**, check [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) for redundant vanilla content to strip. Implementation uses flag-on-load and script skips — same toolchain as HACK-NOTES field recipes; starting city ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) must not depend on Elm/rival/New Bark flags.
 
 ---
 
@@ -113,7 +113,7 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
 | Cianwood pharmacy free Secret Medicine | Medicine sold in Olivine Mart (`sOlivineMart` in `src/field/mart.c`); Cianwood mart list already excludes it | Remove pharmacist **giveitem** scr_seq branch; optional flavour dialogue only |
-| Copycat / S.S. Ticket story (partial) | Pass + Ticket from Mom; train patched | Copycat house repurposed as Saffron home door — displaced-interior scripts still vanilla ([Vision-3](DESIGN-VISION.md#vision-3-starting-location)) |
+| Copycat / S.S. Ticket story (partial) | Pass + Ticket from Mom; train patched | Copycat house repurposed as Saffron home door — displaced-interior scripts still vanilla ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) |
 | Power Plant / Machine Part (partial) | Magnet Train open without quest | Misty Gym still gated — see [Story-1](DESIGN-STORY.md#story-1-story-and-script-content); strip remaining Cerulean/Route 25 hooks when Misty row is done |
 
 ## Superseded obstacles and NPC chains
@@ -140,7 +140,7 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
-| New Bark player-house door when start ≠ New Bark | Should enter **displaced** interior, not Mom cutscene | [Vision-3](DESIGN-VISION.md#vision-3-starting-location) — not started |
+| New Bark player-house door when start ≠ New Bark | Should enter **displaced** interior, not Mom cutscene | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) — not started; same warp class as [KB-3](DESIGN.md#index-5-known-bugs) |
 | Goldenrod / Saffron displaced house interiors | Outdoor door now warps to canonical Mom house | Vanilla NPCs inside old interiors may confuse players — strip or redirect |
 
 ## How to use this section
