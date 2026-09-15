@@ -372,12 +372,27 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | What | Where |
 |------|--------|
 | Toggle | `HEAL_AFTER_BATTLE` in `include/config.h` (enabled by default; comment out to disable) |
-| Hook | existing `Battle_End` overlay hook → `BattleEndRevertFormChange` in `src/battle/battle_pokemon.c` |
-| Logic | Nurse Joy–equivalent: max HP, clear status, `RestoreBoxMonPP` on save party + battle-work copies |
+| Hook | `Battle_End` → `BattleEndRevertFormChange` → `HealAfterBattle_HealParty(bw)` in `src/battle/heal_after_battle.c` |
+| Heal impl | Battle-work party, then save (`SaveBlock2_get()`), with EWRAM pointer checks |
+| Logic | Nurse Joy–equivalent: max HP, clear status, `RestoreBoxMonPP` |
 
 **Verified:** wild, trainer, flee, and catch all restore HP/PP/status on return to field.
 
-**Known bug [KB-2](../DESIGN.md#index-5-known-bugs):** ~2–5% crash rate after battles when heal runs; under investigation.
+**KB-2 (Sep 2026):** intermittent crash when returning to the field after battle — **tentatively fixed**. Heal logic lives in this file; runs only when `sp->fight_end_flag` is set (`BattleStruct` @ `0x311F`), with EWRAM pointer checks on `bw`, `sp`, and party mons. Hook timing unchanged (`Battle_End` → `BattleEndRevertFormChange`). **100+ battle ends without repro** after the refactor; original rate was very low (~once per 70–80+ encounters), so treat as monitoring, not proof. Status: [DESIGN.md § Index-5 *Monitoring*](../DESIGN.md#monitoring-tentatively-resolved).
+
+**Agent notes (do not repeat without new evidence):**
+
+| Attempt | Result |
+| -------- | ------ |
+| Pending flag + heal on `StoreFieldSysPtr` (ARM9) | No heal — field overlay usually stays loaded during wild battles; hook often never runs after battle. If you hook `StoreFieldSysPtr`, preserve **`r0`** across any `bl` (vanilla needs it). |
+| `HealAfterBattle_*` in **ARM9 main** called from battle overlay @ `Battle_End` | **Consistent crash** before fade — battle overlay build uses **`-mno-long-calls`**; do not `bl` main from overlay 12/130 stubs. |
+| Save party only at start of `Battle_End` | No heal — vanilla overwrites save party after the hook returns. |
+| Heal on `UnloadOverlayByID(OVERLAY_BATTLE)` | No heal — path did not run reliably in testing. |
+| Second hook @ overlay `080011A2` (“end of `Battle_End`”) | **Battle-start crash** — site is not battle-end-only. Removing the hook from `hooks` **does not** revert bytes in `base/overlay/overlay_0012.bin`. |
+
+**If KB-2 or heal regressions return:** bisect with `HEAL_AFTER_BATTLE` off in `config.h`. For **battle-start** crash after overlay experiments, re-extract overlay 12 from `rom.nds` (preferred) or restore 10 vanilla bytes @ `080011A2` through `080011AB` (`Hook(..., reg 0)` = 6-byte stub + 4-byte pointer; full span `10 BD 70 47 00 00 F8 B5 92 B0`). Helper: `python scripts/local/check_overlay12_hook.py`. For **end-of-battle** crash only, the next real fix is a **verified** hook after vanilla party sync (decomp/xref) — not another guessed offset.
+
+**Commit shape (Sep 2026):** `include/heal_after_battle.h`, `src/battle/heal_after_battle.c`, call from `BattleEndRevertFormChange` in `battle_pokemon.c`. No `bytereplacement` for overlay 12 unless you intentionally want a team-wide band-aid for stale local overlays.
 
 ---
 
@@ -958,7 +973,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 | `sPersistFieldSysPtr` | `0x021FF900` | 4 |
 | `sWildLevelCapDebug` | `0x021FF910` | 32 |
 | `sWildCapCache` | `0x021FF930` | 8 |
-| *(reserved)* | `0x021FF940` | 4 |
+| `sLevelUpEvoTablesRuntimePtr` | `0x021FF940` | 4 |
 
 `0x021FF940` is zeroed in `armips/asm/wild_level_caps.s` but unused — overlay 129 uses patched pointers into **field overlay rodata**, not ARM9 scratch.
 

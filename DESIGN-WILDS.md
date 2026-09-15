@@ -89,6 +89,8 @@ Synthetic thresholds **do not** change how the player evolves Pokémon ([World-6
 
 **Deferred (not in TSV until later):** Eevee, Tyrogue, Shedinja, **gendered** evolutions (Burmy, Combee, Gallade, Froslass, etc.).
 
+**Future enhancements** (probabilistic synthetic edges; wild / trainer / Gym Leader rates): [Future-11](DESIGN-FUTURE.md#future-11-encounter-stage-selection-wild--trainer).
+
 ## Separation of concerns
 
 Three independent inputs:

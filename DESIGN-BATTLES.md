@@ -9,7 +9,7 @@
 | Section | Status |
 | ------- | ------ |
 | [Battle-1. Gyms and Badges](#battle-1-gyms-and-badges) | PARTIALLY IMPLEMENTED |
-| [Battle-2. Healing and Attrition](#battle-2-healing-and-attrition) | IMPLEMENTED — [KB-2](DESIGN.md#index-5-known-bugs) |
+| [Battle-2. Healing and Attrition](#battle-2-healing-and-attrition) | IMPLEMENTED |
 | [Battle-3. Core Trainer-Battle Philosophy](#battle-3-core-trainer-battle-philosophy) | DECIDED |
 | [Battle-4. Badge-Based Level Caps](#battle-4-badge-based-level-caps) | DECIDED |
 | [Battle-5. Gym Rosters](#battle-5-gym-rosters) | DECIDED |
@@ -44,7 +44,7 @@ This scaling may affect:
 # Battle-2. Healing and Attrition
 
 
-**Status: IMPLEMENTED** — verified wild, trainer, flee, and catch ([Index-2](DESIGN.md#index-2-current-technical-baseline)). Known bug: intermittent post-battle crash ([KB-2](DESIGN.md#index-5-known-bugs)). Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**.
+**Status: IMPLEMENTED** — verified wild, trainer, flee, and catch. Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**.
 
 Traditional long-term HP/PP attrition is intentionally removed.
 
@@ -188,7 +188,7 @@ On trainer battle start (release behaviour):
 1. **Species** — vanilla party (random species: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties)).
 2. **Levels** — band above; Leaders at cap.
 3. **Moves** — last four level-up moves at assigned level (same rule as wild Pokémon).
-4. **Stage** — `AdjustEncounterSpeciesForLevel()` — level-up chains + synthetic edges ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)); `data/synthetic_evolution_thresholds.tsv`.
+4. **Stage** — `AdjustEncounterSpeciesForLevel()` — level-up chains + synthetic edges ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)); `data/synthetic_evolution_thresholds.tsv`. Probabilistic stage rates (wild / trainer / Gym Leader): [Future-11](DESIGN-FUTURE.md#future-11-encounter-stage-selection-wild--trainer).
 
 Generated parties, dynamic rosters, and living trainers: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc), [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions).
 

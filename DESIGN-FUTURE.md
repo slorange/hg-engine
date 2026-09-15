@@ -19,6 +19,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-9. Accelerated day/night cycle](#future-9-accelerated-daynight-cycle) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
+| [Future-11. Encounter stage selection (wild + trainer)](#future-11-encounter-stage-selection-wild--trainer) |
 
 ---
 
@@ -474,5 +475,43 @@ Map-level trainer generation, movement, and placement — distinct from [Battle-
 
 - map spawning; movement; persistence; generated identities; badge counts; generated collections; map transitions; save-state requirements;
 - ecology-linked location requests; reward economy; trade and item-exchange UI; TM distribution hooks.
+
+---
+
+# Future-11. Encounter stage selection (wild + trainer)
+
+**Release behaviour** ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer), [Battle-4 trainer scaling](DESIGN-BATTLES.md#trainer-scaling-implemented)): after an encounter level is known, `AdjustEncounterSpeciesForLevel()` applies linear `EVO_LEVEL` chains, then **deterministic** synthetic edges from `data/synthetic_evolution_thresholds.tsv` (level ≥ `min_level` → step to evolved form). Wild and trainer battles share one ruleset today. Player evolution ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)) is unchanged.
+
+## Probabilistic synthetic evolutions
+
+Today, crossing a synthetic threshold always evolves (except explicit `random50` **branch** picks among equally authored outcomes — Gloom, Poliwhirl, Clamperl, Wurmple — not partial rates on a single edge).
+
+**Wishlist:** optional **partial** evolution for special methods (stone, trade, friendship, etc.) so tables can still list base species without every high-level encounter being fully evolved.
+
+| Idea | Example |
+|------|---------|
+| Fixed rate above threshold | 50% of Growlithe at Lv 25+ appear as Arcanine; 50% stay Growlithe. |
+| Level-scaled rate | Same threshold (e.g. 25), but probability rises with level — Lv 15 → 10%, Lv 30 → 40%, Lv 45 → 70%. |
+| Method-specific defaults | Stone-tier edges might default to higher certainty; friendship-tier edges might default to lower. |
+
+Authoring could extend `synthetic_evolution_thresholds.tsv` (or successor data) with `probability`, curves, or per-method columns. RNG should be **per encounter** (wild) or **per slot** (trainer), stable for that battle.
+
+## Wild vs trainer vs Gym Leader divergence
+
+Release: **identical** stage logic for wild rolls and trainer battle-start scaling (Gym Leaders use the same path at battle start today — [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
+
+**Wishlist:** separate parameters or TSV views by **encounter context**, with a simple ordering for synthetic-edge certainty:
+
+**wild** → **ordinary trainer** → **Gym Leader** (each step: higher evolution rates across method classes, not only friendship).
+
+| Method class | Wild (example intent) | Ordinary trainer | Gym Leader |
+|--------------|----------------------|------------------|------------|
+| Friendship / happiness | Very rare — wild mons do not “grind friendship” | Common — cared-for teams | Very common — ace teams feel fully bonded |
+| Trade / held-item | Moderate — ecology, not player trades | Higher — plausible off-screen trades | Highest — elite teams with rare evolutions |
+| Stone / location stone | Lower — stones are player tools | Slightly higher | Highest — Leaders’ signature lines often fully evolved at cap |
+
+Rematches and Elite Four would share the **Gym Leader** tier
+
+Implementation sketch: `AdjustEncounterSpeciesForLevel()` gains a **context** flag (`wild`, `trainer`, `gym_leader`, …) that selects probability tables, tier offsets, or multipliers without duplicating level-up chain logic.
 
 ---

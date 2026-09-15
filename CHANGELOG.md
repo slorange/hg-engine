@@ -35,7 +35,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 ### Battles & QoL
 
-- **Full heal after every battle** — HP, PP, and status restored for the party (wild and trainer). *Intermittent crash possible — [KB-2](DESIGN.md#index-5-known-bugs).*
+- **Full heal after every battle** — HP, PP, and status restored for the party (wild and trainer).
 - **Full-party EXP share (interim)** — every non-fainted party member receives the **full** EXP for each KO (not split); no Exp Share item required.
 
 ### Trainer scaling

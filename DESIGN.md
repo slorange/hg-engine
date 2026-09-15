@@ -89,7 +89,7 @@ As of September 2026:
 
 | Feature                         | Status   | Design ref |
 | ------------------------------- | -------- | ---------- |
-| Post-battle heal (HP/PP/status) | Verified — [known crash bug](DESIGN.md#index-5-known-bugs) | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
+| Post-battle heal (HP/PP/status) | Verified — [KB-2 tentatively resolved](DESIGN.md#monitoring-tentatively-resolved) | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
 | Full-party EXP share (interim)  | Partial | [Battle-6](DESIGN-BATTLES.md#battle-6-exp-share) |
 
 
@@ -201,9 +201,14 @@ When a bug is fixed, remove its row here and note the fix in [`CHANGELOG.md`](CH
 | ID | Symptom | Notes |
 | -- | ------- | ----- |
 | **KB-1** | **Route 36 Sudowoodo** still blocks the road the **first** time you enter the route after load. Leaving and re-entering hides the tree as intended. | Hide flag runs on map load (`scr_seq_R36_010` / `FLAG_HIDE_ROUTE_36_SUDOWOODO`); object visibility likely applies one visit late. Recipe: `documentation/HACK-NOTES.md` § **Remove Sudowoodo block (Route 36)**. |
-| **KB-2** | **Intermittent crash** after battles (~2–5% of the time) when returning to the field. | Tied to post-battle full heal (`HEAL_AFTER_BATTLE`). Under investigation. Recipe: `documentation/HACK-NOTES.md` § **Heal after every battle**. Design: [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition). |
 | **KB-3** | **Wrong home interior** — entering a city’s player house when that city is **not** your starting city still warps to the **canonical Mom house** (starting interior) instead of that city’s displaced vanilla interior. | Related design: [Vision-3 home wiring](DESIGN-VISION.md#vision-3-starting-location-and-pokémon). Goldenrod/Saffron “home” doors intentionally use the canonical interior; other cities’ houses should not. Recipe: `documentation/HACK-NOTES.md` § [Home = bidirectional door + interior swap](documentation/HACK-NOTES.md#home--bidirectional-door--interior-swap). |
 | **KB-4** | **Poké Mart inventories wrong** — shops skew toward **Great Ball / Ultra Ball** (and similar); **Poké Balls** and expected baseline stock often missing across marts. | Likely interaction with `MART_EXPANSION` / badge-tier `ScrCmd_MartBuy` vs per-city extras (`src/field/mart.c`). Intended direction: [World-7](DESIGN-WORLD.md#world-7-shops). Olivine second clerk (Secret Medicine) is a separate, intentional override. |
+
+### Monitoring (tentatively resolved)
+
+| ID | Former symptom | Notes |
+| -- | -------------- | ----- |
+| **KB-2** | Intermittent crash when returning to the field after a battle (historically very rare; roughly once per 70–80+ encounters). | Tentatively fixed Sep 2026: `heal_after_battle.c` with `fight_end_flag` and pointer guards at `Battle_End`. 100+ battle ends without repro; not statistically proven. Recipe: [Heal after every battle](documentation/HACK-NOTES.md#heal-after-every-battle). Design: [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition). |
 
 ---
 
