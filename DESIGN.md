@@ -143,7 +143,7 @@ Work toward a shippable ROM without [DESIGN-FUTURE.md](DESIGN-FUTURE.md) north-s
 - **Gym trainer type filter** (remainder of release scaling) — [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties); Leader cap done ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented)).
 - **New Bark door swap** when start city ≠ New Bark ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon), [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
 - Collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — HM pilot partial.
-- **Shop pass** — renewable **TMs** and **evolution items** ([World-5](DESIGN-WORLD.md#world-5-tms), [World-7](DESIGN-WORLD.md#world-7-shops)); fix [KB-4](DESIGN.md#index-5-known-bugs).
+- **Shop pass** — **implemented** in `src/field/mart.c` ([World-7](DESIGN-WORLD.md#world-7-shops)); verify in playtest. Still open: **Headbutt TM** slot, Link Cable shelves, Mom resist berries.
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
 - **Wilds-1** + **Wilds-2** — near complete; remaining hooks (Safari, Contest, etc.).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
@@ -170,7 +170,7 @@ The following are intentionally unresolved.
 - Exact starter system — **v1 twelve-option menu implemented**; long-term pools TBD.
 - Per-city home door wiring for **15 of 18** starting cities (3-city PoC in ROM; full list in [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)).
 - Exact Pokémon Center service list ([World-4](DESIGN-WORLD.md#world-4-pokmon-centers)).
-- Per-mart shop inventories and held-item tiers ([World-7](DESIGN-WORLD.md#world-7-shops)).
+- Per-mart **tuning** after the first `mart.c` pass ([World-7 § What’s left](DESIGN-WORLD.md#whats-left-to-do)).
 - **Headbutt TM slot**, tutor removal, learnset audit, and badge-gated shop stock for Flash / Headbutt ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)) — vanilla has **no** Headbutt TM.
 - Clair Dragon's Den: remove trial vs HM-free path ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
 - Trade evolutions without items: Link Cable vs fixed levels ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).

@@ -38,6 +38,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Magnet Train | [Magnet Train (Goldenrod ↔ Saffron)](#magnet-train-goldenrod--saffron) |
 | Route 4 hiker boost | [Route 4 ledge boost](#route-4-ledge-boost-cerulean--mt-moon) |
 | Jasmine medicine | [Olivine Secret Medicine (Jasmine)](#olivine-secret-medicine-jasmine) |
+| Mart inventories | [Mart expansion (`src/field/mart.c`)](#mart-expansion-srcfieldmartc) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
@@ -933,7 +934,7 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 
 **Goal:** Heal Ampharos without a Cianwood fetch. Buy Secret Medicine locally, use it at the Lighthouse.
 
-**Mart:** Olivine Poké Mart **second clerk** (`std_special_mart`, `VAR_SPECIAL_x8004 = 10`) → repointed `sOlivineMart` in `src/field/mart.c`. With `MART_EXPANSION`, the first clerk uses badge-tier `ScrCmd_MartBuy` and ignores city extras.
+**Mart:** Olivine Poké Mart **second clerk** (`std_special_mart`, `VAR_SPECIAL_x8004 = 10`) → `sOlivineMart` in `src/field/mart.c`. Full mart layout: [Mart expansion](#mart-expansion-srcfieldmartc). With `MART_EXPANSION`, the first clerk uses badge-tier `ScrCmd_MartBuy` and ignores city extras.
 
 ### Mart Poké Ball
 
@@ -950,6 +951,40 @@ Vanilla **`InitMartUI`** drops **`ITEM_POKE_BALL` (4)** from buy lists while Gre
 **Verify in-game:** Olivine Mart → second clerk → buy Secret Medicine → Lighthouse top → Jasmine uses medicine on Ampharos → Gym.
 
 **Text:** Lighthouse dialogue in `data/text/094.txt` (msg bank **094**, map `D27R0107`). Edits lines 0–1 (local mart hint) and 3 (item name).
+
+---
+
+## Mart expansion (`src/field/mart.c`)
+
+**Toggle:** `#define MART_EXPANSION` in `include/config.h` (on in this fork).
+
+**Design:** [World-7](DESIGN-WORLD.md#world-7-shops) (player-facing summary in [CHANGELOG.md](../CHANGELOG.md) § Shops).
+
+### Two clerk models
+
+| Mechanism | Used where | Source |
+| --------- | ---------- | ------ |
+| **`ScrCmd_MartBuy`** | Goldenrod & Celadon dept **2F** first clerk | Builds list from `sBadgeMart[]` (badge count → `required_badges` threshold). Does **not** merge city-specific extras. |
+| **`std_special_mart` + `VAR_SPECIAL_x8004`** | Route/town marts, dept floors, Olivine 2nd clerk | Script picks index → pointer to `u16` array ending in `0xFFFF`. Arrays live in **`src/field/mart.c`**. |
+
+Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A` (154)** — see [Mart Poké Ball](#mart-poké-ball). Mom intro sets that flag.
+
+### Arrays (edit here for stock changes)
+
+| Symbol | Role |
+| ------ | ---- |
+| `sBadgeMart[]` | Badge-gated balls, repels, berries, TM70, held items |
+| `sGoldenrodDepartment*` / `sCeladonDepartment*` | Dept store floors (berries, TMs, vitamins, stones, etc.) |
+| `sGoldenrodHerbs[]` | Goldenrod herb clerk → EV-reduction berries |
+| `sOlivineMart[]` | Olivine **second** clerk — Secret Medicine + specialty |
+| `sCherrygroveCityMart[]`, `sVioletCityMart[]`, … | Per-city specialty shelves |
+| `sCianwoodPharmacy[]` | Cianwood shop clerk (not healing stock) |
+| `sIndigoPlateau[]` | Indigo mart |
+| `sMtMoonSquare[]`, `sMahoganyPreRocketHideout[]`, `sMahoganyPostRocketHideout[]` | Route specials |
+
+**Scr_seq wiring:** each map’s mart script sets `VAR_SPECIAL_x8004` to the index expected by the engine hook (Olivine **10** → `sOlivineMart` — see [Olivine Secret Medicine](#olivine-secret-medicine-jasmine)). When adding a new list, repoint the script constant and rebuild.
+
+**Verify:** build ROM → sample Goldenrod/Celadon dept floors (both clerks), one town specialty mart, badge-gated 2F shelf at 0 vs 8 badges.
 
 ---
 

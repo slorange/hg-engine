@@ -37,11 +37,21 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 - **Full heal after every battle** — HP, PP, and status restored for the party (wild and trainer).
 - **Full-party EXP share (interim)** — every non-fainted party member receives the **full** EXP for each KO (not split); no Exp Share item required.
+- **Post-battle field crash (interim fix)** — rare crash when returning to the field after battle; extra guards in the heal-after-battle hook (Sep 2026).
+
+### Shops & items
+
+- **Mart redesign** — under `MART_EXPANSION`, `src/field/mart.c` replaces most healing/potion and X-item shelves with **status berries**, **EV power items**, and **vitamins + Rare Candy / PP Up / PP Max** at Goldenrod and Celadon dept stores.
+- **Renewable TMs** — Celadon dept TM floor and Goldenrod 5F sell fixed TM sets (see [World-7](DESIGN-WORLD.md#world-7-shops)).
+- **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, **TM70 (Flash)**, and late-game gear by **badge count** (not vanilla potion progression).
+- **Town specialty marts** — evolution stones, trade evo held items, and type-resist berries at themed cities (e.g. Moon Stone at Mt. Moon Square, stones/items per city table in design docs).
+- **Olivine** — Secret Medicine remains on the **second** clerk; first clerk uses the badge shelf only.
 
 ### Trainer scaling
 
 - **Trainer levels** scale to badge count (level band per badge tier).
 - **Trainer Pokémon** use level-appropriate **moves** and **evolution stage** for their scaled level (same stage logic as wild encounters where applicable).
+- **Special evolution lines on trainers** — the same authored trade/stone (and similar) stage thresholds as wild encounters can apply to trainer teams, not only wild rolls.
 - **Gym Leaders** — every Pokémon on the Leader’s team is set to the **badge-tier level cap** for your current badge count (not a random level in the ordinary trainer band).
 
 ### Gyms & story

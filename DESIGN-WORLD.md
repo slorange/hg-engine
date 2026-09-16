@@ -203,7 +203,7 @@ Other useful trainer services can be added as systems develop.
 
 # World-5. TMs
 
-**Status: DECIDED — core release target** (not implemented as designed; mart pass still open — [KB-4](DESIGN.md#index-5-known-bugs)).
+**Status: DECIDED — core release target.** Renewable hub TM shelves are **implemented** in `src/field/mart.c` ([World-7 § What we’ve done](DESIGN-WORLD.md#what-weve-done)); Game Corner / rare overworld TMs unchanged.
 
 TMs remain **consumable**.
 
@@ -221,7 +221,12 @@ Available from shops — see [World-7](DESIGN-WORLD.md#world-7-shops) (major hub
 
 ## Game Corner TMs
 
-Some TMs remain Game Corner rewards.
+Coin prizes at the department-store Game Corners (renewable once implemented in prize data / scripts):
+
+| Location | TM pool |
+| -------- | ------- |
+| **Goldenrod Game Corner** | TM05, TM44, TM46, TM75, TM90, TM92 |
+| **Celadon Game Corner** | TM10, TM32, TM49, TM58, TM67, TM82 |
 
 ## Rare / overworld TMs
 
@@ -229,11 +234,35 @@ Rare TMs that would traditionally exist as one overworld copy can also become ob
 
 ## Gym TMs
 
-The first Gym victory awards the Gym's TM.
+Each Gym Leader has a **curated TM pool** (table below). Every `(Leader, TM)` row has a **minimum badge count** (authored per TM; not necessarily uniform within a pool).
 
-Rematching that Gym Leader at the player's current badge tier awards another copy ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
+After the player **defeats** that Leader (first clear or **rematch**), they **choose one TM** from that Leader's pool among entries whose badge requirement is **≤ badges earned** (including the badge just awarded). Same choice rules on rematch — renewable TM source ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 
-Gym TM farming is intentionally unlimited.
+Gym TM picks are intentionally **unlimited** over rematches (no finite TM problem — [World-5](#world-5-tms) policy).
+
+**Implementation:** not shipped; vanilla / pilot scripts still grant a single fixed TM per Leader ([HACK-NOTES](documentation/HACK-NOTES.md) § Gym Leader HM rewards).
+
+### Leader TM pools
+
+**Badge count per TM** (minimum badges to offer that line in the choice menu) is defined in data when implemented — not listed here yet.
+
+| Leader | TM pool |
+| ------ | ------- |
+| **Falkner** | TM40, TM51, TM88 |
+| **Bugsy** | TM62, TM81, TM89 |
+| **Whitney** | TM15, TM27, TM42, TM45, TM68 |
+| **Morty** | TM30, TM56, TM65, TM66, TM79 |
+| **Chuck** | TM01, TM08, TM31, TM52, TM60 |
+| **Jasmine** | TM23, TM47, TM74, TM91 |
+| **Pryce** | TM07, TM13, TM14, TM72 |
+| **Clair** | TM02, TM59 |
+| **Brock** | TM26, TM37, TM39, TM69, TM71, TM80 |
+| **Misty** | TM03, TM18, TM55 |
+| **Lt. Surge** | TM24, TM25, TM34, TM57, TM73 |
+| **Erika** | TM09, TM19, TM22, TM53, TM86 |
+| **Janine** | TM06, TM36, TM84 |
+| **Sabrina** | TM04, TM29, TM48, TM77, TM85 |
+| **Blaine** | TM11, TM35, TM38, TM50, TM61 |
 
 ---
 
@@ -317,82 +346,75 @@ Shop availability for stones and Link Cables: [World-7](DESIGN-WORLD.md#world-7-
 
 # World-7. Shops
 
-**Status: DECIDED — core release target** — especially **renewable TMs** ([World-5](DESIGN-WORLD.md#world-5-tms)) and **evolution items** (stones, Link Cable, trade held items when [World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) ships). Per-mart inventories TBD.
+**Status: DECIDED — core release target** — renewable **TMs** ([World-5](DESIGN-WORLD.md#world-5-tms)), **evolution items**, and **held gear** without vanilla’s one-shot consumable grind.
 
-**Known bug:** current ROM mart stock is wrong ([KB-4](DESIGN.md#index-5-known-bugs)) — treat shop redesign below as target, not what ships today.
+## Overall idea
 
-Marts are redesigned around [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) (post-battle full restore) and [Battle-3](DESIGN-BATTLES.md#battle-3-core-trainer-battle-philosophy) (no bag items in trainer battles). Most vanilla consumables no longer have a job.
+Marts follow [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) (full restore after every battle) and [Battle-3](DESIGN-BATTLES.md#battle-3-core-trainer-battle-philosophy) (no bag items in trainer battles). **Remove** as default shop stock: potions and Full Restore; single-status cures and PP restores; X items, Dire Hit, and Guard Spec; food/healing fluff with no other role (Moomoo Milk, route drinks, etc.) unless repurposed later.
 
-## Remove from shops
+**Sell:**
 
-### Battle-only stat boosters
-
-Not usable in trainer battles; wild fights end with full restore, so mid-battle buffs are unnecessary.
-
-- X Attack, X Defend, X Special, X Sp. Def (if present), X Speed, X Accuracy;
-- Dire Hit;
-- Guard Spec.
-
-### Healing and status cures
-
-HP, PP, and status are restored after every battle (including wild). Healing items cannot be used in trainer battles anyway.
-
-- Potions (Regular / Super / Hyper / Max), Full Restore;
-- Revive, Max Revive;
-- Full Heal and single-status cures (Antidote, Burn Heal, Ice Heal, Awakening, Paralyze Heal);
-- PP restoration (Ether, Elixir, Max Ether, Max Elixir);
-- Food/healing fluff with no other role (Moomoo Milk, Fresh Water, Soda Pop, Lemonade, Lava Cookie, etc.) unless repurposed later.
-
-## Keep / expand
-
-### Poké Balls
-
-Standard balls remain in marts across the region (Great / Ultra / Premier as progression unlocks). Specialty balls follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) when that ships — **Quick Ball** and **Dusk Ball** stay out of normal shops even in core design notes.
-
-### TMs
-
-Renewable TM stock at **department-store hubs** — primarily **Goldenrod** and **Celadon** ([World-5](DESIGN-WORLD.md#world-5-tms)). Smaller towns do not need full TM shelves.
-
-### Evolution items
-
-When [World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) ships:
-
-- **Evolution stones** (Fire, Water, Thunder, Leaf, Moon, Sun, Dusk, Dawn, Shiny, Ice if used) at Goldenrod / Celadon, and sprinkled throughout.
-- **Link Cable** (trade-evolution substitute) at the same hubs;
-- held-item trade evolutions use **on-Pokémon item use** — those held items (Metal Coat, Dragon Scale, etc.) should also be buyable at hubs or from specialists.
-
-### Held items (combat gear)
-
-Unlocked via Badge count, and sprinkled around the shops. Intentionally not consolidated at Goldenrod/Saffron
-
-20% type boosters available in their matching gym type city. Normal, Ground, Dark available in the big marts.
-
-### Field / utility (keep)
-
-- **Repel**, Super Repel, Max Repel — wild-level risk remains ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps));
-- **Escape Rope**
-- **Vitamins** (Protein, Iron, etc.) — EV training unchanged in vanilla; still sold if EVs matter.
-
-## Hub vs route marts
+| Category | Intent |
+| -------- | ------ |
+| **Poké Balls & repels** | Capture and wild-level risk ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)); specialty balls wait on [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) — **Quick Ball** and **Dusk Ball** stay out of normal shops. |
+| **TMs** | Renewable sets at **Goldenrod / Celadon** dept hubs; Gym **choice pools** and **Game Corner** lists in [World-5](DESIGN-WORLD.md#world-5-tms). |
+| **Evolution items** | Stones and trade-evolution held items at **themed town marts** (and hub floors where noted); **Link Cable** at major hubs when [World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) ships. |
+| **Held items** | **Badge-gated** progression, some on dept **2F**, **20% type boosters** in matching Gym cities |
+| **Utility** | Escape Rope, Poké Doll, vitamins + EV training at hubs. |
 
 
-| Mart type                                   | Typical stock                                                           |
-| ------------------------------------------- | ----------------------------------------------------------------------- |
-| **Route / small town**                      | Poké Balls, Repels, 1-2 held items & 1-2 evolution items                |
-| **Mid city**                                | Above + wider held pool, some mid-tier gear                             |
-| **Goldenrod / Celadon (department stores)** | Full ball range, **TMs**, **stones / Link Cable**, broad held selection |
+**Later (not initial release):** [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) living-trainer buy/sell for duplicates and rare TMs — hub marts carry the economy first.
 
+## What we’ve done
 
-Vanilla per-map mart inventories need a **pass** when shop redesign ships — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) (e.g. Secret Medicine only via Olivine clerk, not random route shops).
+**ROM:** `#define MART_EXPANSION` in `include/config.h` → **`src/field/mart.c`** ([HACK-NOTES § Mart expansion](documentation/HACK-NOTES.md#mart-expansion-srcfieldmartc)). Playtest after edits.
 
-## Living-trainer economy
+### Badge-gated shelf (most shops)
 
-[Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions): trainers may **buy and sell** items — sink for duplicates and source for rare TMs / held gear. **Not initial release scope**; hub marts carry the renewable economy first.
+`ScrCmd_MartBuy` → `sBadgeMart[]`: Poké / Great / Ultra / Net / Repeat / Timer Balls; Repels; Escape Rope; Poké Doll; Sitrus & Lum Berries; **TM70 (Flash)**; Cleanse Tag; White / Mental / Power Herbs; Muscle Band & Wise Glasses; Big Root; Expert Belt; Light Clay; Metronome; Leftovers; Shell Bell; Focus Sash; Choice Band / Specs / Scarf; Life Orb — each row gated by **minimum badge count** (0–12).
 
-## Open questions
+### Goldenrod & Celadon department stores
 
-- Sell-only / buyback marts for treasure (Nugget, Pearl, etc.)?
-- Dedicated **berry** vendors vs mixing berries into held tier?
-- Game Corner: coins for TMs / held items only — no battle boosters?
-- Badge-gated shop tiers (e.g. Ultra Balls, late held items)?
-- Ability Patch / Capsule, mints, mega stones — if ever added, likely **not** general marts.
+| Floor | Stock |
+| ----- | ----- |
+| **2F (upper)** | Cheri → Persim status berries (replaces potion aisle) |
+| **2F (lower)** | Balls, Escape Rope, Doll, Repels; Goldenrod adds Chilan Berry, Silk Scarf, Grip Claw, Sticky Barb, Shed Shell (Celadon lower 2F: no mail) |
+| **TM floor** | **Celadon 3F:** TM12, 20, 21, 28, 41, 76, 78, 87 — **Goldenrod 5F:** TM16, 17, 33, 43, 54, 63, 64, 83 |
+| **Battle items** | **Celadon 5F left / Goldenrod 3F:** Power Bracer–Weight + Macho Brace (replaces X items) |
+| **Vitamins** | Protein–HP Up + **Rare Candy**, **PP Up**, **PP Max** |
+| **Celadon 4F** | Sun & Leaf Stones, Rindo Berry, Miracle Seed, Grip Claw, Sticky Barb, Shed Shell |
+| **Goldenrod herbs** | Pomeg, Kelpsy, Qualot, Hondew, Grepa, Tamato Berries (replaces powders/roots) |
+
+### Town / route specialty clerks (`std_special_mart` arrays)
+
+Themed Evolution items, held items, resist berries:
+
+| Location | Items (summary) |
+| -------- | ----------------- |
+| Azalea | King's Rock, Silver Powder, Tanga Berry |
+| Violet | Razor Fang, Coba Berry |
+| Ecruteak | Fire Stone, Charcoal, Occa Berry, Magmarizer, Flame Orb |
+| Olivine | Secret Medicine, Metal Coat, Babiri Berry |
+| Cianwood pharmacy clerk | Poké Ball, Dawn Stone, Black Belt, Chople Berry |
+| Vermilion / Safari | Thunder Stone, Electirizer, Magnet, Wacan Berry |
+| Cerulean | Water Stone, DeepSea Tooth/Scale, Mystic Water, Passho Berry |
+| Lavender | Dusk Stone, Reaper Cloth, Black Glasses, Spell Tag, Kasib, Colbur Berries |
+| Saffron | Up-Grade, Dubious Disc, Twisted Spoon, Payapa Berry |
+| Fuchsia | Shiny Stone, Poison Barb, Kebia Berry, Toxic Orb, Black Sludge |
+| Pewter | Hard Stone, Charti Berry |
+| Viridian | Protector, Soft Sand, Shuca Berry |
+| Blackthorn / Battle Frontier | Dragon Scale, Dragon Fang, Haban Berry |
+| Mt. Moon Square | Moon Stone |
+| Mahogany | Poké Ball, Never-Melt Ice, Yache Berry, Razor Claw |
+| Indigo Plateau | Ultra & Timer Balls, Max Repel, Lum Berry, Leftovers, Shell Bell, Focus Sash, Choice Band / Specs / Scarf, Life Orb |
+
+## What’s left to do
+
+**Implementation**
+
+- **Game Corner** — wire [World-5 Game Corner TM lists](DESIGN-WORLD.md#game-corner-tms) into prize data / scripts (Goldenrod & Celadon).
+- **Gym TM choice** — Leader pools + per-TM badge gates + pick-one UI ([World-5 § Gym TMs](DESIGN-WORLD.md#gym-tms)); scripts still grant one fixed TM ([HACK-NOTES](documentation/HACK-NOTES.md) § Gym Leader HM rewards).
+- **Link Cable** on hub shelves when trade-evolution substitute ships ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
+- **Headbutt TM** slot and badge-gated shop row alongside Flash ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)).
+
+---

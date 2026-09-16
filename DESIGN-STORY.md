@@ -114,7 +114,7 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
-| Cianwood pharmacy free Secret Medicine | Medicine sold in Olivine Mart (`sOlivineMart` in `src/field/mart.c`); Cianwood mart list already excludes it | Remove pharmacist **giveitem** scr_seq branch; optional flavour dialogue only |
+| Cianwood pharmacy free Secret Medicine | Medicine sold in Olivine Mart (`sOlivineMart`); Cianwood clerk sells specialty items only (`sCianwoodPharmacy` in `src/field/mart.c`) | Remove pharmacist **giveitem** scr_seq branch; optional flavour dialogue only |
 | Copycat / S.S. Ticket story (partial) | Pass + Ticket from Mom; train patched | Copycat house repurposed as Saffron home door — displaced-interior scripts still vanilla ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) |
 | Power Plant / Machine Part (partial) | Magnet Train open without quest | Misty Gym still gated — see [Story-1](DESIGN-STORY.md#story-1-story-and-script-content); strip remaining Cerulean/Route 25 hooks when Misty row is done |
 

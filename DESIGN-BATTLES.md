@@ -218,23 +218,23 @@ Gym Leaders can be rematched.
 
 Rematches use the player's **current badge tier**, rather than repeating the difficulty at which the Gym was originally defeated.
 
-Gym rematches are also a renewable source of that Gym's TM ([World-5](DESIGN-WORLD.md#world-5-tms)).
+Rematches use the same **TM choice** as first defeat — pick one qualifying TM from that Leader's pool ([World-5 § Gym TMs](DESIGN-WORLD.md#gym-tms)).
 
-There is no intended hard limit on the number of rematches/TM copies.
+There is no intended hard limit on rematches or TM copies.
 
 ## Gym Leader rewards (first defeat)
 
-**Status: DECIDED conceptually; family lists and hint text TBD**
+**Status: DECIDED conceptually; per-TM badge gates, choice UI, and family hint text TBD**
 
 After a Gym Leader battle, the standard reward sequence is:
 
 1. **Badge**
 2. **HM** — the field ability for this badge count ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)); only on badge counts that grant a new unlock (not every badge grants an HM)
-3. **TM** — that Gym's TM ([World-5](DESIGN-WORLD.md#world-5-tms))
+3. **TM** — **player chooses one** from that Leader's TM pool among entries they qualify for by badge count ([World-5 § Gym TMs](DESIGN-WORLD.md#gym-tms))
 
 Optional **family location hint** (first clear): [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) (requires [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle)).
 
-Rematches continue to award **TM copies** only ([Rematches](#rematches) above).
+Rematches continue to offer the same **TM choice** ([Rematches](#rematches) above).
 
 ---
 
