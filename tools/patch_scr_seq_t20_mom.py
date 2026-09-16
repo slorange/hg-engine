@@ -32,10 +32,35 @@ def config_flag(name: str) -> bool:
     return re.search(rf"^#define\s+{name}\b", text, re.MULTILINE) is not None
 
 
+def config_define_int(name: str, default: int) -> int:
+    text = CONFIG.read_text(encoding="utf-8")
+    m = re.search(rf"^#define\s+{name}\s+(\d+)\b", text, re.MULTILINE)
+    return int(m.group(1)) if m else default
+
+
 def armips_flags() -> list[str]:
-    if config_flag("OPENWORLD_TESTING_GRANTS"):
-        return ["-equ", "OPENWORLD_TESTING_GRANTS", "1"]
-    return ["-equ", "OPENWORLD_TESTING_GRANTS", "0"]
+    flags: list[str] = []
+    flags.extend(
+        ["-equ", "OPENWORLD_TESTING_GRANTS", "1" if config_flag("OPENWORLD_TESTING_GRANTS") else "0"]
+    )
+    sweep = config_flag("OPENWORLD_STORY_FLAG_SWEEP")
+    flags.extend(["-equ", "OPENWORLD_STORY_FLAG_SWEEP", "1" if sweep else "0"])
+    if not sweep:
+        flags.extend(["-equ", "OPENWORLD_STORY_FLAG_SWEEP_START", "0", "-equ", "OPENWORLD_STORY_FLAG_SWEEP_END", "0"])
+    if sweep:
+        start = config_define_int("OPENWORLD_STORY_FLAG_SWEEP_START", 100)
+        end = config_define_int("OPENWORLD_STORY_FLAG_SWEEP_END", 399)
+        flags.extend(
+            [
+                "-equ",
+                "OPENWORLD_STORY_FLAG_SWEEP_START",
+                str(start),
+                "-equ",
+                "OPENWORLD_STORY_FLAG_SWEEP_END",
+                str(end),
+            ]
+        )
+    return flags
 
 
 def find_scrdef_end(data: bytes) -> tuple[int, int]:

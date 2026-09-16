@@ -33,6 +33,8 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
 | Story NPC removal | [Removing / skipping story NPCs](#removing--skipping-story-npcs-reusable-recipe) |
 | Mom intro / start city | [Open-world starting inventory](#open-world-starting-inventory-new-saves) → [Starter menu](#starter-selection--not-choose_starter), [Home warps](#home--bidirectional-door--interior-swap) |
+| Story flag sweep (dev) | [Story flag range sweep (dev)](#story-flag-range-sweep-dev) |
+| HGSS story flags (pret) | [HGSS-STORY-FLAGS.md](HGSS-STORY-FLAGS.md) — index **100–399**; add Wandering Heart notes as we map skips |
 | Magnet Train | [Magnet Train (Goldenrod ↔ Saffron)](#magnet-train-goldenrod--saffron) |
 | Route 4 hiker boost | [Route 4 ledge boost](#route-4-ledge-boost-cerulean--mt-moon) |
 | Jasmine medicine | [Olivine Secret Medicine (Jasmine)](#olivine-secret-medicine-jasmine) |
@@ -400,7 +402,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 **Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass. **Whitney** and remaining Johto leaders not started.
 
-**Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only).
+**Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
 
 | What | Where |
 |------|--------|
@@ -704,7 +706,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Toggle:** `OPENWORLD_STARTING_ITEMS` in `include/config.h` (on by default).
 
-**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). Optional commented **`OPENWORLD_STORY_FLAG_SWEEP`** for flag-range bisect ([Story flag range sweep](#story-flag-range-sweep-dev)). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
 
 **Hook:** Mom downstairs cutscene — scr_seq member **845** (`T20R0201`), script slot **0**.
 
@@ -717,6 +719,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 | S.S. Ticket | `ITEM_SS_TICKET` (456) |
 | Pass | `ITEM_PASS` (480) |
 | Apricorn Box | `ITEM_APRICORN_BOX` (468) + flag 109 |
+| Poké Balls | `ITEM_POKE_BALL` (4) ×5; marts need **`FLAG_UNK_09A` (154)** — `setflag` with Pokégear ([Mart Poké Ball](#mart-poké-ball)) |
 | Running shoes | `give_running_shoes` |
 | Pokédex | `FLAG_GOT_POKEDEX` + `GivePokedex` |
 | Pokégear | `FLAG_GOT_POKEGEAR` + fanfare |
@@ -824,7 +827,7 @@ python scripts/dev/verify_start_city_patch.py
 # repack test.nds
 ```
 
-**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`), `tools/patch_zone_event_start_city.py` (`073`/`056`/`060`), `tools/patch_scr_seq_start_city.py` (no-op placeholder), `scripts/dev/verify_start_city_patch.py`, `data/text/545.txt`, `armips/include/vars.s`. Init header **618** stays vanilla.
+**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s` (sole Mom bytecode source; legacy `scr_seq_t20_mom_openworld.s` removed), `tools/patch_scr_seq_t20_mom.py` (`2_845`), `tools/patch_zone_event_start_city.py` (`073`/`056`/`060`), `tools/patch_scr_seq_start_city.py` (no-op placeholder), `scripts/dev/verify_start_city_patch.py`, `data/text/545.txt`, `armips/include/vars.s`. Init header **618** stays vanilla.
 
 **Bedroom starter:** not used — bedroom scr_seq **846** stays vanilla (**no** `choose_starter`, no OnTransition starter hook). All starter picking is in **Mom script 0** only. Bedroom / OnTransition hooks crashed or never ran reliably when tried.
 
@@ -835,6 +838,26 @@ python scripts/dev/verify_start_city_patch.py
 **Dialogue:** Mom intro greet **545** strings **0–1**. String **6** is post-cutscene talk (vanilla Elm errand line). Cutscene skips bag/card/save/options `npc_msg`s; fanfares + flags unlock touch menu.
 
 **Note:** Test with **new saves** after ROM changes. Story hooks (Elm, rival) still vanilla until Phase 4.
+
+---
+
+## Story flag range sweep (dev)
+
+**Purpose:** find which pret **story flag** (decimal **100–399**, `armips/include/flags.s`) gates some vanilla check — without guessing one flag at a time. First use case: [Mart Poké Ball](#mart-poké-ball) (`InitMartUI` hides `ITEM_POKE_BALL` until a story flag is set).
+
+**Toggles** (`include/config.h`):
+
+| Define | Role |
+| ------ | ---- |
+| `OPENWORLD_STORY_FLAG_SWEEP` | When defined, Mom intro loops `setflagvar` over an inclusive range (skips normal `FLAG_UNK_09A` mart grant). |
+| `OPENWORLD_STORY_FLAG_SWEEP_START` | First flag index (decimal). |
+| `OPENWORLD_STORY_FLAG_SWEEP_END` | Last flag index (decimal). |
+
+**Implementation:** `armips/scr_seq/scr_seq_t20_mom_script0.s` (loop after Apricorn Box flag); `tools/patch_scr_seq_t20_mom.py` reads `config.h` and passes armips `-equ` values when assembling script **0**. Rebuild scr_seq / full ROM after changing the range.
+
+**Workflow:** bisect `[START, END]` on **throwaway saves** (setting many flags breaks world state). When the minimal flag is known, add a single `setflag` in Mom intro (or the right script), **undef** `OPENWORLD_STORY_FLAG_SWEEP`, and document the flag in [HGSS-STORY-FLAGS.md](HGSS-STORY-FLAGS.md).
+
+**Not runtime config:** the `.nds` does not read an external file; only build-time `config.h` (or future patcher-side cfg) controls the range.
 
 ---
 
@@ -911,6 +934,12 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 **Goal:** Heal Ampharos without a Cianwood fetch. Buy Secret Medicine locally, use it at the Lighthouse.
 
 **Mart:** Olivine Poké Mart **second clerk** (`std_special_mart`, `VAR_SPECIAL_x8004 = 10`) → repointed `sOlivineMart` in `src/field/mart.c`. With `MART_EXPANSION`, the first clerk uses badge-tier `ScrCmd_MartBuy` and ignores city extras.
+
+### Mart Poké Ball
+
+Vanilla **`InitMartUI`** drops **`ITEM_POKE_BALL` (4)** from buy lists while Great/Ultra and other stock still show until a pret **story flag** is set.
+
+**Verified (Sep 2026):** **`FLAG_UNK_09A` (154)** alone restores shop Poké Balls. Mom intro sets it with Pokégear / UI unlocks (`scr_seq_t20_mom_script0.s`). Not **`FLAG_MET_PASSERBY_BOY` (153)**, **`FLAG_UNK_0B5` (181)**, or **`FLAG_UNK_15D` (349)** alone. Found via [story flag sweep](#story-flag-range-sweep-dev) (151–156 bracket). Pret name only — vanilla trigger still TBD; index [HGSS-STORY-FLAGS.md](HGSS-STORY-FLAGS.md).
 
 **Price:** `ITEM_SECRET_MEDICINE` buy price **¥500** in `data/itemdata/itemdata.c`. Cianwood pharmacy still gives it free via `giveitem`.
 

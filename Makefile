@@ -352,7 +352,7 @@ clean:
 
 # Drop scr_seq intermediates only (~2 min), not a full clean.
 scr_seq_clean:
-	rm -rf build/a012 build/a012_vanilla build/narc/scr_seq.narc base/root/a/0/1/2 build/t20_mom_script0.bin build/t20_mom_openworld.bin
+	rm -rf build/a012 build/a012_vanilla build/narc/scr_seq.narc base/root/a/0/1/2 build/t20_mom_script0.bin
 
 .PHONY: scr_seq_clean
 

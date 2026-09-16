@@ -19,6 +19,8 @@
 
 Field scripts, NPCs, and map obstacles that assume vanilla story order or a New Bark start are removed or rewritten. Target: **any starting city**, **any-order Gyms**.
 
+**Story flag index:** pret story flags **100–399** (`0x64`–`0x18F`) — see [documentation/HGSS-STORY-FLAGS.md](documentation/HGSS-STORY-FLAGS.md) (add notes as we map skips).
+
 ## Opening and tutorial — remove
 
 Mom cutscene ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon), [Index-2](DESIGN.md#index-2-current-technical-baseline)) **replaces** the vanilla New Bark opening for city pick, starter, and starting grants. **Vanilla leftovers still present** until cleaned up — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog):

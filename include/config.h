@@ -284,6 +284,11 @@
 // Disable before builds for others or any release candidate.
 #define OPENWORLD_TESTING_GRANTS
 
+// Optional dev bisect: Mom sets pret story flags in [START, END] (throwaway saves). See HACK-NOTES.
+// #define OPENWORLD_STORY_FLAG_SWEEP
+// #define OPENWORLD_STORY_FLAG_SWEEP_START 100
+// #define OPENWORLD_STORY_FLAG_SWEEP_END   399
+
 // GYM_BADGE_COUNT_FIELD_REWARDS grants HMs / field unlocks from Gym Leaders by total badge count.
 #define GYM_BADGE_COUNT_FIELD_REWARDS
 

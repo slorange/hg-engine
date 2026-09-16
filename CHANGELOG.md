@@ -9,7 +9,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Starting city** — choose New Bark, Goldenrod, or Saffron in Mom’s cutscene (before starter pick); dynamic home exit warp to chosen city.
 - **Starter selection** — 12-option text menu in Mom’s cutscene (gens 1–4 starters); not vanilla 3-ball UI.
 - **Shortened Professor Oak intro** dialogue.
-- **Mom’s grants** at intro — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, Pokégear, Town Map card, Mom/Oak/Elm phone numbers.
+- **Mom’s grants** at intro — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, **5 Poké Balls**, Pokégear, Town Map card, Mom/Oak/Elm phone numbers; **`FLAG_UNK_09A` (154)** so marts sell Poké Balls without Route 29 tutorial.
 - **HM02 Fly from Mom** — dev/testing grant only (`OPENWORLD_TESTING_GRANTS`); disable before release builds.
 
 ### Travel & world access

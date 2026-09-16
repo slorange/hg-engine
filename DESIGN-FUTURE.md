@@ -20,6 +20,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-9. Accelerated day/night cycle](#future-9-accelerated-daynight-cycle) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Encounter stage selection (wild + trainer)](#future-11-encounter-stage-selection-wild--trainer) |
+| [Future-12. Berry economy & distribution](#future-12-berry-economy--distribution) |
 
 ---
 
@@ -513,5 +514,42 @@ Release: **identical** stage logic for wild rolls and trainer battle-start scali
 Rematches and Elite Four would share the **Gym Leader** tier
 
 Implementation sketch: `AdjustEncounterSpeciesForLevel()` gains a **context** flag (`wild`, `trainer`, `gym_leader`, …) that selects probability tables, tier offsets, or multipliers without duplicating level-up chain logic.
+
+---
+
+# Future-12. Berry economy & distribution
+
+Berries stay a meaningful **held-item** layer: the player cannot use Bag items in trainer battles ([Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition)), so automatic berry effects remain one of the main in-battle consumables. Growth via **Berry Pots** is unchanged in role.
+
+**Scope:** keep **45 of 64** Gen IV berries, all obtainable in-game — no Pokéwalker courses, events, Pal Park, or multiplayer.
+
+**Dropped (19):** Figy-family weak-heal berries (**159–163**); Poffin / contest berries (**164–168**, **175–183**) — no contest system and little use beyond Natural Gift.
+
+## Berry Pots & starter supply
+
+Give **Berry Pots at game start** (Mom’s opening conversation), replacing vanilla Route 36 Sudowoodo unlock. Include ~5 of each **basic** berry (Cheri–Persim)
+
+## Acquisition by group
+
+| Group | Item IDs | Role | Primary sources |
+| ----- | -------- | ---- | ---------------- |
+| Basic | **149–156** (Cheri–Persim) | Status cure, Leppa PP, Oran HP | Starter pack; Goldenrod & Celadon Dept. Stores (partial medicine replacement) |
+| Lum + Sitrus | **157–158** | Full status / 25% max HP | Badge-scaled regular marts (~**6 badges**, tunable) |
+| EV / friendship | **169–174** (Pomeg–Tamato) | −EVs, +friendship | Goldenrod Underground medicine seller (beside Haircut Brothers) |
+| Type-resistance | **184–200** (Occa–Chilan) | Super-effective hit reduction | Themed **local specialty shops** (town ↔ type; detail in [World-7](DESIGN-WORLD.md#world-7-shops) — e.g. Wacan→Vermilion, Passho→Cerulean). Mom’s vanilla resist-berry purchasing **unchanged for now**. |
+| Rare battle | **201–212** (Liechi–Rowap) | Pinch boosts, Enigma heal, Custap priority, Jaboca/Rowap counter | Violet City and Fuchsia City shard traders |
+
+## Wild Pokémon holds
+
+New global rule: any wild species may hold a berry (species-agnostic). If selected, pick uniformly from the **45 supported** Berries. Configurable hold rate - tentative 30%.
+
+## Open design questions
+
+- Starter quantities for the eight basics; exact Lum/Sitrus badge gate.
+- Wild berry-hold probability
+- Shard trade costs and bundle sizes.
+- Final town assignment per resistance berry
+- Berry Pot growth times/yields (unchanged? What about day/night cycle changes?)
+- Whether to later remove, keep, or repurpose Mom’s resist-berry shop.
 
 ---

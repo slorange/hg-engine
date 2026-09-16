@@ -9,6 +9,7 @@
 .equ ITEM_SS_TICKET, 456
 .equ ITEM_PASS, 480
 .equ ITEM_APRICORN_BOX, 468
+.equ ITEM_POKE_BALL, 4
 .equ ITEM_HM02, 421
 
 .equ MSG_MOM_GREET_M, 0
@@ -97,6 +98,7 @@ _mom_begin:
     setflag FLAG_GOT_POKEDEX
     GivePokedex
     setflag FLAG_GOT_POKEGEAR
+    setflag FLAG_UNK_09A
     play_fanfare SEQ_ME_ITEM
     wait_fanfare
     UpgradePokegear 1
@@ -110,6 +112,15 @@ _mom_begin:
     giveitem_no_check ITEM_PASS, 1
     giveitem_no_check ITEM_APRICORN_BOX, 1
     setflag FLAG_GOT_APRICORN_BOX
+.if OPENWORLD_STORY_FLAG_SWEEP == 1
+    setvar VAR_TEMP_x4000, OPENWORLD_STORY_FLAG_SWEEP_START
+_story_flag_sweep:
+    setflagvar VAR_TEMP_x4000
+    addvar VAR_TEMP_x4000, 1
+    compare VAR_TEMP_x4000, OPENWORLD_STORY_FLAG_SWEEP_END + 1
+    goto_if_lt _story_flag_sweep
+.endif
+    giveitem_no_check ITEM_POKE_BALL, 5
 .if OPENWORLD_TESTING_GRANTS == 1
     giveitem_no_check ITEM_HM02, 1
 .endif

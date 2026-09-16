@@ -171,6 +171,7 @@ The following are intentionally unresolved.
 - Per-city home door wiring for **15 of 18** starting cities (3-city PoC in ROM; full list in [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)).
 - Exact Pokémon Center service list ([World-4](DESIGN-WORLD.md#world-4-pokmon-centers)).
 - Per-mart shop inventories and held-item tiers ([World-7](DESIGN-WORLD.md#world-7-shops)).
+- **Headbutt TM slot**, tutor removal, learnset audit, and badge-gated shop stock for Flash / Headbutt ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)) — vanilla has **no** Headbutt TM.
 - Clair Dragon's Den: remove trial vs HM-free path ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
 - Trade evolutions without items: Link Cable vs fixed levels ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
 - Whether expanded stone mechanics ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)) ship.
@@ -202,8 +203,6 @@ When a bug is fixed, remove its row here and note the fix in [`CHANGELOG.md`](CH
 | -- | ------- | ----- |
 | **KB-1** | **Route 36 Sudowoodo** still blocks the road the **first** time you enter the route after load. Leaving and re-entering hides the tree as intended. | Hide flag runs on map load (`scr_seq_R36_010` / `FLAG_HIDE_ROUTE_36_SUDOWOODO`); object visibility likely applies one visit late. Recipe: `documentation/HACK-NOTES.md` § **Remove Sudowoodo block (Route 36)**. |
 | **KB-3** | **Wrong home interior** — entering a city’s player house when that city is **not** your starting city still warps to the **canonical Mom house** (starting interior) instead of that city’s displaced vanilla interior. | Related design: [Vision-3 home wiring](DESIGN-VISION.md#vision-3-starting-location-and-pokémon). Goldenrod/Saffron “home” doors intentionally use the canonical interior; other cities’ houses should not. Recipe: `documentation/HACK-NOTES.md` § [Home = bidirectional door + interior swap](documentation/HACK-NOTES.md#home--bidirectional-door--interior-swap). |
-| **KB-4** | **Poké Mart inventories wrong** — shops skew toward **Great Ball / Ultra Ball** (and similar); **Poké Balls** and expected baseline stock often missing across marts. | Likely interaction with `MART_EXPANSION` / badge-tier `ScrCmd_MartBuy` vs per-city extras (`src/field/mart.c`). Intended direction: [World-7](DESIGN-WORLD.md#world-7-shops). Olivine second clerk (Secret Medicine) is a separate, intentional override. |
-
 ### Monitoring (tentatively resolved)
 
 | ID | Former symptom | Notes |

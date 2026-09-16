@@ -149,6 +149,21 @@ Badge counts not in the table get Badge + TM only
 
 **Unchanged vanilla** (learn move, party menu — not badge-gated, not collection-field): Sweet Scent, Dig, Teleport.
 
+## Headbutt & Flash — battle teaching (vanilla vs target)
+
+**Vanilla HGSS:** **Flash** is **TM070** (normal TM teach in battle). **Headbutt is not a TM** — the only teach source is the **Move Tutor** (`TUTOR_HEADBUTT`; first `TUTOR_HEADBUTT` row in tutor data is the only one read). Overworld Headbutt is gated on that tutor chain (Goldenrod → Azalea), not on a machine item.
+
+**Target (this rom):** Badge **1** / **4** still unlock **collection-based field** Flash and Headbutt ([table above](#badge--field-abilities-single-reference)). Players who want those moves **in battle** need a teach item like any other field-adjacent move.
+
+**Implementation backlog (not decided):**
+
+1. **Make room for a Headbutt TM** — Vanilla has no Headbutt TM, Tutor only. Repurpose an existing TM number (`src/item.c` machine table, `data/itemdata`, hub mart arrays in `src/field/mart.c`) **or** map Headbutt onto an expanded TM item (`ITEM_TM093+` / HG-Engine TM expansion)
+2. **Headbutt tutor** — Consider removing vanilla tutor NPC ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog))
+3. **Learnset pass** — Audit species with **level-up** Headbutt (`MOVE_HEADBUTT`); Consider removing if any learn it at too low a level (before badge would naturally be acquired)
+4. **Shops** — list **Headbutt TM** (and **Flash / TM070**) after badge requirement met
+
+**Status today:** Johto Gym scripts grant badge + TM only at counts **1** and **4** — no Flash / Headbutt field flags yet ([HACK-NOTES](documentation/HACK-NOTES.md) § Gym HM grants).
+
 
 ---
 
