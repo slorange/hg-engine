@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Open-world starting city: patch outdoor home doors only (Goldenrod / Saffron).
+"""Open-world starting city: patch outdoor home doors (Goldenrod / Saffron / Fuchsia).
 
 Interior member 060 must keep both warps — bedroom 2F links to 1F via warp slot 1
 (anchor 1). Removing the front-door warp shifts indices and breaks the stairs.
@@ -20,9 +20,11 @@ CONFIG = ROOT / "include/config.h"
 MAP_T20R0201 = 63
 MAP_T25R0801 = 205
 MAP_T11R0501 = 399
+MAP_T08R0401 = 481
 
 GOLDENROD_DOOR = (73, 14, 376, 335, MAP_T25R0801)
 SAFFRON_DOOR = (56, 14, 1323, 242, MAP_T11R0501)
+FUCHSIA_DOOR = (53, 8, 1200, 439, MAP_T08R0401)
 INTERIOR_EXIT = (60, 0, 3, 10, 60, 1)  # member, warp index, x, z, old header, old anchor
 DYNAMIC_WARP_HEADER = 0xFFF
 DYNAMIC_WARP_ANCHOR = 0x100
@@ -142,8 +144,9 @@ def main(argv: list[str]) -> int:
 
     goldenrod = zone_dir / "2_073"
     saffron = zone_dir / "2_056"
+    fuchsia = zone_dir / "2_053"
     interior = zone_dir / "2_060"
-    for path in (goldenrod, saffron, interior):
+    for path in (goldenrod, saffron, fuchsia, interior):
         if not path.is_file():
             print(f"missing {path}", file=sys.stderr)
             return 1
@@ -157,6 +160,11 @@ def main(argv: list[str]) -> int:
     data = bytearray(saffron.read_bytes())
     patch_city_door_warp(data, m, idx, x, z, old)
     saffron.write_bytes(data)
+
+    m, idx, x, z, old = FUCHSIA_DOOR
+    data = bytearray(fuchsia.read_bytes())
+    patch_city_door_warp(data, m, idx, x, z, old)
+    fuchsia.write_bytes(data)
 
     data = bytearray(interior.read_bytes())
     patch_interior_exit_warp(data)

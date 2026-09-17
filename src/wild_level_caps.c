@@ -58,13 +58,6 @@ extern WildLevelCapCache sWildCapCache;
 
 u8 LONG_CALL MapHeader_GetWildEncounterBank(u32 mapId);
 
-// Mom menu PoC uses 0/1/2 for New Bark / Goldenrod / Saffron.
-static const u8 sPoCStartCityToTableIndex[] = {
-    0,  // New Bark Town
-    3,  // Goldenrod City
-    13, // Saffron City
-};
-
 static void TouchWildLevelCapDebug(void)
 {
     sWildLevelCapDebug.magic = WLC_DEBUG_MAGIC;
@@ -122,10 +115,6 @@ static BOOL ResolveMapId(u16 *mapIdOut)
 
 static u8 ResolveStartCityIndex(u8 startCityVar)
 {
-    if (startCityVar < NELEMS(sPoCStartCityToTableIndex)) {
-        return sPoCStartCityToTableIndex[startCityVar];
-    }
-
     if (startCityVar < WILD_LEVEL_CAP_NUM_START_CITIES) {
         return startCityVar;
     }

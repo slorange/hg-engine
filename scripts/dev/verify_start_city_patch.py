@@ -45,9 +45,10 @@ def main() -> None:
 
     goldenrod = ZONE_DIR / "2_073"
     saffron = ZONE_DIR / "2_056"
+    fuchsia = ZONE_DIR / "2_053"
     interior = ZONE_DIR / "2_060"
     vanilla_interior = ROOT / "build/a032_vanilla/2_060"
-    for path in (goldenrod, saffron, interior, vanilla_interior):
+    for path in (goldenrod, saffron, fuchsia, interior, vanilla_interior):
         if not path.is_file():
             raise SystemExit(f"missing {path}; rebuild zone_event first")
 
@@ -58,6 +59,10 @@ def main() -> None:
     wx, wz, header, _, _, _ = parse_zone_event(saffron.read_bytes())[0][14]
     if (wx, wz, header) != (1323, 242, MAP_T20R0201):
         raise SystemExit(f"Saffron home door warp wrong: {(wx, wz, header)}")
+
+    wx, wz, header, _, _, _ = parse_zone_event(fuchsia.read_bytes())[0][8]
+    if (wx, wz, header) != (1200, 439, MAP_T20R0201):
+        raise SystemExit(f"Fuchsia home door warp wrong: {(wx, wz, header)}")
 
     warps, _ = parse_zone_event(interior.read_bytes())
     if len(warps) != 2:

@@ -2,8 +2,23 @@
 {STRVAR_1 3, 0, 0}, are you finally moving\nout? Took you long enough!\rMake sure you take all your junk\nwith you.\r
 Choose your starting city.
 New Bark Town
+Violet City
+Azalea Town
 Goldenrod City
+Ecruteak City
+Olivine City
+Cianwood City
+Mahogany Town
+Blackthorn City
+Pallet Town
+Viridian City
+Pewter City
+Cerulean City
 Saffron City
+Lavender Town
+Celadon City
+Vermilion City
+Fuchsia City
 Choose your starter Pokémon.
 Chikorita
 Cyndaquil
