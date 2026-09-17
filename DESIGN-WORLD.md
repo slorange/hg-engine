@@ -17,6 +17,7 @@
 | [World-7. Shops](#world-7-shops) | DECIDED — **core release target** (TMs, evolution items) |
 | Accelerated day/night cycle | Moved — [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
+| Expanded stone mechanics | Moved — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics) |
 
 ---
 
@@ -32,7 +33,7 @@ These include:
 
 - Goldenrod/Saffron Train
 - Olivine/Vermillion SSAqua
-- Early Fly HM and Fly works across regions.
+- Early Fly HM — field use partially unblocked ([HACK-NOTES](documentation/HACK-NOTES.md) § Field HM badge bypass). **Kanto Fly map destinations not yet enabled** — in Kanto the UI still shows Johto only (vanilla likely E4 / SS Aqua gated).
 - Pokemon Center Abra transportation
 - local paid route bypasses where required
 
@@ -138,7 +139,7 @@ Field abilities unlock by **badges earned** (any Gym order): when badge count hi
 | 2 | **Cut** (HM01) | Trees / obstacles | |
 | 3 | **Rock Smash** (HM06) | Break rocks | Separate **Rock Smash** encounter slots when smashing |
 | 4 | **Headbutt** | Tree encounters | `data/Headbutt.c` — not grass table; not an HM item |
-| 5 | **Fly** (HM02) | Fast travel between visited cities | |
+| 5 | **Fly** (HM02) | Fast travel between visited cities | Johto fly map works; **Kanto destinations still locked** — see [HACK-NOTES § Fly map](documentation/HACK-NOTES.md#fly-map--kanto-destinations-not-yet) |
 | 6 | **Surf** (HM03) | Water routes + Surf encounters | |
 | 7 | **Strength** (HM04) | Push boulders | |
 | 10 | **Whirlpool** (HM05) | Clear whirlpools | |
@@ -191,7 +192,7 @@ The player can rest to intentionally advance the accelerated in-game clock when 
 
 ### Apricorn crafting
 
-If [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) is implemented, Pokémon Centers may provide distributed Apricorn Ball crafting. **Not core scope.**
+If [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) is implemented, Pokémon Centers may provide distributed Apricorn Ball crafting.
 
 ### Additional services
 
@@ -270,25 +271,35 @@ Gym TM picks are intentionally **unlimited** over rematches (no finite TM proble
 
 # World-6. Evolution Methods (Trade & Stones)
 
-**Status: PARTIALLY DECIDED — stone expansion OPTIONAL / TBD**
+**Status: PARTIALLY DECIDED**
 
-QoL changes to trade and stone evolution. **Not required** for the core open-world shell or trainer scaling; can ship on its own schedule. Placed before the Apricorn addon pointer because both touch items, but this section is **core Design 1**, not `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)`.
+## Evolution stones
 
-## Trade evolutions — with held item
+**Shipped:** Every standard evolution stone is **renewably buyable** at themed town marts and dept-store shelves ([World-7 § What we’ve done](DESIGN-WORLD.md#what-weve-done)) — e.g. Fire at Ecruteak, Water at Cerulean, Thunder at Vermilion, Moon at Mt. Moon Square, Sun & Leaf at Celadon 4F — instead of vanilla’s mostly one-off pickups.
+
+**Planned:** All evolution stones will also be added to the **Rock Smash item tables** (`src/field/rock_smash_item.c`) as a field source alongside shops.
+
+Player stone evolution rules are **unchanged** (use a stone on an eligible Pokémon). Optional flexible stone mechanics (type-matching shortcuts, high-level paths without stones) are deferred — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).
+
+## Trade evolutions
+
+QoL changes to trade evolution (held-item use-on-Pokémon, Link Cable / level-up substitutes for trade). **Not required** for the core open-world shell or trainer scaling; can ship on its own schedule.
+
+### Trade evolutions — with held item
 
 Evolutions that normally require **trade while holding an item** should evolve when the item is **used on the Pokémon** — no trade required.
 
 Examples: Dragon Scale → Kingdra, Metal Coat → Scizor, Protector → Rhyperior, etc.
 
-## Trade evolutions — no item
+### Trade evolutions — no item
 
 Evolutions that require **trade alone** need a substitute for multiplayer. **TBD — pick one (or combine):**
 
-### Option A: Link Cable item
+#### Option A: Link Cable item
 
 Add a **Link Cable** usable item that triggers the same evolution as trade (inventory convenience, no level gate).
 
-### Option B: Level-up evolution
+#### Option B: Level-up evolution
 
 
 | Pokémon            | Evolves at |
@@ -298,47 +309,7 @@ Add a **Link Cable** usable item that triggers the same evolution as trade (inve
 | Kadabra → Alakazam | 42         |
 | Haunter → Gengar   | 42         |
 
-
-## Optional: expanded stone mechanics
-
-**Status: OPTIONAL — cool but not committed**
-
-Evolution stones become more flexible for the matching **elemental type** (Fire Stone on Fire-types, Water Stone on Water-types, etc.).
-
-### Pokémon that do not normally evolve with that stone
-
-Using the matching stone **lowers the next natural level-up evolution by ~5 levels** (one step toward the target stage). Exact stacking rules TBD.
-
-Example — Cyndaquil line (natural levels **16** / **36**):
-
-- Stone on Fire-type at **11+** / **31+** instead of waiting for 16 / 36.
-
-Example — Rapidash (natural level **40**):
-
-- Level **40** as today, **or** Fire Stone on Ponyta/Rapidash at **35+**.
-
-
-
-### Pokémon that normally evolve by stone only
-
-- **Stone at any level** (keep the classic convenience).
-- **Also** a **high level-up path** without the stone.
-
-
-| Stage pattern                                     | Stone                       | Level without stone |
-| ------------------------------------------------- | --------------------------- | ------------------- |
-| 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **35**              |
-| 2nd stage, stone-only (e.g. Gloom, Poliwhirl)     | matching stone at any level | **50**              |
-
-
-### Open questions (stones)
-
-- Exact −5 behaviour: one-time per stage, permanent flag, or repeatable?
-- Dual-types: either type matches, or primary type only?
-- Using a stone on a Pokémon with no evolution in that line — no effect?
-- Interaction with [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) evolution exclusions for generated trainer teams.
-
-Shop availability for stones and Link Cables: [World-7](DESIGN-WORLD.md#world-7-shops).
+Shop availability for Link Cables (when implemented): [World-7](DESIGN-WORLD.md#world-7-shops).
 
 ---
 

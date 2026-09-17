@@ -292,6 +292,10 @@
 // GYM_BADGE_COUNT_FIELD_REWARDS grants HMs / field unlocks from Gym Leaders by total badge count.
 #define GYM_BADGE_COUNT_FIELD_REWARDS
 
+// OPENWORLD_FIELD_MOVES_NO_BADGE_GATE skips vanilla per-Gym badge checks when using HMs
+// from the party menu (FieldMove_Check*). Map/script gates (Flash caves, etc.) unchanged.
+#define OPENWORLD_FIELD_MOVES_NO_BADGE_GATE
+
 // Champions-specific move configurations. Set to 0 to use Scarlet/Violet values.
 #define CHAMPIONS_POWER_CHANGES         1
 #define CHAMPIONS_TYPE_CHANGES          1

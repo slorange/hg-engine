@@ -14,6 +14,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 ### Travel & world access
 
+- **HM field use** — once a Pokémon knows an HM, you can use it from the party menu without that move's vanilla Gym badge (matches badge-count gym HM grants; map/script gates like Flash caves unchanged). *Fly Kanto destinations still unavailable — Johto map only when in Kanto; see HACK-NOTES.*
 - **Magnet Train** (Goldenrod ↔ Saffron) open from the start — no Power Plant / Machine Part quest.
 - **Route 42 ferry** — fishermen on both shores; paid warp across the water without Surf.
 - **Route 4 ledge boost** — hiker boosts you over the ledge toward Mt. Moon for ¥100.

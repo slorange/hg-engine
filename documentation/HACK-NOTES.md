@@ -25,7 +25,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Route 32 gate | [Remove Route 32 badge gate](#remove-route-32-badge-gate-south-of-violet--verified-pattern) |
 | Gym Cut trees | [Remove Surge / Erika Cut trees](#remove-surge--erika-cut-trees--gym-access) |
 | Post-battle heal | [Heal after every battle](#heal-after-every-battle) |
-| Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) |
+| Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) → [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags), [Kanto Fly map](#fly-map--kanto-destinations-not-yet) |
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
 | Trainer scaling | [Trainer level scaling](#trainer-level-scaling) |
 | Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies-not-enabled-yet) |
@@ -408,6 +408,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | What | Where |
 |------|--------|
 | Toggle | `GYM_BADGE_COUNT_FIELD_REWARDS` in `include/config.h` |
+| Field HM use | `OPENWORLD_FIELD_MOVES_NO_BADGE_GATE` — [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags) (verified Sep 2026) |
 | Shared logic | `armips/include/gym_badge_hm_reward.inc` — level cap (`10 + 4×badges`, 80 at 16) + HM table |
 | Shared text | `data/text/854.txt` — level cap, HM names, TM intro |
 | Falkner | scr_seq **859** — slots **1–5** patched; zone_event **365** sprout gate obj removed (`tools/patch_zone_event_violet_gym.py`) |
@@ -425,6 +426,49 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 **Flow:** win dialogue → `GiveBadge` → receipt → `SEQ_ME_BADGE` → shared level-cap line → **`count_badges`** → HM line (if row) + `SEQ_ME_WAZA` + silent `giveitem` → shared TM intro + fanfare + TM + Leader flavor text.
 
 **Test:** beat a Gym as **2nd** badge → Cut; as **5th** → Fly; badge **1** or **4** → no HM, TM only.
+
+### Field HM use without per-Gym badge flags
+
+**Status: verified in-game Sep 2026** — Mom HM02 + party Fly without Storm Badge; Goldenrod dept mart shelves still badge-gated.
+
+**Toggle:** `OPENWORLD_FIELD_MOVES_NO_BADGE_GATE` in `include/config.h` (on by default with open-world HM work). Required for [OPENWORLD_TESTING_GRANTS](#open-world-starting-inventory-new-saves) HM02 to work from the party menu — granting the item alone is not enough; vanilla `FieldMove_CheckFly` still demands Storm Badge without this hook.
+
+Vanilla `FieldMove_Check*` (arm9 ~`0x02067F00`) calls `PlayerProfile_TestBadgeFlag` for a **specific** Gym badge before returning `FIELD_MOVE_RESPONSE_NEED_BADGE` (2). That is independent of gym HM grants and of `FLAG_GOT_HM*`.
+
+| What | Where |
+|------|--------|
+| Hook | `src/field_move_badge.c` → `PlayerProfile_TestBadgeFlag_hook` @ arm9 `0x02028F98` |
+| Bypass | When caller LR is in `0x02067F87`–`0x0206888B` (field-move checks only), return TRUE |
+| Preserved | Mart badge shelves (`ScrCmd_MartBuy`, LR in field overlay ~`0x023Cxxxx`), TM teach helpers, script/map gates |
+
+**Vanilla per-move badge checks** (pret `field_move.c`; rebases: re-scan arm9 for `bl #0x02028F98` from `FieldMove_Check*`):
+
+| Field move | Vanilla badge | `BADGE_*` index |
+|------------|---------------|-----------------|
+| Rock Smash | Zephyr | 0 |
+| Cut | Hive | 1 |
+| Strength | Plain | 2 |
+| Surf | Fog | 3 |
+| Fly | Storm | 4 |
+| Whirlpool | Glacier | 6 |
+| Waterfall | Rising | 7 |
+| Rock Climb | Earth | 15 |
+
+Flash and Headbutt have **no** `TestBadgeFlag` call in vanilla field-move checks — their gates are script/map-side ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+
+**Test:** new save with `OPENWORLD_TESTING_GRANTS` → Mom HM02 → teach Fly → party menu Fly without Storm Badge; Goldenrod dept mart still gates shelves by badge count; Gym-granted HM (e.g. Cut as 2nd badge) usable without owning that Leader’s vanilla badge flag.
+
+**Out of scope (for now):** `FLAG_GOT_HM02`, Flash dungeon scripts, Surf map tiles, collection-based field HMs ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+
+### Fly map — Kanto destinations (not yet)
+
+**Status: not implemented** — confirmed in-game Sep 2026.
+
+Party-menu Fly works in Johto after the [badge bypass](#field-hm-use-without-per-gym-badge-flags) above. When the player is **physically in Kanto** (e.g. Magnet Train to Saffron), the Fly destination UI still lists **Johto cities only** — no Kanto fly points. Vanilla HGSS likely gates the Kanto Fly map on story progress (**Elite Four clear** and/or **SS Aqua Kanto arrival**); neither applies in the open-world shell yet.
+
+**Target ([World-1](DESIGN-WORLD.md#world-1-world-transportation), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)):** once HM Fly is unlocked, Fly to **visited cities in both regions** without E4 or SS Aqua story prerequisites.
+
+**ROM work (TBD):** find Fly map / flypoint table init (pret `field_move*.c`, flypoint data) and decouple Kanto destination visibility from `gameClear` / SS Aqua flags — or set the minimum story flags on new saves if a lighter hack suffices.
 
 ### Falkner follow-ups (859 / zone_event 365)
 
@@ -707,7 +751,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Toggle:** `OPENWORLD_STARTING_ITEMS` in `include/config.h` (on by default).
 
-**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). Optional commented **`OPENWORLD_STORY_FLAG_SWEEP`** for flag-range bisect ([Story flag range sweep](#story-flag-range-sweep-dev)). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). Party-menu Fly needs **`OPENWORLD_FIELD_MOVES_NO_BADGE_GATE`** ([Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags)). Optional commented **`OPENWORLD_STORY_FLAG_SWEEP`** for flag-range bisect ([Story flag range sweep](#story-flag-range-sweep-dev)). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
 
 **Hook:** Mom downstairs cutscene — scr_seq member **845** (`T20R0201`), script slot **0**.
 
@@ -726,7 +770,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 | Pokégear | `FLAG_GOT_POKEGEAR` + fanfare |
 | Town Map card | `UpgradePokegear(1)` only — **do not** use `town_map` / `WorldMapScreen` (cmd 157); it opens the map UI during `lockall` and softlocks on close |
 | Phone numbers | `register_gear_number` — Mom (0), Elm (1), Oak (2) |
-| HM02 Fly (testing) | `ITEM_HM02` (421) when `OPENWORLD_TESTING_GRANTS` is defined |
+| HM02 Fly (testing) | `ITEM_HM02` (421) when `OPENWORLD_TESTING_GRANTS` is defined; field use via [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags) |
 
 **Starting city / starter (v1 prototype — [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)):**
 

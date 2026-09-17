@@ -580,6 +580,10 @@ arm9 PartyMenu_LearnMoveToSlot 0208254C 3
 arm9 ScrCmd_MartBuy 02048060 1
 #endif
 
+#ifdef OPENWORLD_FIELD_MOVES_NO_BADGE_GATE
+arm9 PlayerProfile_TestBadgeFlag_hook 02028F98 1
+#endif
+
 # expand heal blocked moves
 0012 BattleContext_CheckMoveHealBlocked 02252DF8 1
 

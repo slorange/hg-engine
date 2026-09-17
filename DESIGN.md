@@ -172,12 +172,12 @@ The following are intentionally unresolved.
 - Exact Pokémon Center service list ([World-4](DESIGN-WORLD.md#world-4-pokmon-centers)).
 - Per-mart **tuning** after the first `mart.c` pass ([World-7 § What’s left](DESIGN-WORLD.md#whats-left-to-do)).
 - **Headbutt TM slot**, tutor removal, learnset audit, and badge-gated shop stock for Flash / Headbutt ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)) — vanilla has **no** Headbutt TM.
+- **Kanto Fly map** — enable Kanto fly destinations when visiting Kanto early (Magnet Train / open world); vanilla UI stays Johto-only until likely E4 clear or SS Aqua story ([HACK-NOTES § Fly map](documentation/HACK-NOTES.md#fly-map--kanto-destinations-not-yet)).
 - Clair Dragon's Den: remove trial vs HM-free path ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
 - Trade evolutions without items: Link Cable vs fixed levels ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
-- Whether expanded stone mechanics ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)) ship.
 - Special-trainer roster (Red ~100 / Pikachu buff, E4 first-clear levels) vs badge-tier cap at 80 ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)).
 
-(Deferred systems and addons: [`DESIGN-FUTURE.md`](DESIGN-FUTURE.md) — [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) through [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions).)
+(Deferred systems and addons: [`DESIGN-FUTURE.md`](DESIGN-FUTURE.md) — [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) through [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).)
 
 These questions should remain open until deliberately resolved.
 

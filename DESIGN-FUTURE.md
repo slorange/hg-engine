@@ -21,6 +21,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Encounter stage selection (wild + trainer)](#future-11-encounter-stage-selection-wild--trainer) |
 | [Future-12. Berry economy & distribution](#future-12-berry-economy--distribution) |
+| [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
 
 ---
 
@@ -551,5 +552,42 @@ New global rule: any wild species may hold a berry (species-agnostic). If select
 - Final town assignment per resistance berry
 - Berry Pot growth times/yields (unchanged? What about day/night cycle changes?)
 - Whether to later remove, keep, or repurpose Mom’s resist-berry shop.
+
+---
+
+# Future-13. Expanded stone mechanics
+
+Evolution stones become more flexible for the matching **elemental type** (Fire Stone on Fire-types, Water Stone on Water-types, etc.).
+
+## Pokémon that do not normally evolve with that stone
+
+Using the matching stone **lowers the next natural level-up evolution by ~5 levels** (one step toward the target stage). Exact stacking rules TBD.
+
+Example — Cyndaquil line (natural levels **16** / **36**):
+
+- Stone on Fire-type at **11+** / **31+** instead of waiting for 16 / 36.
+
+Example — Rapidash (natural level **40**):
+
+- Level **40** as today, **or** Fire Stone on Ponyta/Rapidash at **35+**.
+
+## Pokémon that normally evolve by stone only
+
+- **Stone at any level** (keep the classic convenience).
+- **Also** a **high level-up path** without the stone.
+
+| Stage pattern                                     | Stone                       | Level without stone |
+| ------------------------------------------------- | --------------------------- | ------------------- |
+| 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **35**              |
+| 2nd stage, stone-only (e.g. Gloom, Poliwhirl)     | matching stone at any level | **50**              |
+
+## Open design questions
+
+- Exact −5 behaviour: one-time per stage, permanent flag, or repeatable?
+- Dual-types: either type matches, or primary type only?
+- Using a stone on a Pokémon with no evolution in that line — no effect?
+- Interaction with [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) evolution exclusions for generated trainer teams.
+
+Shop availability for stones: [World-7](DESIGN-WORLD.md#world-7-shops).
 
 ---
