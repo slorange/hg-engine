@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Open-world starting city: patch outdoor home doors (Goldenrod / Saffron / Fuchsia).
+"""Open-world starting city: patch outdoor home doors to canonical Mom interior.
 
 Interior member 060 must keep both warps — bedroom 2F links to 1F via warp slot 1
 (anchor 1). Removing the front-door warp shifts indices and breaks the stairs.
@@ -21,10 +21,42 @@ MAP_T20R0201 = 63
 MAP_T25R0801 = 205
 MAP_T11R0501 = 399
 MAP_T08R0401 = 481
+MAP_T22R0401 = 160
+MAP_T23R0201 = 163
+MAP_T27R0401 = 85
+MAP_T26R0301 = 228
+MAP_T28R0201 = 133
+MAP_T30R0301 = 290
+MAP_T24R0801 = 385
+MAP_T01R0101 = 503
+MAP_T02R0201 = 497
+MAP_T03R0601 = 477
+MAP_T04R0301 = 431
+MAP_T05R0301 = 436
+MAP_T07R0701 = 383
+MAP_T06R0401 = 363
 
-GOLDENROD_DOOR = (73, 14, 376, 335, MAP_T25R0801)
-SAFFRON_DOOR = (56, 14, 1323, 242, MAP_T11R0501)
-FUCHSIA_DOOR = (53, 8, 1200, 439, MAP_T08R0401)
+# (zone_event member, warp index, world x, world z, vanilla dest header)
+CITY_DOORS: list[tuple[int, int, int, int, int]] = [
+    (73, 14, 376, 335, MAP_T25R0801),    # Goldenrod
+    (56, 14, 1323, 242, MAP_T11R0501),   # Saffron
+    (53, 8, 1200, 439, MAP_T08R0401),    # Fuchsia
+    (70, 8, 459, 254, MAP_T22R0401),     # Violet
+    (71, 4, 419, 468, MAP_T23R0201),     # Azalea
+    (75, 1, 375, 173, MAP_T27R0401),     # Ecruteak
+    (74, 6, 287, 241, MAP_T26R0301),     # Olivine
+    (72, 7, 167, 335, MAP_T24R0801),     # Cianwood
+    (84, 4, 537, 174, MAP_T28R0201),     # Mahogany
+    (86, 4, 684, 168, MAP_T30R0301),    # Blackthorn
+    (46, 0, 1033, 363, MAP_T01R0101),    # Pallet
+    (47, 1, 1034, 244, MAP_T02R0201),    # Viridian
+    (48, 5, 1037, 111, MAP_T03R0601),    # Pewter
+    (49, 2, 1304, 131, MAP_T04R0301),    # Cerulean
+    (50, 2, 1414, 249, MAP_T05R0301),    # Lavender
+    (52, 6, 1225, 261, MAP_T07R0701),    # Celadon
+    (51, 3, 1301, 309, MAP_T06R0401),    # Vermilion
+]
+
 INTERIOR_EXIT = (60, 0, 3, 10, 60, 1)  # member, warp index, x, z, old header, old anchor
 DYNAMIC_WARP_HEADER = 0xFFF
 DYNAMIC_WARP_ANCHOR = 0x100
@@ -142,30 +174,21 @@ def main(argv: list[str]) -> int:
         print("OPENWORLD_STARTING_ITEMS disabled; skipping start-city zone_event patches")
         return 0
 
-    goldenrod = zone_dir / "2_073"
-    saffron = zone_dir / "2_056"
-    fuchsia = zone_dir / "2_053"
-    interior = zone_dir / "2_060"
-    for path in (goldenrod, saffron, fuchsia, interior):
+    members = {member for member, *_ in CITY_DOORS}
+    members.add(INTERIOR_EXIT[0])
+    for member in sorted(members):
+        path = zone_dir / f"2_{member:03d}"
         if not path.is_file():
             print(f"missing {path}", file=sys.stderr)
             return 1
 
-    m, idx, x, z, old = GOLDENROD_DOOR
-    data = bytearray(goldenrod.read_bytes())
-    patch_city_door_warp(data, m, idx, x, z, old)
-    goldenrod.write_bytes(data)
+    for member, idx, x, z, old in CITY_DOORS:
+        path = zone_dir / f"2_{member:03d}"
+        data = bytearray(path.read_bytes())
+        patch_city_door_warp(data, member, idx, x, z, old)
+        path.write_bytes(data)
 
-    m, idx, x, z, old = SAFFRON_DOOR
-    data = bytearray(saffron.read_bytes())
-    patch_city_door_warp(data, m, idx, x, z, old)
-    saffron.write_bytes(data)
-
-    m, idx, x, z, old = FUCHSIA_DOOR
-    data = bytearray(fuchsia.read_bytes())
-    patch_city_door_warp(data, m, idx, x, z, old)
-    fuchsia.write_bytes(data)
-
+    interior = zone_dir / "2_060"
     data = bytearray(interior.read_bytes())
     patch_interior_exit_warp(data)
     interior.write_bytes(data)

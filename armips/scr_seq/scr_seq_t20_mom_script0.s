@@ -67,6 +67,20 @@
 .equ MAP_T25, 76
 .equ MAP_T11, 59
 .equ MAP_T08, 56
+.equ MAP_T22, 73
+.equ MAP_T23, 74
+.equ MAP_T26, 77
+.equ MAP_T27, 78
+.equ MAP_T24, 75
+.equ MAP_T28, 87
+.equ MAP_T30, 89
+.equ MAP_T01, 49
+.equ MAP_T02, 50
+.equ MAP_T03, 51
+.equ MAP_T04, 52
+.equ MAP_T05, 53
+.equ MAP_T06, 54
+.equ MAP_T07, 55
 
 .equ START_CITY_NEW_BARK, 0
 .equ START_CITY_VIOLET, 1
@@ -91,6 +105,20 @@
 .equ GD_HOME_WARP, 14
 .equ SF_HOME_WARP, 14
 .equ FC_HOME_WARP, 8
+.equ VI_HOME_WARP, 8
+.equ AZ_HOME_WARP, 4
+.equ EC_HOME_WARP, 1
+.equ OL_HOME_WARP, 6
+.equ CI_HOME_WARP, 7
+.equ MH_HOME_WARP, 4
+.equ BT_HOME_WARP, 4
+.equ PA_HOME_WARP, 0
+.equ VR_HOME_WARP, 1
+.equ PW_HOME_WARP, 5
+.equ CE_HOME_WARP, 2
+.equ LA_HOME_WARP, 2
+.equ CD_HOME_WARP, 6
+.equ VM_HOME_WARP, 3
 
 .create "build/t20_mom_script0.bin", 0
     scrcmd_609
@@ -218,15 +246,154 @@ _openworld_pick_city:
     return
 
 _set_home_dynamic_warp:
-    // Home doors wired: Goldenrod (3), Saffron (13), Fuchsia (17).
-    // All other choices (including New Bark) exit to New Bark until wired.
+    // All cities wired except New Bark (0).
+    compare VAR_PLAYER_START_CITY, START_CITY_VIOLET
+    goto_if_eq _dyn_violet
+    compare VAR_PLAYER_START_CITY, START_CITY_AZALEA
+    goto_if_eq _dyn_azalea
     compare VAR_PLAYER_START_CITY, START_CITY_GOLDENROD
     goto_if_eq _dyn_goldenrod
+    compare VAR_PLAYER_START_CITY, START_CITY_ECRUTEAK
+    goto_if_eq _dyn_ecruteak
+    compare VAR_PLAYER_START_CITY, START_CITY_OLIVINE
+    goto_if_eq _dyn_olivine
+    compare VAR_PLAYER_START_CITY, START_CITY_CIANWOOD
+    goto_if_eq _dyn_cianwood
+    compare VAR_PLAYER_START_CITY, START_CITY_MAHOGANY
+    goto_if_eq _dyn_mahogany
+    compare VAR_PLAYER_START_CITY, START_CITY_BLACKTHORN
+    goto_if_eq _dyn_blackthorn
+    compare VAR_PLAYER_START_CITY, START_CITY_PALLET
+    goto_if_eq _dyn_pallet
+    compare VAR_PLAYER_START_CITY, START_CITY_VIRIDIAN
+    goto_if_eq _dyn_viridian
+    compare VAR_PLAYER_START_CITY, START_CITY_PEWTER
+    goto_if_eq _dyn_pewter
+    compare VAR_PLAYER_START_CITY, START_CITY_CERULEAN
+    goto_if_eq _dyn_cerulean
     compare VAR_PLAYER_START_CITY, START_CITY_SAFFRON
     goto_if_eq _dyn_saffron
+    compare VAR_PLAYER_START_CITY, START_CITY_LAVENDER
+    goto_if_eq _dyn_lavender
+    compare VAR_PLAYER_START_CITY, START_CITY_CELADON
+    goto_if_eq _dyn_celadon
+    compare VAR_PLAYER_START_CITY, START_CITY_VERMILION
+    goto_if_eq _dyn_vermilion
     compare VAR_PLAYER_START_CITY, START_CITY_FUCHSIA
     goto_if_eq _dyn_fuchsia
     goto _dyn_new_bark
+_dyn_cianwood:
+    setvar VAR_TEMP_x4000, MAP_T24
+    setvar VAR_TEMP_x4001, CI_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_mahogany:
+    setvar VAR_TEMP_x4000, MAP_T28
+    setvar VAR_TEMP_x4001, MH_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_blackthorn:
+    setvar VAR_TEMP_x4000, MAP_T30
+    setvar VAR_TEMP_x4001, BT_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_pallet:
+    setvar VAR_TEMP_x4000, MAP_T01
+    setvar VAR_TEMP_x4001, PA_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_viridian:
+    setvar VAR_TEMP_x4000, MAP_T02
+    setvar VAR_TEMP_x4001, VR_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_pewter:
+    setvar VAR_TEMP_x4000, MAP_T03
+    setvar VAR_TEMP_x4001, PW_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_cerulean:
+    setvar VAR_TEMP_x4000, MAP_T04
+    setvar VAR_TEMP_x4001, CE_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_lavender:
+    setvar VAR_TEMP_x4000, MAP_T05
+    setvar VAR_TEMP_x4001, LA_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_celadon:
+    setvar VAR_TEMP_x4000, MAP_T07
+    setvar VAR_TEMP_x4001, CD_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_vermilion:
+    setvar VAR_TEMP_x4000, MAP_T06
+    setvar VAR_TEMP_x4001, VM_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_azalea:
+    setvar VAR_TEMP_x4000, MAP_T23
+    setvar VAR_TEMP_x4001, AZ_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_ecruteak:
+    setvar VAR_TEMP_x4000, MAP_T27
+    setvar VAR_TEMP_x4001, EC_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_olivine:
+    setvar VAR_TEMP_x4000, MAP_T26
+    setvar VAR_TEMP_x4001, OL_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
+_dyn_violet:
+    setvar VAR_TEMP_x4000, MAP_T22
+    setvar VAR_TEMP_x4001, VI_HOME_WARP
+    setvar VAR_TEMP_x4002, 0
+    setvar VAR_TEMP_x4003, 0
+    setvar VAR_TEMP_x4004, DIR_NORTH
+    set_dynamic_warp VAR_TEMP_x4000, VAR_TEMP_x4001, VAR_TEMP_x4002, VAR_TEMP_x4003, VAR_TEMP_x4004
+    return
 _dyn_fuchsia:
     setvar VAR_TEMP_x4000, MAP_T08
     setvar VAR_TEMP_x4001, FC_HOME_WARP

@@ -6,7 +6,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 ### New game & starting experience
 
-- **Starting city** — choose New Bark, Goldenrod, or Saffron in Mom’s cutscene (before starter pick); dynamic home exit warp to chosen city.
+- **Starting city** — choose from **18 cities** (Johto + Kanto) in Mom’s cutscene (before starter pick); dynamic home exit warp to your chosen city’s outdoor door; re-enter that door for the same Mom interior.
 - **Starter selection** — 12-option text menu in Mom’s cutscene (gens 1–4 starters); not vanilla 3-ball UI.
 - **Shortened Professor Oak intro** dialogue.
 - **Mom’s grants** at intro — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, **5 Poké Balls**, Pokégear, Town Map card, Mom/Oak/Elm phone numbers; **`FLAG_UNK_09A` (154)** so marts sell Poké Balls without Route 29 tutorial.
@@ -25,7 +25,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 ### Wild encounters
 
-- **Distance-based level caps** — wild levels depend on how far the current area is from your **chosen starting city** (same distance table supports all 18 planned start cities; the in-game city picker is still a 3-city PoC).
+- **Distance-based level caps** — wild levels depend on how far the current area is from your **chosen starting city** (18-city menu index matches the distance table).
 - **Level rolls** — most encounters sit near the area cap; when the cap is high enough, there is a **15%** chance for a low “early route” band instead of a fully scaled level.
 - **Stage and moves** — wild species and moves match the rolled level (including evolutions you would expect at that level).
 - **Special evolution lines in the wild** — trade-, stone-, and similar lines can appear as their evolved forms at authored level thresholds in encounters (player evolution rules unchanged).

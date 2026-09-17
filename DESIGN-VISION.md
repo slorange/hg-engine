@@ -95,11 +95,11 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 # Vision-3. Starting Location and Pokémon
 
-**Status: PARTIALLY IMPLEMENTED** — twelve-starter menu verified in-game; **18-city list decided** for Wilds-2 distance matrix; Mom menu still **3-city PoC** until expanded ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Status: PARTIALLY IMPLEMENTED** — **18-city menu** and **17 home doors** verified in-game (Sep 2026); twelve-starter menu verified; New Bark door swap and displaced-house story still open ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
 
 ## Starting city
 
-**Status: PARTIALLY IMPLEMENTED**
+**Status: IMPLEMENTED** — 18-city Mom menu; home-door wiring for all cities except New Bark (vanilla door). [KB-3](DESIGN.md#index-5-known-bugs) remains for non-home player houses.
 
 The player chooses their starting city from locations throughout Johto and Kanto.
 
@@ -128,7 +128,7 @@ The player chooses their starting city from locations throughout Johto and Kanto
 | 17    | Fuchsia City   | Kanto  |
 
 
-**In-game picker (current ROM):** New Bark, Goldenrod, and Saffron only — expand to the full table above with per-city home doors ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
+**In-game picker:** full table above (index **0–17** = menu choice = Wilds-2 distance row). Outdoor home doors patched via `tools/patch_zone_event_start_city.py` ([HACK-NOTES § Open-world starting inventory](documentation/HACK-NOTES.md)).
 
 
 ### Home / house wiring (v1 approach)
@@ -140,7 +140,7 @@ Not a simple “redirect the house exit.” Each city needs a **designated outdo
 
 **Interior swap (preferred v1 strategy):** keep **one canonical player house interior** (Mom, grants, PC) for all starts. The chosen city’s outdoor “home” door warps into it; leaving home returns to that outdoor door. The **displaced vanilla house** in that city should become what New Bark’s player-house door leads into when the player did **not** start in New Bark — so the old New Bark house does not replay Mom’s cutscene.
 
-Goldenrod and Saffron home doors verified in-game (Sep 2026). **New Bark door swap** when start ≠ New Bark is deferred — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). Wrong interior on other cities’ player houses: [KB-3](DESIGN.md#index-5-known-bugs). Wiring recipe: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
+All **17 non–New-Bark home doors** verified in-game (Sep 2026). **New Bark door swap** when start ≠ New Bark is deferred — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). Wrong interior on other cities’ **non-home** player houses: [KB-3](DESIGN.md#index-5-known-bugs). Wiring recipe: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
 
 ## Starter selection
 
@@ -165,7 +165,7 @@ Long-term options (any non-legendary, curated pools, location-specific pools) re
 
 Flow runs **after Professor Oak / name / gender**. Player still wakes in **player house 2F (bedroom)** regardless of chosen city, walks downstairs, and Mom’s cutscene runs:
 
-1. **City picker** — 18 cities decided ([Starting city](#starting-city)); **3** in the current ROM (PoC).
+1. **City picker** — 18 cities ([Starting city](#starting-city)).
 2. **Starter picker** (12 options) — same Mom cutscene; bedroom wake stays vanilla.
 3. **Mom grants** (bag, Pass, Pokédex, shoes, etc.) — same cutscene, after starter pick.
 4. **Exit** — player walks out the front door to the chosen city (no post-cutscene teleport).

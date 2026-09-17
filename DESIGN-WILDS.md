@@ -108,7 +108,7 @@ Three independent inputs:
 
 # Wilds-2. Starting-City Distance-Based Wild Level Caps
 
-**Status: IMPLEMENTED (near complete)** — distance caps verified in-game (Sep 2026). Remaining gaps: Safari Zone, Bug Catching Contest, roamers/scripted wilds, 18-city start menu wiring, balance tuning.
+**Status: IMPLEMENTED (near complete)** — distance caps verified in-game (Sep 2026). Remaining gaps: Safari Zone, Bug Catching Contest, roamers/scripted wilds, balance tuning.
 
 **Decision:** distance-from-start-city caps ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)) replace badge-guard / encounter-tile wild **level** progression. The alternative ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) wild gating) is **not pursued** for general wild levels; World-2 remains for HM/Flash/League and optional hard zones only.
 
@@ -180,7 +180,7 @@ levelCap = 57 × route_distance / max_route_distance + 3
 - `route_distance` — shortest graph distance from the chosen starting city to the encounter area.
 - `max_route_distance` — farthest reachable distance for that starting city on the same graph.
 - Integer division; at distance **0** → cap **3**; at max distance → cap **60**.
-- **PoC starting city:** Mom menu stores the choice; ROM still maps **3 menu options** to New Bark / Goldenrod / Saffron table rows until the full 18-city picker ships.
+- **Starting city:** Mom menu stores Vision-3 index **0–17** in `VAR_PLAYER_START_CITY`; used directly as the Wilds-2 table row.
 
 ### Future level-cap overrides (not in PoC)
 

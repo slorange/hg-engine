@@ -16,6 +16,27 @@ MAP_T20R0201 = 63
 DYNAMIC_WARP_HEADER = 0xFFF
 DYNAMIC_WARP_ANCHOR = 0x100
 
+# (label, member, warp index, x, z)
+EXPECTED_DOORS: list[tuple[str, int, int, int, int]] = [
+    ("Goldenrod", 73, 14, 376, 335),
+    ("Saffron", 56, 14, 1323, 242),
+    ("Fuchsia", 53, 8, 1200, 439),
+    ("Violet", 70, 8, 459, 254),
+    ("Azalea", 71, 4, 419, 468),
+    ("Ecruteak", 75, 1, 375, 173),
+    ("Olivine", 74, 6, 287, 241),
+    ("Cianwood", 72, 7, 167, 335),
+    ("Mahogany", 84, 4, 537, 174),
+    ("Blackthorn", 86, 4, 684, 168),
+    ("Pallet", 46, 0, 1033, 363),
+    ("Viridian", 47, 1, 1034, 244),
+    ("Pewter", 48, 5, 1037, 111),
+    ("Cerulean", 49, 2, 1304, 131),
+    ("Lavender", 50, 2, 1414, 249),
+    ("Celadon", 52, 6, 1225, 261),
+    ("Vermilion", 51, 3, 1301, 309),
+]
+
 
 def openworld_enabled() -> bool:
     text = CONFIG.read_text(encoding="utf-8")
@@ -31,11 +52,7 @@ def parse_zone_event(data: bytes):
     (warp_count,) = struct.unpack_from("<I", data, pos)
     pos += 4
     warps = [struct.unpack_from("<HHHHHH", data, pos + i * 12) for i in range(warp_count)]
-    pos += warp_count * 12
-    (coord_count,) = struct.unpack_from("<I", data, pos)
-    pos += 4
-    coords = [struct.unpack_from("<8H", data, pos + i * 16) for i in range(coord_count)]
-    return warps, coords
+    return warps
 
 
 def main() -> None:
@@ -43,28 +60,24 @@ def main() -> None:
         print("ok: OPENWORLD_STARTING_ITEMS off (start-city patches skipped)")
         return
 
-    goldenrod = ZONE_DIR / "2_073"
-    saffron = ZONE_DIR / "2_056"
-    fuchsia = ZONE_DIR / "2_053"
-    interior = ZONE_DIR / "2_060"
     vanilla_interior = ROOT / "build/a032_vanilla/2_060"
-    for path in (goldenrod, saffron, fuchsia, interior, vanilla_interior):
+    needed = {member for _, member, _, _, _ in EXPECTED_DOORS}
+    needed.add(60)
+    for member in sorted(needed):
+        path = ZONE_DIR / f"2_{member:03d}"
         if not path.is_file():
             raise SystemExit(f"missing {path}; rebuild zone_event first")
+    if not vanilla_interior.is_file():
+        raise SystemExit("missing build/a032_vanilla/2_060; rebuild zone_event first")
 
-    wx, wz, header, _, _, _ = parse_zone_event(goldenrod.read_bytes())[0][14]
-    if (wx, wz, header) != (376, 335, MAP_T20R0201):
-        raise SystemExit(f"Goldenrod home door warp wrong: {(wx, wz, header)}")
+    for label, member, idx, x, z in EXPECTED_DOORS:
+        warps = parse_zone_event((ZONE_DIR / f"2_{member:03d}").read_bytes())
+        wx, wz, header, _, _, _ = warps[idx]
+        if (wx, wz, header) != (x, z, MAP_T20R0201):
+            raise SystemExit(f"{label} home door warp wrong: {(wx, wz, header)}")
 
-    wx, wz, header, _, _, _ = parse_zone_event(saffron.read_bytes())[0][14]
-    if (wx, wz, header) != (1323, 242, MAP_T20R0201):
-        raise SystemExit(f"Saffron home door warp wrong: {(wx, wz, header)}")
-
-    wx, wz, header, _, _, _ = parse_zone_event(fuchsia.read_bytes())[0][8]
-    if (wx, wz, header) != (1200, 439, MAP_T20R0201):
-        raise SystemExit(f"Fuchsia home door warp wrong: {(wx, wz, header)}")
-
-    warps, _ = parse_zone_event(interior.read_bytes())
+    interior = ZONE_DIR / "2_060"
+    warps = parse_zone_event(interior.read_bytes())
     if len(warps) != 2:
         raise SystemExit(f"interior 060 must keep 2 warps, got {len(warps)}")
 
@@ -79,7 +92,7 @@ def main() -> None:
     if (stair_wx, stair_wz, stair_hdr, stair_anc) != (3, 3, 64, 0):
         raise SystemExit(f"interior stairs warp 1 wrong: {(stair_wx, stair_wz, stair_hdr, stair_anc)}")
 
-    print("ok: outdoor home doors patched; interior exit dynamic; stairs intact")
+    print(f"ok: {len(EXPECTED_DOORS)} outdoor home doors patched; interior exit dynamic; stairs intact")
 
 
 if __name__ == "__main__":
