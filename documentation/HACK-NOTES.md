@@ -39,6 +39,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Route 4 hiker boost | [Route 4 ledge boost](#route-4-ledge-boost-cerulean--mt-moon) |
 | Jasmine medicine | [Olivine Secret Medicine (Jasmine)](#olivine-secret-medicine-jasmine) |
 | Mart inventories | [Mart expansion (`src/field/mart.c`)](#mart-expansion-srcfieldmartc) |
+| Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
@@ -1029,6 +1030,51 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 **Scr_seq wiring:** each map’s mart script sets `VAR_SPECIAL_x8004` to the index expected by the engine hook (Olivine **10** → `sOlivineMart` — see [Olivine Secret Medicine](#olivine-secret-medicine-jasmine)). When adding a new list, repoint the script constant and rebuild.
 
 **Verify:** build ROM → sample Goldenrod/Celadon dept floors (both clerks), one town specialty mart, badge-gated 2F shelf at 0 vs 8 badges.
+
+---
+
+## Game Corner TM prizes
+
+**Design:** [World-5 § Game Corner TMs](../DESIGN-WORLD.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
+
+International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlGameCornerPrizeMap` table from pret’s `scrcmd_dppl_prizes.c`). Each prize block embeds an item id and a coin cost. Submenus: **6 TMs + Cancel**, **4 held items + Cancel**, **3 Pokémon + Cancel** (Pokémon menus still vanilla).
+
+| Corner | Map | scr_seq member | Text bank |
+| ------ | --- | -------------- | --------- |
+| **Goldenrod** prize clerks | `T25SP0101` | **910** (`2_910`) | **603** (`data/text/603.txt`) — TM menu lines **15–20** (indices 14–19) |
+| **Celadon** prize clerks | `T07R0501` (dept store 5F) | **804** (`2_804`) | **509** (`data/text/509.txt`) — TM menu lines **24–29** |
+
+**Not** the Voltorb Flip floor (`T07SP0101` → scr_seq **806**).
+
+### TM lists
+
+| Corner | TMs (menu order) |
+| ------ | ---------------- |
+| Goldenrod | TM05, TM75, TM44, TM46, TM90, TM92 |
+| Celadon | TM58, TM32, TM10, TM49, TM67, TM82 |
+
+| Corner | Held items (menu order) |
+| ------ | ----------------------- |
+| Goldenrod | Bright Powder, Quick Claw, Wide Lens, Metronome |
+| Celadon | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
+
+**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut until [World-5 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented) ships; restore tiered costs when coin income is decided.
+
+### Files
+
+| File | Role |
+| ---- | ---- |
+| `tools/patch_scr_seq_game_corner.py` | Ordered `u16` item-id and coin-cost patches in `2_910` / `2_804` after vanilla extract |
+| `scripts/build/verify_game_corner_patch.py` | Patched item ids and coin costs at each fixed offset |
+| `data/text/603.txt`, `data/text/509.txt` | Prize menu labels (`ROAR`, `FURY CUTTER`, …) |
+
+**Build:** wired in `narcs.mk` after gym scr_seq patches.
+
+**Verify in-game:** Coin Case → Goldenrod Game Corner → right-hand clerk → TM and held-item submenus; Celadon dept store 5F prize clerk → same. Pokémon submenu still vanilla.
+
+**Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-5 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented).
+
+**Changing TMs later:** edit replacement tables in `patch_scr_seq_game_corner.py`, update menu strings in the text banks (keep `{CURSOR_X …}` padding if renaming), rebuild.
 
 ---
 

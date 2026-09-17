@@ -44,6 +44,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 - **Mart redesign** — under `MART_EXPANSION`, `src/field/mart.c` replaces most healing/potion and X-item shelves with **status berries**, **EV power items**, and **vitamins + Rare Candy / PP Up / PP Max** at Goldenrod and Celadon dept stores.
 - **Renewable TMs** — Celadon dept TM floor and Goldenrod 5F sell fixed TM sets (see [World-7](DESIGN-WORLD.md#world-7-shops)).
+- **Game Corner prizes** — Goldenrod and Celadon coin-exchange **TM** and **held-item** menus retargeted per [World-5](DESIGN-WORLD.md#game-corner-tms). All prizes temporarily cost **50 Coins** (playtest shortcut until coin income ships).
 - **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, **TM70 (Flash)**, and late-game gear by **badge count** (not vanilla potion progression).
 - **Town specialty marts** — evolution stones, trade evo held items, and type-resist berries at themed cities (e.g. Moon Stone at Mt. Moon Square, stones/items per city table in design docs).
 - **Olivine** — Secret Medicine remains on the **second** clerk; first clerk uses the badge shelf only.

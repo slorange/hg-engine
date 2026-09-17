@@ -722,6 +722,8 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_932
 	$(PYTHON) tools/patch_scr_seq_gym_jasmine.py $(SCR_SEQ_DIR)/2_913
 	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_913
+	$(PYTHON) tools/patch_scr_seq_game_corner.py $(SCR_SEQ_DIR)/2_910 $(SCR_SEQ_DIR)/2_804
+	$(PYTHON) scripts/build/verify_game_corner_patch.py $(SCR_SEQ_DIR)/2_910 $(SCR_SEQ_DIR)/2_804
 	$(NARCHIVE) create $@ $(SCR_SEQ_DIR) -nf
 
 # for convenience, rebuild SCR_SEQ_NARC every build so that DSPRE changes are not overwritten

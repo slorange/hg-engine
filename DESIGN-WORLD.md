@@ -204,7 +204,7 @@ Other useful trainer services can be added as systems develop.
 
 # World-5. TMs
 
-**Status: DECIDED — core release target.** Renewable hub TM shelves are **implemented** in `src/field/mart.c` ([World-7 § What we’ve done](DESIGN-WORLD.md#what-weve-done)); Game Corner / rare overworld TMs unchanged.
+**Status: DECIDED — core release target.** Renewable hub TM shelves are **implemented** in `src/field/mart.c` ([World-7 § What we’ve done](DESIGN-WORLD.md#what-weve-done)); **Game Corner TM menus implemented** ([HACK-NOTES § Game Corner TM prizes](documentation/HACK-NOTES.md#game-corner-tm-prizes)); rare overworld TMs unchanged.
 
 TMs remain **consumable**.
 
@@ -222,12 +222,36 @@ Available from shops — see [World-7](DESIGN-WORLD.md#world-7-shops) (major hub
 
 ## Game Corner TMs
 
-Coin prizes at the department-store Game Corners (renewable once implemented in prize data / scripts):
+Coin prizes at the department-store Game Corners (renewable — implemented in scr_seq + text banks; see [HACK-NOTES § Game Corner TM prizes](documentation/HACK-NOTES.md#game-corner-tm-prizes)):
 
 | Location | TM pool |
 | -------- | ------- |
 | **Goldenrod Game Corner** | TM05, TM44, TM46, TM75, TM90, TM92 |
 | **Celadon Game Corner** | TM10, TM32, TM49, TM58, TM67, TM82 |
+
+**Held items** (implemented with TMs above):
+
+| Location | Items |
+| -------- | ----- |
+| **Goldenrod Game Corner** | Bright Powder, Quick Claw, Wide Lens, Metronome |
+| **Celadon Game Corner** | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
+
+### Coin income (not implemented)
+
+**Temporary pricing:** all Game Corner TM, held-item, and Pokémon prizes cost **50 Coins** until proper coin income and tiered pricing ship. This is a playtest shortcut only — not the long-term economy.
+
+Prize menus are wired; **earning Coins is still vanilla** — international HGSS replaced slot machines with **Voltorb Flip** on the Game Corner floor (`T25SP0101` / `T07SP0101`). That minigame is **not** the intended long-term coin grind for this rom.
+
+**Requirement:** add at least one **renewable, low-friction** way to obtain Coins without playing Voltorb Flip, so Game Corner TMs stay a practical source alongside dept-store shelves.
+
+**Not decided yet (pick one or combine):**
+
+- **Buy Coins for ¥** — clerk at Goldenrod / Celadon Game Corner or dept store (exchange rate TBD).
+- **Dept-store Coin counter** — same prize clerks also sell Coin bundles.
+- **Restore a simpler casino game** — if technically feasible; slots were removed from non-JP HGSS.
+- **Battle / trainer payout** — small Coin bonus from trainer wins (needs economy tuning vs [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) money policy).
+
+Until this ships, Game Corner TMs are technically buyable but **Coin income is the bottleneck**.
 
 ## Rare / overworld TMs
 
@@ -383,7 +407,8 @@ Themed Evolution items, held items, resist berries:
 
 **Implementation**
 
-- **Game Corner** — wire [World-5 Game Corner TM lists](DESIGN-WORLD.md#game-corner-tms) into prize data / scripts (Goldenrod & Celadon).
+- ~~**Game Corner TM + held-item menus**~~ — **done** ([HACK-NOTES § Game Corner TM prizes](documentation/HACK-NOTES.md#game-corner-tm-prizes)); Pokémon submenu still vanilla.
+- **Game Corner Coin income** — alternative to Voltorb Flip ([World-5 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)); not investigated.
 - **Gym TM choice** — Leader pools + per-TM badge gates + pick-one UI ([World-5 § Gym TMs](DESIGN-WORLD.md#gym-tms)); scripts still grant one fixed TM ([HACK-NOTES](documentation/HACK-NOTES.md) § Gym Leader HM rewards).
 - **Link Cable** on hub shelves when trade-evolution substitute ships ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
 - **Headbutt TM** slot and badge-gated shop row alongside Flash ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)).
