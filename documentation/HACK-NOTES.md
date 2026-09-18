@@ -29,7 +29,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
 | Trainer scaling | [Trainer level scaling](#trainer-level-scaling) |
 | Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies-not-enabled-yet) |
-| Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42](#route-42-reference-verified), [Route 40 / Cianwood](#route-40--cianwood-reference-verified) |
+| Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42](#route-42-reference-verified), [Route 40 / Cianwood](#route-40--cianwood-reference-verified), [Route 31 / Route 45](#route-31--route-45-dark-cave-reference) |
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
 | Story NPC removal | [Removing / skipping story NPCs](#removing--skipping-story-npcs-reusable-recipe) |
 | Mom intro / start city | [Open-world starting inventory](#open-world-starting-inventory-new-saves) → [Starter menu](#starter-selection--not-choose_starter), [Home warps](#home--bidirectional-door--interior-swap) |
@@ -636,6 +636,29 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 **Fee:** $200. **Sprite:** fishing NPC (`347`).
 
 **Gotcha:** Cianwood text indices are **22–25** (0-based line numbers in `572.txt` after appended ferry lines) — off-by-one here showed “All aboard!” as the offer instead of the fare prompt.
+
+### Route 31 / Route 45 Dark Cave reference
+
+**Goal:** bypass Dark Cave on foot between Violet-side Route 31 and Blackthorn-side Route 45 — one hiker per outdoor cave mouth, full crossing per trip.
+
+| Shore | Map header | zone_event | scr_seq | Text bank | Hiker NPC | Landing after warp | Post-warp facing |
+|-------|------------|------------|---------|-----------|-----------|--------------------|------------------|
+| Route 31 (Violet side) | `MAP_R31` **35** | **032** | **230** slot **6** (scriptId **7**) | **378** msgs **16–19** | obj **9** `(566, 270)` + Quagsire **10** `(567, 270)` | Route 45 `(650, 199)` | `DIR_SOUTH` |
+| Route 45 (Blackthorn side) | `MAP_R45` **47** | **044** | **258** slot **5** (scriptId **6**) | **405** msgs **3–6** | obj **15** `(649, 199)` + Quagsire **16** `(648, 199)` | Route 31 `(565, 270)` | `DIR_SOUTH` |
+
+| File | Role |
+|------|------|
+| `armips/scr_seq/scr_seq_r31_ferry_r45.s` | Route 31 → Route 45 warp |
+| `armips/scr_seq/scr_seq_r45_ferry_r31.s` | Route 45 → Route 31 warp |
+| `tools/patch_scr_seq_r31_ferry.py` / `tools/patch_scr_seq_r45_ferry.py` | Append ferry scripts to members **230** / **258** |
+| `tools/patch_zone_event_r31_ferry.py` / `tools/patch_zone_event_r45_ferry.py` | Shore hiker NPCs |
+| `data/text/378.txt` / `data/text/405.txt` | Offer / accept / decline / no-money lines |
+
+**Fee:** $200. **Sprite:** hiker `SPRITE_MOUNT_2` (**333**).
+
+**Companion Pokémon:** use static NPC prop tags (**994–1050**), not follower sprite IDs. Lapras **1023** and Quagsire **1050** reuse species overworld gfx from `pokemonow.narc` with `OVERWORLD_SIZE_SMALL` in `overworld_table.c`. Follower tag **626** (Quagsire) **crashes map load** as a zone_event object.
+
+**Gotcha:** Route 31 msg indices are **16–19** in `378.txt` (append after vanilla line 17 / index 16).
 
 ### Debug helpers (keep using these)
 

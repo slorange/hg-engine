@@ -107,6 +107,7 @@ Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) 
 | Magnet Train (Goldenrod ↔ Saffron) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
 | Route 42 paid ferry | Verified | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
 | Route 40 ↔ Cianwood paid ferry | Verified | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
+| Route 31 ↔ Route 45 Dark Cave paid ferry | Implemented | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
 | Route 4 ledge boost ($100 hiker) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
 | Route 29→46 gate (2 badges) | PoC | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) — template only |
 | Route 36 Sudowoodo removed | Verified after re-enter — [first-visit bug](DESIGN.md#index-5-known-bugs) | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
