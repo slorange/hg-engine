@@ -138,13 +138,6 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 | Whirlpool / Waterfall / Strength story gates on routes and dungeons | Badge-count unlock | Replace with badge checks or remove where travel must stay open |
 | Flash / Headbutt tutor & story acquisition | Unlocked via Gym badge order + collection field use ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) | Remove or skip vanilla tutor gates and Flash/Headbutt quest NPCs |
 
-## Interior / warp leftovers (starting city)
-
-| Vanilla content | Why obsolete | Cleanup |
-|-----------------|--------------|---------|
-| New Bark player-house door when start ≠ New Bark | Should enter **displaced** interior, not Mom cutscene | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) — not started; same warp class as [KB-3](DESIGN.md#index-5-known-bugs) |
-| Goldenrod / Saffron displaced house interiors | Outdoor door now warps to canonical Mom house | Vanilla NPCs inside old interiors may confuse players — strip or redirect |
-
 ## How to use this section
 
 - When a feature in [Index-2](DESIGN.md#index-2-current-technical-baseline) or [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) is marked **verified**, check whether vanilla duplicates belong here.

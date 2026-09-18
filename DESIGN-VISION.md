@@ -95,11 +95,11 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 # Vision-3. Starting Location and Pokémon
 
-**Status: PARTIALLY IMPLEMENTED** — **18-city menu** and **17 home doors** verified in-game (Sep 2026); twelve-starter menu verified; New Bark door swap and displaced-house story still open ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Status: PARTIALLY IMPLEMENTED** — **18-city menu**, **12-starter menu**, and **Mom exit → start city** verified in-game (Sep 2026). Outdoor home-door routing (steps 2–4 below) not complete; see [Home wiring (four steps)](#home-wiring-four-steps).
 
 ## Starting city
 
-**Status: IMPLEMENTED** — 18-city Mom menu; home-door wiring for all cities except New Bark (vanilla door). [KB-3](DESIGN.md#index-5-known-bugs) remains for non-home player houses.
+**Status: IMPLEMENTED** — 18-city Mom menu; `VAR_PLAYER_START_CITY` drives wild level caps and Mom’s dynamic exit warp.
 
 The player chooses their starting city from locations throughout Johto and Kanto.
 
@@ -128,19 +128,23 @@ The player chooses their starting city from locations throughout Johto and Kanto
 | 17    | Fuchsia City   | Kanto  |
 
 
-**In-game picker:** full table above (index **0–17** = menu choice = Wilds-2 distance row). Outdoor home doors patched via `tools/patch_zone_event_start_city.py` ([HACK-NOTES § Open-world starting inventory](documentation/HACK-NOTES.md)).
+**In-game picker:** full table above (index **0–17** = menu choice = Wilds-2 distance row). Mom interior exit patched via `tools/patch_zone_event_start_city.py` ([HACK-NOTES § Open-world starting inventory](documentation/HACK-NOTES.md)).
 
 
-### Home / house wiring (v1 approach)
+### Home wiring (four steps)
 
-Not a simple “redirect the house exit.” Each city needs a **designated outdoor door** that is “home” in both directions:
+Bidirectional “home” needs four warp behaviours per save. Canonical interior stays **`T20R0201`** (Mom, grants, PC upstairs).
 
-1. **Exit from home interior** → chosen city’s outdoor door tile.
-2. **Enter that outdoor door** → same home interior (Mom, grants, PC upstairs).
+| Step | Direction | Requirement | Status |
+| ---- | --------- | ----------- | ------ |
+| **1** | Leave Mom interior | Front door → **chosen start city’s** outdoor home door tile | **Complete** — dynamic exit warp + Mom `_set_home_dynamic_warp` |
+| **2** | Enter start city’s outdoor home door | That door → **Mom interior (header 63)** | **Attempted, rolled back** — mass `zone_event` patch + RAM hook caused map-load crashes; see HACK-NOTES |
+| **3** | Enter New Bark player-house door (when start ≠ New Bark) | → **displaced** vanilla interior for start city (not Mom cutscene) | **Not started** |
+| **4** | Leave that displaced interior | → **New Bark outdoor** door tile | **Not started** |
 
-**Interior swap (preferred v1 strategy):** keep **one canonical player house interior** (Mom, grants, PC) for all starts. The chosen city’s outdoor “home” door warps into it; leaving home returns to that outdoor door. The **displaced vanilla house** in that city should become what New Bark’s player-house door leads into when the player did **not** start in New Bark — so the old New Bark house does not replay Mom’s cutscene.
+**Planned v2 for step 2:** leave outdoor doors **vanilla** in ROM; on map load, patch **only the start city’s** home-door warp header to 63 (same timing as step 1, no mass revert loop). Steps 3–4 likely need a similar targeted runtime or interior-side pattern.
 
-All **17 non–New-Bark home doors** verified in-game (Sep 2026). **New Bark door swap** when start ≠ New Bark is deferred — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). Wrong interior on other cities’ **non-home** player houses: [KB-3](DESIGN.md#index-5-known-bugs). Wiring recipe: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
+Displaced-interior NPC/story cleanup: [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). Wiring recipe and rollback notes: `documentation/HACK-NOTES.md` § **Home = bidirectional door + interior swap**.
 
 ## Starter selection
 

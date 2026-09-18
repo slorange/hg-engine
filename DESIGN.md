@@ -101,7 +101,7 @@ Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) 
 | Feature | Status | Design ref |
 | ------- | ------ | ---------- |
 | Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
-| Starting city picker (18 cities; 17 home doors wired) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) — [KB-3](DESIGN.md#index-5-known-bugs) for wrong interior on non-home player houses |
+| Starting city picker (18 cities; home doors + runtime routing) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
 | Starter pick (12-option menu, gens 1–4) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
 | Dev-only testing grants (e.g. Fly from Mom) | Implemented | Disable before release — see HACK-NOTES |
 | Magnet Train (Goldenrod ↔ Saffron) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
@@ -169,7 +169,7 @@ Docker remains the known-good build path.
 The following are intentionally unresolved.
 
 - Exact starter system — **v1 twelve-option menu implemented**; long-term pools TBD.
-- **New Bark door swap** when start city ≠ New Bark (displaced interior); **KB-3** — non-home player houses in other cities still warp to Mom interior ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon), [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
+- Displaced-interior **story/NPC cleanup** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — home-door warps route correctly; vanilla scripts inside old houses may still confuse players.
 - Exact Pokémon Center service list ([World-4](DESIGN-WORLD.md#world-4-pokmon-centers)).
 - Per-mart **tuning** after the first `mart.c` pass ([World-7 § What’s left](DESIGN-WORLD.md#whats-left-to-do)).
 - **Game Corner Coin source** — replace or supplement Voltorb Flip ([World-5 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)); exchange rate / UI TBD.
@@ -204,7 +204,7 @@ When a bug is fixed, remove its row here and note the fix in [`CHANGELOG.md`](CH
 | ID | Symptom | Notes |
 | -- | ------- | ----- |
 | **KB-1** | **Route 36 Sudowoodo** still blocks the road the **first** time you enter the route after load. Leaving and re-entering hides the tree as intended. | Hide flag runs on map load (`scr_seq_R36_010` / `FLAG_HIDE_ROUTE_36_SUDOWOODO`); object visibility likely applies one visit late. Recipe: `documentation/HACK-NOTES.md` § **Remove Sudowoodo block (Route 36)**. |
-| **KB-3** | **Wrong home interior** — entering a city’s player house when that city is **not** your starting city still warps to the **canonical Mom house** (starting interior) instead of that city’s displaced vanilla interior. | Related design: [Vision-3 home wiring](DESIGN-VISION.md#vision-3-starting-location-and-pokémon). Goldenrod/Saffron “home” doors intentionally use the canonical interior; other cities’ houses should not. Recipe: `documentation/HACK-NOTES.md` § [Home = bidirectional door + interior swap](documentation/HACK-NOTES.md#home--bidirectional-door--interior-swap). |
+
 ### Monitoring (tentatively resolved)
 
 | ID | Former symptom | Notes |

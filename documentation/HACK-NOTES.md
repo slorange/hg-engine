@@ -775,14 +775,14 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Starting city / starter (v1 — [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)):**
 
-**Status: verified in-game (Sep 2026)** — **18-city menu**; **17 outdoor home doors** patched (all except New Bark, which uses vanilla door). City pick → Mom cutscene → walk out front door → chosen city; re-enter home door → Mom interior; exit again. Stairs bedroom ↔ 1F intact.
+**Status (Sep 2026):** **18-city menu**, **12-starter menu**, and **step 1 exit** verified in-game. Outdoor home-door routing (**Vision-3 steps 2–4**) not complete — step 2 was attempted twice and rolled back; see [Home = bidirectional door + interior swap](#home--bidirectional-door--interior-swap).
 
 | Step | When | What |
 |------|------|------|
 | 1 | Mom cutscene, before starter menu | **18-city** `ListLocalText` (Vision-3 index **0–17**) → `VAR_PLAYER_START_CITY` (**0x4031**) → `_set_home_dynamic_warp` |
 | 2 | Same cutscene | Starter **12-option text menu** → `give_mon` (not `choose_starter`) → `FLAG_GOT_STARTER` |
 | 3 | Same cutscene | Mom grants (bag, Pokédex, Pass, etc.) — **no post-cutscene teleport** |
-| 4 | Walk to front door **(3, 10)** on 1F | Dynamic exit warp → outdoor home door in chosen city |
+| 4 | Walk to front door **(3, 10)** on 1F | Dynamic exit warp → outdoor home door in chosen city (**Vision-3 step 1 — works**) |
 
 **Menu index = Wilds-2 table row** (direct lookup in `src/wild_level_caps.c`; no PoC remap).
 
@@ -824,42 +824,60 @@ Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/s
 
 ### Home = bidirectional door + interior swap
 
-Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Per-city **outdoor door** warps in; **dynamic warp** handles exit.
+Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Four warp behaviours per save ([Vision-3 four steps](../DESIGN-VISION.md#home-wiring-four-steps)):
 
-**Home doors** (`tools/patch_zone_event_start_city.py` → `CITY_DOORS`; outdoor warp dest → header **63**). `_set_home_dynamic_warp` in Mom script **845** must use matching **outdoor map header + warp index**.
+| Step | Direction | Status |
+|------|-----------|--------|
+| **1** | Mom interior → start city outdoor door | **Complete** — dynamic exit (below) |
+| **2** | Start city outdoor door → Mom interior | **Rolled back** — see [Outdoor entrance attempts](#outdoor-entrance-attempts-rolled-back) |
+| **3** | New Bark door → displaced interior (start ≠ New Bark) | **Not started** |
+| **4** | Displaced interior → New Bark outdoor | **Not started** |
 
-| Idx | City | zone_event | warp | (x, z) | Outdoor hdr | Dynamic exit |
-|-----|------|------------|------|--------|-------------|--------------|
-| 0 | New Bark | **057** | 1 | (695, 396) | 60 | map **60**, warp **1** |
-| 1 | Violet | **070** | 8 | (459, 254) | 73 | map **73**, warp **8** |
-| 2 | Azalea | **071** | 4 | (419, 468) | 74 | map **74**, warp **4** |
-| 3 | Goldenrod | **073** | 14 | (376, 335) | 76 | map **76**, warp **14** |
-| 4 | Ecruteak | **075** | 1 | (375, 173) | 78 | map **78**, warp **1** |
-| 5 | Olivine | **074** | 6 | (287, 241) | 77 | map **77**, warp **6** |
-| 6 | Cianwood | **072** | 7 | (167, 335) | 75 | map **75**, warp **7** |
-| 7 | Mahogany | **084** | 4 | (537, 174) | 87 | map **87**, warp **4** |
-| 8 | Blackthorn | **086** | 4 | (684, 168) | 89 | map **89**, warp **4** |
-| 9 | Pallet | **046** | 0 | (1033, 363) | 49 | map **49**, warp **0** |
-| 10 | Viridian | **047** | 1 | (1034, 244) | 50 | map **50**, warp **1** |
-| 11 | Pewter | **048** | 5 | (1037, 111) | 51 | map **51**, warp **5** |
-| 12 | Cerulean | **049** | 2 | (1304, 131) | 52 | map **52**, warp **2** |
-| 13 | Saffron | **056** | 14 | (1323, 242) | 59 | map **59**, warp **14** |
-| 14 | Lavender | **050** | 2 | (1414, 249) | 53 | map **53**, warp **2** |
-| 15 | Celadon | **052** | 6 | (1225, 261) | 55 | map **55**, warp **6** |
-| 16 | Vermilion | **051** | 3 | (1301, 309) | 54 | map **54**, warp **3** |
-| 17 | Fuchsia | **053** | 8 | (1200, 439) | 56 | map **56**, warp **8** |
+**Designated home doors** (reference for Mom `_set_home_dynamic_warp` and future step 2/3). Outdoor doors stay **vanilla** in ROM as of Sep 2026 rollback.
+
+| Idx | City | zone_event | warp | (x, z) | Outdoor hdr | Vanilla interior hdr |
+|-----|------|------------|------|--------|-------------|----------------------|
+| 0 | New Bark | **057** | 1 | (695, 396) | 60 | **63** (Mom — vanilla) |
+| 1 | Violet | **070** | 8 | (459, 254) | 73 | 160 |
+| 2 | Azalea | **071** | 4 | (419, 468) | 74 | 163 |
+| 3 | Goldenrod | **073** | 14 | (376, 335) | 76 | 205 |
+| 4 | Ecruteak | **075** | 1 | (375, 173) | 78 | 85 |
+| 5 | Olivine | **074** | 6 | (287, 241) | 77 | 228 |
+| 6 | Cianwood | **072** | 7 | (167, 335) | 75 | 385 |
+| 7 | Mahogany | **084** | 4 | (537, 174) | 87 | 133 |
+| 8 | Blackthorn | **086** | 4 | (684, 168) | 89 | 290 |
+| 9 | Pallet | **046** | 0 | (1033, 363) | 49 | 503 |
+| 10 | Viridian | **047** | 1 | (1034, 244) | 50 | 497 |
+| 11 | Pewter | **048** | 5 | (1037, 111) | 51 | 477 |
+| 12 | Cerulean | **049** | 2 | (1304, 131) | 52 | 431 |
+| 13 | Saffron | **056** | 14 | (1323, 242) | 59 | 399 |
+| 14 | Lavender | **050** | 2 | (1414, 249) | 53 | 436 |
+| 15 | Celadon | **052** | 6 | (1225, 261) | 55 | 383 |
+| 16 | Vermilion | **051** | 3 | (1301, 309) | 54 | 363 |
+| 17 | Fuchsia | **053** | 8 | (1200, 439) | 56 | 481 |
 
 Goldenrod: NE house by Flower Shop (**not** Friendship Checker / `T25R0301`). Saffron: Copycat house warp **14** (**not** warp 7 / `T11R0801`).
 
+#### Step 1 — Mom exit (verified; keep as-is)
+
 **Verified working pattern (do not simplify):**
 
-1. **Outdoor doors only** — patch each row in **`CITY_DOORS`** destination header to **63** (`tools/patch_zone_event_start_city.py`).
-2. **Interior 060 warp slot 0** — change **(3, 10)** from `hdr=60, anchor=1` to **`hdr=0xFFF (4095), anchor=0x100 (256)`**. Keep warp slot **1** `(3,3)→64` untouched (stairs).
-3. **Mom script 0** — after city pick, `set_dynamic_warp` using **`VAR_TEMP_x4000`–`x4004`** (cmd **240** reads all five args via `ScriptGetVar`, not literals).
-4. **No post-cutscene `warp`** — player walks to the door.
-5. **No coord script at (3, 10)** and **no removing warp slot 0** — both break stairs (black void) or misfire.
+1. **Interior 060 warp slot 0** — change **(3, 10)** from `hdr=60, anchor=1` to **`hdr=0xFFF (4095), anchor=0x100 (256)`**. Keep warp slot **1** `(3,3)→64` untouched (stairs). Patched by `tools/patch_zone_event_start_city.py`.
+2. **Mom script 0** — after city pick, `set_dynamic_warp` using **`VAR_TEMP_x4000`–`x4004`** (cmd **240** reads all five args via `ScriptGetVar`, not literals). `_set_home_dynamic_warp` must match **outdoor map header + warp index** from table above.
+3. **No post-cutscene `warp`** — player walks to the door.
+4. **No coord script at (3, 10)** and **no removing warp slot 0** — both break stairs (black void) or misfire.
 
 **Engine reference (pret `field/field_control.c`):** warp with `anchor == 0x100` and `header == 0xFFF` uses `LocalFieldData.dynamicWarp`. Vanilla examples: zone_event **396–402** (elevator exits).
+
+#### Outdoor entrance attempts (rolled back)
+
+**v1 (Sep 2026, rolled back):** patch all **17** non–New-Bark outdoor home doors in `zone_event` to header **63** via `tools/patch_zone_event_start_city.py` (`CITY_DOORS`). Every door entered Mom’s house; wrong for non-start cities but proved the door table and Mom exit wiring.
+
+**v2 (Sep 2026, rolled back):** add ARM9 hook after `Field_InitMapEvents` to rewrite warp headers in **RAM** on map load — start city door → **63**; other cities → vanilla interior header; New Bark door when start ≠ New Bark → start city’s vanilla interior. Files were `armips/asm/start_city_home_warp_hook.s`, `start_city_home_warp_data.s`, `scripts/build/patch_field_init_map_events_hook.py`. **Map-load crashes** (`Undefined instruction` at `0x0203C108`, then `0x020537FC`) — Thumb/ARM interworking and register/stack bugs in the hook; never verified in-game.
+
+**After rollback:** deleting the patch script does **not** unpatch `base/arm9.bin`. The hook wrote a `bl` over `0x02052FD2` on each build; incremental `make` reuses cached `base/` until `rom.nds` is newer. Fix: **`rm -rf base && make -j24`** (full re-extract from `rom.nds`). Check: `python scripts/local/_check_arm9_hook_gone.py`.
+
+**Planned v3 (not implemented):** leave outdoor doors **vanilla** in ROM (current state). On map load, patch **only the start city’s** home-door warp header to **63** — same *timing* as step 1, without mass-patching and reverting 16 doors. Steps 3–4 (New Bark ↔ displaced interior) still open.
 
 ### Failed approaches (save future dev time)
 
@@ -872,10 +890,10 @@ Goldenrod: NE house by Flower Shop (**not** Friendship Checker / `T25R0301`). Sa
 | New Bark door coord script / remove static warp | Cascading wrong warps, black screen |
 | `FLAG_OPENWORLD_HOME_EXIT` gate on exit | False premise — Mom does not walk player onto door tile |
 | scr_seq exit script + removed warp 0 | Same reindex bug as row 1 |
+| Patch all outdoor doors → 63 + RAM revert loop | Inverted design; hook crashes on map load; rolled back |
+| `Field_InitMapEvents` mid/tail hook in overlay 129 | Overlay overlap / wrong thunk address; abandoned early |
 
-**Deferred:** New Bark door → displaced interior when start city ≠ New Bark; Copycat/swap-house story scripts.
-
-**Known bug [KB-3](../DESIGN.md#index-5-known-bugs):** player houses in cities other than your start (and non–home-door entries) can still warp to the canonical Mom interior instead of the displaced vanilla house.
+**Deferred:** Copycat/swap-house story scripts inside displaced interiors.
 
 **Build / verify:**
 
@@ -886,11 +904,11 @@ python scripts/dev/verify_start_city_patch.py
 # repack test.nds
 ```
 
-**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`), `tools/patch_zone_event_start_city.py` (`CITY_DOORS` + interior **060**), `tools/patch_scr_seq_start_city.py` (no-op placeholder), `scripts/dev/verify_start_city_patch.py`, `scripts/dev/verify_t20_mom_patch.py`, `data/text/545.txt`, `armips/include/vars.s`. Init header **618** stays vanilla.
+**Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`), `tools/patch_zone_event_start_city.py` (interior **060** exit only), `scripts/dev/verify_start_city_patch.py`, `scripts/dev/verify_t20_mom_patch.py`, `data/text/545.txt`, `armips/include/vars.s`. Init header **618** stays vanilla.
 
 **Bedroom starter:** not used — bedroom scr_seq **846** stays vanilla (**no** `choose_starter`, no OnTransition starter hook). All starter picking is in **Mom script 0** only.
 
-**Change a home door:** recon in `build/a032_vanilla` (member, warp index, x/z, old header) → update **`CITY_DOORS`** + **`EXPECTED_DOORS`** in verify script + **`_set_home_dynamic_warp`** branch + warp constant in Mom script. Verify **060** still has exactly 2 warps.
+**Change a home door:** recon in `build/a032_vanilla` (member, warp index, x/z, vanilla header) → update **`EXPECTED_DOORS`** in verify script + **`_set_home_dynamic_warp`** branch + warp constant in Mom script. Verify **060** still has exactly 2 warps.
 
 **Dialogue:** Mom intro greet **545** strings **0–1**. Post-cutscene talk still uses vanilla Elm errand strings until [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Cutscene skips bag/card/save/options `npc_msg`s; fanfares + flags unlock touch menu.
 
