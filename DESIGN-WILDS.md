@@ -171,15 +171,15 @@ Exact weighting should be tuned after generating and inspecting the distance mat
 
 Normal wild encounters use the cap + [Wilds-1 level distribution](#level-distribution). Roamers, Safari, and most scripted wilds are unchanged — see table above.
 
-Player badge level caps run up to **70–80** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use a lower ceiling (**3–60**) for balance:
+Player badge level caps run up to **70–80** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use a lower ceiling (**5–60**) for balance:
 
 ```
-levelCap = 57 × route_distance / max_route_distance + 3
+levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5
 ```
 
 - `route_distance` — shortest graph distance from the chosen starting city to the encounter area.
 - `max_route_distance` — farthest reachable distance for that starting city on the same graph.
-- Integer division; at distance **0** → cap **3**; at max distance → cap **60**.
+- Integer division; at distance **0–1** → cap **5** (starter town + first connected routes); at max distance → cap **60**.
 - **Starting city:** Mom menu stores Vision-3 index **0–17** in `VAR_PLAYER_START_CITY`; used directly as the Wilds-2 table row.
 
 ### Future level-cap overrides (not in PoC)

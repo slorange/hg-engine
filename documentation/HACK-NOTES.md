@@ -1118,7 +1118,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 Build-time cap per `(starting city, encounter area id)`:
 
 ```
-levelCap = 57 × route_distance / max_route_distance + 3   // caps in [3, 60]
+levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5   // caps in [5, 60]
 ```
 
 - **Graph data:** `scripts/dev/Route Levels/connections.txt`, `starting_cities.txt`
@@ -1130,7 +1130,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 
 **Start city var:** Mom menu sets `VAR_PLAYER_START_CITY` (**0x4031**) to Vision-3 index **0–17**; `ResolveStartCityIndex` uses it directly as the Wilds-2 table row (`src/wild_level_caps.c`).
 
-**Example (Saffron start):** Route 37 → **29**, Violet → **29**, Route 31 → **36**, Dark Cave → **49**, Route 30 → **43**.
+**Example (Saffron start):** Route 37 → **23**, Violet → **23**, Route 31 → **29**, Dark Cave → **35**, Route 30 → **35**. **Example (Pallet start):** Route 1 → **5** (distance 0–1 both cap at starter floor).
 
 ### Runtime pipeline
 

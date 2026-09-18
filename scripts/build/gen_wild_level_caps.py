@@ -17,9 +17,9 @@ ENCOUNTER_TABLES_H = ROOT / "include/constants/encounter_tables.h"
 OUT_C = ROOT / "src/wild_level_caps_data.c"
 OUT_H = ROOT / "include/constants/generated/wild_level_caps.h"
 
-WILD_LEVEL_MIN = 3
+WILD_LEVEL_MIN = 5
 WILD_LEVEL_MAX = 60
-WILD_LEVEL_NUMERATOR = WILD_LEVEL_MAX - WILD_LEVEL_MIN  # 57
+WILD_LEVEL_NUMERATOR = WILD_LEVEL_MAX - WILD_LEVEL_MIN  # 55
 
 
 def load_starting_cities(path: Path) -> list[str]:
@@ -87,6 +87,9 @@ def parse_max_encounter_area_id(path: Path) -> int:
 
 
 def compute_level_cap(distance: int, max_distance: int) -> int:
+    """levelCap = 55 * max(0, d-1) / (max_d-1) + 5; caps in [5, 60]."""
+    distance -= 1
+    max_distance -= 1
     if distance < 0 or max_distance <= 0:
         return WILD_LEVEL_MIN
     if distance >= max_distance:
