@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Append Route 44 rod guru script to scr_seq member 257 (slot 3 / scriptId 4).
-
-See documentation/HACK-NOTES.md § "Fishing Rod guru NPCs".
-"""
+"""Patch Blackthorn → Route 44 ferry script into scr_seq member 941."""
 
 from __future__ import annotations
 
@@ -15,15 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 ARMIPS = ROOT / "tools/armips"
 PYTHON = ROOT / ".venv/bin/python"
 ROM = ROOT / "rom.nds"
-MEMBER_INDEX = 257
+MEMBER_INDEX = 941
 VANILLA_MEMBER = ROOT / f"build/a012_vanilla/2_{MEMBER_INDEX:03d}"
 PATCH_SOURCES = [
-    (ROOT / "armips/scr_seq/scr_seq_r44_rod_guru.s", ROOT / "build/r44_rod_guru.bin"),
-    (ROOT / "armips/scr_seq/scr_seq_r44_ferry_t30.s", ROOT / "build/r44_ferry_t30.bin"),
+    (ROOT / "armips/scr_seq/scr_seq_t30_ferry_r44.s", ROOT / "build/t30_ferry_r44.bin"),
 ]
-VANILLA_SCRIPT_COUNT = 3
-ROD_GURU_SLOT = 3
-FERRY_SLOT = 4
+
+VANILLA_SCRIPT_COUNT = 17
+FERRY_SLOT = 17
 MAX_HEALTHY_SIZE = 8192
 MAX_TABLE_SCAN = 512
 
@@ -92,10 +88,12 @@ def load_vanilla_member() -> bytearray:
     if not ROM.is_file():
         raise FileNotFoundError(f"missing {ROM} and {VANILLA_MEMBER}")
 
-    vanilla_narc = ROOT / "build/vanilla_rom_root/a/0/1/2"
+    vanilla_root = ROOT / "build/vanilla_rom_root"
+    vanilla_narc = vanilla_root / "a/0/1/2"
     if not vanilla_narc.is_file():
         raise FileNotFoundError(f"extract vanilla scr_seq first ({vanilla_narc})")
 
+    out_dir = ROOT / "build/a012_vanilla"
     py = str(PYTHON if PYTHON.is_file() else sys.executable)
     subprocess.check_call(
         [
@@ -104,7 +102,7 @@ def load_vanilla_member() -> bytearray:
             "extract",
             str(vanilla_narc),
             "-o",
-            str(ROOT / "build/a012_vanilla"),
+            str(out_dir),
             "-nf",
         ],
         cwd=ROOT,
@@ -114,19 +112,9 @@ def load_vanilla_member() -> bytearray:
     return bytearray(VANILLA_MEMBER.read_bytes())
 
 
-def validate_patch_body(body: bytes) -> None:
-    sys.path.insert(0, str(ROOT / "scripts" / "build"))
-    from rod_guru_patch_checks import ValueExit, validate_rod_guru_body
-
-    try:
-        validate_rod_guru_body(body, "rod guru patch")
-    except ValueExit as exc:
-        raise ValueError(str(exc)) from exc
-
-
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
-        print(f"usage: {argv[0]} <build/a012/2_{MEMBER_INDEX:03d}>", file=sys.stderr)
+        print(f"usage: {argv[0]} <build/a012/2_941>", file=sys.stderr)
         return 1
 
     target = Path(argv[1])
@@ -134,30 +122,29 @@ def main(argv: list[str]) -> int:
         print(f"missing {target}", file=sys.stderr)
         return 1
 
-    PATCH_SOURCES[0][1].parent.mkdir(parents=True, exist_ok=True)
     for asm, out in PATCH_SOURCES:
         subprocess.check_call([str(ARMIPS), str(asm)])
-        patch = out.read_bytes()
-        if not patch:
-            raise ValueError(f"empty patch blob {out}")
-    validate_patch_body(PATCH_SOURCES[0][1].read_bytes())
+        if not out.is_file():
+            print(f"missing {out}", file=sys.stderr)
+            return 1
 
     vanilla = load_vanilla_member()
+    ferry_patch = PATCH_SOURCES[0][1].read_bytes()
+
     scripts = extract_scripts(vanilla)
     if len(scripts) != VANILLA_SCRIPT_COUNT:
         raise ValueError(f"expected {VANILLA_SCRIPT_COUNT} vanilla scripts, got {len(scripts)}")
 
-    for _, out in PATCH_SOURCES:
-        scripts.append(out.read_bytes())
-
+    scripts.append(ferry_patch)
     data = build_scr_seq(scripts, scrdef_word(vanilla))
+
     if len(data) > MAX_HEALTHY_SIZE:
         raise ValueError(f"patched scr_seq member is unexpectedly large ({len(data)} bytes)")
 
     target.write_bytes(data)
     print(
-        "Route 44 rod guru + ferry scripts patched into "
-        f"{target} ({len(data)} bytes, scriptIds {ROD_GURU_SLOT + 1}, {FERRY_SLOT + 1})"
+        "Blackthorn ferry script patched into "
+        f"{target} ({len(data)} bytes, scriptId {FERRY_SLOT + 1})"
     )
     return 0
 

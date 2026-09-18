@@ -5,3 +5,7 @@ You’ve caught lots of Water\nPokémon! You earned this Good Rod.
 Impressive! You really know the water.\nTake this Super Rod. You’ve earned it.
 If you catch {STRVAR_1 52, 0, 0} more types of fish,\nI’ll have something for you.
 You’ve got all my rods already.\nGood luck out there!
+I’ll guide you through the Ice Path\n for $200.
+All aboard to Blackthorn!\nHang on tight!
+Maybe next time, then.
+You don’t have $200 on you.

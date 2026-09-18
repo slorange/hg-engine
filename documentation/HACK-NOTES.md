@@ -677,6 +677,27 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 
 **Fee:** $200. **Sprites:** hiker **333** (`SPRITE_MOUNT_2`); Rhydon **1020** (vanilla static slot in `overworld_table.c`).
 
+### Blackthorn / Route 44 (Ice Path bypass) reference
+
+**Goal:** paid outdoor warp between Blackthorn City and Route 44 — bypasses walking through Ice Path without editing any Ice Path maps.
+
+| Shore | Map header | zone_event | scr_seq | Text bank | Hiker NPC | Landing after warp | Post-warp facing |
+|-------|------------|------------|---------|-----------|-----------|--------------------|------------------|
+| Blackthorn City | `MAP_T30` **89** | **086** | **941** slot **17** (scriptId **18**) | **629** msgs **15–18** | obj **10** `(692, 166)` + Piloswine **11** `(693, 166)` | Route 44 `(626, 171)` | `DIR_SOUTH` |
+| Route 44 (bridge) | `MAP_R44` **46** | **043** | **257** slot **4** (scriptId **5**) | **404** msgs **7–10** | obj **16** `(627, 170)` + Piloswine **17** `(626, 170)` | Blackthorn `(691, 166)` | `DIR_SOUTH` |
+
+| File | Role |
+|------|------|
+| `armips/scr_seq/scr_seq_t30_ferry_r44.s` | Blackthorn → Route 44 warp |
+| `armips/scr_seq/scr_seq_r44_ferry_t30.s` | Route 44 → Blackthorn warp |
+| `tools/patch_scr_seq_t30_ferry.py` / `tools/patch_scr_seq_r44_rod_guru.py` | Append ferry to **941** / rebuild **257** (rod guru + ferry) |
+| `tools/patch_zone_event_t30_ferry.py` / `tools/patch_zone_event_r44_ferry.py` | Shore hiker + Piloswine NPCs |
+| `data/text/629.txt` / `data/text/404.txt` | Offer / accept / decline / no-money lines |
+
+**Fee:** $200. **Sprites:** hiker **333**; Piloswine **1051** (registered in `overworld_table.c` like Quagsire **1050**).
+
+**ID gotchas:** map header **89** ≠ zone_event **086** (Olivine-class). Walkable Route 44 is zone_event **043**, not pret **`046_R44`** (Ice Path junction chunk). Rod guru stays obj **15** on **043**; ferry uses **16–17**.
+
 ### Debug helpers (keep using these)
 
 | Script | Purpose |

@@ -369,6 +369,7 @@ struct OVERWORLD_TAG gOWTagToFileNum[] = // skip down a bit to see the parts tha
         { .tag = 1048, .gfx = MON_OVERWORLD_GFX_START + SPECIES_TYPHLOSION, .callback_params = OVERWORLD_SIZE_SMALL },
         { .tag = 1049, .gfx = MON_OVERWORLD_GFX_START + SPECIES_FERALIGATR, .callback_params = OVERWORLD_SIZE_SMALL },
         { .tag = 1050, .gfx = MON_OVERWORLD_GFX_START + SPECIES_QUAGSIRE, .callback_params = OVERWORLD_SIZE_SMALL },
+        { .tag = 1051, .gfx = MON_OVERWORLD_GFX_START + SPECIES_PILOSWINE, .callback_params = OVERWORLD_SIZE_SMALL },
 
         // pokémon follower specific overworlds start here... left off on gfx 1451 - galarian stunfisk which was inserted after all the others
 

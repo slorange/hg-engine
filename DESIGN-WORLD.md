@@ -51,7 +51,7 @@ Likely only to cities that have already been visited.
 
 ## Paid ferry NPCs
 
-**Status: PARTIALLY IMPLEMENTED** — Route 42, Olivine ↔ Cianwood, Route 31 ↔ Route 45 (Dark Cave), and Route 46 → Route 45 verified; additional ferries planned
+**Status: PARTIALLY IMPLEMENTED** — Route 42, Olivine ↔ Cianwood, Route 31 ↔ Route 45 (Dark Cave), Route 46 → Route 45, and Blackthorn ↔ Route 44 verified; additional ferries planned
 
 **Route 42** (Blackthorn ↔ Mahogany water gaps) is the reference implementation — verified in [Index-2](DESIGN.md#index-2-current-technical-baseline); recipe in `documentation/HACK-NOTES.md`.
 
@@ -61,8 +61,9 @@ Likely only to cities that have already been visited.
 
 **Route 46 → Route 45 (mountain lift)** — hiker + static Rhydon at the south end of Route 46; **$200** one-way paid warp to north Route 45 near Blackthorn. Sep 2026 — see HACK-NOTES § Route 46 → Route 45 reference.
 
+**Blackthorn ↔ Route 44 (Ice Path bypass)** — hikers + static Piloswine companions on Blackthorn outdoors and Route 44 bridge area; **$200** paid warp each way (no Ice Path map edits). Sep 2026 — see HACK-NOTES § Blackthorn / Route 44 reference.
+
 Add more **paid ferry NPCs** (same Route 42 recipe) for:
-- Ice Path
 - Pallet / Cinnabar / Seafoam / Fuchsia
 
 ---
