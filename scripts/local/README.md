@@ -6,4 +6,6 @@ When a script becomes reusable (referenced from `documentation/HACK-NOTES.md` or
 
 Olivine recon leftovers (gitignored): `dump_msg_bank.py`, `_probe_map_header_fields.py` (wrong header layout — use pret `map_headers.h`).
 
+Kanto ferry session leftovers: `dump_vanilla_slot_counts.py`, `find_flag_in_scr_seq.py`.
+
 See `documentation/HACK-NOTES.md` § **Scripts layout**.

@@ -51,7 +51,7 @@ Likely only to cities that have already been visited.
 
 ## Paid ferry NPCs
 
-**Status: PARTIALLY IMPLEMENTED** — Route 42, Olivine ↔ Cianwood, Route 31 ↔ Route 45 (Dark Cave), Route 46 → Route 45, and Blackthorn ↔ Route 44 verified; additional ferries planned
+**Status: PARTIALLY IMPLEMENTED** — Route 42, Olivine ↔ Cianwood, Route 31 ↔ Route 45 (Dark Cave), Route 46 → Route 45, Blackthorn ↔ Route 44, and Kanto coastal mesh implemented; coordinate tuning may be needed in-game
 
 **Route 42** (Blackthorn ↔ Mahogany water gaps) is the reference implementation — verified in [Index-2](DESIGN.md#index-2-current-technical-baseline); recipe in `documentation/HACK-NOTES.md`.
 
@@ -63,8 +63,7 @@ Likely only to cities that have already been visited.
 
 **Blackthorn ↔ Route 44 (Ice Path bypass)** — hikers + static Piloswine companions on Blackthorn outdoors and Route 44 bridge area; **$200** paid warp each way (no Ice Path map edits). Sep 2026 — see HACK-NOTES § Blackthorn / Route 44 reference.
 
-Add more **paid ferry NPCs** (same Route 42 recipe) for:
-- Pallet / Cinnabar / Seafoam / Fuchsia
+**Kanto coastal mesh** — fishermen + static Lapras at Pallet Town south shore, Cinnabar Island beach, Route 20 (Seafoam cave mouth), and Route 19 (south of Fuchsia); **$200** with a **3-destination menu** to any of the other stops (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City). Sep 2026 — see HACK-NOTES § Kanto coastal ferry mesh reference.
 
 ---
 

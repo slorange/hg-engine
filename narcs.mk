@@ -695,7 +695,7 @@ SCR_SEQ_DIR := $(BUILD)/a012
 SCR_SEQ_NARC := $(BUILD_NARC)/scr_seq.narc
 SCR_SEQ_TARGET := $(FILESYS)/a/0/1/2
 SCR_SEQ_DEPENDENCIES_DIR := armips/scr_seq
-SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot2.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot3.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot4.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot5.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_morty_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_jasmine_gym_slot0.s
+SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot2.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot3.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot4.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot5.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_morty_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_jasmine_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/kanto_waters_landings.s
 SCR_SEQ_DEPENDENCIES := $(filter-out $(SCR_SEQ_PATCH_ONLY),$(wildcard $(SCR_SEQ_DEPENDENCIES_DIR)/*.s))
 
 $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
@@ -712,6 +712,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/patch_scr_seq_r44_rod_guru.py $(SCR_SEQ_DIR)/2_257
 	$(PYTHON) scripts/build/verify_r44_rod_guru_patch.py $(SCR_SEQ_DIR)/2_257
 	$(PYTHON) tools/patch_scr_seq_t30_ferry.py $(SCR_SEQ_DIR)/2_941
+	$(PYTHON) tools/patch_scr_seq_kanto_waters_ferry.py $(SCR_SEQ_DIR)/2_735 $(SCR_SEQ_DIR)/2_958 $(SCR_SEQ_DIR)/2_960 $(SCR_SEQ_DIR)/2_961 $(SCR_SEQ_DIR)/2_815
 	$(PYTHON) tools/patch_scr_seq_olivine_rod_guru.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) scripts/build/verify_olivine_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
@@ -742,7 +743,8 @@ ZONE_EVENT_NARC := $(BUILD_NARC)/zone_event.narc
 ZONE_EVENT_TARGET := $(FILESYS)/a/0/3/2
 ZONE_EVENT_DEPENDENCIES_DIR := data/zone_event
 ZONE_EVENT_JSONS := $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/*.json)
-ZONE_EVENT_DEPENDENCIES := tools/zone_event_enc.py $(ZONE_EVENT_JSONS) $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/events/*)
+ZONE_EVENT_PATCH_SCRIPTS := $(wildcard tools/patch_zone_event*.py) scripts/dev/verify_olivine_rod_guru_zone_event.py scripts/dev/verify_start_city_patch.py
+ZONE_EVENT_DEPENDENCIES := tools/zone_event_enc.py tools/extract_zone_event_vanilla.py include/config.h $(ZONE_EVENT_JSONS) $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/events/*) $(ZONE_EVENT_PATCH_SCRIPTS)
 
 $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/extract_zone_event_vanilla.py $(ZONE_EVENT_DIR)
@@ -765,7 +767,9 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r31_ferry.py $(ZONE_EVENT_DIR)/2_032
 	$(PYTHON) tools/patch_zone_event_r45_ferry.py $(ZONE_EVENT_DIR)/2_044
 	$(PYTHON) tools/patch_zone_event_r46_ferry.py $(ZONE_EVENT_DIR)/2_045
+	$(PYTHON) tools/patch_zone_event_kanto_waters_ferry.py $(ZONE_EVENT_DIR)/2_046 $(ZONE_EVENT_DIR)/2_054 $(ZONE_EVENT_DIR)/2_088 $(ZONE_EVENT_DIR)/2_089 $(ZONE_EVENT_DIR)/2_090
 	$(PYTHON) tools/patch_zone_event_start_city.py $(ZONE_EVENT_DIR)
+	$(PYTHON) scripts/dev/verify_start_city_patch.py
 	$(NARCHIVE) create $@ $(ZONE_EVENT_DIR) -nf
 
 .PHONY: $(ZONE_EVENT_NARC)

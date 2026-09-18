@@ -172,6 +172,15 @@ _mom_begin:
     giveitem_no_check ITEM_PASS, 1
     giveitem_no_check ITEM_APRICORN_BOX, 1
     setflag FLAG_GOT_APRICORN_BOX
+    setflag FLAG_UNLOCKED_WEST_KANTO
+    setflag FLAG_UNK_265
+    setflag FLAG_HIDE_ROUTE_19_WORKMEN_CLOSED
+    setflag FLAG_HIDE_ROUTE_19_WORKMEN_OPEN
+    setflag FLAG_MAPTEMP_010
+    setflag FLAG_MAPTEMP_011
+    setflag FLAG_MAPTEMP_012
+    setflag FLAG_MAPTEMP_013
+    setflag FLAG_MAPTEMP_014
 .if OPENWORLD_STORY_FLAG_SWEEP == 1
     setvar VAR_TEMP_x4000, OPENWORLD_STORY_FLAG_SWEEP_START
 _story_flag_sweep:

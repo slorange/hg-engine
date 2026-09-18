@@ -21,6 +21,8 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Route 31 ↔ Route 45 Dark Cave ferry** — hikers + static Quagsire companions outside both cave mouths ($200).
 - **Route 46 → Route 45 ferry** — hiker + static Rhydon at the Route 46 gatehouse end; one-way paid warp to north Route 45 ($200).
 - **Blackthorn ↔ Route 44 ferry** — hikers + static Piloswine companions; paid outdoor warp bypassing Ice Path ($200).
+- **Kanto coastal ferry mesh** — fishermen + Lapras at Pallet Town south shore, Cinnabar Island beach, Seafoam cave mouth, and Route 19 ($200); 3-destination menu (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City labels).
+- **Mom intro** — sets `FLAG_UNLOCKED_WEST_KANTO` and Route 19 shore clearance flags so Fuchsia’s south beach is reachable from the start.
 - **Route 4 ledge boost** — blackbelt + Machoke boost you over the ledge toward Mt. Moon for ¥100.
 - **Route 36** — Sudowoodo roadblock removed (Violet ↔ Goldenrod open at 0 badges). *First visit may still show the tree until you leave and re-enter — [KB-1](DESIGN.md#index-5-known-bugs).*
 - **Route 32** — badge gate south toward Violet removed.

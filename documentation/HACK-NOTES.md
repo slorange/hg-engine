@@ -698,6 +698,52 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 
 **ID gotchas:** map header **89** ≠ zone_event **086** (Olivine-class). Walkable Route 44 is zone_event **043**, not pret **`046_R44`** (Ice Path junction chunk). Rod guru stays obj **15** on **043**; ferry uses **16–17**.
 
+### Kanto coastal ferry mesh reference
+
+**Goal:** four paid water-route stops linked by a **3-choice destination menu** (`ListLocalText` / `AddListOption` / `ShowList`, same UI as Mom’s starter/city pick). Flow: offer → yes/no → $200 → “Where to?” → warp. **Not** a simple pairwise yes/no ferry.
+
+| Stop | Map header | zone_event | scr_seq | msg bank | Fisherman + Lapras | scriptId |
+|------|------------|------------|---------|----------|-------------------|----------|
+| Pallet Town south shore | `MAP_T01` **49** | **046** | **735** slot **8** | **446** msgs **6–13** | obj **3–4** `(1036, 375)` / `(1036, 376)` | **9** |
+| Cinnabar Island beach | `MAP_CINNABAR_ISLAND` **57** | **054** | **815** slot **5** | **519** msgs **22–30** | obj **3–4** `(1030, 503)` / `(1030, 504)` | **6** |
+| Seafoam cave mouth | `MAP_W20` **92** | **089** | **960** slot **2** | **742** msgs **2–9** | obj **12–13** `(1125, 504)` / `(1124, 504)` | **3** |
+| Route 19 (Fuchsia) | `MAP_W19` **91** | **088** | **958** slot **6** | **740** msgs **6–13** | obj **18–19** `(1203, 469)` / `(1203, 470)` | **7** |
+
+**Landing tiles** (shared constants in `armips/scr_seq/kanto_waters_landings.s`):
+
+| Destination | Warp map | Landing `(x, z)` | Facing |
+|-------------|----------|------------------|--------|
+| Pallet Town | `MAP_T01` **49** | `(1037, 375)` | north |
+| Cinnabar Island | `MAP_T09` **57** | `(1031, 503)` | south |
+| Seafoam cave mouth | `MAP_W20` **92** | `(1126, 504)` | north |
+| Route 19 (Fuchsia) | `MAP_W19` **91** | `(1204, 469)` | north |
+
+| File | Role |
+|------|------|
+| `armips/scr_seq/kanto_waters_landings.s` | Shared warp targets, fee, map constants |
+| `armips/scr_seq/scr_seq_t01_kanto_ferry_pallet.s` | Pallet script (→ Cinnabar / Seafoam / Fuchsia) |
+| `armips/scr_seq/scr_seq_t09_kanto_ferry_cinnabar.s` | Cinnabar script (→ Pallet / Seafoam / Fuchsia) |
+| `armips/scr_seq/scr_seq_w19_kanto_ferry.s` | Route 19 script (→ Pallet / Cinnabar / Seafoam) |
+| `armips/scr_seq/scr_seq_w20_kanto_ferry.s` | Route 20 script (→ Pallet / Cinnabar / Fuchsia) |
+| `tools/patch_scr_seq_kanto_waters_ferry.py` | Append scripts to members **735**, **815**, **958**, **960** (+ legacy **961**) |
+| `tools/patch_zone_event_kanto_waters_ferry.py` | Shore fishermen + Lapras on **046**, **054**, **088**, **089** |
+| `data/text/446.txt` / `519.txt` / `740.txt` / `742.txt` | Ferry dialogue + destination labels |
+
+**Fee:** $200. **Sprites:** fisherman **347**; Lapras static OW **1023** (registered in `overworld_table.c`).
+
+**Menu labels:** Pallet Town, Cinnabar Island, Seafoam Island, Fuchsia City (no “Near …” prefix).
+
+**Gotchas:**
+
+- **Map header ID ≠ scr_seq / msg index** — Cinnabar uses zone_event **054** but scr_seq **815** and msg **519** (pret `map_headers.h` row for `MAP_CINNABAR_ISLAND`). Do **not** patch scr_seq member **054** or msg **741** for the beach fisherman.
+- **Blaine shares zone_event 054** — vanilla Blaine (obj **1**, spr **374**) uses scriptId **5** (scr_seq **815** slot **4**, msg **519** line **10**). Ferry fisherman must use scriptId **6** (appended slot **5**). Wrong scriptId shows Blaine post-gym dialogue.
+- **Pallet visible shore** — matrix water chunk **090** / scr_seq **961** is **not** used; ferry NPC lives on land member **046** so the fisherman is visible from town.
+- **Route 21 water NPCs removed** — zone_event **090** no longer hosts ferry objects; scr_seq **961** append is harmless dead code unless a water-side NPC returns.
+- **Seafoam stop** on walkable **089** near east cave warp `(1127, 501)`.
+- **Text bank indexing:** `msgenc` treats every line as an index — split merged strings (Route 19 “All aboard!\nWhere to?” bug) before wiring `npc_msg` indices.
+
+**Route 19 access (Mom intro):** `FLAG_UNLOCKED_WEST_KANTO` alone only affects Route 22 gate dialogue; clearing Fuchsia’s south shore also sets Blaine-equivalent flags in Mom intro: `FLAG_UNK_265`, `FLAG_HIDE_ROUTE_19_WORKMEN_*`, and `FLAG_MAPTEMP_010`–`014` (hide STOP signs, workmen, and rock-smash boulders).
+
 ### Debug helpers (keep using these)
 
 | Script | Purpose |
@@ -706,6 +752,8 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 | `scripts/dev/inspect_scr_seq.py build/a012/2_<NNN>` | script slot offsets |
 | `scripts/dev/dump_scr_seq_slots.py build/a012/2_<NNN>` | slot sizes + bytecode heads |
 | `scripts/dev/verify_scr_seq_patch.py build/a012_vanilla/2_<NNN> build/a012/2_<NNN>` | confirm vanilla slots unchanged |
+| `scripts/dev/scan_scr_seq_msgs.py build/a012/2_<NNN>` | list `npc_msg` indices per script slot |
+| `scripts/dev/extract_msg_banks.py <bank>…` | decode vanilla msg banks from ROM into `data/text/<bank>.txt` |
 | `scripts/dev/decode_r42_objects.py` | quick object field dump (adapt member path) |
 
 Vanilla scr_seq for recovery: `build/a012_vanilla/2_<NNN>` (extracted from `rom.nds` on first patch run).
