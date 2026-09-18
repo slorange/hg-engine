@@ -660,6 +660,23 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 
 **Gotcha:** Route 31 msg indices are **16–19** in `378.txt` (append after vanilla line 17 / index 16).
 
+### Route 46 → Route 45 (one-way mountain lift) reference
+
+**Goal:** one-way paid bypass from lower Route 46 up to north Route 45 near Blackthorn — hiker + Rhydon at the south end of Route 46 only.
+
+| Shore | Map header | zone_event | scr_seq | Text bank | Hiker NPC | Landing after warp | Post-warp facing |
+|-------|------------|------------|---------|-----------|-----------|--------------------|------------------|
+| Route 46 (departure) | `MAP_R46` **48** | **045** | **259** slot **3** (scriptId **4**) | **406** msgs **4–7** | obj **7** `(627, 366)` + Rhydon **8** `(626, 366)` | Route 45 `(663, 199)` | `DIR_NORTH` |
+
+| File | Role |
+|------|------|
+| `armips/scr_seq/scr_seq_r46_ferry_r45.s` | Route 46 → Route 45 warp |
+| `tools/patch_scr_seq_r46_ferry.py` | Append ferry script to member **259** |
+| `tools/patch_zone_event_r46_ferry.py` | Shore hiker + Rhydon NPCs |
+| `data/text/406.txt` | Offer / accept / decline / no-money lines |
+
+**Fee:** $200. **Sprites:** hiker **333** (`SPRITE_MOUNT_2`); Rhydon **1020** (vanilla static slot in `overworld_table.c`).
+
 ### Debug helpers (keep using these)
 
 | Script | Purpose |
@@ -1011,7 +1028,7 @@ python scripts/dev/verify_start_city_patch.py
 
 **Status:** **verified in-game** (Aug 2026). NPC **(1270, 118)** / landing **(1270, 116)** — no coordinate tuning needed.
 
-**Goal:** one-way paid bypass below the Cerulean-side ledge — fisherman boosts you up 2 tiles for **$100** (same flow as Route 42 ferry, single shore).
+**Goal:** one-way paid bypass below the Cerulean-side ledge — blackbelt + Machoke boost you up 2 tiles for **$100** (same flow as Route 42 ferry, single shore).
 
 ### Four IDs (easy to mix up)
 
@@ -1030,9 +1047,10 @@ No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / R
 
 | Constant | Value | File |
 |----------|-------|------|
-| NPC tile | **(1270, 118)** facing **south** (sprite **333** hiker) | `tools/patch_zone_event_r04_boost.py` |
+| NPC tile | **(1270, 118)** facing **south** (sprite **344** blackbelt) | `tools/patch_zone_event_r04_boost.py` |
+| Machoke companion | **(1269, 118)** (sprite **1014** static Machoke) | same |
 | Landing tile | **(1270, 116)** — 2 north of NPC | same + `armips/scr_seq/scr_seq_r04_boost.s` (`LAND_X` / `LAND_Z`) |
-| Object id | **4** | zone_event patch |
+| Object ids | **4** (blackbelt), **5** (Machoke) | zone_event patch |
 | scr_seq slot | **1** → scriptId **2** | scr_seq patch |
 
 ### Files

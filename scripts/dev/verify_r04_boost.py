@@ -12,13 +12,18 @@ ZONE_MEMBER = 9
 SCR_MEMBER = 178
 BOOST_SCRIPT_ID = 2
 BOOST_OBJECT_ID = 4
+MACHOKE_OBJECT_ID = 5
+SPRITE_BLACKBELT = 344
+SPRITE_STATIC_MACHOKE = 1014
 NPC_X = 1270
 NPC_Z = 118
+MACHOKE_X = 1269
+MACHOKE_Z = 118
 LAND_X = 1270
 LAND_Z = 116
 
 
-def zone_objects(data: bytes) -> list[tuple[int, int, int, int]]:
+def zone_objects(data: bytes) -> list[tuple[int, int, int, int, int]]:
     pos = 0
     bg_count = struct.unpack_from("<I", data, pos)[0]
     pos += 4 + bg_count * 20
@@ -27,7 +32,7 @@ def zone_objects(data: bytes) -> list[tuple[int, int, int, int]]:
     out = []
     for _ in range(obj_count):
         vals = struct.unpack_from("<14H", data, pos)
-        out.append((vals[0], vals[5], vals[12], vals[13]))
+        out.append((vals[0], vals[1], vals[5], vals[12], vals[13]))
         pos += 32
     return out
 
@@ -49,17 +54,31 @@ def main() -> int:
         print(f"FAIL: missing {ze}")
         return 1
 
+    objects = zone_objects(ze.read_bytes())
     boost = [
-        o for o in zone_objects(ze.read_bytes()) if o[0] == BOOST_OBJECT_ID and o[1] == BOOST_SCRIPT_ID
+        o for o in objects if o[0] == BOOST_OBJECT_ID and o[2] == BOOST_SCRIPT_ID
     ]
+    machoke = [o for o in objects if o[0] == MACHOKE_OBJECT_ID and o[1] == SPRITE_STATIC_MACHOKE]
     if len(boost) != 1:
         print(f"FAIL: expected one boost object id={BOOST_OBJECT_ID}, found {boost}")
         ok = False
     else:
-        _, _, x, z = boost[0]
-        print(f"OK: zone_event 009 boost NPC at ({x},{z}) scriptId={BOOST_SCRIPT_ID}")
-        if (x, z) != (NPC_X, NPC_Z):
-            print(f"  note: coords differ from default ({NPC_X},{NPC_Z})")
+        _, sprite, _, x, z = boost[0]
+        if sprite != SPRITE_BLACKBELT:
+            print(f"FAIL: boost sprite {sprite}, expected {SPRITE_BLACKBELT}")
+            ok = False
+        else:
+            print(f"OK: zone_event 009 boost blackbelt at ({x},{z}) scriptId={BOOST_SCRIPT_ID}")
+            if (x, z) != (NPC_X, NPC_Z):
+                print(f"  note: coords differ from default ({NPC_X},{NPC_Z})")
+    if len(machoke) != 1:
+        print(f"FAIL: expected one Machoke object id={MACHOKE_OBJECT_ID}, found {machoke}")
+        ok = False
+    else:
+        _, _, _, x, z = machoke[0]
+        print(f"OK: zone_event 009 Machoke companion at ({x},{z})")
+        if (x, z) != (MACHOKE_X, MACHOKE_Z):
+            print(f"  note: coords differ from default ({MACHOKE_X},{MACHOKE_Z})")
 
     sq = ROOT / f"build/a012/2_{SCR_MEMBER}"
     if not sq.is_file():

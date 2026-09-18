@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Add Route 4 paid ledge-boost blackbelt + Machoke to zone_event member 009.
-
-See documentation/HACK-NOTES.md § "Route 4 ledge boost".
-Tune NPC_X/NPC_Z and LAND_X/LAND_Z after in-game positioning.
-"""
+"""Add Route 46 → Route 45 ferry hiker + Rhydon to zone_event member 045."""
 
 from __future__ import annotations
 
@@ -11,27 +7,21 @@ import struct
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-
-# scr_seq slot 1 → scriptId 2 (tools/patch_scr_seq_r04_boost.py).
-BOOST_SCRIPT_ID = 2
-BOOST_OBJECT_ID = 4
-MACHOKE_OBJECT_ID = 5
-
-SPRITE_BLACKBELT = 344
-SPRITE_STATIC_MACHOKE = 1014
-MOVEMENT_STAND = 0
+SPRITE_MOUNT_2 = 333
+SPRITE_STATIC_RHYDON = 1020
+MOVEMENT_STAND = 15
 TYPE_NPC = 0
 FLAG_NOTHING = 0
 
-# Cerulean-side ledge: Sharon (1250,112) is 20 west + 6 north of this tile.
-NPC_X = 1270
-NPC_Z = 118
-MACHOKE_X = 1269
-MACHOKE_Z = 118
-LAND_X = NPC_X
-LAND_Z = NPC_Z - 2
-NPC_FACING = 1  # DIR_SOUTH — pret: 0=north, 1=south, 2=west, 3=east
+FERRY_SCRIPT_ID = 4
+FERRY_OBJECT_ID = 7
+RHYDON_OBJECT_ID = 8
+FACING_NORTH = 0
+
+FERRY_X = 627
+FERRY_Z = 366
+RHYDON_X = 626
+RHYDON_Z = 366
 
 
 def pack_object(
@@ -100,28 +90,28 @@ def object_id(obj: bytes) -> int:
 def patch_member(data: bytearray) -> None:
     bgs, objects, warps, coords = parse_zone_event(data)
 
-    boost_ids = {BOOST_OBJECT_ID, MACHOKE_OBJECT_ID}
-    kept = [obj for obj in objects if object_id(obj) not in boost_ids]
+    ferry_ids = {FERRY_OBJECT_ID, RHYDON_OBJECT_ID}
+    kept = [obj for obj in objects if object_id(obj) not in ferry_ids]
     removed = len(objects) - len(kept)
     if removed:
-        print(f"removed {removed} existing Route 4 boost object(s)")
+        print(f"removed {removed} existing Route 46 ferry object(s)")
 
     new_objects = kept + [
         pack_object(
-            BOOST_OBJECT_ID,
-            SPRITE_BLACKBELT,
-            BOOST_SCRIPT_ID,
-            NPC_FACING,
-            NPC_X,
-            NPC_Z,
+            FERRY_OBJECT_ID,
+            SPRITE_MOUNT_2,
+            FERRY_SCRIPT_ID,
+            FACING_NORTH,
+            FERRY_X,
+            FERRY_Z,
         ),
         pack_object(
-            MACHOKE_OBJECT_ID,
-            SPRITE_STATIC_MACHOKE,
+            RHYDON_OBJECT_ID,
+            SPRITE_STATIC_RHYDON,
             0,
-            NPC_FACING,
-            MACHOKE_X,
-            MACHOKE_Z,
+            FACING_NORTH,
+            RHYDON_X,
+            RHYDON_Z,
         ),
     ]
 
@@ -140,7 +130,7 @@ def patch_member(data: bytearray) -> None:
 
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
-        print(f"usage: {argv[0]} <build/a032/2_009>", file=sys.stderr)
+        print(f"usage: {argv[0]} <build/a032/2_045>", file=sys.stderr)
         return 1
 
     target = Path(argv[1])
@@ -148,16 +138,12 @@ def main(argv: list[str]) -> int:
         print(f"missing {target}", file=sys.stderr)
         return 1
 
-    if target.name != "2_009":
-        print(f"warning: expected zone_event 2_009 (Route 4), got {target.name}", file=sys.stderr)
-
     data = bytearray(target.read_bytes())
     patch_member(data)
     target.write_bytes(data)
     print(
-        f"installed Route 4 boost blackbelt id={BOOST_OBJECT_ID} at ({NPC_X},{NPC_Z}) "
-        f"+ Machoke id={MACHOKE_OBJECT_ID} at ({MACHOKE_X},{MACHOKE_Z}) "
-        f"-> warp ({LAND_X},{LAND_Z}) scriptId={BOOST_SCRIPT_ID} in {target}"
+        f"installed Route 46 ferry at ({FERRY_X}, {FERRY_Z}) + "
+        f"Rhydon at ({RHYDON_X}, {RHYDON_Z}) in {target}"
     )
     return 0
 

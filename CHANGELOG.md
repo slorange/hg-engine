@@ -19,7 +19,8 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Route 42 ferry** — fishermen on both shores; paid warp across the water without Surf.
 - **Route 40 ↔ Cianwood ferry** — fishermen on the Olivine and Cianwood shores ($200); Route 40 Surf gate removed.
 - **Route 31 ↔ Route 45 Dark Cave ferry** — hikers + static Quagsire companions outside both cave mouths ($200).
-- **Route 4 ledge boost** — hiker boosts you over the ledge toward Mt. Moon for ¥100.
+- **Route 46 → Route 45 ferry** — hiker + static Rhydon at the Route 46 gatehouse end; one-way paid warp to north Route 45 ($200).
+- **Route 4 ledge boost** — blackbelt + Machoke boost you over the ledge toward Mt. Moon for ¥100.
 - **Route 36** — Sudowoodo roadblock removed (Violet ↔ Goldenrod open at 0 badges). *First visit may still show the tree until you leave and re-enter — [KB-1](DESIGN.md#index-5-known-bugs).*
 - **Route 32** — badge gate south toward Violet removed.
 - **Mahogany** — Team Rocket arc skipped on load; RageCandyBar salesman no longer blocks Route 44.
