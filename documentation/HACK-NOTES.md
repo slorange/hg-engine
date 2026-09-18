@@ -29,7 +29,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
 | Trainer scaling | [Trainer level scaling](#trainer-level-scaling) |
 | Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies-not-enabled-yet) |
-| Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42 reference](#route-42-reference-verified) |
+| Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42](#route-42-reference-verified), [Route 40 / Cianwood](#route-40--cianwood-reference-verified) |
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
 | Story NPC removal | [Removing / skipping story NPCs](#removing--skipping-story-npcs-reusable-recipe) |
 | Mom intro / start city | [Open-world starting inventory](#open-world-starting-inventory-new-saves) → [Starter menu](#starter-selection--not-choose_starter), [Home warps](#home--bidirectional-door--interior-swap) |
@@ -581,6 +581,8 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
    - **HGSS yes/no:** `0` = Yes, `1` = No → `compare VAR_SPECIAL_RESULT, 1` / `goto_if_eq` decline branch
    - `hasenoughmoneyimmediate` / `submoneyimmediate` for fee
    - `fade_screen` → `warp MAP_<X>, WARP_DOOR, <x>, <z>, DIR_*` → fade in → `releaseall` / `end`
+   - **Warp facing:** the fifth `warp` argument sets **player facing after landing** (`DIR_NORTH=0`, `DIR_SOUTH=1`, `DIR_WEST=2`, `DIR_EAST=3`). Object `facingDirection` in zone_event only affects the NPC sprite until `faceplayer` runs.
+   - **Landing tile:** must be **walkable land** — do not warp onto water or a static Lapras object tile (player can soft-lock). Place landing beside the shore NPC; test both directions in-game.
    - Decline / no-money branches: message + `wait_button_or_walk_away` + `closemsg`
 
 3. **Text** — append lines to the map’s msg bank (`data/text/<bank>.txt`). Reuse indices across ferries on the same map if dialogue is identical. Use curly apostrophe **`’`** (U+2019), not ASCII `'`.
@@ -613,6 +615,27 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 | `data/zone_event/events/event_R42.h` | Ferry slot + object id defs |
 
 **Fee:** $200. **Sprite:** fishing NPC (`347`).
+
+### Route 40 / Cianwood reference (verified)
+
+**Goal:** cross Route 40 ↔ Cianwood without Surf — one fisherman per shore, full crossing per trip. Route 40 Surf gate middleman removed (`tools/patch_zone_event_w40_surf_gate.py`).
+
+| Shore | Map header | zone_event | scr_seq | Text bank | Ferry NPC | Lapras (static `1023`) | Landing after warp | Post-warp facing |
+|-------|------------|------------|---------|-----------|-----------|------------------------|--------------------|------------------|
+| Route 40 (Olivine side) | `MAP_W40` **94** | **091** | **962** slot **10** (scriptId **11**) | **744** msgs **13–16** | obj **7** `(248, 277)` | obj **8** `(248, 278)` | Cianwood `(190, 360)` | `DIR_WEST` (face left / toward town) |
+| Cianwood (east shore) | `MAP_T24` **75** | **072** | **875** slot **16** (scriptId **17**) | **572** msgs **22–25** | obj **12** `(191, 360)` | obj **13** `(192, 360)` | Route 40 `(249, 277)` | `DIR_NORTH` |
+
+| File | Role |
+|------|------|
+| `armips/scr_seq/scr_seq_w40_ferry_cianwood.s` | Route 40 → Cianwood warp |
+| `armips/scr_seq/scr_seq_t24_ferry_route40.s` | Cianwood → Route 40 warp |
+| `tools/patch_scr_seq_w40_ferry.py` / `tools/patch_scr_seq_t24_ferry.py` | Append ferry scripts to members **962** / **875** |
+| `tools/patch_zone_event_w40_ferry.py` / `tools/patch_zone_event_t24_ferry.py` | Shore NPCs + Lapras |
+| `data/text/744.txt` / `data/text/572.txt` | Offer / accept / decline / no-money lines (destination + **$200** in offer; no Lapras mention in dialogue) |
+
+**Fee:** $200. **Sprite:** fishing NPC (`347`).
+
+**Gotcha:** Cianwood text indices are **22–25** (0-based line numbers in `572.txt` after appended ferry lines) — off-by-one here showed “All aboard!” as the offer instead of the fare prompt.
 
 ### Debug helpers (keep using these)
 

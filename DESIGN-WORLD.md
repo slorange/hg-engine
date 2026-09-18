@@ -51,13 +51,14 @@ Likely only to cities that have already been visited.
 
 ## Paid ferry NPCs
 
-**Status: PARTIALLY IMPLEMENTED** — Route 42 verified; additional ferries planned
+**Status: PARTIALLY IMPLEMENTED** — Route 42 and Olivine ↔ Cianwood verified; additional ferries planned
 
 **Route 42** (Blackthorn ↔ Mahogany water gaps) is the reference implementation — verified in [Index-2](DESIGN.md#index-2-current-technical-baseline); recipe in `documentation/HACK-NOTES.md`.
 
+**Route 40 ↔ Cianwood** — fishermen on the Olivine-side Route 40 beach and Cianwood east shore; **$200** paid warp each way; static Lapras companion sprites; Route 40 Surf gate removed. Verified Sep 2026 — see HACK-NOTES § Route 40 / Cianwood reference.
+
 Add more **paid ferry NPCs** (same Route 42 recipe) for:
 
-- Olivine ↔ Cianwood
 - Dark Cave (Blackthorn ↔ Violet)
 - Ice Path
 - Pallet / Cinnabar / Seafoam / Fuchsia
