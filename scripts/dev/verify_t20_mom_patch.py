@@ -24,11 +24,15 @@ GIVE_MON = bytes.fromhex("8900")  # give_mon (cmd 137)
 SHOW_LIST = bytes.fromhex("4700")  # ShowList (cmd 71)
 ADD_LIST_OPTION = bytes.fromhex("4600")  # AddListOption (cmd 70)
 NPC_MSG_CITY = bytes.fromhex("2d0002")  # npc_msg 2 (city prompt)
-NPC_MSG_STARTER = bytes.fromhex("2d0015")  # npc_msg 21 (starter prompt)
+NPC_MSG_GRASS = bytes.fromhex("2d0015")  # npc_msg 21 (grass starter prompt)
+NPC_MSG_FIRE = bytes.fromhex("2d0022")  # npc_msg 34 (fire starter prompt)
+NPC_MSG_WATER = bytes.fromhex("2d0023")  # npc_msg 35 (water starter prompt)
 COPYVAR_START_CITY = bytes.fromhex("2a0031400c80")  # copyvar VAR_PLAYER_START_CITY, VAR_SPECIAL_RESULT
 SET_DYNAMIC_WARP = bytes.fromhex("f000")  # set_dynamic_warp (cmd 240)
 MIN_CITY_LIST_OPTIONS = 18
-MIN_STARTER_LIST_OPTIONS = 12
+MIN_STARTER_LIST_OPTIONS = 12  # 4 per type × 3 types
+MIN_STARTER_MENUS = 3
+MIN_GIVE_MON = 3
 
 
 def has_town_map_call(body: bytes) -> bool:
@@ -81,23 +85,29 @@ def main() -> None:
         raise SystemExit("script 0 missing register_gear_number Elm")
     if REGISTER_GEAR_OAK not in body:
         raise SystemExit("script 0 missing register_gear_number Oak")
-    if GIVE_MON not in body:
-        raise SystemExit("script 0 missing give_mon (open-world starter pick)")
+    if body.count(GIVE_MON) < MIN_GIVE_MON:
+        raise SystemExit(
+            f"script 0 missing give_mon (open-world starter pick; expect {MIN_GIVE_MON})"
+        )
     if NPC_MSG_CITY not in body:
         raise SystemExit("script 0 missing npc_msg 2 (city prompt)")
     if COPYVAR_START_CITY not in body:
         raise SystemExit("script 0 missing copyvar VAR_PLAYER_START_CITY")
     if SET_DYNAMIC_WARP not in body:
         raise SystemExit("script 0 missing set_dynamic_warp after city pick")
-    if body.count(SHOW_LIST) < 2:
-        raise SystemExit("script 0 missing ShowList (city + starter menus)")
+    if body.count(SHOW_LIST) < 1 + MIN_STARTER_MENUS:
+        raise SystemExit("script 0 missing ShowList (city + grass/fire/water starter menus)")
     if body.count(ADD_LIST_OPTION) < MIN_CITY_LIST_OPTIONS + MIN_STARTER_LIST_OPTIONS:
         raise SystemExit(
             f"script 0 missing AddListOption entries "
             f"(expect at least {MIN_CITY_LIST_OPTIONS + MIN_STARTER_LIST_OPTIONS})"
         )
-    if NPC_MSG_STARTER not in body:
-        raise SystemExit("script 0 missing npc_msg 21 (starter prompt)")
+    if NPC_MSG_GRASS not in body:
+        raise SystemExit("script 0 missing npc_msg 21 (grass starter prompt)")
+    if NPC_MSG_FIRE not in body:
+        raise SystemExit("script 0 missing npc_msg 34 (fire starter prompt)")
+    if NPC_MSG_WATER not in body:
+        raise SystemExit("script 0 missing npc_msg 35 (water starter prompt)")
     if config_flag("OPENWORLD_TESTING_GRANTS"):
         if HM02_ITEM_ID not in body:
             raise SystemExit("script 0 missing ITEM_HM02 (421) grant (OPENWORLD_TESTING_GRANTS)")

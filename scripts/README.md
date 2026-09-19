@@ -1,6 +1,6 @@
 # Scripts
 
-Python helpers for hg-engine. See `documentation/HACK-NOTES.md` § **Scripts layout** for the rules agents should follow.
+Python helpers for hg-engine. See `documentation/AGENTS.md` § **Scripts layout** for the rules agents should follow.
 
 | Folder | Purpose |
 |--------|---------|

@@ -95,7 +95,7 @@ Where a route is geographically necessary for travel between cities but cannot r
 
 # Vision-3. Starting Location and Pokémon
 
-**Status: PARTIALLY IMPLEMENTED** — **18-city menu**, **12-starter menu**, and **Mom exit → start city** verified in-game (Sep 2026). Outdoor home-door routing (steps 2–4 below) not complete; see [Home wiring (four steps)](#home-wiring-four-steps).
+**Status: PARTIALLY IMPLEMENTED** — **18-city menu**, **three-type starter pick** (grass / fire / water), and **Mom exit → start city** verified in-game (Sep 2026). Outdoor home-door routing (steps 2–4 below) not complete; see [Home wiring (four steps)](#home-wiring-four-steps).
 
 ## Starting city
 
@@ -161,7 +161,7 @@ Long-term options (any non-legendary, curated pools, location-specific pools) re
 | 9–11  | Turtwig, Chimchar, Piplup       |
 
 
-**Implemented (Sep 2026):** twelve-option **text menu** in the Mom cutscene (not vanilla three-ball `choose_starter`). Species table above. Details: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
+**Implemented (Sep 2026):** three **type menus** (grass / fire / water, four options each) in the Mom cutscene — player receives **one starter per type** (not vanilla three-ball `choose_starter`). Species table above. Details: `documentation/HACK-NOTES.md` § **Open-world starting inventory**.
 
 ## Intro timing (v1)
 
@@ -170,7 +170,7 @@ Long-term options (any non-legendary, curated pools, location-specific pools) re
 Flow runs **after Professor Oak / name / gender**. Player still wakes in **player house 2F (bedroom)** regardless of chosen city, walks downstairs, and Mom’s cutscene runs:
 
 1. **City picker** — 18 cities ([Starting city](#starting-city)).
-2. **Starter picker** (12 options) — same Mom cutscene; bedroom wake stays vanilla.
+2. **Starter picker** (grass / fire / water menus, 4 options each → 3 Pokémon) — same Mom cutscene; bedroom wake stays vanilla.
 3. **Mom grants** (bag, Pass, Pokédex, shoes, etc.) — same cutscene, after starter pick.
 4. **Exit** — player walks out the front door to the chosen city (no post-cutscene teleport).
 

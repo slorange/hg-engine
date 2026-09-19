@@ -2,23 +2,18 @@
 
 Working notes for this fork so we don’t re-discover the text/data layout every session.
 
-**New agent session?** Read **[Git (agents)](#git-agents)** and **[Agents: always build](#agents-always-build-user-does-not)** before changing game files.
+**New agent session?** Read [AGENTS.md](AGENTS.md) (build, git, workflow) before changing game files.
 
 ## Contents
 
-Implementation recipes and reference notes (no design-status column — see [DESIGN.md](../DESIGN.md) for `Vision-*` / `World-*` / `Battle-*` specs). **Known bugs:** [DESIGN.md § Index-5](../DESIGN.md#index-5-known-bugs).
+Implementation recipes and reference notes (no design-status column — see [DESIGN.md](../DESIGN.md) for `Vision-*` / `World-*` / `Battle-*` specs). **Known bugs:** [DESIGN.md § Index-5](../DESIGN.md#index-5-known-bugs). **Agents:** [AGENTS.md](AGENTS.md).
 
 | Topic | Section |
 | ----- | ------- |
-| Agent git rules | [Git (agents)](#git-agents) |
-| Repo script buckets | [Scripts layout](#scripts-layout) |
-| Build expectation | [Agents: always build](#agents-always-build-user-does-not) |
 | Mom dialogue discovery | [Why the Mom line was hard to find](#why-the-mom-line-was-hard-to-find) |
 | Text / msgenc | [How text editing works](#how-text-editing-works) |
 | Important msg banks | [Known `data/text` banks](#known-datatext-banks-tracked--important) |
 | What to patch first | [Easy wins vs awkward targets](#easy-wins-vs-awkward-targets) |
-| Docker / `make` | [Build and verification](#build-and-verification) → [How to build](#how-to-build-this-fork), [Build types](#build-types), [Full build scope](#what-a-full-build-covers-roughly) |
-| Find strings | [Quick “find this dialogue” checklist](#quick-find-this-dialogue-checklist) |
 | Upstream scope | [Scope reminder (upstream)](#scope-reminder-upstream) |
 | Badge coord gates | [Badge gate blocks](#badge-gate-blocks-field-scripting) → [Recipe](#recipe-for-a-new-gate), [Route 46 reference](#route-46-gate-reference-implementation) |
 | Route 36 Sudowoodo | [Remove Sudowoodo block (Route 36)](#remove-sudowoodo-block-route-36--verified-poc) |
@@ -43,55 +38,6 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
-
-## Git (agents)
-
-**Read-only only.** Agents may run git commands that **inspect** state (`status`, `diff`, `log`, `show`, etc.). **Never commit, push, merge, rebase, reset, checkout, add, stash, or any other mutating git action** — the user handles all of that themselves. If they say they’re committing, they mean they will do it; don’t beat them to it.
-
-## Scripts layout
-
-Python helpers live under `scripts/` in three buckets. **Keep new scripts in the right bucket** so `scripts/local/` can stay gitignored.
-
-| Folder | Track in git? | When to use |
-|--------|---------------|-------------|
-| `scripts/build/` | Yes | Wired into `Makefile`, `narcs.mk`, `overlays.mk`, or `data/codetables.mk` |
-| `scripts/dev/` | Yes | Reusable inspect/verify helpers referenced from HACK-NOTES or wiki docs |
-| `scripts/local/` | **No** | One-off recon, session experiments, throwaway debugging |
-
-**Rules for agents:**
-
-- New recon or “figure this out once” scripts → `scripts/local/` (prefix with `_` when possible).
-- When a script becomes reusable, move it to `dev/` or `build/` and update Makefile/docs references.
-- Do **not** add Makefile hooks for `local/` scripts.
-- `scripts/fixed/` is unrelated metadata (monData numbering) — leave it alone.
-
-See `scripts/README.md` for the inventory.
-
-## Agents: always build (user does not)
-
-**The user does not build this project.** They are not set up to run Docker, `make`, or MSYS2/WSL for day-to-day work. **You must build for them** whenever you change anything that affects the ROM.
-
-**Rule:** If you edited C/asm, armips scr_seq, `data/text/`, zone_event JSON, `include/config.h`, NARC patchers, or similar — **run a full build and produce `test.nds` before you finish.** Do not hand off source-only changes and expect the user to compile.
-
-**User testing workflow:** load **`test.nds`** (repo root) in DeSmuME. That file *is* the deliverable. Use a **new save** after intro/flag/starting-city changes.
-
-**Agent build command** (this machine, repo at `e:\Code\hg-engine`):
-
-```bat
-docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make -j24
-```
-
-**One-time Docker image** (only if `hg-engine` image is missing or Dockerfile changed):
-
-```bat
-docker build -t hg-engine e:\Code\hg-engine
-```
-
-Interactive shell (optional): run `docker-makerom.cmd` from the repo root, then `make -j24` inside the container.
-
-If the build fails, say so explicitly — do not imply the user can test your edits without a successful build.
-
-See **[Build and verification](#build-and-verification)** below for build types, outputs, and troubleshooting.
 
 ## Why the Mom line was hard to find
 
@@ -155,71 +101,6 @@ Generated banks: prefer editing the **source data** (`data/Moves.c`, `data/Speci
 - **Map location banners** (e.g. “New Bark Town” / “Winds of a New Beginning”) — not found in tracked text; treat as vanilla until we identify the bank/system
 - **Most overworld NPC dialogue** — still in undumped msg banks
 - **Map scripts / events** — `armips/scr_seq/` and `data/zone_event/` (see **Badge gate blocks** below)
-
-## Build and verification
-
-Reference for agents (see **[Agents: always build](#agents-always-build-user-does-not)** for the mandatory handoff rule).
-
-| File | Role |
-|------|------|
-| `rom.nds` | User-provided base ROM (input). **Never commit.** |
-| `test.nds` | **Playable build output** — user loads this in DeSmuME. **Never commit.** Agents must regenerate it after ROM-affecting changes. |
-| `build/` | Intermediate artifacts (NARCs, objects, extracted vanilla). Regenerated; do not commit. |
-
-### How to build (this fork)
-
-**Use Docker on this machine** — native MSYS2/UCRT64 linking has been unreliable with hg-engine’s dual linker scripts.
-
-**Default (agents):** full ROM, non-interactive:
-
-```bat
-docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make -j24
-```
-
-**One-time image:** `docker build -t hg-engine e:\Code\hg-engine`
-
-**Interactive:** `./docker-makerom.cmd` from repo root, then `make -j24` inside the container.
-
-Upstream native/WSL setup (without Docker): [README.md](../README.md).
-
-**Notes:**
-
-- Do **not** commit `rom.nds` or `test.nds`.
-- First Docker build on a dirty tree can be slow; text-only rebuilds are faster.
-- If MSYS-built object files cause trouble, clear `tools/source/**/*.o` before Docker `make`.
-- After text/scr_seq/zone_event edits, close the emulator and reload **`test.nds`** — don’t reuse a stale file from an old build.
-
-### Build types
-
-| Command | Use when | Output / notes |
-|---------|----------|----------------|
-| `make -j24` | Default — verify any change end-to-end | Full **`test.nds`**: C/asm (`src/`, `asm/`), `data/*.c`, armips, NARC rebuild, overlays |
-| `make build/narc/scr_seq.narc build/narc/zone_event.narc NOSCAN=1` | Iterating on scr_seq / zone_event only | NARCs only; still repack `test.nds` before in-game test |
-| `make scr_seq_clean && make -j24` | Suspect scr_seq corruption or duplicate NPCs after patch | Clears scr_seq build artifacts, then full rebuild |
-| `make clean_code && make -j24` | C/asm changed but objects seem stale | Drops compiled code objects only |
-| `make clean && make -j24` | Broken build state, tool rebuild, or “nothing makes sense” | Full clean (slow) |
-| `make AUTO_TEST=Y -j24` | Battle-engine automated tests | Same **`test.nds`** name, compiled with `DEBUG_BATTLE_SCENARIOS`; see [data/battle_tests/README.md](../data/battle_tests/README.md) |
-| `make restore_build` | Reset extracted `base/` from `rom.nds` then rebuild | Nuclear reset of extracted filesystem |
-
-**`NOSCAN=1`** skips dependency scanning — use for targeted NARC targets to save time; not a substitute for a full verify before calling something done.
-
-**Compile toggles** (`HEAL_AFTER_BATTLE`, trainer scaling, open-world grants, etc.) live in `include/config.h` and `armips/include/config.s` — documented in [CONFIG.md](../CONFIG.md) and [Index-2](DESIGN.md#index-2-current-technical-baseline).
-
-### What a full build covers (roughly)
-
-1. **Tools** — armips, nitrogfx, msgenc, ndstool, patch scripts, …
-2. **Generated data** — species/move/trainer text banks, learnsets, evo tables, …
-3. **NARCs** — encounters, scr_seq, zone_event, sprites, msgdata overrides from `data/text/`, …
-4. **Engine code** — `src/` + overlays linked into `base/`
-5. **Pack** — `test.nds` from `rom.nds` + modified `base/root/`
-
-Field-script recipes in this file often add Python **verify_*.py** scripts — run those after the relevant `make` when listed.
-
-## Quick “find this dialogue” checklist
-
-1. `rg` / search in `data/text/` and `data/*.c` (trainer speech lives in `data/Trainers.c`).
-2. If missing: scan decoded msgdata banks (Docker + `msgenc` + `ndspy`).
-3. Dump full bank → `data/text/<N>.txt` → edit → `make` in Docker → reload `test.nds`.
 
 ## Scope reminder (upstream)
 
@@ -907,12 +788,12 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Starting city / starter (v1 — [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)):**
 
-**Status (Sep 2026):** **18-city menu**, **12-starter menu**, and **step 1 exit** verified in-game. Outdoor home-door routing (**Vision-3 steps 2–4**) not complete — step 2 was attempted twice and rolled back; see [Home = bidirectional door + interior swap](#home--bidirectional-door--interior-swap).
+**Status (Sep 2026):** **18-city menu**, **three-type starter pick** (grass / fire / water, 4 options each → **3** Pokémon), and **step 1 exit** verified in-game. Outdoor home-door routing (**Vision-3 steps 2–4**) not complete — step 2 was attempted twice and rolled back; see [Home = bidirectional door + interior swap](#home--bidirectional-door--interior-swap).
 
 | Step | When | What |
 |------|------|------|
 | 1 | Mom cutscene, before starter menu | **18-city** `ListLocalText` (Vision-3 index **0–17**) → `VAR_PLAYER_START_CITY` (**0x4031**) → `_set_home_dynamic_warp` |
-| 2 | Same cutscene | Starter **12-option text menu** → `give_mon` (not `choose_starter`) → `FLAG_GOT_STARTER` |
+| 2 | Same cutscene | **Three** starter menus (grass / fire / water, 4 options each) → **3×** `give_mon` (not `choose_starter`) → `FLAG_GOT_STARTER` |
 | 3 | Same cutscene | Mom grants (bag, Pokédex, Pass, etc.) — **no post-cutscene teleport** |
 | 4 | Walk to front door **(3, 10)** on 1F | Dynamic exit warp → outdoor home door in chosen city (**Vision-3 step 1 — works**) |
 
@@ -925,17 +806,17 @@ Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/s
 | | **Open-world path (what we use)** | **Vanilla / legacy path (not used)** |
 |---|-----------------------------------|--------------------------------------|
 | Where | Mom scr_seq **845** script **0** (`scr_seq_t20_mom_script0.s`) | `choose_starter` script cmd → `CreateStarter_*` hooks |
-| UI | 12-row `ListLocalText` text menu | Three Poké Balls on a table |
-| Give Pokémon | `give_mon` per menu branch (Johto/Kanto/Gen 3/Gen 4) | Engine creates mon from `starters.c` trio |
-| Species count | **12** (hardcoded in script) | **6** in `sStarterChoices[]` (Johto 0–2 + Kanto 3–5 only) |
-| `VAR_PLAYER_STARTER` | Menu index **0–11** after pick | Was **0** or **3** (region base for which trio) |
-| Dex / phone register | `set_starter_choice` from **party slot 0 species** after `give_mon` | Same cmd, but after ball pick |
+| UI | **3×** 4-row `ListLocalText` menus (grass, fire, water) | Three Poké Balls on a table |
+| Give Pokémon | **3×** `give_mon` (one per type menu) | Engine creates mon from `starters.c` trio |
+| Species count | **12** options across **3** menus (hardcoded in script) | **6** in `sStarterChoices[]` (Johto 0–2 + Kanto 3–5 only) |
+| `VAR_PLAYER_STARTER` | Grass menu index **0–3** after first pick | Was **0** or **3** (region base for which trio) |
+| Dex / phone register | `set_starter_choice` from **party slot 0** (grass pick) after all `give_mon` | Same cmd, but after ball pick |
 
 **Implications for dev:**
 
 - Adding a starter → edit **`scr_seq_t20_mom_script0.s`** (+ string in **`data/text/545.txt`**). Do **not** expect `starters.c` changes to affect Mom’s menu.
 - **`src/starters.c`** + **`hooks`** (`CreateStarter_SetStarterSpecies`, `CreateStarter_CreateMon`) still ship with the engine but are **dead code** unless some other scr_seq calls `choose_starter`. Grep shows **no** open-world scr_seq does — bedroom **846** is vanilla and must stay that way (verify script rejects `choose_starter` there).
-- Old design docs ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) still describe Johto/Kanto YES/NO + 3-ball UI; **implementation superseded** that with the 12-option list.
+- Old design docs ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) still describe Johto/Kanto YES/NO + 3-ball UI; **implementation superseded** that with type-split text menus (grass / fire / water).
 
 **Pokémon menu:** `FLAG_GOT_BAG` set during Mom cutscene (not bedroom).
 
@@ -952,7 +833,7 @@ Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/s
 | zone_event Mom 1F interior | member **060** | 2 warps — **do not reindex** |
 | zone_event bedroom 2F | member **061** | warp down uses **anchor 1** → 1F warp **slot 1** |
 | New Bark player house door | **057** warp **1** at **(695, 396)** | vanilla → header 63; **no** `CITY_DOORS` patch |
-| Text bank Mom dialogue | **545** | city prompt **2**, cities **3–20**, starter prompt **21**, starters **22–33** |
+| Text bank Mom dialogue | **545** | city prompt **2**, cities **3–20**, grass prompt **21**, species **22–33**, fire/water prompts **34–35** |
 
 ### Home = bidirectional door + interior swap
 

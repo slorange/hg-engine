@@ -2,12 +2,12 @@
 
 Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared to vanilla HeartGold/SoulSilver.
 
-Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)`. Design baseline: `[DESIGN.md](DESIGN.md#index-2-current-technical-baseline)`. Known bugs: `[DESIGN.md § Index-5](DESIGN.md#index-5-known-bugs)`.
+Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)`. Agent build workflow: `[documentation/AGENTS.md](documentation/AGENTS.md)`. Design baseline: `[DESIGN.md](DESIGN.md#index-2-current-technical-baseline)`. Known bugs: `[DESIGN.md § Index-5](DESIGN.md#index-5-known-bugs)`.
 
 ### New game & starting experience
 
 - **Starting city** — choose from **18 cities** (Johto + Kanto) in Mom’s cutscene (before starter pick); dynamic home exit warp to your chosen city’s outdoor door; re-enter that door for the same Mom interior.
-- **Starter selection** — 12-option text menu in Mom’s cutscene (gens 1–4 starters); not vanilla 3-ball UI.
+- **Starter selection** — three type menus in Mom’s cutscene (grass / fire / water, 4 gens 1–4 options each); receive **one starter per type**; not vanilla 3-ball UI.
 - **Shortened Professor Oak intro** dialogue.
 - **Mom’s grants** at intro — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, **5 Poké Balls**, Pokégear, Town Map card, Mom/Oak/Elm phone numbers; **`FLAG_UNK_09A` (154)** so marts sell Poké Balls without Route 29 tutorial.
 - **HM02 Fly from Mom** — dev/testing grant only (`OPENWORLD_TESTING_GRANTS`); disable before release builds.

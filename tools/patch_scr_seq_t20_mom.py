@@ -150,7 +150,7 @@ def load_vanilla_member() -> bytearray:
 
 def remap_vanilla_msg_indices(body: bytearray) -> None:
     """545.txt inserts city + starter strings before vanilla index 9; shift npc_msg ids >= 9."""
-    msg_shift = 10  # 545.txt inserts 10 strings before vanilla index 9
+    msg_shift = 12  # 545.txt inserts 12 strings before vanilla index 9 (+ fire/water prompts)
     i = 0
     while i + 2 < len(body):
         if body[i] == 0x2D and body[i + 1] == 0x00:

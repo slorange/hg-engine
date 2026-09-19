@@ -43,7 +43,7 @@ If you have read all of this and still need help, feel free to swing by the Disc
 ### How do I submit a pull request?
 
 #### 1. Get a working local copy
-If you haven't already, follow [README.md](README.md) to get a working local copy of `hg-engine`.
+If you haven't already, follow [README (HG-Engine).md](README%20(HG-Engine).md) to get a working local copy of `hg-engine`.
 
 Contributors should work from their own fork so they have a repository they can push branches to while still pulling updates from the main project.
 

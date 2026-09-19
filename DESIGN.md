@@ -16,6 +16,7 @@
 | `[DESIGN-STORY.md](DESIGN-STORY.md)`                         | `Story-*`  | Story policy, vanilla cleanup backlog                            |
 | `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)`                       | `Future-*` | Deferred addons (balls/Apricorns, Full Moon, moves, maps, …)     |
 | `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)` | —          | Implementation recipes, IDs, verified patches                    |
+| `[documentation/AGENTS.md](documentation/AGENTS.md)`           | —          | Agent build workflow, git rules, script layout                     |
 
 ## Sections in this document
 
@@ -48,7 +49,7 @@ When using this document as development context:
 - Preserve compatibility with the existing Docker build process.
 - `rom.nds` and generated ROM files must never be committed.
 - **Git is read-only for agents** unless the user explicitly asks otherwise: do not commit, push, checkout, stash, rebase, reset, or otherwise change repo state. Using `log`, `status`, `diff`, and `show` for context is fine.
-- **The user relies on agents to run builds** when verifying work. Follow [Build and verification](documentation/HACK-NOTES.md#build-and-verification) in HACK-NOTES. First-time toolchain setup: [README.md](README.md).
+- **The user relies on agents to run builds** when verifying work. Follow [documentation/AGENTS.md](documentation/AGENTS.md). First-time toolchain setup: [README (HG-Engine).md](README%20(HG-Engine).md).
 
 The design statuses used in this document are:
 
@@ -78,7 +79,7 @@ As of September 2026:
 
 ### Build and toolchain
 
-- HG-Engine builds reliably via **Docker** (`make -j24` → `test.nds`; DeSmuME verification). See [Build and verification](documentation/HACK-NOTES.md#build-and-verification).
+- HG-Engine builds reliably via **Docker** (`make -j24` → `test.nds`; DeSmuME verification). See [documentation/AGENTS.md](documentation/AGENTS.md).
 - Field scripting workflow is established (see HACK-NOTES).
 - Map identity pitfalls (`map header ≠ scr_seq member ≠ zone_event member`) are documented in HACK-NOTES.
 
@@ -102,7 +103,7 @@ Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) 
 | ------- | ------ | ---------- |
 | Mom starting grants (Ticket, Pass, Apricorn Box, shoes, dex) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
 | Starting city picker (18 cities; home doors + runtime routing) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
-| Starter pick (12-option menu, gens 1–4) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
+| Starter pick (grass / fire / water menus → 3 starters, gens 1–4) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
 | Dev-only testing grants (e.g. Fly from Mom) | Implemented | Disable before release — see HACK-NOTES |
 | Magnet Train (Goldenrod ↔ Saffron) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
 | Route 42 paid ferry | Verified | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
@@ -170,7 +171,7 @@ Docker remains the known-good build path.
 
 The following are intentionally unresolved.
 
-- Exact starter system — **v1 twelve-option menu implemented**; long-term pools TBD.
+- Exact starter system — **v1 three-type menus implemented** (one grass / fire / water each); long-term pools TBD.
 - Displaced-interior **story/NPC cleanup** ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)) — home-door warps route correctly; vanilla scripts inside old houses may still confuse players.
 - Exact Pokémon Center service list ([World-4](DESIGN-WORLD.md#world-4-pokmon-centers)).
 - Per-mart **tuning** after the first `mart.c` pass ([World-7 § What’s left](DESIGN-WORLD.md#whats-left-to-do)).
