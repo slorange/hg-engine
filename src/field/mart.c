@@ -184,15 +184,13 @@ BOOL ScrCmd_MartBuy(SCRIPTCONTEXT *ctx)
     u16 unused UNUSED = ScriptGetVar(ctx);
 
     u16 items[NELEMS(sBadgeMart) + 1];
-    u8 badgeCount = 0;
+    struct PlayerProfile *profile;
+    u8 badgeCount;
     u8 index = 0;
     u32 i;
 
-    for (i = 0; i < 16; i++) {
-        if (PlayerProfile_TestBadgeFlag(Sav2_PlayerData_GetProfileAddr(ctx->fsys->savedata), i) == TRUE) {
-            badgeCount++;
-        }
-    }
+    profile = Sav2_PlayerData_GetProfileAddr(ctx->fsys->savedata);
+    badgeCount = PlayerProfile_CountBadges(profile);
 
     for (i = 0; i < NELEMS(sBadgeMart); i++) {
         if (badgeCount >= sBadgeMart[i].required_badges) {
