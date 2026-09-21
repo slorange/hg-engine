@@ -188,7 +188,7 @@ On trainer battle start (release behaviour):
 1. **Species** — vanilla party (random species: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties)).
 2. **Levels** — band above; Leaders at cap.
 3. **Moves** — last four level-up moves at assigned level (same rule as wild Pokémon).
-4. **Stage** — `AdjustEncounterSpeciesForLevel()` — level-up chains + synthetic edges ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)); `data/synthetic_evolution_thresholds.tsv`. Probabilistic stage rates (wild / trainer / Gym Leader): [Future-11](DESIGN-FUTURE.md#future-11-encounter-stage-selection-wild--trainer).
+4. **Stage** — `AdjustEncounterSpeciesForLevel()` — walks prevos then forward through level-up chains + synthetic edges ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)); `data/synthetic_evolution_thresholds.tsv`. Verified: authored trade/stone finals devolve at low scaled levels. Probabilistic stage rates (wild / trainer / Gym Leader): [Future-11](DESIGN-FUTURE.md#future-11-encounter-stage-selection-wild--trainer).
 
 Generated parties, dynamic rosters, and living trainers: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc), [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions).
 

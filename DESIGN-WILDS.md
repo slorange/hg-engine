@@ -67,10 +67,12 @@ After rolling, evolution **stage** is chosen from level-up chains plus [syntheti
 
 ## Synthetic evolution stages (wild + trainer)
 
-Encounter tables still list a base species (e.g. Poliwhirl, Exeggcute). After the rolled level is known, stage selection runs in order:
+Encounter tables still list a base species (e.g. Poliwhirl, Exeggcute). After the rolled level is known, **`AdjustEncounterSpeciesForLevel()`** (`include/encounter_species_stage.h`):
 
-1. **`AdjustSpeciesForLevel`** — linear **`EVO_LEVEL`** chains from `data/Evolutions.c` (implemented today).
-2. **Synthetic edges** — `data/synthetic_evolution_thresholds.tsv`: if level ≥ `min_level`, may step `from` → `to` (chained up to 8 steps). Runtime: `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h`; ROM data from `scripts/build/gen_synthetic_evo_edges.py` → `sSyntheticEvoEdgesData` in field overlay.
+1. Walks **prevos** through linear **`EVO_LEVEL`** chains (`data/Evolutions.c`) **and** synthetic edges (`data/synthetic_evolution_thresholds.tsv`) to find the chain root (so authored Alakazam / Vileplume devolve correctly at low levels).
+2. Walks **forward** from that root, applying level-up thresholds then synthetic edges (level ≥ `min_level`) up to 8 steps. ROM data: `scripts/build/gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py` → field overlay rodata.
+
+**Verified Sep 2026** in-game for wild rolls and trainer scaling (including devolving authored trade/stone finals at low levels). Offline check: `scripts/dev/verify_encounter_stage.py`.
 
 Synthetic thresholds **do not** change how the player evolves Pokémon ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) stays player-facing). Wild/trainer mons still get moves and stats from the **final** species (`PokeParaSet` / `InitBoxMonMoveset`), same as today.
 

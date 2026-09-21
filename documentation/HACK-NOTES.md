@@ -398,7 +398,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 ## Trainer level scaling
 
-**Status:** level band, moves, and stage adjust verified in-game; Gym Leader cap enabled — Gym trainer band + type filter still open ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
+**Status:** level band, moves, and stage adjust verified in-game (Sep 2026) — including **devolving** trade/stone finals at low scaled levels (e.g. authored Alakazam → Abra/Kadabra, Vileplume → Oddish/Gloom); Gym Leader cap enabled — Gym trainer band + type filter still open ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
 
 **Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps) — badge count → cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Special-trainer overrides deferred. Generated parties / dynamic battles: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc).
 
@@ -406,7 +406,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 |---------|--------|--------|
 | Rescale levels | `TRAINER_LEVEL_SCALING` | `MakeTrainerPokemonParty()` in `src/field/enemy_party.c` — `CountPlayerBadges()`, `PickTrainerLevelInBand()` |
 | Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; `InitBoxMonMoveset()` after `ChangeToBattleForm` |
-| Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires level scaling). Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)) |
+| Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires level scaling): walk **prevos** (level-up + synthetic), then **forward** to the stage for scaled level. Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)). Offline check: `python3 scripts/dev/verify_encounter_stage.py` |
 | Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires level scaling |
 
 **Dependencies:** moves and stage adjust require `TRAINER_LEVEL_SCALING`; Gym Leader cap requires level scaling.
@@ -1153,7 +1153,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 | Persist FieldSystem | `StoreFieldSysPtr` hook @ `0x0203E028` | Writes `gFieldSysPtr` → ARM9 scratch `sPersistFieldSysPtr` @ `0x021FF900` |
 | Cache cap (field) | `WildEncSingle` / `WildWaterEncSingle` in `src/pokemon.c` | `CacheWildLevelCapFromFieldSystem(fsys)` while FieldSystem is valid |
 | Apply level (battle) | `modify_species_encounter_data` in `asm/other_hook.s` (overlay 129) | `ApplyWildDistanceLevelCapToMon` **before** `InitBoxMonMoveset`; tail-calls vanilla stub `0x02247B4C` last |
-| Stage adjust | `include/encounter_species_stage.h` | `AdjustEncounterSpeciesForLevel` = level-up `AdjustSpeciesForLevel` + synthetic edges (`data/synthetic_evolution_thresholds.tsv` → `sSyntheticEvoEdgesData` in field overlay). Overlay 129: patched `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` |
+| Stage adjust | `include/encounter_species_stage.h` | `AdjustEncounterSpeciesForLevel` walks prevos (level-up + synthetic), then forward to the stage matching level (`data/synthetic_evolution_thresholds.tsv` → `sSyntheticEvoEdgesData` in field overlay). Overlay 129: patched `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` |
 | Species display | `ApplyWildSpeciesStageForLevel` in `src/wild_level_caps.c` | After `SetMonData(MON_DATA_SPECIES, …)`, call `SetMonData(MON_DATA_SPECIES_NAME, NULL)` — same as `PokeParaSet` — or battle/caught UI keeps the encounter-table name while sprite/stats use the new species |
 | Level write | `src/wild_level_caps.c` | Roll level → adjust species → set exp + `MON_DATA_LEVEL` → `RecalcPartyPokemonStats` |
 
@@ -1161,7 +1161,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 
 **Not hooked:** Safari Zone (`data/SafariEncounters.c`), Bug Catching Contest (verify in-game path), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`.
 
-**Stage adjust:** level-up chains (`data/Evolutions.c`) plus **synthetic edges** ([Wilds-1 § Synthetic evolution stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer)) — trade, stone, friendship, move-known, etc. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution unchanged ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
+**Stage adjust:** `AdjustEncounterSpeciesForLevel()` — (1) `FindEncounterChainBase()` walks level-up prevos (`data/Evolutions.c`) **and** synthetic prevos (`data/synthetic_evolution_thresholds.tsv`) so authored finals devolve; (2) `WalkEncounterStageForLevel()` applies level-up then synthetic **forward** for the rolled/scaled level. Trade, stone, friendship, move-known, etc. **Verified Sep 2026** on wild and trainers. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution unchanged ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
 
 ### ARM9 scratch (`armips/asm/wild_level_caps.s`, `rom.ld`)
 
@@ -1211,9 +1211,10 @@ All tracked — nothing belongs in `scripts/local/`:
 | `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
 | `scripts/build/gen_synthetic_evo_edges.py` | build | TSV → `src/field/synthetic_evo_edges_data.c` + generated header (`narcs.mk`) |
 | `data/synthetic_evolution_thresholds.tsv` | data | Authoring source for synthetic stage edges (`from`, `to`, `min_level`, `branch`) |
-| `include/species_stage_for_level.h` | include | `AdjustSpeciesForLevel` (level-up chains only) |
-| `include/synthetic_evo_apply.h` | include | `ApplySyntheticEvolutionEdges` (inline; reads `gSyntheticEvoEdgesPtr`) |
-| `include/encounter_species_stage.h` | include | `AdjustEncounterSpeciesForLevel` — level-up then synthetic (wild + trainer) |
+| `include/species_stage_for_level.h` | include | `AdjustSpeciesForLevel` (level-up forward bands only; used internally) |
+| `include/synthetic_evo_apply.h` | include | `PickSyntheticEvolutionStep` (inline; reads `gSyntheticEvoEdgesPtr`) |
+| `include/encounter_species_stage.h` | include | `AdjustEncounterSpeciesForLevel` — unified prevo walk + forward stage (wild + trainer) |
+| `scripts/dev/verify_encounter_stage.py` | dev | Offline sanity check for trade/stone devolve cases (Alakazam, Vileplume, …) |
 | `scripts/dev/Route Levels/calculate_location_distances.py` | dev | Regenerate `location_distances.txt` after graph edits |
 | `scripts/dev/Route Levels/*.txt`, `encounter_area_graph.tsv` | dev | Source graph inputs |
 
@@ -1224,8 +1225,9 @@ All tracked — nothing belongs in `scripts/local/`:
 ### Editing synthetic stage edges
 
 1. Edit `data/synthetic_evolution_thresholds.tsv` (`branch`: empty or `random50`).
-2. Full `make` (or `python3 scripts/build/gen_synthetic_evo_edges.py`) regenerates field rodata.
-3. Rebuild `test.nds` — confirm both patch lines in the build log.
+2. Run `python3 scripts/dev/verify_encounter_stage.py` (optional — catches obvious threshold mistakes).
+3. Full `make` (or `python3 scripts/build/gen_synthetic_evo_edges.py`) regenerates field rodata.
+4. Rebuild `test.nds` — confirm both patch lines in the build log.
 
 ---
 

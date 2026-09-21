@@ -59,7 +59,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 - **Trainer levels** scale to badge count (level band per badge tier).
 - **Trainer Pokémon** use level-appropriate **moves** and **evolution stage** for their scaled level (same stage logic as wild encounters where applicable).
-- **Special evolution lines on trainers** — the same authored trade/stone (and similar) stage thresholds as wild encounters can apply to trainer teams, not only wild rolls.
+- **Special evolution lines on trainers** — the same authored trade/stone (and similar) stage thresholds as wild encounters apply to trainer teams; low-level trainers **devolve** authored finals (e.g. Alakazam → Abra) instead of keeping stone/trade forms at every level.
 - **Gym Leaders** — every Pokémon on the Leader’s team is set to the **badge-tier level cap** for your current badge count (not a random level in the ordinary trainer band).
 
 ### Gyms & story

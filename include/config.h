@@ -155,8 +155,8 @@
 // uses InitBoxMonMoveset (same as wild); requires TRAINER_LEVEL_SCALING
 #define TRAINER_LEVEL_APPROPRIATE_MOVES
 
-// TRAINER_SPECIES_STAGE_ADJUST downgrades/upgrades within the same level-up evolution line
-// requires TRAINER_LEVEL_SCALING; stone/trade lines unchanged
+// TRAINER_SPECIES_STAGE_ADJUST downgrades/upgrades species to match scaled level
+// (level-up chains + synthetic trade/stone edges); requires TRAINER_LEVEL_SCALING
 #define TRAINER_SPECIES_STAGE_ADJUST
 
 // TRAINER_GYM_LEADER_CAP_LEVEL sets every Gym Leader party mon to the badge level cap exactly
