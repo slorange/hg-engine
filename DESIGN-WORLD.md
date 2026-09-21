@@ -13,7 +13,7 @@
 | [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | PARTIALLY IMPLEMENTED |
 | [World-4. Pokémon Centers](#world-4-pokémon-centers) | DECIDED direction |
 | [World-5. TMs](#world-5-tms) | DECIDED — **core release target** (renewable shop TMs) |
-| [World-6. Evolution Methods (Trade & Stones)](#world-6-evolution-methods-trade--stones) | PARTIALLY DECIDED |
+| [World-6. Evolution Methods (Trade & Stones)](#world-6-evolution-methods-trade--stones) | DECIDED (Option B level-up trade subs deferred) |
 | [World-7. Shops](#world-7-shops) | DECIDED — **core release target** (TMs, evolution items) |
 | Accelerated day/night cycle | Moved — [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
@@ -298,7 +298,7 @@ Gym TM picks are intentionally **unlimited** over rematches (no finite TM proble
 
 # World-6. Evolution Methods (Trade & Stones)
 
-**Status: PARTIALLY DECIDED**
+**Status: DECIDED** — trade-item use-on-Pokémon and Linking Cord shipped Sep 2026. Optional level-up substitutes for plain trade evos ([Option B](#option-b-level-up-evolution)) deferred.
 
 ## Evolution stones
 
@@ -310,24 +310,19 @@ Player stone evolution rules are **unchanged** (use a stone on an eligible Poké
 
 ## Trade evolutions
 
-QoL changes to trade evolution (held-item use-on-Pokémon, Link Cable / level-up substitutes for trade). **Not required** for the core open-world shell or trainer scaling; can ship on its own schedule.
+QoL changes to trade evolution (held-item use-on-Pokémon, Linking Cord for plain trade lines). **Shipped Sep 2026** — [HACK-NOTES § Trade-item evolution](documentation/HACK-NOTES.md#trade-item-evolution-use-on-pokémon).
 
 ### Trade evolutions — with held item
 
-Evolutions that normally require **trade while holding an item** should evolve when the item is **used on the Pokémon** — no trade required.
+**Shipped:** Evolutions that normally require **trade while holding an item** evolve when the item is **used on the Pokémon** — no trade required ([HACK-NOTES § Trade-item evolution](documentation/HACK-NOTES.md#trade-item-evolution-use-on-pokémon)).
 
 Examples: Dragon Scale → Kingdra, Metal Coat → Scizor, Protector → Rhyperior, etc.
 
 ### Trade evolutions — no item
 
-Evolutions that require **trade alone** need a substitute for multiplayer. **TBD — pick one (or combine):**
+**Shipped (Option A):** **Linking Cord** — use on the Pokémon like a stone (`EVO_STONE` + `ITEM_LINKING_CORD` rows for plain trade lines in `data/Evolutions.c`). **Marts:** first slot on Goldenrod dept **2F lower** and Celadon dept **4F** ([World-7 § dept stores](#goldenrod--celadon-department-stores)); ¥8000.
 
-#### Option A: Link Cable item
-
-Add a **Link Cable** usable item that triggers the same evolution as trade (inventory convenience, no level gate).
-
-#### Option B: Level-up evolution
-
+#### Option B: Level-up evolution (deferred)
 
 | Pokémon            | Evolves at |
 | ------------------ | ---------- |
@@ -336,7 +331,7 @@ Add a **Link Cable** usable item that triggers the same evolution as trade (inve
 | Kadabra → Alakazam | 42         |
 | Haunter → Gengar   | 42         |
 
-Shop availability for Link Cables (when implemented): [World-7](DESIGN-WORLD.md#world-7-shops).
+Not implemented; Linking Cord is the player-facing substitute unless we add these level-up rows later.
 
 ---
 
@@ -356,7 +351,7 @@ Marts follow [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) (full 
 | -------- | ------ |
 | **Poké Balls & repels** | Capture and wild-level risk ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)); specialty balls wait on [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) — **Quick Ball** and **Dusk Ball** stay out of normal shops. |
 | **TMs** | Renewable sets at **Goldenrod / Celadon** dept hubs; Gym **choice pools** and **Game Corner** lists in [World-5](DESIGN-WORLD.md#world-5-tms). |
-| **Evolution items** | Stones and trade-evolution held items at **themed town marts** (and hub floors where noted); **Link Cable** at major hubs when [World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) ships. |
+| **Evolution items** | Stones and trade-evolution held items at **themed town marts**; **Linking Cord** at Goldenrod dept 2F lower + Celadon 4F ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)). |
 | **Held items** | **Badge-gated** progression, some on dept **2F**, **20% type boosters** in matching Gym cities |
 | **Utility** | Escape Rope, Poké Doll, vitamins + EV training at hubs. |
 
@@ -375,12 +370,12 @@ Marts follow [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) (full 
 
 | Floor | Stock |
 | ----- | ----- |
-| **2F (upper)** | Cheri → Persim status berries (replaces potion aisle) |
-| **2F (lower)** | Balls, Escape Rope, Doll, Repels; Goldenrod adds Chilan Berry, Silk Scarf, Grip Claw, Sticky Barb, Shed Shell (Celadon lower 2F: no mail) |
+| **2F (upper)** | **Goldenrod:** Poké Balls, Repels, Escape Rope, Doll, Cheri → Persim berries — **Celadon:** same berry aisle as vanilla-style upper 2F |
+| **2F (lower)** | **Goldenrod:** **Linking Cord**, Chilan Berry, Silk Scarf, Grip Claw, Sticky Barb, Shed Shell — **Celadon:** Poké Balls, Repels, Escape Rope, Doll |
 | **TM floor** | **Celadon 3F:** TM12, 20, 21, 28, 41, 76, 78, 87 — **Goldenrod 5F:** TM16, 17, 33, 43, 54, 63, 64, 83 |
 | **Battle items** | **Celadon 5F left / Goldenrod 3F:** Power Bracer–Weight + Macho Brace (replaces X items) |
 | **Vitamins** | Protein–HP Up + **Rare Candy**, **PP Up**, **PP Max** |
-| **Celadon 4F** | Sun & Leaf Stones, Rindo Berry, Miracle Seed, Grip Claw, Sticky Barb, Shed Shell |
+| **Celadon 4F** | **Linking Cord**, Sun & Leaf Stones, Rindo Berry, Miracle Seed, Grip Claw, Sticky Barb, Shed Shell |
 | **Goldenrod herbs** | Pomeg, Kelpsy, Qualot, Hondew, Grepa, Tamato Berries (replaces powders/roots) |
 
 ### Town / route specialty clerks (`std_special_mart` arrays)
@@ -413,7 +408,7 @@ Themed Evolution items, held items, resist berries:
 - ~~**Game Corner TM + held-item menus**~~ — **done** ([HACK-NOTES § Game Corner TM prizes](documentation/HACK-NOTES.md#game-corner-tm-prizes)); Pokémon submenu still vanilla.
 - **Game Corner Coin income** — alternative to Voltorb Flip ([World-5 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)); not investigated.
 - **Gym TM choice** — Leader pools + per-TM badge gates + pick-one UI ([World-5 § Gym TMs](DESIGN-WORLD.md#gym-tms)); scripts still grant one fixed TM ([HACK-NOTES](documentation/HACK-NOTES.md) § Gym Leader HM rewards).
-- **Link Cable** on hub shelves when trade-evolution substitute ships ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
+- ~~**Linking Cord** on hub shelves~~ — **done:** Goldenrod 2F lower + Celadon 4F ([HACK-NOTES § Trade-item evolution](documentation/HACK-NOTES.md#trade-item-evolution-use-on-pokémon)).
 - **Headbutt TM** slot and badge-gated shop row alongside Flash ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)).
 
 ---

@@ -34,6 +34,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Route 4 hiker boost | [Route 4 ledge boost](#route-4-ledge-boost-cerulean--mt-moon) |
 | Jasmine medicine | [Olivine Secret Medicine (Jasmine)](#olivine-secret-medicine-jasmine) |
 | Mart inventories | [Mart expansion (`src/field/mart.c`)](#mart-expansion-srcfieldmartc) |
+| Trade-item evolution | [Trade-item evolution (use on Pokémon)](#trade-item-evolution-use-on-pokémon) |
 | Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
@@ -1076,6 +1077,32 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 ---
 
+## Trade-item evolution (use on Pokémon)
+
+**Design:** [World-6 § Trade evolutions — with held item](DESIGN-WORLD.md#trade-evolutions--with-held-item) — use the held item **on** the Pokémon (like a stone), no trade required.
+
+**Status:** verified in-game Sep 2026.
+
+- **Trade + held item** — use the item on the Pokémon (Metal Coat, Up-Grade, …); see table below.
+- **Trade, no item** — use **Linking Cord** (`ITEM_LINKING_CORD`) like a stone; extra `EVO_STONE` + `ITEM_LINKING_CORD` rows in `data/Evolutions.c` (Kadabra, Machoke, Graveler, Haunter, …).
+- **Marts (Linking Cord):** first slot — Goldenrod dept **2F lower** (`sGoldenrodDepartmentLower2F`), Celadon dept **4F** (`sCeladonDepartment4F`); price **¥8000** (itemdata).
+
+### How it works
+
+| Layer | File | Change |
+| ----- | ---- | ------ |
+| Evolution check | `src/individual/GetMonEvolutionInternal.c` | In `EVOCTX_ITEM_USE` / `EVOCTX_ITEM_CHECK`, `EVO_TRADE_ITEM` matches when `usedItem == param` (direct use). Link Cable + held item still works as fallback. |
+| Item usability | `data/itemdata/itemdata.c` | Trade-evo held items get `fieldUseFunc = 20`, `partyUse = 1`, `evolve = TRUE` (same as stones). |
+| Evolution data | `data/Evolutions.c` | Unchanged — still `EVO_TRADE_ITEM` rows (Metal Coat → Scizor, Up-Grade → Porygon2, …). |
+
+**Items patched:** King's Rock, Metal Coat, Dragon Scale, Protector, Electirizer, Magmarizer, Up-Grade, Dubious Disc, Reaper Cloth, DeepSea Tooth/Scale, Prism Scale.
+
+**Verify in-game:** buy Metal Coat (Olivine) → use on Scyther → Scizor; Up-Grade (Saffron) on Porygon → Porygon2. Wrong species should show “no effect” like stones.
+
+**Not covered:** `EVO_TRADE_SPECIFIC_MON` (Shelmet/Karrablast). Optional **level-up** substitutes for plain trade lines ([World-6 Option B](DESIGN-WORLD.md#option-b-level-up-evolution)) — not implemented; Linking Cord is the shipped substitute.
+
+---
+
 ## Game Corner TM prizes
 
 **Design:** [World-5 § Game Corner TMs](../DESIGN-WORLD.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
@@ -1161,7 +1188,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 
 **Not hooked:** Safari Zone (`data/SafariEncounters.c`), Bug Catching Contest (verify in-game path), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`.
 
-**Stage adjust:** `AdjustEncounterSpeciesForLevel()` — (1) `FindEncounterChainBase()` walks level-up prevos (`data/Evolutions.c`) **and** synthetic prevos (`data/synthetic_evolution_thresholds.tsv`) so authored finals devolve; (2) `WalkEncounterStageForLevel()` applies level-up then synthetic **forward** for the rolled/scaled level. Trade, stone, friendship, move-known, etc. **Verified Sep 2026** on wild and trainers. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution unchanged ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
+**Stage adjust:** `AdjustEncounterSpeciesForLevel()` — (1) `FindEncounterChainBase()` walks level-up prevos (`data/Evolutions.c`) **and** synthetic prevos (`data/synthetic_evolution_thresholds.tsv`) so authored finals devolve; (2) `WalkEncounterStageForLevel()` applies level-up then synthetic **forward** for the rolled/scaled level. Trade, stone, friendship, move-known, etc. **Verified Sep 2026** on wild and trainers. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution QoL: [Trade-item evolution](#trade-item-evolution-use-on-pokémon) + Linking Cord ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
 
 ### ARM9 scratch (`armips/asm/wild_level_caps.s`, `rom.ld`)
 

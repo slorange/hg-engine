@@ -482,7 +482,7 @@ Map-level trainer generation, movement, and placement — distinct from [Battle-
 
 # Future-11. Encounter stage selection (wild + trainer)
 
-**Release behaviour** ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer), [Battle-4 trainer scaling](DESIGN-BATTLES.md#trainer-scaling-implemented)): after an encounter level is known, `AdjustEncounterSpeciesForLevel()` walks **prevos** through level-up and synthetic edges to the chain root, then walks **forward** applying both edge types (level ≥ `min_level` → step to evolved form; below threshold → lower stage). Verified Sep 2026 for wild rolls and trainer scaling (including devolving authored trade/stone finals). Wild and trainer battles share one ruleset today. Player evolution ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)) is unchanged.
+**Release behaviour** ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer), [Battle-4 trainer scaling](DESIGN-BATTLES.md#trainer-scaling-implemented)): after an encounter level is known, `AdjustEncounterSpeciesForLevel()` walks **prevos** through level-up and synthetic edges to the chain root, then walks **forward** applying both edge types (level ≥ `min_level` → step to evolved form; below threshold → lower stage). Verified Sep 2026 for wild rolls and trainer scaling (including devolving authored trade/stone finals). Wild and trainer battles share one ruleset today. Player evolution ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)) — trade-item use-on-Pokémon and Linking Cord shipped; wild/trainer stage adjust is separate.
 
 ## Probabilistic synthetic evolutions
 

@@ -34,7 +34,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Distance-based level caps** — wild levels depend on how far the current area is from your **chosen starting city** (18-city menu index matches the distance table).
 - **Level rolls** — most encounters sit near the area cap; when the cap is high enough, there is a **15%** chance for a low “early route” band instead of a fully scaled level.
 - **Stage and moves** — wild species and moves match the rolled level (including evolutions you would expect at that level).
-- **Special evolution lines in the wild** — trade-, stone-, and similar lines can appear as their evolved forms at authored level thresholds in encounters (player evolution rules unchanged).
+- **Special evolution lines in the wild** — trade-, stone-, and similar lines can appear as their evolved forms at authored level thresholds in encounters (separate from player trade/stone QoL below).
 
 ### Fishing
 
@@ -53,6 +53,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Game Corner prizes** — Goldenrod and Celadon coin-exchange **TM** and **held-item** menus retargeted per [World-5](DESIGN-WORLD.md#game-corner-tms). All prizes temporarily cost **50 Coins** (playtest shortcut until coin income ships).
 - **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, **TM70 (Flash)**, and late-game gear by **badge count** (not vanilla potion progression).
 - **Town specialty marts** — evolution stones, trade evo held items, and type-resist berries at themed cities (e.g. Moon Stone at Mt. Moon Square, stones/items per city table in design docs).
+- **Trade evolution QoL** — trade-evo **held items** (Metal Coat, Up-Grade, etc.) work when **used on the Pokémon** like stones; **Linking Cord** replaces trade for Kadabra, Machoke, Graveler, Haunter, and similar lines. Buy Linking Cord at **Goldenrod dept 2F (lower)** and **Celadon dept 4F** (¥8000).
 - **Olivine** — Secret Medicine remains on the **second** clerk; first clerk uses the badge shelf only.
 
 ### Trainer scaling

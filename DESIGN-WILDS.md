@@ -74,7 +74,7 @@ Encounter tables still list a base species (e.g. Poliwhirl, Exeggcute). After th
 
 **Verified Sep 2026** in-game for wild rolls and trainer scaling (including devolving authored trade/stone finals at low levels). Offline check: `scripts/dev/verify_encounter_stage.py`.
 
-Synthetic thresholds **do not** change how the player evolves Pokémon ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) stays player-facing). Wild/trainer mons still get moves and stats from the **final** species (`PokeParaSet` / `InitBoxMonMoveset`), same as today.
+Synthetic thresholds **do not** change player evolution rules ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) QoL is separate from wild/trainer stage adjust). Wild/trainer mons still get moves and stats from the **final** species (`PokeParaSet` / `InitBoxMonMoveset`), same as today.
 
 **Authoring tiers** (each TSV row has an explicit `min_level`; tiers are for filling the sheet, not runtime logic):
 

@@ -146,7 +146,7 @@ Work toward a shippable ROM without [DESIGN-FUTURE.md](DESIGN-FUTURE.md) north-s
 - **Gym trainer type filter** (remainder of release scaling) — [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties); Leader cap done ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented)).
 - **New Bark door swap** when start city ≠ New Bark ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon), [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
 - Collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — HM pilot partial.
-- **Shop pass** — **implemented** in `src/field/mart.c` ([World-7](DESIGN-WORLD.md#world-7-shops)); verify in playtest. Still open: **Headbutt TM** slot, Link Cable shelves, Mom resist berries.
+- **Shop pass** — **implemented** in `src/field/mart.c` ([World-7](DESIGN-WORLD.md#world-7-shops)); verify in playtest. Still open: **Headbutt TM** slot, Mom resist berries.
 - **Game Corner Coin income** — prize TMs wired; earning Coins still requires Voltorb Flip ([World-5 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)).
 - Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
 - **Wilds-1** + **Wilds-2** — near complete; remaining hooks (Safari, Contest, etc.).
@@ -179,7 +179,7 @@ The following are intentionally unresolved.
 - **Headbutt TM slot**, tutor removal, learnset audit, and badge-gated shop stock for Flash / Headbutt ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)) — vanilla has **no** Headbutt TM.
 - **Kanto Fly map** — enable Kanto fly destinations when visiting Kanto early (Magnet Train / open world); vanilla UI stays Johto-only until likely E4 clear or SS Aqua story ([HACK-NOTES § Fly map](documentation/HACK-NOTES.md#fly-map--kanto-destinations-not-yet)).
 - Clair Dragon's Den: remove trial vs HM-free path ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
-- Trade evolutions without items: Link Cable vs fixed levels ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
+- Trade evolutions without items: optional level-up substitutes ([World-6 Option B](DESIGN-WORLD.md#option-b-level-up-evolution)) — Linking Cord shipped; level-up rows deferred.
 - Special-trainer roster (Red ~100 / Pikachu buff, E4 first-clear levels) vs badge-tier cap at 80 ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)).
 
 (Deferred systems and addons: [`DESIGN-FUTURE.md`](DESIGN-FUTURE.md) — [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) through [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).)
