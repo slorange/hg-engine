@@ -103,6 +103,7 @@ Vermillion	11
 15	Fuchsia	
 Fuchsia	18	
 16	17	
+Celadon	16
 17	18	
 Fuchsia	19	
 19	Seafoam Islands	

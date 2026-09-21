@@ -2,11 +2,11 @@
 
 Working notes for this fork so we don’t re-discover the text/data layout every session.
 
-**New agent session?** Read [AGENTS.md](AGENTS.md) (build, git, workflow) before changing game files.
+**New agent session?** Cursor loads `.cursor/rules/agents.mdc` automatically (build, git, workflow).
 
 ## Contents
 
-Implementation recipes and reference notes (no design-status column — see [DESIGN.md](../DESIGN.md) for `Vision-*` / `World-*` / `Battle-*` specs). **Known bugs:** [DESIGN.md § Index-5](../DESIGN.md#index-5-known-bugs). **Agents:** [AGENTS.md](AGENTS.md).
+Implementation recipes and reference notes (no design-status column — see [DESIGN.md](../DESIGN.md) for `Vision-*` / `World-*` / `Battle-*` specs). **Known bugs:** [DESIGN.md § Index-5](../DESIGN.md#index-5-known-bugs). **Agents:** `.cursor/rules/agents.mdc`.
 
 | Topic | Section |
 | ----- | ------- |
@@ -16,7 +16,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | What to patch first | [Easy wins vs awkward targets](#easy-wins-vs-awkward-targets) |
 | Upstream scope | [Scope reminder (upstream)](#scope-reminder-upstream) |
 | Badge coord gates | [Badge gate blocks](#badge-gate-blocks-field-scripting) → [Recipe](#recipe-for-a-new-gate), [Route 46 reference](#route-46-gate-reference-implementation) |
-| Route 36 Sudowoodo | [Remove Sudowoodo block (Route 36)](#remove-sudowoodo-block-route-36--verified-poc) |
+| Route 36 Sudowoodo | [Remove Sudowoodo block (Route 36)](#remove-sudowoodo-block-route-36--verified) |
 | Route 32 gate | [Remove Route 32 badge gate](#remove-route-32-badge-gate-south-of-violet--verified-pattern) |
 | Gym Cut trees | [Remove Surge / Erika Cut trees](#remove-surge--erika-cut-trees--gym-access) |
 | Post-battle heal | [Heal after every battle](#heal-after-every-battle) |
@@ -174,24 +174,22 @@ Vanilla had no coord events on this map; slots `_001`/`_002` keep their NPC talk
 
 ---
 
-## Remove Sudowoodo block (Route 36) — verified PoC
+## Remove Sudowoodo block (Route 36) — verified
 
-**Goal:** walk Violet ↔ Goldenrod / Ecruteak with **0 badges**; Sudowoodo never blocks the path. **Tested in-game:** tree gone after re-entering the route, no collision, existing save OK. **Known bug [KB-1](../DESIGN.md#index-5-known-bugs):** Sudowoodo may still appear on the **first** visit until you leave and return.
+**Goal:** walk Violet ↔ Goldenrod / Ecruteak with **0 badges**; Sudowoodo never blocks the path. **Tested in-game:** tree hidden on first Route 36 visit (new save).
 
 ### Wiring (pret decomp)
 
 | What | ID / symbol |
 |------|-------------|
 | Map header | `MAP_R36` = **40** |
-| scr_seq member | **243** — patched via `tools/patch_scr_seq_r36.py` |
-| scr_seq init header | **488** (`scr_seq_00488_R36_hdr.s`) |
 | zone_event member | **037** (`037_R36.json`) |
 | Sudowoodo object | `obj_R36_usokky` |
 | Hide flag | `FLAG_HIDE_ROUTE_36_SUDOWOODO` (**450**) |
 
-Vanilla init header runs **`scr_seq_R36_010` on map load**. **`tools/patch_scr_seq_r36.py`** rewrites slot `_010` after scr_seq extract to **`setflag FLAG_HIDE_ROUTE_36_SUDOWOODO`** on every Route 36 load.
+Mom intro (`scr_seq_t20_mom_script0.s`) **`setflag FLAG_HIDE_ROUTE_36_SUDOWOODO`** with other world-clearance flags — before the player can reach Route 36. Route 36 scr_seq stays vanilla.
 
-**Option B (fallback):** remove `obj_R36_usokky` from `037_R36.json` if the flag alone leaves collision (not needed — flag patch sufficient).
+**Option B (fallback):** remove `obj_R36_usokky` from `037_R36.json` if the flag alone leaves collision (not needed — Mom flag sufficient).
 
 **Out of scope for now:** Floria / SquirtBottle / flower-shop chain, moving Sudowoodo encounter elsewhere.
 
@@ -624,6 +622,8 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 - **Text bank indexing:** `msgenc` treats every line as an index — split merged strings (Route 19 “All aboard!\nWhere to?” bug) before wiring `npc_msg` indices.
 
 **Route 19 access (Mom intro):** `FLAG_UNLOCKED_WEST_KANTO` alone only affects Route 22 gate dialogue; clearing Fuchsia’s south shore also sets Blaine-equivalent flags in Mom intro: `FLAG_UNK_265`, `FLAG_HIDE_ROUTE_19_WORKMEN_*`, and `FLAG_MAPTEMP_010`–`014` (hide STOP signs, workmen, and rock-smash boulders).
+
+**Route 36 Sudowoodo (Mom intro):** `FLAG_HIDE_ROUTE_36_SUDOWOODO` (**450**) in the same block (see [Remove Sudowoodo block](#remove-sudowoodo-block-route-36--verified)).
 
 ### Debug helpers (keep using these)
 

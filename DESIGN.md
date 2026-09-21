@@ -16,7 +16,7 @@
 | `[DESIGN-STORY.md](DESIGN-STORY.md)`                         | `Story-*`  | Story policy, vanilla cleanup backlog                            |
 | `[DESIGN-FUTURE.md](DESIGN-FUTURE.md)`                       | `Future-*` | Deferred addons (balls/Apricorns, Full Moon, moves, maps, …)     |
 | `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)` | —          | Implementation recipes, IDs, verified patches                    |
-| `[documentation/AGENTS.md](documentation/AGENTS.md)`           | —          | Agent build workflow, git rules, script layout                     |
+| `.cursor/rules/agents.mdc`                                       | —          | Agent build workflow, git rules, script layout (local; not in git) |
 
 ## Sections in this document
 
@@ -49,7 +49,7 @@ When using this document as development context:
 - Preserve compatibility with the existing Docker build process.
 - `rom.nds` and generated ROM files must never be committed.
 - **Git is read-only for agents** unless the user explicitly asks otherwise: do not commit, push, checkout, stash, rebase, reset, or otherwise change repo state. Using `log`, `status`, `diff`, and `show` for context is fine.
-- **The user relies on agents to run builds** when verifying work. Follow [documentation/AGENTS.md](documentation/AGENTS.md). First-time toolchain setup: [README (HG-Engine).md](README%20(HG-Engine).md).
+- **The user relies on agents to run builds** when verifying work. Follow `.cursor/rules/agents.mdc`. First-time toolchain setup: [README (HG-Engine).md](README%20(HG-Engine).md).
 
 The design statuses used in this document are:
 
@@ -79,7 +79,7 @@ As of September 2026:
 
 ### Build and toolchain
 
-- HG-Engine builds reliably via **Docker** (`make -j24` → `test.nds`; DeSmuME verification). See [documentation/AGENTS.md](documentation/AGENTS.md).
+- HG-Engine builds reliably via **Docker** (`make -j24` → `test.nds`; DeSmuME verification). See `.cursor/rules/agents.mdc`.
 - Field scripting workflow is established (see HACK-NOTES).
 - Map identity pitfalls (`map header ≠ scr_seq member ≠ zone_event member`) are documented in HACK-NOTES.
 
@@ -111,7 +111,7 @@ Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) 
 | Route 31 ↔ Route 45 Dark Cave paid ferry | Implemented | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
 | Route 4 ledge boost ($100 hiker) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
 | Route 29→46 gate (2 badges) | PoC | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) — template only |
-| Route 36 Sudowoodo removed | Verified after re-enter — [first-visit bug](DESIGN.md#index-5-known-bugs) | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
+| Route 36 Sudowoodo removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 | Route 32 badge gate removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 | Mahogany Rocket arc skipped | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 | Surge / Erika Cut trees removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
@@ -203,10 +203,6 @@ These questions should remain open until deliberately resolved.
 Regressions and incorrect behaviour in the **current ROM**. This is not [Index-2](#index-2-current-technical-baseline) incomplete work, [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) cleanup, or open design in [Index-3](#index-3-open-design-questions).
 
 When a bug is fixed, remove its row here and note the fix in [`CHANGELOG.md`](CHANGELOG.md) if player-visible.
-
-| ID | Symptom | Notes |
-| -- | ------- | ----- |
-| **KB-1** | **Route 36 Sudowoodo** still blocks the road the **first** time you enter the route after load. Leaving and re-entering hides the tree as intended. | Hide flag runs on map load (`scr_seq_R36_010` / `FLAG_HIDE_ROUTE_36_SUDOWOODO`); object visibility likely applies one visit late. Recipe: `documentation/HACK-NOTES.md` § **Remove Sudowoodo block (Route 36)**. |
 
 ### Monitoring (tentatively resolved)
 

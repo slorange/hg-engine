@@ -9,7 +9,7 @@ An open-world HeartGold/SoulSilver romhack built on [hg-engine](https://github.c
 | **[DESIGN.md](DESIGN.md)** | Design index — vision, world, battles, wilds, story; what’s implemented vs planned |
 | **[CHANGELOG.md](CHANGELOG.md)** | Player-facing changes vs vanilla HGSS |
 | **[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)** | Implementation recipes, IDs, verified patches, msg banks |
-| **[documentation/AGENTS.md](documentation/AGENTS.md)** | **Coding agents:** Docker build, git rules, script layout, verification workflow |
+| **`.cursor/rules/agents.mdc`** | **Coding agents:** Docker build, git rules, script layout (local Cursor config; not in git) |
 | **[README (HG-Engine).md](README%20(HG-Engine).md)** | Upstream hg-engine setup (WSL, MSYS2, native `make`, Docker image build) |
 
 ### Design sub-documents
@@ -25,7 +25,7 @@ Linked from [DESIGN.md](DESIGN.md):
 
 ## Playtesting
 
-The user loads **`test.nds`** (repo root) in DeSmuME. Agents regenerate it after ROM-affecting changes — see [documentation/AGENTS.md](documentation/AGENTS.md).
+The user loads **`test.nds`** (repo root) in DeSmuME. Agents regenerate it after ROM-affecting changes — see `.cursor/rules/agents.mdc`.
 
 Place a clean **HeartGold** ROM named **`rom.nds`** in the repo root (never commit it).
 

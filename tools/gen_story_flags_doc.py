@@ -326,7 +326,7 @@ WANDERING_HEART_NOTES: dict[int, str] = {
     117: "Olivine + Route 44 rod gurus; `src/fishing_rod.c` gates rods on this flag.",
     154: "Mom intro: `setflag` — gates mart `ITEM_POKE_BALL` sales (HACK-NOTES § Mart Poké Ball).",
     156: "Mom intro: Pokégear + fanfare.",
-    164: "Route 36 Sudowoodo patch: `clearflag` after fight (`scr_seq_r36_010_patch.s`).",
+    450: "Mom intro: `setflag` hide Route 36 Sudowoodo (`scr_seq_t20_mom_script0.s`).",
     166: "Morty gym patch: TM30 reward `setflag`.",
     185: "Olivine Secret Medicine: lighthouse scene + `Bag_AddItem` sets flag ([HACK-NOTES](HACK-NOTES.md)).",
     189: "Rod gurus Good Rod tier; `src/fishing_rod.c`.",

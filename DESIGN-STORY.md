@@ -123,7 +123,7 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
 | SquirtBottle / Floria flower-shop chain | Route 36 Sudowoodo removed; bottle only existed for that block | Remove or flavour-only the Goldenrod SquirtBottle girl; no functional gate |
-| Sudowoodo encounter scripts (Route 36) | Tree hidden on load | Optional: relocate encounter elsewhere later |
+| Sudowoodo encounter scripts (Route 36) | Tree hidden via Mom intro flag | Optional: relocate encounter elsewhere later |
 | Badge gates already patched (R32, R36, Mahogany, …) | Replaced by open travel | Scan for stale coord triggers or talk scripts referencing removed blockers |
 
 ## Superseded HM and progression teaching

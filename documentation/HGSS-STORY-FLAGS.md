@@ -74,7 +74,7 @@ Regenerate: `python tools/gen_story_flags_doc.py` (edit `WANDERING_HEART_NOTES` 
 | 161 | 0xA1 | `FLAG_UNK_0A1` |  |
 | 162 | 0xA2 | `FLAG_GOT_HM03` |  |
 | 163 | 0xA3 | `FLAG_GOT_DOWSING_MACHINE` |  |
-| 164 | 0xA4 | `FLAG_ENGAGING_STATIC_POKEMON` | Route 36 Sudowoodo patch: `clearflag` after fight (`scr_seq_r36_010_patch.s`). |
+| 164 | 0xA4 | `FLAG_ENGAGING_STATIC_POKEMON` | Vanilla Route 36 Sudowoodo fight (static encounter in progress). |
 | 165 | 0xA5 | `FLAG_GOT_MAGNET_FROM_SUNNY` |  |
 | 166 | 0xA6 | `FLAG_GOT_TM30_FROM_MORTY` | Morty gym patch: TM30 reward `setflag`. |
 | 167 | 0xA7 | `FLAG_TALKED_TO_MOM_AFTER_NAMING_RIVAL` |  |

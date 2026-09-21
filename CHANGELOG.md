@@ -2,7 +2,7 @@
 
 Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared to vanilla HeartGold/SoulSilver.
 
-Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)`. Agent build workflow: `[documentation/AGENTS.md](documentation/AGENTS.md)`. Design baseline: `[DESIGN.md](DESIGN.md#index-2-current-technical-baseline)`. Known bugs: `[DESIGN.md § Index-5](DESIGN.md#index-5-known-bugs)`.
+Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)`. Agent build workflow: `.cursor/rules/agents.mdc` (local). Design baseline: `[DESIGN.md](DESIGN.md#index-2-current-technical-baseline)`. Known bugs: `[DESIGN.md § Index-5](DESIGN.md#index-5-known-bugs)`.
 
 ### New game & starting experience
 
@@ -24,7 +24,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Kanto coastal ferry mesh** — fishermen + Lapras at Pallet Town south shore, Cinnabar Island beach, Seafoam cave mouth, and Route 19 ($200); 3-destination menu (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City labels).
 - **Mom intro** — sets `FLAG_UNLOCKED_WEST_KANTO` and Route 19 shore clearance flags so Fuchsia’s south beach is reachable from the start.
 - **Route 4 ledge boost** — blackbelt + Machoke boost you over the ledge toward Mt. Moon for ¥100.
-- **Route 36** — Sudowoodo roadblock removed (Violet ↔ Goldenrod open at 0 badges). *First visit may still show the tree until you leave and re-enter — [KB-1](DESIGN.md#index-5-known-bugs).*
+- **Route 36** — Sudowoodo roadblock removed (Violet ↔ Goldenrod open at 0 badges); hide flag set at Mom intro.
 - **Route 32** — badge gate south toward Violet removed.
 - **Mahogany** — Team Rocket arc skipped on load; RageCandyBar salesman no longer blocks Route 44.
 - **Route 29 → Route 46** — blocked until **2 badges** (Zephyr + Hive); guard-style gating proof of concept.

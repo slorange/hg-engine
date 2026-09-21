@@ -27,6 +27,7 @@ NPC_MSG_CITY = bytes.fromhex("2d0002")  # npc_msg 2 (city prompt)
 NPC_MSG_GRASS = bytes.fromhex("2d0015")  # npc_msg 21 (grass starter prompt)
 NPC_MSG_FIRE = bytes.fromhex("2d0022")  # npc_msg 34 (fire starter prompt)
 NPC_MSG_WATER = bytes.fromhex("2d0023")  # npc_msg 35 (water starter prompt)
+SETFLAG_HIDE_R36_SUDOWOODO = bytes.fromhex("1e00c201")  # setflag 450
 COPYVAR_START_CITY = bytes.fromhex("2a0031400c80")  # copyvar VAR_PLAYER_START_CITY, VAR_SPECIAL_RESULT
 SET_DYNAMIC_WARP = bytes.fromhex("f000")  # set_dynamic_warp (cmd 240)
 MIN_CITY_LIST_OPTIONS = 18
@@ -108,6 +109,8 @@ def main() -> None:
         raise SystemExit("script 0 missing npc_msg 34 (fire starter prompt)")
     if NPC_MSG_WATER not in body:
         raise SystemExit("script 0 missing npc_msg 35 (water starter prompt)")
+    if SETFLAG_HIDE_R36_SUDOWOODO not in body:
+        raise SystemExit("script 0 missing setflag FLAG_HIDE_ROUTE_36_SUDOWOODO (450)")
     if config_flag("OPENWORLD_TESTING_GRANTS"):
         if HM02_ITEM_ID not in body:
             raise SystemExit("script 0 missing ITEM_HM02 (421) grant (OPENWORLD_TESTING_GRANTS)")

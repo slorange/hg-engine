@@ -701,7 +701,6 @@ SCR_SEQ_DEPENDENCIES := $(filter-out $(SCR_SEQ_PATCH_ONLY),$(wildcard $(SCR_SEQ_
 $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/extract_scr_seq_vanilla.py $(SCR_SEQ_DIR)
 	for file in $(SCR_SEQ_DEPENDENCIES); do $(ARMIPS) $$file; done
-	$(PYTHON) tools/patch_scr_seq_r36.py $(SCR_SEQ_DIR)/2_243
 	$(PYTHON) tools/patch_scr_seq_r32_badge.py $(SCR_SEQ_DIR)/2_232
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
 	$(PYTHON) tools/patch_scr_seq_w40_ferry.py $(SCR_SEQ_DIR)/2_962

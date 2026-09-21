@@ -1,4 +1,4 @@
-> Upstream **hg-engine** guide. For **Pokémon Wandering Heart** — start at [README.md](README.md) (project hub), then [DESIGN.md](DESIGN.md) and [CHANGELOG.md](CHANGELOG.md). Agent build workflow: [documentation/AGENTS.md](documentation/AGENTS.md).
+> Upstream **hg-engine** guide. For **Pokémon Wandering Heart** — start at [README.md](README.md) (project hub), then [DESIGN.md](DESIGN.md) and [CHANGELOG.md](CHANGELOG.md). Agent build workflow: .cursor/rules/agents.mdc (local Cursor config).
 
 # hg-engine
 
