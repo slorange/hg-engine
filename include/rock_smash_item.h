@@ -37,8 +37,6 @@ enum {
     NUM_ROCK_SMASH_TABLES
 };
 
-#define MAX_ROCK_SMASH_ITEMS_PER_TABLE 8
-
 // overlay_01_022001E4.h in pokeheartgold
 int LONG_CALL ov01_02200540(LocalMapObject *obj, int a0, int a1);
 BOOL LONG_CALL ov01_022003F4(int a0);

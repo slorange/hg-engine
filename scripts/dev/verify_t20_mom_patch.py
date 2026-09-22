@@ -19,7 +19,8 @@ TOWN_MAP_SCREEN = bytes.fromhex("9d00")  # WorldMapScreen — must NOT appear in
 REGISTER_GEAR_MOM = bytes.fromhex("920000")
 REGISTER_GEAR_ELM = bytes.fromhex("920001")
 REGISTER_GEAR_OAK = bytes.fromhex("920002")
-HM02_ITEM_ID = bytes.fromhex("a501")  # ITEM_HM02 = 421
+HM_ITEM_IDS = tuple((420 + i).to_bytes(2, "little") for i in range(8))  # ITEM_HM01..08
+GIVEITEM_CMD = bytes.fromhex("7d00")  # scrcmd giveitem (silent)
 GIVE_MON = bytes.fromhex("8900")  # give_mon (cmd 137)
 SHOW_LIST = bytes.fromhex("4700")  # ShowList (cmd 71)
 ADD_LIST_OPTION = bytes.fromhex("4600")  # AddListOption (cmd 70)
@@ -112,10 +113,15 @@ def main() -> None:
     if SETFLAG_HIDE_R36_SUDOWOODO not in body:
         raise SystemExit("script 0 missing setflag FLAG_HIDE_ROUTE_36_SUDOWOODO (450)")
     if config_flag("OPENWORLD_TESTING_GRANTS"):
-        if HM02_ITEM_ID not in body:
-            raise SystemExit("script 0 missing ITEM_HM02 (421) grant (OPENWORLD_TESTING_GRANTS)")
-    elif HM02_ITEM_ID in body:
-        raise SystemExit("script 0 must not grant HM02 when OPENWORLD_TESTING_GRANTS is off")
+        for i, hm_id in enumerate(HM_ITEM_IDS, start=1):
+            if hm_id not in body:
+                raise SystemExit(
+                    f"script 0 missing ITEM_HM0{i} ({419 + i}) silent grant (OPENWORLD_TESTING_GRANTS)"
+                )
+        if body.count(GIVEITEM_CMD) < 8:
+            raise SystemExit("script 0 missing silent giveitem HM grants (OPENWORLD_TESTING_GRANTS)")
+    elif any(hm_id in body for hm_id in HM_ITEM_IDS):
+        raise SystemExit("script 0 must not grant HMs when OPENWORLD_TESTING_GRANTS is off")
 
     print("ok: vanilla init header + script 0 open-world grants (pokegear, phones, key items)")
 

@@ -10,7 +10,14 @@
 .equ ITEM_PASS, 480
 .equ ITEM_APRICORN_BOX, 468
 .equ ITEM_POKE_BALL, 4
+.equ ITEM_HM01, 420
 .equ ITEM_HM02, 421
+.equ ITEM_HM03, 422
+.equ ITEM_HM04, 423
+.equ ITEM_HM05, 424
+.equ ITEM_HM06, 425
+.equ ITEM_HM07, 426
+.equ ITEM_HM08, 427
 
 .equ MSG_MOM_GREET_M, 0
 .equ MSG_MOM_GREET_F, 1
@@ -194,7 +201,14 @@ _story_flag_sweep:
 .endif
     giveitem_no_check ITEM_POKE_BALL, 5
 .if OPENWORLD_TESTING_GRANTS == 1
-    giveitem_no_check ITEM_HM02, 1
+    giveitem ITEM_HM01, 1, VAR_SPECIAL_RESULT
+    giveitem ITEM_HM02, 1, VAR_SPECIAL_RESULT
+    giveitem ITEM_HM03, 1, VAR_SPECIAL_RESULT
+    giveitem ITEM_HM04, 1, VAR_SPECIAL_RESULT
+    giveitem ITEM_HM05, 1, VAR_SPECIAL_RESULT
+    giveitem ITEM_HM06, 1, VAR_SPECIAL_RESULT
+    giveitem ITEM_HM07, 1, VAR_SPECIAL_RESULT
+    giveitem ITEM_HM08, 1, VAR_SPECIAL_RESULT
 .endif
     closemsg
     apply_movement OBJ_MOM, _mv_mom_return
@@ -443,17 +457,17 @@ _pick_grass_starter:
     touchscreen_menu_hide
     npc_msg MSG_GRASS_PROMPT
     ListLocalText 1, 1, 0, 0, VAR_SPECIAL_RESULT
-    AddListOption MSG_MENU_CHIKORITA, MSG_LIST_HIGHLIGHT, 0
-    AddListOption MSG_MENU_BULBASAUR, MSG_LIST_HIGHLIGHT, 1
+    AddListOption MSG_MENU_BULBASAUR, MSG_LIST_HIGHLIGHT, 0
+    AddListOption MSG_MENU_CHIKORITA, MSG_LIST_HIGHLIGHT, 1
     AddListOption MSG_MENU_TREECKO, MSG_LIST_HIGHLIGHT, 2
     AddListOption MSG_MENU_TURTWIG, MSG_LIST_HIGHLIGHT, 3
     ShowList
     closemsg
     copyvar VAR_PLAYER_STARTER, VAR_SPECIAL_RESULT
     compare VAR_SPECIAL_RESULT, 0
-    goto_if_eq _give_chikorita
-    compare VAR_SPECIAL_RESULT, 1
     goto_if_eq _give_bulbasaur
+    compare VAR_SPECIAL_RESULT, 1
+    goto_if_eq _give_chikorita
     compare VAR_SPECIAL_RESULT, 2
     goto_if_eq _give_treecko
     give_mon SPECIES_TURTWIG, 5, 0, 0, 0, VAR_SPECIAL_RESULT
@@ -463,16 +477,16 @@ _pick_fire_starter:
     touchscreen_menu_hide
     npc_msg MSG_FIRE_PROMPT
     ListLocalText 1, 1, 0, 0, VAR_SPECIAL_RESULT
-    AddListOption MSG_MENU_CYNDAQUIL, MSG_LIST_HIGHLIGHT, 0
-    AddListOption MSG_MENU_CHARMANDER, MSG_LIST_HIGHLIGHT, 1
+    AddListOption MSG_MENU_CHARMANDER, MSG_LIST_HIGHLIGHT, 0
+    AddListOption MSG_MENU_CYNDAQUIL, MSG_LIST_HIGHLIGHT, 1
     AddListOption MSG_MENU_TORCHIC, MSG_LIST_HIGHLIGHT, 2
     AddListOption MSG_MENU_CHIMCHAR, MSG_LIST_HIGHLIGHT, 3
     ShowList
     closemsg
     compare VAR_SPECIAL_RESULT, 0
-    goto_if_eq _give_cyndaquil
-    compare VAR_SPECIAL_RESULT, 1
     goto_if_eq _give_charmander
+    compare VAR_SPECIAL_RESULT, 1
+    goto_if_eq _give_cyndaquil
     compare VAR_SPECIAL_RESULT, 2
     goto_if_eq _give_torchic
     give_mon SPECIES_CHIMCHAR, 5, 0, 0, 0, VAR_SPECIAL_RESULT
@@ -482,16 +496,16 @@ _pick_water_starter:
     touchscreen_menu_hide
     npc_msg MSG_WATER_PROMPT
     ListLocalText 1, 1, 0, 0, VAR_SPECIAL_RESULT
-    AddListOption MSG_MENU_TOTODILE, MSG_LIST_HIGHLIGHT, 0
-    AddListOption MSG_MENU_SQUIRTLE, MSG_LIST_HIGHLIGHT, 1
+    AddListOption MSG_MENU_SQUIRTLE, MSG_LIST_HIGHLIGHT, 0
+    AddListOption MSG_MENU_TOTODILE, MSG_LIST_HIGHLIGHT, 1
     AddListOption MSG_MENU_MUDKIP, MSG_LIST_HIGHLIGHT, 2
     AddListOption MSG_MENU_PIPLUP, MSG_LIST_HIGHLIGHT, 3
     ShowList
     closemsg
     compare VAR_SPECIAL_RESULT, 0
-    goto_if_eq _give_totodile
-    compare VAR_SPECIAL_RESULT, 1
     goto_if_eq _give_squirtle
+    compare VAR_SPECIAL_RESULT, 1
+    goto_if_eq _give_totodile
     compare VAR_SPECIAL_RESULT, 2
     goto_if_eq _give_mudkip
     give_mon SPECIES_PIPLUP, 5, 0, 0, 0, VAR_SPECIAL_RESULT

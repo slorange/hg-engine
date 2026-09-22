@@ -9,45 +9,54 @@
 #include "script.h"
 
 /*
-This table can be expanded as you please.
-Each vanilla header has a file in a253 that has 2 bytes for odds (out of 100) to receive an item from a rock and 2 bytes for the item table index.
-Items are sorted in ascending order of quality, which affects their individual chance to be received.
+Each vanilla map header (NARC a253) has 2 bytes for odds (out of 100) to receive an item from a rock
+and 2 bytes for a table index. Table indices are ignored for item choice; all locations use RockSmashItemPool.
+DrawRockSmashIdx picks a uniform index into that pool.
+Per-map item odds in NARC a253 are ignored; ROCK_SMASH_ITEM_ODDS_PERCENT is used instead.
 */
-const u16 RockSmashItemTable[NUM_ROCK_SMASH_TABLES][MAX_ROCK_SMASH_ITEMS_PER_TABLE] = {
-    {
-        // Default:
-        ITEM_MAX_ETHER,
-        ITEM_REVIVE,
-        ITEM_HEART_SCALE,
-        ITEM_RED_SHARD,
-        ITEM_BLUE_SHARD,
-        ITEM_GREEN_SHARD,
-        ITEM_YELLOW_SHARD,
-        ITEM_STAR_PIECE,
-    },
-    {
-        // Ruins of Alph:
-        ITEM_RED_SHARD,
-        ITEM_YELLOW_SHARD,
-        ITEM_HELIX_FOSSIL,
-        ITEM_MAX_ETHER,
-        ITEM_BLUE_SHARD,
-        ITEM_GREEN_SHARD,
-        ITEM_OLD_AMBER,
-        ITEM_MAX_REVIVE,
-    },
-    {
-        // Cliff Cave:
-        ITEM_MAX_ETHER,
-        ITEM_PEARL,
-        ITEM_BIG_PEARL,
-        ITEM_RED_SHARD,
-        ITEM_YELLOW_SHARD,
-        ITEM_CLAW_FOSSIL,
-        ITEM_CLAW_FOSSIL,
-        ITEM_RARE_BONE,
-    },
+#define ROCK_SMASH_ITEM_ODDS_PERCENT 80
+
+static const u16 RockSmashItemPool[] = {
+    ITEM_RED_SHARD,
+    ITEM_BLUE_SHARD,
+    ITEM_YELLOW_SHARD,
+    ITEM_GREEN_SHARD,
+    ITEM_PEARL,
+    ITEM_BIG_PEARL,
+    ITEM_STARDUST,
+    ITEM_STAR_PIECE,
+    ITEM_NUGGET,
+    ITEM_HEART_SCALE,
+    ITEM_ROOT_FOSSIL,
+    ITEM_CLAW_FOSSIL,
+    ITEM_HELIX_FOSSIL,
+    ITEM_DOME_FOSSIL,
+    ITEM_OLD_AMBER,
+    ITEM_ARMOR_FOSSIL,
+    ITEM_SKULL_FOSSIL,
+    ITEM_RARE_BONE,
+    ITEM_EVERSTONE,
+    ITEM_ICY_ROCK,
+    ITEM_SMOOTH_ROCK,
+    ITEM_HEAT_ROCK,
+    ITEM_DAMP_ROCK,
+    ITEM_SUN_STONE,
+    ITEM_MOON_STONE,
+    ITEM_FIRE_STONE,
+    ITEM_THUNDER_STONE,
+    ITEM_WATER_STONE,
+    ITEM_LEAF_STONE,
+    ITEM_SHINY_STONE,
+    ITEM_DUSK_STONE,
+    ITEM_DAWN_STONE,
+    ITEM_KINGS_ROCK,
+    ITEM_DEEP_SEA_TOOTH,
+    ITEM_DEEP_SEA_SCALE,
+    ITEM_METAL_COAT,
+    ITEM_HARD_STONE,
 };
+
+#define NUM_ROCK_SMASH_ITEMS NELEMS(RockSmashItemPool)
 
 // List of abilities that increase the odds (out of 100) to receive an item from a rock and their percentage increases.
 const RockSmashAbilityOdds RockSmashAbilityOddsTable[] = {
@@ -56,47 +65,17 @@ const RockSmashAbilityOdds RockSmashAbilityOddsTable[] = {
     { ABILITY_KEEN_EYE, 5 },
 };
 
-// List of abilities that increase the quality of items received from a rock and their increase amounts.
-// Note: Having any of these abilities active will prevent items of the lowest quality from appearing at all!
-const RockSmashAbilityQuality RockSmashAbilityQualityTable[] = {
-    { ABILITY_SERENE_GRACE, 1 },
-    { ABILITY_SUPER_LUCK, 1 },
-};
-
-u32 DetermineRockSmashItem(u32 tableIndex, u32 quality)
+u32 DetermineRockSmashItem(u32 tableIndex, u32 itemIndex)
 {
-    if (tableIndex >= NELEMS(RockSmashItemTable)) {
+    if (tableIndex >= NUM_ROCK_SMASH_TABLES) {
         return ITEM_NONE;
     }
 
-    int partySlot = 0;
-    struct Party *party = SaveData_GetPlayerPartyPtr(gFieldSysPtr->savedata);
-#ifdef ENTIRE_PARTY_AFFECTS_ROCK_SMASH
-    for (; partySlot < party->count; partySlot++) {
-#endif
-        int ability;
-        struct PartyPokemon *mon = Party_GetMonByIndex(party, partySlot);
-        if (GetMonData(mon, MON_DATA_IS_EGG, NULL) == FALSE) {
-            ability = GetMonData(mon, MON_DATA_ABILITY, NULL);
-        } else {
-            ability = NUM_ABILITIES;
-        }
-
-        for (u32 i = 0; i < NELEMS(RockSmashAbilityQualityTable); i++) {
-            if (ability == RockSmashAbilityQualityTable[i].ability) {
-                quality += RockSmashAbilityQualityTable[i].quality;
-                break;
-            }
-        }
-#ifdef ENTIRE_PARTY_AFFECTS_ROCK_SMASH
-    }
-#endif
-
-    if (quality >= MAX_ROCK_SMASH_ITEMS_PER_TABLE) {
-        quality = MAX_ROCK_SMASH_ITEMS_PER_TABLE - 1;
+    if (itemIndex >= NUM_ROCK_SMASH_ITEMS) {
+        itemIndex = NUM_ROCK_SMASH_ITEMS - 1;
     }
 
-    return RockSmashItemTable[tableIndex][quality];
+    return RockSmashItemPool[itemIndex];
 }
 
 BOOL LONG_CALL CheckRockSmashItemDrop(FieldSystem *fieldSystem, RockSmashItemCheckWork *env);
@@ -115,16 +94,17 @@ BOOL LONG_CALL CheckRockSmashItemDrop(FieldSystem *fieldSystem, RockSmashItemChe
         // It's definitely easier to store that here for now with custom maps.
         switch (mapID) {
         default:
-            data.odds = 50;
+            data.odds = 0;
             data.table = ROCK_SMASH_TABLE_DEFAULT;
             break;
         }
     }
 
-    int odds = data.odds;
-    if (odds == 0 || data.table >= NUM_ROCK_SMASH_TABLES) {
+    if (data.table >= NUM_ROCK_SMASH_TABLES) {
         return FALSE;
     }
+
+    int odds = ROCK_SMASH_ITEM_ODDS_PERCENT;
 
     int partySlot = 0;
     struct Party *party = SaveData_GetPlayerPartyPtr(fieldSystem->savedata);
@@ -166,24 +146,7 @@ BOOL LONG_CALL CheckRockSmashItemDrop(FieldSystem *fieldSystem, RockSmashItemChe
     return FALSE;
 }
 
-// Exposing this lets us mess with the odds and total number of items in the rock smash tables.
 int LONG_CALL DrawRockSmashIdx(UNUSED FieldSystem *fieldSystem)
 {
-    u8 rand = gf_rand() % 100;
-    if (rand < 25) { // 25%
-        return 0;
-    } else if (rand < 45) { // 20%
-        return 1;
-    } else if (rand < 55) { // 10%
-        return 2;
-    } else if (rand < 65) { // 10%
-        return 3;
-    } else if (rand < 75) { // 10%
-        return 4;
-    } else if (rand < 85) { // 10%
-        return 5;
-    } else if (rand < 95) { // 10%
-        return 6;
-    }
-    return 7; // 5%
+    return gf_rand() % NUM_ROCK_SMASH_ITEMS;
 }

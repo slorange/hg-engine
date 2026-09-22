@@ -280,7 +280,7 @@
 // after Mom gives the bag / Trainer Card / save and settings (scr_seq member 845).
 #define OPENWORLD_STARTING_ITEMS
 
-// OPENWORLD_TESTING_GRANTS enables dev-only extras while prototyping (e.g. HM02 Fly from Mom).
+// OPENWORLD_TESTING_GRANTS enables dev-only extras while prototyping (e.g. all HMs from Mom, silent).
 // Disable before builds for others or any release candidate.
 #define OPENWORLD_TESTING_GRANTS
 
