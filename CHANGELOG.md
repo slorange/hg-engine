@@ -10,7 +10,8 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Starter selection** — three type menus in Mom’s cutscene (grass / fire / water, 4 gens 1–4 options each); receive **one starter per type**; not vanilla 3-ball UI.
 - **Shortened Professor Oak intro** dialogue.
 - **Mom’s grants** at intro — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, **5 Poké Balls**, Pokégear, Town Map card, Mom/Oak/Elm phone numbers; **`FLAG_UNK_09A` (154)** so marts sell Poké Balls without Route 29 tutorial.
-- **HM02 Fly from Mom** — dev/testing grant only (`OPENWORLD_TESTING_GRANTS`); disable before release builds.
+- **Dev testing grants from Mom** — 100 Rare Candies (silent) plus **HMs 01–08** when `OPENWORLD_TESTING_GRANTS` is on; disable before release builds.
+- **Broader story skip at Mom intro** — consolidated flag sweep on new saves (rival hidden, SS Aqua arrived, many Azalea/Mahogany rocket flags, Elm lab errand skipped, etc.; see `openworld_story_skip_flags.inc`). **Known gaps:** Cherrygrove guide tutorial can still run with an invisible NPC ([KB-3](DESIGN.md#index-5-known-bugs)); a Rocket may still block Slowpoke Well ([KB-4](DESIGN.md#index-5-known-bugs)).
 
 ### Travel & world access
 
@@ -24,7 +25,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Kanto coastal ferry mesh** — fishermen + Lapras at Pallet Town south shore, Cinnabar Island beach, Seafoam cave mouth, and Route 19 ($200); 3-destination menu (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City labels).
 - **Mom intro** — sets `FLAG_UNLOCKED_WEST_KANTO` and Route 19 shore clearance flags so Fuchsia’s south beach is reachable from the start.
 - **Route 4 ledge boost** — blackbelt + Machoke boost you over the ledge toward Mt. Moon for ¥100.
-- **Route 36** — Sudowoodo roadblock removed (Violet ↔ Goldenrod open at 0 badges); hide flag set at Mom intro.
+- **Route 36** — Sudowoodo roadblock removed
 - **Route 32** — badge gate south toward Violet removed.
 - **Mahogany** — Team Rocket arc skipped on load; RageCandyBar salesman no longer blocks Route 44.
 - **Route 29 → Route 46** — blocked until **2 badges** (Zephyr + Hive); guard-style gating proof of concept.
@@ -40,18 +41,23 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 - **Rod gurus** — fishermen in **Olivine City** and on **Route 44** (east bridge) grant **Old / Good / Super Rod** based on how many Pokémon you have caught from water encounters (no badge-gated fetch quest).
 
+### Field & items
+
+- **Rock Smash drops** — all breakable rocks use one shared loot table (shards, pearls, fossils, evolution stones, held evo items, etc.); **80%** item chance per rock (map-specific tables ignored). Pickup-style ability bonuses (Suction Cups, Magnet Pull, Keen Eye) still apply.
+
 ### Battles & QoL
 
+- **Badge-based player level cap** — party Pokémon stop gaining levels from EXP at **10 + 4×badges** ( **80** at 16 badges; **100** after becoming Champion). **Rare Candies** can still raise level above the current cap; EXP does not.
 - **Full heal after every battle** — HP, PP, and status restored for the party (wild and trainer).
 - **Full-party EXP share (interim)** — every non-fainted party member receives the **full** EXP for each KO (not split); no Exp Share item required.
-- **Post-battle field crash (interim fix)** — rare crash when returning to the field after battle; extra guards in the heal-after-battle hook (Sep 2026).
+- **Post-battle field crash** — known issue when returning to the field after battle ([KB-2](DESIGN.md#index-5-known-bugs)); frequency varies by setup; try with `HEAL_AFTER_BATTLE` disabled to bisect.
 
 ### Shops & items
 
 - **Mart redesign** — under `MART_EXPANSION`, `src/field/mart.c` replaces most healing/potion and X-item shelves with **status berries**, **EV power items**, and **vitamins + Rare Candy / PP Up / PP Max** at Goldenrod and Celadon dept stores.
 - **Renewable TMs** — Celadon dept TM floor and Goldenrod 5F sell fixed TM sets (see [World-7](DESIGN-WORLD.md#world-7-shops)).
 - **Game Corner prizes** — Goldenrod and Celadon coin-exchange **TM** and **held-item** menus retargeted per [World-5](DESIGN-WORLD.md#game-corner-tms). All prizes temporarily cost **50 Coins** (playtest shortcut until coin income ships).
-- **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, **TM70 (Flash)**, and late-game gear by **badge count** (not vanilla potion progression).
+- **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, **TM70 (Flash)**, and late-game gear by **badge count** (not vanilla potion progression). Shelves use **total Johto + Kanto badges** (matches trainer scaling)
 - **Town specialty marts** — evolution stones, trade evo held items, and type-resist berries at themed cities (e.g. Moon Stone at Mt. Moon Square, stones/items per city table in design docs).
 - **Trade evolution QoL** — trade-evo **held items** (Metal Coat, Up-Grade, etc.) work when **used on the Pokémon** like stones; **Linking Cord** replaces trade for Kadabra, Machoke, Graveler, Haunter, and similar lines. Buy Linking Cord at **Goldenrod dept 2F (lower)** and **Celadon dept 4F** (¥8000).
 - **Olivine** — Secret Medicine remains on the **second** clerk; first clerk uses the badge shelf only.

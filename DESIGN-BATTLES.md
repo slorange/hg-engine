@@ -165,7 +165,20 @@ When level caps are enabled, **Rare Candies are not subject to the badge level c
 - Creates meaningful timing decisions: hoard Rare Candies for a hard Gym Leader or special trainer; spike one ace for a single fight to get an evolution or move early. Example: 6 badges (34 level cap), 2 rare candies for early lv36 Typhlosion
 - Power spikes from candies should feel **earned and spent**, not a substitute for badge progression across the whole party.
 
-Player level cap hooks are **not enabled** in the ROM yet. When ready: `documentation/HACK-NOTES.md` § **Player badge level cap & Rare Candies**.
+Player level cap hooks are **enabled** in this fork (`IMPLEMENT_LEVEL_CAP`, `UNCAP_CANDIES_FROM_LEVEL_CAP`). Recipe: `documentation/HACK-NOTES.md` § **Player badge level cap & Rare Candies**.
+
+## Wild catches above the player level cap
+
+**Status: DECIDED — not implemented**
+
+[Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) can produce wild Pokémon **above** the current **player** badge cap ([level cap curve](#level-cap-curve)). Letting the player catch them would skip the collection-oriented cap loop.
+
+**Policy:** **Block the catch** when the wild mon’s level is greater than `GetLevelCap()`. Implementation options (either is fine):
+
+- Show an error **before or after** the ball throw (clear player-facing message), or
+- Treat catch rate as **0** for that battle (silent fail).
+
+**Out of scope:** trainer battles, gifts, trades, in-battle catches that are not wild (e.g. Snorlax events — handle per encounter if needed). **Rare Candies** above cap remain intentional ([Rare Candies and power spikes](#rare-candies-and-power-spikes)).
 
 ## Trainer scaling (implemented)
 

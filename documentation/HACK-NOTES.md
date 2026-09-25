@@ -36,6 +36,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Mart inventories | [Mart expansion (`src/field/mart.c`)](#mart-expansion-srcfieldmartc) |
 | Trade-item evolution | [Trade-item evolution (use on Pokémon)](#trade-item-evolution-use-on-pokémon) |
 | Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
+| Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
@@ -262,7 +263,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 **Verified:** wild, trainer, flee, and catch all restore HP/PP/status on return to field.
 
-**KB-2 (Sep 2026):** intermittent crash when returning to the field after battle — **tentatively fixed**. Heal logic lives in this file; runs only when `sp->fight_end_flag` is set (`BattleStruct` @ `0x311F`), with EWRAM pointer checks on `bw`, `sp`, and party mons. Hook timing unchanged (`Battle_End` → `BattleEndRevertFormChange`). **100+ battle ends without repro** after the refactor; original rate was very low (~once per 70–80+ encounters), so treat as monitoring, not proof. Status: [DESIGN.md § Index-5 *Monitoring*](../DESIGN.md#monitoring-tentatively-resolved).
+**KB-2 (Sep 2026):** crash when returning to the field after battle — **open again**. Heal logic runs only when `sp->fight_end_flag` is set (`BattleStruct` @ `0x311F`), with EWRAM pointer checks on `bw`, `sp`, and party mons; hook timing unchanged (`Battle_End` → `BattleEndRevertFormChange`). A Sep 2026 guard pass stopped repro for the primary dev (100+ battle ends) but **another tester hits it regularly** — treat as environment- or timing-sensitive, not fixed. Status: [DESIGN.md § Index-5 KB-2](../DESIGN.md#index-5-known-bugs).
 
 **Agent notes (do not repeat without new evidence):**
 
@@ -282,7 +283,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 ## Gym Leader HM rewards (Johto pilot)
 
-**Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass. **Whitney** and remaining Johto leaders not started.
+**Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass; **Mahogany Gym last-room crash** reported ([KB-5](../DESIGN.md#index-5-known-bugs)). **Whitney** and remaining Johto leaders not started.
 
 **Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
 
@@ -425,6 +426,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 | `IMPLEMENT_LEVEL_CAP` / `UNCAP_CANDIES_FROM_LEVEL_CAP` | `include/config.h` (on) |
 | `ALLOW_LEVEL_CAP_EVOLVE` | Optional — Rare Candy at cap runs level-up evolution check (off by default) |
 | EXP / candy hooks | `ImplementLevelCap_hook` (battle EXP), `Pokemon_TryLevelUp` @ ARM9 (level-up + **EXP clamp at cap** — empty bar), `CanUseItemOnMonInParty`; `CapRareCandies` only when UNCAP off |
+| Wild catch above cap | **Not implemented** — design: [Battle-4 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-level-cap) (error or 0% catch rate) |
 
 ---
 
@@ -774,6 +776,8 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Loop fix:** keep vanilla init header **618** (OnFrame `var==0`, like retail). Script **0** sets `VAR_SCENE_PLAYERS_HOUSE_1F = 1` on the first frame before any `wait`, so the cutscene cannot re-trigger. Do **not** move this cutscene to OnTransition — that runs too early and crashes on stairs.
 
+**KB-6:** after the cutscene, **seated Mom** talk is broken (weird menus / wrong conversation). Script **0** only — other **845** slots + **545** text remap may not match vanilla sitting behaviour ([Index-5 KB-6](../DESIGN.md#index-5-known-bugs)).
+
 **Grants:** Rebuilt script **0** inserts items/shoes/dex after UI unlock fanfares. `std_give_item_verbose` already waits for A per item — do not add extra `wait_button` between grants; one `closemsg` after **all** item grants (including HM02) clears the window.
 
 | Grant | Item / command |
@@ -1101,7 +1105,7 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 **Verify in-game:** buy Metal Coat (Olivine) → use on Scyther → Scizor; Up-Grade (Saffron) on Porygon → Porygon2. Wrong species should show “no effect” like stones.
 
-**Not covered:** `EVO_TRADE_SPECIFIC_MON` (Shelmet/Karrablast). Optional **level-up** substitutes for plain trade lines ([World-6 Option B](DESIGN-WORLD.md#option-b-level-up-evolution)) — not implemented; Linking Cord is the shipped substitute.
+**Not covered:** `EVO_TRADE_SPECIFIC_MON` (Shelmet/Karrablast). Plain trade lines use **Linking Cord** ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
 
 ---
 
@@ -1147,6 +1151,56 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 **Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-5 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented).
 
 **Changing TMs later:** edit replacement tables in `patch_scr_seq_game_corner.py`, update menu strings in the text banks (keep `{CURSOR_X …}` padding if renaming), rebuild.
+
+---
+
+## Overlay 129 — engine code budget
+
+HG-Engine packs most **custom C/asm** into **overlay 129** (vanilla slot **129**, file `base/overlay/overlay_0129.bin`). This fork also uses the **field overlay** (`src/field/`, overlay **131** in `src/field/linker.ld`) for large **read-only tables**. The two share overlapping **ARM9 load addresses** — growing one without a plan can break the other.
+
+### Memory map (ARM9)
+
+| Overlay | Linker | Load origin | Size (linker) | What links here |
+|---------|--------|-------------|---------------|-----------------|
+| **129** | `src/linker.ld` | `0x023D8000 + 0x60` | `0x8000 − 0x60` (**32 KiB** total window) | All `src/*.c` + `asm/*.s` → `build/linked.o` → `build/output.bin` |
+| **Field (131)** | `src/field/linker.ld` | `0x023C8000` | `0x18000` (**96 KiB**) | All `src/field/*.c` → `build/field_linked.o` (evo tables, wild cap matrix, …) |
+
+Field ROM spans `0x023C8000`–`0x023E0000`; overlay **129** sits in the **top** of that range (`0x023D8000` onward). Field rodata that grows past the reservation can **overwrite** what 129 expects at boot — do not “make room” by extending field with a linker hole into 129’s window.
+
+### Hard limit
+
+- **129 code blob:** `build/output.bin` must stay within the **32 KiB** (`0x8000`) budget (same limit as `LENGTH` in `src/linker.ld`).
+- **Check after `make`:** `wc -c build/output.bin` (PowerShell: `(Get-Item build/output.bin).Length`). Re-check whenever you add root `src/*.c` logic, big `.rodata`, or new asm in `asm/`. Recent full builds were **~30 KiB** (~2 KiB headroom — numbers drift as features land).
+- **Pack into ROM:** `scripts/build/make.py` writes `output.bin` into `overlay_0129.bin` at **`OFFSET_START_IN_129 = 0x60`** (matches the `+ 0x60` in `src/linker.ld`). Do not change one without the other.
+
+### Where to put new data
+
+| Need | Prefer |
+|------|--------|
+| Large static tables (arrays, generated cap/evo data) | **`src/field/`** — link into field overlay rodata |
+| Runtime access from overlay 129 | **`u32 SomeTableFieldAddr`** in root `src/` + **`scripts/build/patch_level_up_evo_addrs.py`** patches the pointer into `build/output.bin` after link (symbols in field ELF, slot in overlay ELF) |
+| Small constants / hot path code | Root **`src/`** / **`asm/`** if budget allows |
+| Cross-battle scratch that must survive 129 reload | **ARM9 fixed RAM** — see `rom.ld` + [wild caps scratch table](#arm9-scratch-armipsasmwild_level_capss-romld) (`0x021FF900` region). Not the same as field pointers |
+
+**Working examples:** `LevelUpEvoTablesFieldAddr`, `SyntheticEvoEdgesFieldAddr`, `WildLevelCapsFieldAddr` in `src/wild_level_caps.c` → tables in `src/field/level_up_evo_tables.c`, `synthetic_evo_edges_data.c`, `wild_level_caps_data.c`.
+
+**Anti-patterns:**
+
+- Linking multi-kilobyte `.rodata` into root `src/` (bloats `output.bin` fast).
+- Reserving field space with a linker hole that pushes field content into **`0x023D8000+`** (clobbered 129 in past experiments).
+- Hooks that assume field overlay layout without using patched pointers (129 reloads; field addresses move per build).
+
+**Failed approach (home warps):** mid/tail hook on `Field_InitMapEvents` inside overlay 129 — overlap / wrong thunk; abandoned ([failed approaches](#failed-approaches-save-future-dev-time)).
+
+### Hooks and symbols
+
+- **`hooks` / `armhooks`:** `make.py` resolves symbols from `build/linked.o` and each `build/<subdir>_linked.o` (field first in the list) when inserting branches into ARM9 or overlay files.
+- **129-only logic** often lives in `asm/other_hook.s` (e.g. wild encounter species hook) calling into `src/wild_level_caps.c` (`-DOVERLAY129` on that translation unit only).
+
+### Related docs
+
+- Wild distance caps pipeline (uses this split): [below](#wild-level-caps-distance-based--verified-poc).
+- Upstream `CONFIG.md` overlay notes are stale; treat this section as canonical for this fork.
 
 ---
 
@@ -1209,7 +1263,7 @@ Stage tables live in **contiguous field overlay rodata** (`sLevelUpEvoTablesData
 
 Scratch survives overlay 129 reload; do not reuse these addresses for other features without updating `rom.ld`.
 
-**Overlay 129 size:** must stay **≤ 32 KiB** (`0x8000`). It loads at startup @ `0x023D8000` and overlaps the field overlay reservation — do not link large rodata into overlay 129.
+**Overlay 129 size:** must stay **≤ 32 KiB** — see [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) (measure `build/output.bin`, field vs 129 split, pointer-patch recipe).
 
 ### Debug toggles (turn off for normal play)
 
@@ -1237,7 +1291,7 @@ All tracked — nothing belongs in `scripts/local/`:
 |------|--------|------|
 | `scripts/build/gen_wild_level_caps.py` | build | Cap table → `src/field/wild_level_caps_data.c` (`narcs.mk`) |
 | `scripts/build/gen_level_up_evo_tables.py` | build | Stage tables → `src/field/level_up_evo_tables.c` + `include/constants/generated/level_up_evo_tables.h` |
-| `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
+| `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr`, `SyntheticEvoEdgesFieldAddr`, `WildLevelCapsFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
 | `scripts/build/gen_synthetic_evo_edges.py` | build | TSV → `src/field/synthetic_evo_edges_data.c` + generated header (`narcs.mk`) |
 | `data/synthetic_evolution_thresholds.tsv` | data | Authoring source for synthetic stage edges (`from`, `to`, `min_level`, `branch`) |
 | `include/species_stage_for_level.h` | include | `AdjustSpeciesForLevel` (level-up forward bands only; used internally) |

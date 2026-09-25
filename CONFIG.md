@@ -69,9 +69,10 @@
 
  ``STATIC_HP_BAR`` (``include/config.h`` only) updates the HP bar to increase/decrease at a fixed rate like later generations.
 
-### ``scripts\make.py`` and ``linker.ld``
- On line 13 of ``scripts/build/make.py``, change ``OFFSET_TO_START`` to be your location in overlay 129 with enough free space.  This is separate from the above one.  MAKE SURE THE OFFSETS DON'T OVERLAP.
+### Overlay 129 and ``linker.ld`` (this fork)
 
- Change the numbers at the beginning of ``linker.ld`` to be the same thing.
+See **[documentation/HACK-NOTES.md § Overlay 129 — engine code budget](documentation/HACK-NOTES.md#overlay-129-32-kib-engine-overlay)** for the 32 KiB limit, field vs 129 memory map, and the field-rodata + pointer-patch pattern.
+
+``scripts/build/make.py`` inserts ``build/output.bin`` into ``overlay_0129.bin`` at ``OFFSET_START_IN_129`` (``0x60``), matching ``ORIGIN = 0x023D8000 + 0x60`` in ``src/linker.ld``. Large tables belong in ``src/field/``, not root ``src/``.
 
  NOTE:  It is strongly suggested that code edits and repoints be done through hg-engine since its move to get rid of the synthetic overlay.

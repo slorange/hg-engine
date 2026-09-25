@@ -13,7 +13,7 @@
 | [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | PARTIALLY IMPLEMENTED |
 | [World-4. Pokémon Centers](#world-4-pokémon-centers) | DECIDED direction |
 | [World-5. TMs](#world-5-tms) | DECIDED — **core release target** (renewable shop TMs) |
-| [World-6. Evolution Methods (Trade & Stones)](#world-6-evolution-methods-trade--stones) | DECIDED (Option B level-up trade subs deferred) |
+| [World-6. Evolution Methods (Trade & Stones)](#world-6-evolution-methods-trade--stones) | DECIDED |
 | [World-7. Shops](#world-7-shops) | DECIDED — **core release target** (TMs, evolution items) |
 | Accelerated day/night cycle | Moved — [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
@@ -65,6 +65,14 @@ Likely only to cities that have already been visited.
 
 **Kanto coastal mesh** — fishermen + static Lapras at Pallet Town south shore, Cinnabar Island beach, Route 20 (Seafoam cave mouth), and Route 19 (south of Fuchsia); **$200** with a **3-destination menu** to any of the other stops (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City). Sep 2026 — see HACK-NOTES § Kanto coastal ferry mesh reference.
 
+## SS Aqua (Olivine ↔ Vermilion)
+
+**Status: PARTIALLY IMPLEMENTED** — ticket + story flags from Mom intro; **weekday schedule not fully open**
+
+**Target (DECIDED):** the **S.S. Aqua** runs **every day of the week** (no vanilla “wrong day” lockout). Open-world new saves already set **`FLAG_BOAT_ARRIVED`** and grant the S.S. Ticket for repeat travel ([HACK-NOTES](documentation/HACK-NOTES.md) § Open-world starting inventory); remaining work is **RTC / day-of-week checks** in Olivine and Vermilion port scr_seq (and any ship interior scripts that refuse boarding).
+
+**Not the same as:** Kanto **Fly map** destinations ([HACK-NOTES § Fly map](documentation/HACK-NOTES.md#fly-map--kanto-destinations-not-yet)) — still a separate unlock.
+
 ---
 
 
@@ -112,6 +120,8 @@ World-2-style gating **still applies** for non–wild-level concerns:
 - **HM / Flash / Headbutt** milestone locks ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) — Surf routes, Flash dungeons (Dark Cave, Rock Tunnel), etc.
 - **Victory Road / Pokémon League** — 16 badges.
 - **Optional hard areas** — dungeons, postgame paths, or similar where distance caps alone are insufficient; light World-2 complements Wilds-2 here.
+- **Vanilla story blockers (should be removed)** — e.g. **Team Rocket at Slowpoke Well (Azalea)** still gates the well on some new saves despite open-world skips; track under [Story-1 — Team Rocket](DESIGN-STORY.md#team-rocket--remove) and [Index-5 KB-4](DESIGN.md#index-5-known-bugs). Not intentional World-2 progression.
+- **Cut obstacles on open routes (DECIDED, not implemented)** — remove the **Cut tree in Ilex Forest** so the forest is traversable without Cut (same open-travel intent as Surge/Erika gym trees — [Story-1](DESIGN-STORY.md#route-cut-obstacles--remove), [HACK-NOTES](documentation/HACK-NOTES.md) § Remove Surge / Erika Cut trees). Flash / dungeon gates unchanged.
 
 Wild **level** progression uses [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) exclusively (not badge-gated encounter tiles).
 
@@ -298,7 +308,7 @@ Gym TM picks are intentionally **unlimited** over rematches (no finite TM proble
 
 # World-6. Evolution Methods (Trade & Stones)
 
-**Status: DECIDED** — trade-item use-on-Pokémon and Linking Cord shipped Sep 2026. Optional level-up substitutes for plain trade evos ([Option B](#option-b-level-up-evolution)) deferred.
+**Status: DECIDED** — trade-item use-on-Pokémon and Linking Cord shipped Sep 2026.
 
 ## Evolution stones
 
@@ -320,18 +330,7 @@ Examples: Dragon Scale → Kingdra, Metal Coat → Scizor, Protector → Rhyperi
 
 ### Trade evolutions — no item
 
-**Shipped (Option A):** **Linking Cord** — use on the Pokémon like a stone (`EVO_STONE` + `ITEM_LINKING_CORD` rows for plain trade lines in `data/Evolutions.c`). **Marts:** first slot on Goldenrod dept **2F lower** and Celadon dept **4F** ([World-7 § dept stores](#goldenrod--celadon-department-stores)); ¥8000.
-
-#### Option B: Level-up evolution (deferred)
-
-| Pokémon            | Evolves at |
-| ------------------ | ---------- |
-| Graveler → Golem   | 38         |
-| Machoke → Machamp  | 38         |
-| Kadabra → Alakazam | 42         |
-| Haunter → Gengar   | 42         |
-
-Not implemented; Linking Cord is the player-facing substitute unless we add these level-up rows later.
+**Shipped:** **Linking Cord** — use on the Pokémon like a stone (`EVO_STONE` + `ITEM_LINKING_CORD` rows for plain trade lines in `data/Evolutions.c`). **Marts:** first slot on Goldenrod dept **2F lower** and Celadon dept **4F** ([World-7 § dept stores](#goldenrod--celadon-department-stores)); ¥8000.
 
 ---
 

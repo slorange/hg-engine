@@ -116,6 +116,8 @@ Three independent inputs:
 
 The player can **enter** high-distance areas early; encounters scale from [Wilds-1](DESIGN-WILDS.md#wilds-1-increased-wild-pokémon-level-range) level ranges tied to graph distance — danger is in the fights, not a coord gate on the grass.
 
+**Interaction with [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps):** wild **levels** may exceed the **player** badge cap; **catching** those Pokémon must be blocked (decided — see [Wild catches above the player level cap](DESIGN-BATTLES.md#wild-catches-above-the-player-level-cap)).
+
 Wild-area difficulty should depend on the player's **chosen starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) rather than one fixed world progression curve or badge-count encounter blocks.
 
 ## World graph

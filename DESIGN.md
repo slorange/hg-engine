@@ -90,7 +90,7 @@ As of September 2026:
 
 | Feature                         | Status   | Design ref |
 | ------------------------------- | -------- | ---------- |
-| Post-battle heal (HP/PP/status) | Verified — [KB-2 tentatively resolved](DESIGN.md#monitoring-tentatively-resolved) | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
+| Post-battle heal (HP/PP/status) | Verified (heal works); **return-to-field crash [KB-2](DESIGN.md#index-5-known-bugs) open** | [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) |
 | Full-party EXP share (interim)  | Partial | [Battle-6](DESIGN-BATTLES.md#battle-6-exp-share) |
 
 
@@ -148,7 +148,9 @@ Work toward a shippable ROM without [DESIGN-FUTURE.md](DESIGN-FUTURE.md) north-s
 - Collection-based HMs + Gym Leader grants ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)) — HM pilot partial.
 - **Shop pass** — **implemented** in `src/field/mart.c` ([World-7](DESIGN-WORLD.md#world-7-shops)); verify in playtest. Still open: **Headbutt TM** slot, Mom resist berries.
 - **Game Corner Coin income** — prize TMs wired; earning Coins still requires Voltorb Flip ([World-5 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)).
-- Level caps (`IMPLEMENT_LEVEL_CAP`) — after scaling prototype is stable in playtesting.
+- **Player level caps** — implemented; **block wild catches above cap** ([Battle-4 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-level-cap)).
+- **SS Aqua every day** — [World-1 § SS Aqua](DESIGN-WORLD.md#ss-aqua-olivine--vermilion).
+- **Ilex Forest Cut tree** — [Story-1 § Route Cut obstacles](DESIGN-STORY.md#route-cut-obstacles--remove).
 - **Wilds-1** + **Wilds-2** — near complete; remaining hooks (Safari, Contest, etc.).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
 - Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival removal, Rocket extension, remaining gym rows.
@@ -179,7 +181,6 @@ The following are intentionally unresolved.
 - **Headbutt TM slot**, tutor removal, learnset audit, and badge-gated shop stock for Flash / Headbutt ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)) — vanilla has **no** Headbutt TM.
 - **Kanto Fly map** — enable Kanto fly destinations when visiting Kanto early (Magnet Train / open world); vanilla UI stays Johto-only until likely E4 clear or SS Aqua story ([HACK-NOTES § Fly map](documentation/HACK-NOTES.md#fly-map--kanto-destinations-not-yet)).
 - Clair Dragon's Den: remove trial vs HM-free path ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
-- Trade evolutions without items: optional level-up substitutes ([World-6 Option B](DESIGN-WORLD.md#option-b-level-up-evolution)) — Linking Cord shipped; level-up rows deferred.
 - Special-trainer roster (Red ~100 / Pikachu buff, E4 first-clear levels) vs badge-tier cap at 80 ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)).
 
 (Deferred systems and addons: [`DESIGN-FUTURE.md`](DESIGN-FUTURE.md) — [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) through [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).)
@@ -204,11 +205,15 @@ Regressions and incorrect behaviour in the **current ROM**. This is not [Index-2
 
 When a bug is fixed, remove its row here and note the fix in [`CHANGELOG.md`](CHANGELOG.md) if player-visible.
 
-### Monitoring (tentatively resolved)
+### Open
 
-| ID | Former symptom | Notes |
-| -- | -------------- | ----- |
-| **KB-2** | Intermittent crash when returning to the field after a battle (historically very rare; roughly once per 70–80+ encounters). | Tentatively fixed Sep 2026: `heal_after_battle.c` with `fight_end_flag` and pointer guards at `Battle_End`. 100+ battle ends without repro; not statistically proven. Recipe: [Heal after every battle](documentation/HACK-NOTES.md#heal-after-every-battle). Design: [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition). |
+| ID | Symptom | Notes |
+| -- | ------- | ----- |
+| **KB-2** | **Crash when returning to the field after a battle** — freeze or hard crash on the fade back to overworld. | **Open again (Sep 2026):** worse than the original report for at least one tester (**regular** repro); original dev **no longer reproduces** after the `heal_after_battle.c` guard pass — asymmetric, hard to bisect locally. Sep 2026 change (`fight_end_flag` + EWRAM pointer checks at `Battle_End`) may have shifted timing or masked one path only. **Bisect:** `#define HEAL_AFTER_BATTLE` off in `include/config.h`. Real fix likely needs a **decomp-verified** hook **after** vanilla save-party sync, not another guessed offset — see failed attempts in [Heal after every battle](documentation/HACK-NOTES.md#heal-after-every-battle). When reporting: emulator vs hardware, `test.nds` build date, new vs old save, wild vs trainer, party size, any cheats/speedup. |
+| **KB-3** | **Cherrygrove guide** — the Town Map / running-shoes tutorial **cutscene still runs**; the guide NPC is **invisible** (hidden on new saves via Mom intro flag sweep). | Mom already grants shoes + Town Map card. Fix: skip or nop the guide **coord / trigger scripts**, not just `FLAG_HIDE_CHERRYGROVE_GUIDE_GENT`. Backlog: [Story-2 — Cherrygrove guide](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). |
+| **KB-4** | **Slowpoke Well (Azalea)** — **at least one Team Rocket grunt** still blocks the well entrance despite Azalea rocket flags and scr_seq patches on new saves. | Partial work: `openworld_story_skip_flags.inc`, `tools/patch_scr_seq_t23_azalea.py` (scr_seq member **866**). Policy: [Story-1 — Team Rocket](DESIGN-STORY.md#team-rocket--remove). |
+| **KB-5** | **Mahogany Gym** — **crash when entering the last (Pryce) room** of the ice puzzle. | Repro when walking into Pryce’s room, not necessarily on battle start. Suspects: Mahogany gym **scr_seq** / **zone_event**, ice-tile puzzle state, or Pryce leader patch (member **932** slot **1** — `scr_seq_pryce_gym_slot1.s`, `tools/patch_scr_seq_gym_pryce.py`). Mahogany **town** rocket skip is separate ([HACK-NOTES § Mahogany Rocket](documentation/HACK-NOTES.md#skip-mahogany-rocket-arc--post-clear-town-on-load)). Recipe area: [Gym Leader HM rewards](documentation/HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot). |
+| **KB-6** | **Mom (player house 1F)** — after the open-world intro cutscene finishes and **Mom sits down**, talking to her shows **broken dialogue / wrong menus** (garbled or vanilla Elm-fetch flow). | Repro: complete Mom script **0** grants, then interact with seated Mom. Only slot **0** is rebuilt (`scr_seq_t20_mom_script0.s`); other scr_seq **845** slots stay vanilla with **`npc_msg` index remap** for `data/text/545.txt` (`tools/patch_scr_seq_t20_mom.py` — may not match sitting-script branches or scene vars). Fix likely: dedicated post-intro script slot(s) + aligned **545** strings, or replace sitting talk with a single sane menu. Recipe: [Open-world starting inventory](documentation/HACK-NOTES.md#open-world-starting-inventory-new-saves). |
 
 ---
 

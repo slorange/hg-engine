@@ -34,9 +34,24 @@ Mom cutscene ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémo
 
 No replacement fetch quests at other cities unless optional flavour, not service gates.
 
+## Route Cut obstacles — remove
+
+**Status: DECIDED — partially implemented**
+
+Same policy as Gym-adjacent Cut trees ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Surge / Erika Cut trees): players should reach cities and dungeons without story-gated Cut on **travel** routes when HMs unlock from Gym Leaders ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+
+| Location | Status |
+|----------|--------|
+| Vermilion / Celadon Gym (Surge, Erika) | **Verified** — trees stripped |
+| **Ilex Forest** | **Not implemented** — remove the Cut tree blocking passage through the forest (`D36R0101` / zone_event + scr_seq; mirror gym tree patch pattern) |
+
+Internal puzzles that only need Cut **inside** a optional side area may stay until audited; the **main through-route** should not require Cut.
+
 ## Team Rocket — remove
 
 Rocket grunts, hideouts, Radio Tower arc, and related roadblocks must not gate travel, Gyms, or items. Mahogany post-clear on load is the verified pattern (`HACK-NOTES.md`); extend to Goldenrod basement, Radio Tower, etc.
+
+**Partial (Sep 2026):** Mom intro sets many Azalea / Mahogany rocket flags (`armips/include/openworld_story_skip_flags.inc`); **Azalea Town** scr_seq **866** is patched when open-world starting items are on (`tools/patch_scr_seq_t23_azalea.py` — well coord flag flip, rival script nops). **Still open:** at least **one Rocket grunt remains at Slowpoke Well** and can block the entrance ([Index-5 KB-4](DESIGN.md#index-5-known-bugs)). Goldenrod basement and Radio Tower arcs are largely untouched.
 
 ## Rival — remove
 
@@ -56,7 +71,7 @@ Remove the rival entirely: no naming, no scripted intro, no mandatory early batt
 
 | Leader | Change |
 |--------|--------|
-| **Bugsy** (Azalea) | Remove Team Rocket. |
+| **Bugsy** (Azalea) | Remove Team Rocket — **in progress:** flag sweep + scr_seq **866**; **Slowpoke Well grunt still blocks** (see [Team Rocket — remove](#team-rocket--remove), [KB-4](DESIGN.md#index-5-known-bugs)). |
 | **Clair** (Blackthorn) | Drop 7-badge + Goldenrod Rocket gates. Drop or HM-free the Dragon's Den trial before the badge (Den currently needs Surf + Whirlpool). |
 | **Misty** (Cerulean) | Drop Power Plant / Machine Part / Route 25 chain; Leader available in Gym without leaving town. |
 | **Blue** (Viridian) | Drop “7 Kanto badges first” gate; challengeable at any badge tier. |
@@ -69,7 +84,7 @@ Remove the rival entirely: no naming, no scripted intro, no mandatory early batt
 | **Jasmine** (Olivine) | Secret Medicine sold at Olivine Mart (¥500); Lighthouse works after purchase. **Cleanup:** redundant Cianwood pharmacy — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). |
 | **Lt. Surge** (Vermilion) | Cut tree outside Gym removed; internal trash-can puzzle unchanged. |
 | **Erika** (Celadon) | City + Gym maze Cut trees removed; Leader reachable without Cut. |
-| **Pryce** (Mahogany) | Rocket skip on load (see above). |
+| **Pryce** (Mahogany) | Rocket skip on load (see above). **Known bug:** crash entering Pryce’s gym room — [KB-5](DESIGN.md#index-5-known-bugs) (not verified fixed). |
 
 Verified in-game Aug–Sep 2026. Field recipes: `documentation/HACK-NOTES.md`.
 
@@ -96,9 +111,10 @@ Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-sc
 
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
-| Cherrygrove guide (Town Map, running-shoes tutorial) | Mom grants shoes + Town Map card | Skip or shorten guide NPC scripts |
+| Cherrygrove guide (Town Map, running-shoes tutorial) | Mom grants shoes + Town Map card | Skip or shorten guide **trigger scripts** (NPC hidden via flag only — cutscene still runs; [KB-3](DESIGN.md#index-5-known-bugs)) |
 | Route 30 Apricorn Box NPC | Mom grants Apricorn Box + flag 109 | Remove NPC or make flavour-only |
 | Mom post-cutscene Elm errand line | Open-world intro has no Elm fetch | Edit `data/text/545.txt` string 6+; skip Elm lab gate scripts |
+| Mom **seated** talk after intro | Script **0** replaced; sitting scripts still vanilla + partial msg remap | Broken menus/dialogue — [KB-6](DESIGN.md#index-5-known-bugs); rewrite scr_seq **845** slot(s) for post-intro Mom |
 | Vanilla New Bark bedroom starter flow | Starters chosen in Mom script **0** | Bedroom scr_seq **846** already vanilla — verify no `choose_starter` hook |
 
 ## Opening / rival / egg (still mostly vanilla)

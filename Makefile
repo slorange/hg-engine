@@ -285,7 +285,7 @@ ifneq (1,$(NOSCAN))
 $(foreach src, $(ALL_C_SRCS), $(eval $(call SRC_OBJ_INC_DEFINE,$(patsubst $(C_SUBDIR)/%.c,$(BUILD)/%.o, $(src)),$(src))))
 endif
 
-# Overlay 129 reads field-overlay tables via ARM9 scratch (filled from patched LevelUpEvoTablesFieldAddr).
+# wild_level_caps.c in overlay 129; large tables live in field overlay — pointers patched in build/output.bin.
 $(BUILD)/wild_level_caps.o: $(C_SUBDIR)/wild_level_caps.c $(LEVEL_UP_EVO_TABLES_H) $(SYNTHETIC_EVO_EDGES_H) $(LEARNSETS_HEADER) $(BATTLETESTS_HEADER) | $(dir $(BUILD)/wild_level_caps.o)
 	$(CC) -MMD -MF $(basename $(BUILD)/wild_level_caps.o).d $(CFLAGS) -DOVERLAY129 -c $(C_SUBDIR)/wild_level_caps.c -o $(BUILD)/wild_level_caps.o
 
