@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Remove Cut trees blocking Vermilion / Celadon Gym access (Surge, Erika)."""
+"""Remove standard Cut trees (SPRITE_TREE + std_field_cut) from zone_event members."""
 
 from __future__ import annotations
 
@@ -7,11 +7,12 @@ import struct
 import sys
 from pathlib import Path
 
-# pret: 051_T06, 052_T07, 352_T07GYM0101
+# pret zone_event indices (not map header IDs — see HACK-NOTES)
 GYM_CUT_TREE_MEMBERS = (
     "2_051",  # Vermilion City — tree in front of Gym
     "2_052",  # Celadon City — tree blocking Gym approach
     "2_352",  # Celadon Gym — interior maze trees
+    "2_114",  # Ilex Forest (D36R0101) — main-path tree; eventsBank 114, header MAP_D36R0101=117
 )
 
 SPRITE_TREE = 86

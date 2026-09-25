@@ -121,7 +121,7 @@ World-2-style gating **still applies** for non–wild-level concerns:
 - **Victory Road / Pokémon League** — 16 badges.
 - **Optional hard areas** — dungeons, postgame paths, or similar where distance caps alone are insufficient; light World-2 complements Wilds-2 here.
 - **Vanilla story blockers (should be removed)** — e.g. **Team Rocket at Slowpoke Well (Azalea)** still gates the well on some new saves despite open-world skips; track under [Story-1 — Team Rocket](DESIGN-STORY.md#team-rocket--remove) and [Index-5 KB-4](DESIGN.md#index-5-known-bugs). Not intentional World-2 progression.
-- **Cut obstacles on open routes (DECIDED, not implemented)** — remove the **Cut tree in Ilex Forest** so the forest is traversable without Cut (same open-travel intent as Surge/Erika gym trees — [Story-1](DESIGN-STORY.md#route-cut-obstacles--remove), [HACK-NOTES](documentation/HACK-NOTES.md) § Remove Surge / Erika Cut trees). Flash / dungeon gates unchanged.
+- **Cut obstacles on open routes (verified Sep 2026)** — Ilex Forest main path ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Ilex Forest Cut tree); Route 35 tree removed separately. Same open-travel intent as Surge/Erika gym trees. Flash / dungeon gates unchanged.
 
 Wild **level** progression uses [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) exclusively (not badge-gated encounter tiles).
 

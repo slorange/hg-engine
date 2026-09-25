@@ -115,6 +115,7 @@ Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) 
 | Route 32 badge gate removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 | Mahogany Rocket arc skipped | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 | Surge / Erika Cut trees removed | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
+| Ilex Forest Cut tree removed | Verified | [Story-1 § Route Cut obstacles](DESIGN-STORY.md#route-cut-obstacles--remove) |
 | Jasmine / Olivine Lighthouse (Secret Medicine) | Verified | [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) |
 
 
@@ -150,7 +151,6 @@ Work toward a shippable ROM without [DESIGN-FUTURE.md](DESIGN-FUTURE.md) north-s
 - **Game Corner Coin income** — prize TMs wired; earning Coins still requires Voltorb Flip ([World-5 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)).
 - **Player level caps** — implemented; **block wild catches above cap** ([Battle-4 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-level-cap)).
 - **SS Aqua every day** — [World-1 § SS Aqua](DESIGN-WORLD.md#ss-aqua-olivine--vermilion).
-- **Ilex Forest Cut tree** — [Story-1 § Route Cut obstacles](DESIGN-STORY.md#route-cut-obstacles--remove).
 - **Wilds-1** + **Wilds-2** — near complete; remaining hooks (Safari, Contest, etc.).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
 - Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival removal, Rocket extension, remaining gym rows.

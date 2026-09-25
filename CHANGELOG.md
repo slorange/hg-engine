@@ -27,6 +27,8 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Route 4 ledge boost** — blackbelt + Machoke boost you over the ledge toward Mt. Moon for ¥100.
 - **Route 36** — Sudowoodo roadblock removed
 - **Route 32** — badge gate south toward Violet removed.
+- **Ilex Forest** — main-path Cut tree removed; cross the forest without HM Cut (verified in playtest, Sep 2026).
+- **Route 35** — one Cut tree removed for open-world travel; **not** part of Ilex Forest (same playtest).
 - **Mahogany** — Team Rocket arc skipped on load; RageCandyBar salesman no longer blocks Route 44.
 - **Route 29 → Route 46** — blocked until **2 badges** (Zephyr + Hive); guard-style gating proof of concept.
 

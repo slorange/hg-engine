@@ -36,14 +36,15 @@ No replacement fetch quests at other cities unless optional flavour, not service
 
 ## Route Cut obstacles — remove
 
-**Status: DECIDED — partially implemented**
+**Status: DECIDED — verified for listed locations (Sep 2026)**
 
 Same policy as Gym-adjacent Cut trees ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Surge / Erika Cut trees): players should reach cities and dungeons without story-gated Cut on **travel** routes when HMs unlock from Gym Leaders ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
 
 | Location | Status |
 |----------|--------|
 | Vermilion / Celadon Gym (Surge, Erika) | **Verified** — trees stripped |
-| **Ilex Forest** | **Not implemented** — remove the Cut tree blocking passage through the forest (`D36R0101` / zone_event + scr_seq; mirror gym tree patch pattern) |
+| **Ilex Forest** (`D36R0101`) | **Verified** — standard cut tree stripped from zone_event **`2_114`** (eventsBank **114**, not map header 117); same recipe as gym trees ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Ilex Forest Cut tree) |
+| **Route 35** | **Verified** — one Cut tree removed on Route 35 for open travel; **not** part of Ilex Forest ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Route 35 Cut tree) |
 
 Internal puzzles that only need Cut **inside** a optional side area may stay until audited; the **main through-route** should not require Cut.
 

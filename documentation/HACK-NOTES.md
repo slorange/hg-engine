@@ -19,6 +19,8 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Route 36 Sudowoodo | [Remove Sudowoodo block (Route 36)](#remove-sudowoodo-block-route-36--verified) |
 | Route 32 gate | [Remove Route 32 badge gate](#remove-route-32-badge-gate-south-of-violet--verified-pattern) |
 | Gym Cut trees | [Remove Surge / Erika Cut trees](#remove-surge--erika-cut-trees--gym-access) |
+| Ilex Forest Cut | [Remove Ilex Forest Cut tree](#remove-ilex-forest-cut-tree--open-travel) |
+| Route 35 Cut tree | [Remove Route 35 Cut tree](#remove-route-35-cut-tree--unrelated-to-ilex) |
 | Post-battle heal | [Heal after every battle](#heal-after-every-battle) |
 | Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) → [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags), [Kanto Fly map](#fly-map--kanto-destinations-not-yet) |
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
@@ -234,17 +236,51 @@ Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,3
 | Vermilion City | **051** → `2_051` | 1 outside Gym |
 | Celadon City | **052** → `2_052` | 1 outside Gym |
 | Celadon Gym | **352** → `2_352` | 3 inside maze |
+| Ilex Forest (`D36R0101`) | **114** → `2_114` | 1 on main path (not header id **117**) |
 
 Cut trees are `SPRITE_TREE` (86) + `std_field_cut` (script 10000) objects — **not** Blender map geometry.
 
 | File | Role |
 |------|------|
-| `tools/patch_zone_event_gym_cut_trees.py` | Strip matching tree objects from the three members above |
+| `tools/patch_zone_event_gym_cut_trees.py` | Strip matching tree objects from the members above (incl. Ilex `2_114`) |
 | `narcs.mk` | Hook after zone_event extract |
 
 Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 **Verified:** new save, 0 badges, no Cut mon — walk to Vermilion Gym door; Celadon Gym door; inside Celadon Gym reach Erika without Cut.
+
+---
+
+## Remove Ilex Forest Cut tree — open travel
+
+**Status:** verified in-game (Sep 2026). 0 badges, no Cut — main path walkable Route 34 ↔ Route 35.
+
+**Goal:** cross **Ilex Forest** (`D36R0101`) without Cut — [Story-1 § Route Cut obstacles](DESIGN-STORY.md#route-cut-obstacles--remove).
+
+| What | ID |
+|------|-----|
+| Map header | `MAP_D36R0101` = **117** (`include/constants/maps.h`) |
+| **zone_event `eventsBank`** | **114** → `2_114` (pret `114_D36R0101`) |
+| Cut tree object | `SPRITE_TREE` (86) + `std_field_cut` (10000), flag 16 @ **(16, 62)** |
+
+**Gotcha:** map header **117** ≠ zone_event member **117** (`2_117` is a different map). Always use pret `map_headers.h` **`eventsBank`**, same lesson as Route 32 ([badge gate](#remove-route-32-badge-gate-south-of-violet--verified-pattern)).
+
+Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **`2_114`**.
+
+**Verified:** enter from Route 34, walk through to the Route 35 side without Cut.
+
+---
+
+## Remove Route 35 Cut tree — unrelated to Ilex
+
+**Status:** verified in same playtest as Ilex (Sep 2026); optional open-world cleanup only.
+
+**Goal:** optional open-world cleanup — one standard Cut tree on **Route 35** (`MAP_R35` = **39**, zone_event **036** → `2_036` @ world **(380, 265)**). Not required for Ilex interior; documented separately in [Story-1](DESIGN-STORY.md#route-cut-obstacles--remove).
+
+| File | Role |
+|------|------|
+| `tools/patch_zone_event_r35_cut_tree.py` | Strip the single `2_036` tree (reuses gym cut-tree logic) |
+| `narcs.mk` | Hook after zone_event extract |
 
 ---
 
