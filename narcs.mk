@@ -715,6 +715,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) tools/patch_scr_seq_olivine_rod_guru.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) scripts/build/verify_olivine_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
+	$(PYTHON) tools/patch_scr_seq_t23_azalea.py $(SCR_SEQ_DIR)/2_866
 	$(PYTHON) tools/patch_scr_seq_t20_mom.py $(SCR_SEQ_DIR)/2_845
 	$(PYTHON) tools/patch_scr_seq_start_city.py $(SCR_SEQ_DIR)/2_845
 	$(PYTHON) tools/patch_scr_seq_t20_bedroom.py $(SCR_SEQ_DIR)/2_846

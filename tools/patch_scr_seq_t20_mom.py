@@ -24,7 +24,7 @@ MAX_TABLE_SCAN = 512
 
 def openworld_enabled() -> bool:
     text = CONFIG.read_text(encoding="utf-8")
-    return re.search(r"^#define\s+OPENWORLD_STARTING_ITEMS\b", text, re.MULTILINE) is not None
+    return re.search(r"^#define\s+OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS\b", text, re.MULTILINE) is not None
 
 
 def config_flag(name: str) -> bool:
@@ -40,6 +40,9 @@ def config_define_int(name: str, default: int) -> int:
 
 def armips_flags() -> list[str]:
     flags: list[str] = []
+    flags.extend(
+        ["-equ", "OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS", "1" if openworld_enabled() else "0"]
+    )
     flags.extend(
         ["-equ", "OPENWORLD_TESTING_GRANTS", "1" if config_flag("OPENWORLD_TESTING_GRANTS") else "0"]
     )
@@ -186,7 +189,7 @@ def main(argv: list[str]) -> int:
     vanilla = load_vanilla_member()
     if not openworld_enabled():
         target.write_bytes(vanilla)
-        print(f"OPENWORLD_STARTING_ITEMS disabled; left vanilla scr_seq in {target}")
+        print(f"OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS disabled; left vanilla scr_seq in {target}")
         return 0
 
     SCRIPT0_BIN.parent.mkdir(parents=True, exist_ok=True)

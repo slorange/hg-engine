@@ -276,9 +276,9 @@
 // uncomment the line out to get this functionality
 #define SKIP_TUTORIAL_INFO
 
-// OPENWORLD_STARTING_ITEMS grants key transport items, Apricorn Box, running shoes, and Pokédex
-// after Mom gives the bag / Trainer Card / save and settings (scr_seq member 845).
-#define OPENWORLD_STARTING_ITEMS
+// OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS: Mom intro grants (Pass, Ticket, Apricorn Box, …) plus
+// openworld_story_skip_flags.inc on new saves; gates start-city / train / Mahogany OnLoad patchers.
+#define OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS
 
 // OPENWORLD_TESTING_GRANTS enables dev-only extras while prototyping (e.g. all HMs from Mom, silent).
 // Disable before builds for others or any release candidate.

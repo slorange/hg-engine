@@ -39,7 +39,7 @@ EXPECTED_DOORS: list[tuple[str, int, int, int, int, int]] = [
 
 def openworld_enabled() -> bool:
     text = CONFIG.read_text(encoding="utf-8")
-    return re.search(r"^#define\s+OPENWORLD_STARTING_ITEMS\b", text, re.MULTILINE) is not None
+    return re.search(r"^#define\s+OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS\b", text, re.MULTILINE) is not None
 
 
 def parse_zone_event(data: bytes):
@@ -56,7 +56,7 @@ def parse_zone_event(data: bytes):
 
 def main() -> None:
     if not openworld_enabled():
-        print("ok: OPENWORLD_STARTING_ITEMS off (start-city patches skipped)")
+        print("ok: OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS off (start-city patches skipped)")
         return
 
     needed = {member for _, member, _, _, _, _ in EXPECTED_DOORS}

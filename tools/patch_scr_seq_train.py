@@ -2,7 +2,7 @@
 """Patch Magnet Train station scr_seq members: skip FLAG_RESTORED_POWER gates.
 
 Goldenrod T25R0501 (893) and Saffron T11R0601 (834). Assumes Pass and Ticket
-are already granted at Mom (OPENWORLD_STARTING_ITEMS); coord gates keep vanilla
+are already granted at Mom (OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS); coord gates keep vanilla
 HasItem ITEM_PASS checks.
 
 Replaces each checkflag FLAG_RESTORED_POWER + goto_if(1) with an unconditional
@@ -33,7 +33,7 @@ MAX_TABLE_SCAN = 512
 
 def openworld_enabled() -> bool:
     text = CONFIG.read_text(encoding="utf-8")
-    return re.search(r"^#define\s+OPENWORLD_STARTING_ITEMS\b", text, re.MULTILINE) is not None
+    return re.search(r"^#define\s+OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS\b", text, re.MULTILINE) is not None
 
 
 def load_vanilla_member(index: int) -> bytearray:
@@ -172,7 +172,7 @@ def main(argv: list[str]) -> int:
         vanilla = load_vanilla_member(index)
         if not openworld_enabled():
             target.write_bytes(vanilla)
-            print(f"OPENWORLD_STARTING_ITEMS disabled; left vanilla scr_seq in {target}")
+            print(f"OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS disabled; left vanilla scr_seq in {target}")
             continue
 
         patch_file(target, index)

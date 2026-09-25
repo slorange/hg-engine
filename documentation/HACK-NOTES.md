@@ -626,6 +626,8 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 
 **Route 36 Sudowoodo (Mom intro):** `FLAG_HIDE_ROUTE_36_SUDOWOODO` (**450**) in the same block (see [Remove Sudowoodo block](#remove-sudowoodo-block-route-36--verified)).
 
+**Vanilla cleanup (Mom intro):** with `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS`, `armips/include/openworld_story_skip_flags.inc` sets early-route hide flags, rival/Elm skips, Azalea + Mahogany rocket flags, and **`FLAG_BOAT_ARRIVED` (235)** + **`FLAG_UNK_0F2` (242)** / pret S.S. Ticket from Elm for SS Aqua repeat-travel (ticket item already granted). Mahogany rocket **story flags** are not duplicated on map load when the define is on — `tools/patch_scr_seq_t28_rocket.py` uses `scr_seq_t28_005_onload.s` (`hide_person` only). **Kanto Fly map** is separate — likely `PlayerProfile.gameClear` (Hall of Fame), not flypoint flags; see [Fly map](#fly-map--kanto-destinations-not-yet).
+
 ### Debug helpers (keep using these)
 
 | Script | Purpose |
@@ -676,7 +678,7 @@ Water walkability is **`land_data.narc`** (`a/0/6/5`), not scr_seq. hg-engine re
 
 Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TAKEOVER = 2`, sets rocket flags). **`tools/patch_scr_seq_t28_rocket.py`** replaces the first bytes at OnLoad entry (**38**) with `call` → appended patch blob (preserves overlapping script layout — **do not** rebuild the offset table).
 
-**Flags set:** hide rocket town NPCs (439–444), shady salesman (498), Lance in shop (504), Route 43 gate rockets (506); restore normal shopkeeper (`clearflag` 487), gate guard (`clearflag` 507); hide hideout interior NPCs if entered. **`clearflag FLAG_ROCKET_TAKEOVER_ACTIVE`** (2459), **`clearflag FLAG_UNK_0C5`** (197), **`setflag FLAG_BEAT_RADIO_TOWER_ROCKETS`** (198), **`setflag FLAG_ROCKET_HIDEOUT_CLEARED`** (202, Route 43 toll).
+**Flags set:** hide rocket town NPCs (439–444), shady salesman (498), Lance in shop (504), Route 43 gate rockets (506); restore normal shopkeeper (`clearflag` 487), gate guard (`clearflag` 507); hide hideout interior NPCs if entered. **`clearflag FLAG_ROCKET_TAKEOVER_ACTIVE`** (2459), **`clearflag FLAG_UNK_0C5`** (197), **`setflag FLAG_BEAT_RADIO_TOWER_ROCKETS`** (198), **`setflag FLAG_ROCKET_HIDEOUT_CLEARED`** (202, Route 43 toll). With **`OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS`**, the same flag/var block runs at **Mom intro** (`openworld_story_skip_flags.inc`); Mahogany OnLoad patch is **`hide_person` only** (`scr_seq_t28_005_onload.s`).
 
 **Gym blocker:** hide flag **439** on obj1. **East exit:** remove middleman obj0 `(540,175)` from zone_event **084** *and* matrix duplicate **043** (script 65535 — visible from Route 44); remove exit coord script 2; remove bigman obj2 `(523,184)`. **Route 44:** remove all three junction NPCs from **046** (incl. sprite 325 blocker) plus matrix duplicates in **090**. OnLoad sets `VAR_UNK_407A=1`, flags **505/517**, `hide_person 0/2`.
 
@@ -764,7 +766,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 ## Open-world starting inventory (new saves)
 
-**Toggle:** `OPENWORLD_STARTING_ITEMS` in `include/config.h` (on by default).
+**Toggle:** `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS` in `include/config.h` (on by default). Same switch enables Mom starting grants, `openworld_story_skip_flags.inc`, start-city zone_event patches, Magnet Train scr_seq bypass, and slim Mahogany OnLoad when rocket flags are set at Mom intro.
 
 **Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). Party-menu Fly needs **`OPENWORLD_FIELD_MOVES_NO_BADGE_GATE`** ([Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags)). Optional commented **`OPENWORLD_STORY_FLAG_SWEEP`** for flag-range bisect ([Story flag range sweep](#story-flag-range-sweep-dev)). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
 
@@ -952,7 +954,7 @@ python scripts/dev/verify_start_city_patch.py
 
 ## Magnet Train (Goldenrod ↔ Saffron)
 
-**Toggle:** same `OPENWORLD_STARTING_ITEMS` gate as Mom grants.
+**Toggle:** same `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS` gate as Mom grants.
 
 **Assumption:** Pass (`ITEM_PASS` 480) and S.S. Ticket (`ITEM_SS_TICKET` 456) already in bag from Mom; coord gates keep vanilla `HasItem ITEM_PASS` (passes). No Copycat / power-plant story required.
 

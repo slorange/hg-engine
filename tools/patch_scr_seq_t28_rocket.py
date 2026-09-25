@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Patch Mahogany Town scr_seq member 930: skip rocket takeover on map load."""
 
-from __future__ import annotations
-
+import re
 import struct
 import subprocess
 import sys
@@ -16,8 +15,15 @@ MEMBER_INDEX = 930
 VANILLA_MEMBER = ROOT / f"build/a012_vanilla/2_{MEMBER_INDEX:03d}"
 ONLOAD_OFFSET = 38
 SLOT0_OFFSET = 101
-PATCH_ASM = ROOT / "armips/scr_seq/scr_seq_t28_005_patch.s"
+PATCH_ASM_FULL = ROOT / "armips/scr_seq/scr_seq_t28_005_patch.s"
+PATCH_ASM_ONLOAD = ROOT / "armips/scr_seq/scr_seq_t28_005_onload.s"
 PATCH_BIN = ROOT / "build/t28_005_patch.bin"
+CONFIG = ROOT / "include/config.h"
+
+
+def openworld_story_skip_and_starting_items() -> bool:
+    text = CONFIG.read_text(encoding="utf-8")
+    return re.search(r"^#define\s+OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS\b", text, re.MULTILINE) is not None
 
 
 def script_offset(data: bytes, index: int) -> int:
@@ -112,7 +118,8 @@ def main(argv: list[str]) -> int:
     target = Path(argv[1])
 
     PATCH_BIN.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.check_call([str(ARMIPS), str(PATCH_ASM)])
+    patch_asm = PATCH_ASM_ONLOAD if openworld_story_skip_and_starting_items() else PATCH_ASM_FULL
+    subprocess.check_call([str(ARMIPS), str(patch_asm)])
     patch = PATCH_BIN.read_bytes()
 
     vanilla = load_vanilla_member()

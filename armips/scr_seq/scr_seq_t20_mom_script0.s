@@ -191,6 +191,9 @@ _mom_begin:
     setflag FLAG_MAPTEMP_013
     setflag FLAG_MAPTEMP_014
     setflag FLAG_HIDE_ROUTE_36_SUDOWOODO
+.if OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS == 1
+.include "armips/include/openworld_story_skip_flags.inc"
+.endif
 .if OPENWORLD_STORY_FLAG_SWEEP == 1
     setvar VAR_TEMP_x4000, OPENWORLD_STORY_FLAG_SWEEP_START
 _story_flag_sweep:

@@ -25,7 +25,7 @@ DYNAMIC_WARP_ANCHOR = 0x100
 
 def openworld_enabled() -> bool:
     text = CONFIG.read_text(encoding="utf-8")
-    return re.search(r"^#define\s+OPENWORLD_STARTING_ITEMS\b", text, re.MULTILINE) is not None
+    return re.search(r"^#define\s+OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS\b", text, re.MULTILINE) is not None
 
 
 def parse_zone_event(data: bytes) -> tuple[list[list[int]], list[bytes], list[tuple[int, int, int, int, int, int]], list[list[int]]]:
@@ -117,7 +117,7 @@ def main(argv: list[str]) -> int:
         return 1
 
     if not openworld_enabled():
-        print("OPENWORLD_STARTING_ITEMS disabled; skipping start-city zone_event patches")
+        print("OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS disabled; skipping start-city zone_event patches")
         return 0
 
     interior = zone_dir / "2_060"

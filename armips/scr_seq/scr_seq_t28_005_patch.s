@@ -9,6 +9,8 @@
 .create "build/t28_005_patch.bin", 0
 
 // Mahogany Town OnLoad (slot 5 / scriptId 6): force post-rocket-hideout town state.
+// Used when OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS is off. When on, rocket flags are set at Mom intro
+// (openworld_story_skip_flags.inc); patch_scr_seq_t28_rocket.py assembles scr_seq_t28_005_onload.s instead.
 // Do NOT set Gyarados hide/catch flags (483, 362, 201). Flag 202 = hideout cleared (Route 43).
     setvar VAR_SCENE_ROCKET_TAKEOVER, 5
     setvar VAR_UNK_407A, 1

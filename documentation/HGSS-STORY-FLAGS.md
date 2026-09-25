@@ -33,7 +33,7 @@ Regenerate: `python tools/gen_story_flags_doc.py` (edit `WANDERING_HEART_NOTES` 
 | 120 | 0x78 | `FLAG_UNK_078` |  |
 | 121 | 0x79 | `FLAG_GAVE_RIVAL_NAME_TO_OFFICER` |  |
 | 122 | 0x7A | `FLAG_GOT_KINGS_ROCK_FROM_SLOWPOKE_WELL_MAN` |  |
-| 123 | 0x7B | `FLAG_BEAT_AZALEA_ROCKETS` |  |
+| 123 | 0x7B | `FLAG_BEAT_AZALEA_ROCKETS` | Mom intro: post–Proton + **425/426**; member **866** clearflag **415** @ coord 83, NOP rival @868/903/936. |
 | 124 | 0x7C | `FLAG_UNK_07C` |  |
 | 125 | 0x7D | `FLAG_FOUND_FIRST_FARFETCHD` |  |
 | 126 | 0x7E | `FLAG_FOUND_SECOND_FARFETCHD` |  |
@@ -74,7 +74,7 @@ Regenerate: `python tools/gen_story_flags_doc.py` (edit `WANDERING_HEART_NOTES` 
 | 161 | 0xA1 | `FLAG_UNK_0A1` |  |
 | 162 | 0xA2 | `FLAG_GOT_HM03` |  |
 | 163 | 0xA3 | `FLAG_GOT_DOWSING_MACHINE` |  |
-| 164 | 0xA4 | `FLAG_ENGAGING_STATIC_POKEMON` | Vanilla Route 36 Sudowoodo fight (static encounter in progress). |
+| 164 | 0xA4 | `FLAG_ENGAGING_STATIC_POKEMON` |  |
 | 165 | 0xA5 | `FLAG_GOT_MAGNET_FROM_SUNNY` |  |
 | 166 | 0xA6 | `FLAG_GOT_TM30_FROM_MORTY` | Morty gym patch: TM30 reward `setflag`. |
 | 167 | 0xA7 | `FLAG_TALKED_TO_MOM_AFTER_NAMING_RIVAL` |  |
@@ -107,12 +107,12 @@ Regenerate: `python tools/gen_story_flags_doc.py` (edit `WANDERING_HEART_NOTES` 
 | 194 | 0xC2 | `FLAG_GOT_TM23_FROM_JASMINE` | Jasmine gym patch: TM23 reward `setflag`. |
 | 195 | 0xC3 | `FLAG_UNK_0C3` |  |
 | 196 | 0xC4 | `FLAG_UNK_0C4` |  |
-| 197 | 0xC5 | `FLAG_UNK_0C5` | Mahogany Rocket skip: `clearflag` (`scr_seq_t28_005_patch.s`). |
-| 198 | 0xC6 | `FLAG_BEAT_RADIO_TOWER_ROCKETS` | Mahogany Rocket skip: `setflag` (beat radio tower). |
+| 197 | 0xC5 | `FLAG_UNK_0C5` | Mahogany Rocket skip: `clearflag` (Mom intro + `scr_seq_t28_005_patch.s` if starting items off). |
+| 198 | 0xC6 | `FLAG_BEAT_RADIO_TOWER_ROCKETS` | Mahogany Rocket skip: `setflag` beat radio tower (Mom intro; OnLoad full patch if starting items off). |
 | 199 | 0xC7 | `FLAG_GOT_TM10_FROM_LAKE_OF_RAGE_MAN` |  |
 | 200 | 0xC8 | `FLAG_UNK_0C8` |  |
 | 201 | 0xC9 | `FLAG_GOT_RED_SCALE` | Mahogany skip: **do not set** — keeps Red Gyarados chain (HACK-NOTES). |
-| 202 | 0xCA | `FLAG_ROCKET_HIDEOUT_CLEARED` | Mahogany Rocket skip: `setflag` hideout cleared (pret name; not Gyarados hide). |
+| 202 | 0xCA | `FLAG_ROCKET_HIDEOUT_CLEARED` | Mahogany Rocket skip: `setflag` hideout cleared (Mom intro; OnLoad full patch if starting items off). |
 | 203 | 0xCB | `FLAG_REMOVED_ROCKET_HIDEOUT_B3F_ELECTRODE_1` |  |
 | 204 | 0xCC | `FLAG_REMOVED_ROCKET_HIDEOUT_B3F_ELECTRODE_2` |  |
 | 205 | 0xCD | `FLAG_REMOVED_ROCKET_HIDEOUT_B3F_ELECTRODE_3` |  |
@@ -145,14 +145,14 @@ Regenerate: `python tools/gen_story_flags_doc.py` (edit `WANDERING_HEART_NOTES` 
 | 232 | 0xE8 | `FLAG_UNK_0E8` |  |
 | 233 | 0xE9 | `FLAG_GOT_TM37_FROM_ROUTE_27_WOMAN` |  |
 | 234 | 0xEA | `FLAG_UNK_0EA` |  |
-| 235 | 0xEB | `FLAG_BOAT_ARRIVED` |  |
+| 235 | 0xEB | `FLAG_BOAT_ARRIVED` | Mom intro: `FLAG_BOAT_ARRIVED` — SS Aqua post-first-voyage (pret). |
 | 236 | 0xEC | `FLAG_UNK_0EC` |  |
 | 237 | 0xED | `FLAG_UNK_0ED` |  |
 | 238 | 0xEE | `FLAG_GOT_ELMS_PANIC_CALL` |  |
 | 239 | 0xEF | `FLAG_UNK_0EF` |  |
 | 240 | 0xF0 | `FLAG_UNK_0F0` |  |
 | 241 | 0xF1 | `FLAG_UNK_0F1` |  |
-| 242 | 0xF2 | `FLAG_GOT_SS_TICKET_FROM_ELM` |  |
+| 242 | 0xF2 | `FLAG_GOT_SS_TICKET_FROM_ELM` | Mom intro: `FLAG_UNK_0F2` / pret `GOT_SS_TICKET_FROM_ELM` (S.S. Ticket item also from Mom). |
 | 243 | 0xF3 | `FLAG_GOT_MYSTIC_WATER_FROM_CHERRYGROVE_CITY_MAN` |  |
 | 244 | 0xF4 | `FLAG_UNK_0F4` | Falkner gym patch: vanilla side-effect `setflag` (`FLAG_UNK_0F4`). |
 | 245 | 0xF5 | `FLAG_UNK_0F5` |  |
@@ -279,7 +279,7 @@ Regenerate: `python tools/gen_story_flags_doc.py` (edit `WANDERING_HEART_NOTES` 
 | 366 | 0x16E | `FLAG_UNK_16E` |  |
 | 367 | 0x16F | `FLAG_SPECIAL_MART_PHARMACY` | Commonscript `special_mart` routing when pharmacy mart active (vanilla). |
 | 368 | 0x170 | `FLAG_SPECIAL_MART_BITTER` | Commonscript `special_mart` routing when bitter mart active (vanilla). |
-| 369 | 0x171 | `FLAG_SPECIAL_MART_MAHOGANY_GOOD` | Mahogany Rocket skip: `setflag` → Mahogany good mart stock. |
+| 369 | 0x171 | `FLAG_SPECIAL_MART_MAHOGANY_GOOD` | Mahogany Rocket skip + Mom intro: `setflag` → Mahogany good mart stock. |
 | 370 | 0x172 | `FLAG_UNK_172` |  |
 | 371 | 0x173 | `FLAG_CAUGHT_SNORLAX` |  |
 | 372 | 0x174 | `FLAG_GOT_LURE_BALL_FROM_ROUTE_32_KURT_FAN` |  |

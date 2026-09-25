@@ -42,7 +42,7 @@ PATCHED_HDR = bytes(
 
 def openworld_enabled() -> bool:
     text = CONFIG.read_text(encoding="utf-8")
-    return re.search(r"^#define\s+OPENWORLD_STARTING_ITEMS\b", text, re.MULTILINE) is not None
+    return re.search(r"^#define\s+OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS\b", text, re.MULTILINE) is not None
 
 
 def main(argv: list[str]) -> int:
@@ -57,7 +57,7 @@ def main(argv: list[str]) -> int:
     vanilla = VANILLA_MEMBER.read_bytes()
     if not openworld_enabled():
         target.write_bytes(vanilla)
-        print(f"OPENWORLD_STARTING_ITEMS disabled; left vanilla header in {target}")
+        print(f"OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS disabled; left vanilla header in {target}")
         return 0
 
     if vanilla == PATCHED_HDR:
