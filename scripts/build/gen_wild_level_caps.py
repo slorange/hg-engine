@@ -14,7 +14,7 @@ DISTANCES_TSV = ROUTE_LEVELS / "location_distances.txt"
 STARTING_CITIES = ROUTE_LEVELS / "starting_cities.txt"
 ENCOUNTER_GRAPH = ROUTE_LEVELS / "encounter_area_graph.tsv"
 ENCOUNTER_TABLES_H = ROOT / "include/constants/encounter_tables.h"
-OUT_C = ROOT / "src/wild_level_caps_data.c"
+OUT_C = ROOT / "src/field/wild_level_caps_data.c"
 OUT_H = ROOT / "include/constants/generated/wild_level_caps.h"
 
 WILD_LEVEL_MIN = 5

@@ -1752,14 +1752,14 @@ bool8 LONG_CALL RevertFormChange(struct PartyPokemon *pp, u16 species, u8 form_n
 void LONG_CALL ClearMonMoves(struct PartyPokemon *pokemon);
 
 /**
- *  @brief get level cap from the script variable defined by LEVEL_CAP_VARIABLE
+ *  @brief get current player level cap (badge ladder when IMPLEMENT_LEVEL_CAP)
  *
- *  @return level cap from LEVEL_CAP_VARIABLE script variable
+ *  @return level cap (100 when disabled or post–Hall of Fame)
  */
 u32 LONG_CALL GetLevelCap(void);
 
 /**
- *  @brief check if the level is at or above the level cap defined in LEVEL_CAP_VARIABLE
+ *  @brief check if the level is at or above GetLevelCap()
  *
  *  @param level level to check
  *  @return TRUE if level >= level cap; FALSE otherwise

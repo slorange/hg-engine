@@ -48,11 +48,11 @@ typedef struct WildLevelCapDebug {
     u32 gFieldSysPtrVal;
 } WildLevelCapDebug;
 
-extern const u8 sWildLevelCaps[WILD_LEVEL_CAP_NUM_START_CITIES][WILD_LEVEL_CAP_NUM_ENCOUNTER_AREAS];
 extern FieldSystem *sPersistFieldSysPtr;
-// Runtime address of field-overlay sLevelUpEvoTablesData (patched in build/output.bin).
+// Runtime addresses of field-overlay rodata (patched in build/output.bin).
 u32 LevelUpEvoTablesFieldAddr = 0;
 u32 SyntheticEvoEdgesFieldAddr = 0;
+u32 WildLevelCapsFieldAddr = 0;
 extern WildLevelCapDebug sWildLevelCapDebug;
 extern WildLevelCapCache sWildCapCache;
 
@@ -166,7 +166,12 @@ static u8 ComputeWildLevelCap(u8 *failReason)
         return WILD_LEVEL_CAP_MIN;
     }
 
-    cap = sWildLevelCaps[startCityIndex][encBank];
+    if (WildLevelCapsFieldAddr == 0) {
+        *failReason = WLC_FAIL_CAP_ZERO;
+        return WILD_LEVEL_CAP_MIN;
+    }
+
+    cap = ((const u8 (*)[WILD_LEVEL_CAP_NUM_ENCOUNTER_AREAS])(u32)WildLevelCapsFieldAddr)[startCityIndex][encBank];
 
     if (cap == 0) {
         *failReason = WLC_FAIL_CAP_ZERO;

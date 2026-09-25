@@ -23,7 +23,7 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) → [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags), [Kanto Fly map](#fly-map--kanto-destinations-not-yet) |
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
 | Trainer scaling | [Trainer level scaling](#trainer-level-scaling) |
-| Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies-not-enabled-yet) |
+| Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies) |
 | Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42](#route-42-reference-verified), [Route 40 / Cianwood](#route-40--cianwood-reference-verified), [Route 31 / Route 45](#route-31--route-45-dark-cave-reference) |
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
 | Story NPC removal | [Removing / skipping story NPCs](#removing--skipping-story-npcs-reusable-recipe) |
@@ -414,17 +414,17 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 ---
 
-## Player badge level cap & Rare Candies (not enabled yet)
+## Player badge level cap & Rare Candies
 
-**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps) — EXP stops at badge cap; **Rare Candies may exceed the cap** when both hooks are enabled.
+**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps) — EXP stops at badge cap; **Rare Candies may exceed the cap**.
 
-| Toggle | Role |
-|--------|------|
-| `IMPLEMENT_LEVEL_CAP` | hg-engine level cap from `LEVEL_CAP_VARIABLE` (off in this fork by default) |
-| `UNCAP_CANDIES_FROM_LEVEL_CAP` | Rare Candies ignore the cap (use with `IMPLEMENT_LEVEL_CAP`) |
-| `ALLOW_LEVEL_CAP_EVOLVE` | Optional — evolve at cap via candy when evolution level matches |
-
-All three are commented out in `include/config.h`. Trainer scaling (`TRAINER_LEVEL_SCALING`) is independent and **on** by default. Verify hg-engine cap behaviour matches design before enabling `IMPLEMENT_LEVEL_CAP`.
+| Piece | Where |
+|-------|--------|
+| `GetLevelCap()` | `src/pokemon.c` — `GetPlayerLevelCapForBadges(PlayerProfile_CountBadges(...))`; **100** when `PlayerProfile.gameClear` |
+| Trainer cap helper | `include/player_level_cap.h` (inline; shared with `enemy_party.c`) |
+| `IMPLEMENT_LEVEL_CAP` / `UNCAP_CANDIES_FROM_LEVEL_CAP` | `include/config.h` (on) |
+| `ALLOW_LEVEL_CAP_EVOLVE` | Optional — Rare Candy at cap runs level-up evolution check (off by default) |
+| EXP / candy hooks | `ImplementLevelCap_hook` (battle EXP), `Pokemon_TryLevelUp` @ ARM9 (level-up + **EXP clamp at cap** — empty bar), `CanUseItemOnMonInParty`; `CapRareCandies` only when UNCAP off |
 
 ---
 
@@ -768,7 +768,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Toggle:** `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS` in `include/config.h` (on by default). Same switch enables Mom starting grants, `openworld_story_skip_flags.inc`, start-city zone_event patches, Magnet Train scr_seq bypass, and slim Mahogany OnLoad when rocket flags are set at Mom intro.
 
-**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (currently HM02 from Mom). Party-menu Fly needs **`OPENWORLD_FIELD_MOVES_NO_BADGE_GATE`** ([Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags)). Optional commented **`OPENWORLD_STORY_FLAG_SWEEP`** for flag-range bisect ([Story flag range sweep](#story-flag-range-sweep-dev)). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (100 Rare Candies silent + HMs 01–08 from Mom). Party-menu Fly needs **`OPENWORLD_FIELD_MOVES_NO_BADGE_GATE`** ([Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags)). Optional commented **`OPENWORLD_STORY_FLAG_SWEEP`** for flag-range bisect ([Story flag range sweep](#story-flag-range-sweep-dev)). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
 
 **Hook:** Mom downstairs cutscene — scr_seq member **845** (`T20R0201`), script slot **0**.
 
@@ -787,7 +787,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 | Pokégear | `FLAG_GOT_POKEGEAR` + fanfare |
 | Town Map card | `UpgradePokegear(1)` only — **do not** use `town_map` / `WorldMapScreen` (cmd 157); it opens the map UI during `lockall` and softlocks on close |
 | Phone numbers | `register_gear_number` — Mom (0), Elm (1), Oak (2) |
-| HM02 Fly (testing) | `ITEM_HM02` (421) when `OPENWORLD_TESTING_GRANTS` is defined; field use via [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags) |
+| Dev testing grants | `ITEM_RARE_CANDY` ×100 (silent `giveitem`) + `ITEM_HM01`–`ITEM_HM08` when `OPENWORLD_TESTING_GRANTS` is defined; Fly field use via [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags) |
 
 **Starting city / starter (v1 — [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)):**
 
@@ -1167,9 +1167,9 @@ levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5  
 - **Graph data:** `scripts/dev/Route Levels/connections.txt`, `starting_cities.txt`
 - **Distances:** `scripts/dev/Route Levels/calculate_location_distances.py` → `location_distances.txt` (includes `MaxDistance` row per city column)
 - **Enc area → graph node:** `scripts/dev/Route Levels/encounter_area_graph.tsv` (`ENCDATA_*` index → location name)
-- **ROM table:** `scripts/build/gen_wild_level_caps.py` → `src/wild_level_caps_data.c` + `include/constants/generated/wild_level_caps.h` (Makefile rule in `narcs.mk`)
+- **ROM table:** `scripts/build/gen_wild_level_caps.py` → `src/field/wild_level_caps_data.c` + `include/constants/generated/wild_level_caps.h` (Makefile rule in `narcs.mk`)
 
-Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHeader_GetWildEncounterBank(mapId)`.
+Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAddr` — `[startCityIndex][encBank]` where `encBank = MapHeader_GetWildEncounterBank(mapId)`.
 
 **Start city var:** Mom menu sets `VAR_PLAYER_START_CITY` (**0x4031**) to Vision-3 index **0–17**; `ResolveStartCityIndex` uses it directly as the Wilds-2 table row (`src/wild_level_caps.c`).
 
@@ -1205,7 +1205,7 @@ Runtime lookup: `sWildLevelCaps[startCityIndex][encBank]` where `encBank = MapHe
 
 Stage tables live in **contiguous field overlay rodata** (`sLevelUpEvoTablesData`, `sSyntheticEvoEdgesData`). Do not pin them with a linker hole — that bloated the field overlay past `0x023D8000` and clobbered overlay 129.
 
-**Build-time patch:** `scripts/build/patch_level_up_evo_addrs.py` runs after `field_linked.o` + `linked.o` exist; patches overlay 129 **`LevelUpEvoTablesFieldAddr`** and **`SyntheticEvoEdgesFieldAddr`** in `build/output.bin` (also from `scripts/build/make.py`). Example log: `LevelUpEvoTablesFieldAddr @ … = 0x023CA4A8` and `SyntheticEvoEdgesFieldAddr @ … = 0x023CC220`. If either pointer is **0**, wild stage adjust is skipped (`ApplyWildSpeciesStageForLevel` guard in `src/wild_level_caps.c`).
+**Build-time patch:** `scripts/build/patch_level_up_evo_addrs.py` runs after `field_linked.o` + `linked.o` exist; patches overlay 129 **`LevelUpEvoTablesFieldAddr`**, **`SyntheticEvoEdgesFieldAddr`**, and **`WildLevelCapsFieldAddr`** in `build/output.bin` (also from `scripts/build/make.py`). Table source: **`src/field/wild_level_caps_data.c`** (generated). If **`WildLevelCapsFieldAddr`** is **0**, cap lookup fails closed to min level. If evo pointers are **0**, wild stage adjust is skipped (`ApplyWildSpeciesStageForLevel` guard in `src/wild_level_caps.c`).
 
 Scratch survives overlay 129 reload; do not reuse these addresses for other features without updating `rom.ld`.
 
@@ -1235,7 +1235,7 @@ All tracked — nothing belongs in `scripts/local/`:
 
 | Path | Bucket | Role |
 |------|--------|------|
-| `scripts/build/gen_wild_level_caps.py` | build | Cap table → `src/wild_level_caps_data.c` (`narcs.mk`) |
+| `scripts/build/gen_wild_level_caps.py` | build | Cap table → `src/field/wild_level_caps_data.c` (`narcs.mk`) |
 | `scripts/build/gen_level_up_evo_tables.py` | build | Stage tables → `src/field/level_up_evo_tables.c` + `include/constants/generated/level_up_evo_tables.h` |
 | `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
 | `scripts/build/gen_synthetic_evo_edges.py` | build | TSV → `src/field/synthetic_evo_edges_data.c` + generated header (`narcs.mk`) |
@@ -1249,7 +1249,7 @@ All tracked — nothing belongs in `scripts/local/`:
 
 **Not in `scripts/local/`:** wild-cap and synthetic-stage tooling is all under `data/`, `scripts/build/`, and `scripts/dev/Route Levels/`. Session throwaways stay gitignored per § Scripts layout.
 
-**Generated (rebuilt every `make`):** `include/constants/generated/wild_level_caps.h`, `level_up_evo_tables.h`, `synthetic_evo_edges.h`. `.c` outputs may be committed for convenience (`wild_level_caps_data.c`, `level_up_evo_tables.c`, `synthetic_evo_edges_data.c`). `wild_level_caps.o` uses `-DOVERLAY129` for patched field pointers.
+**Generated (rebuilt every `make`):** `include/constants/generated/wild_level_caps.h`, `level_up_evo_tables.h`, `synthetic_evo_edges.h`. `.c` outputs may be committed for convenience (`src/field/wild_level_caps_data.c`, `level_up_evo_tables.c`, `synthetic_evo_edges_data.c`). `wild_level_caps.o` uses `-DOVERLAY129` for patched field pointers.
 
 ### Editing synthetic stage edges
 

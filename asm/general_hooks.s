@@ -38,6 +38,7 @@ bx r3
 .pool
 
 
+#ifndef UNCAP_CANDIES_FROM_LEVEL_CAP
 // r0 is level
 .global CapRareCandies
 CapRareCandies:
@@ -53,6 +54,7 @@ bx r3
 return_to_208FEFA:
 ldr r3, =0x0208FEFA | 1
 bx r3
+#endif
 
 
 // still needed because function itself is not 0x1C bytes long

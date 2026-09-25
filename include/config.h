@@ -81,14 +81,11 @@
 // commenting this line out disables the building of the new EV/IV viewing system
 #define IMPLEMENT_NEW_EV_IV_VIEWER
 
-// IMPLEMENT_LEVEL_CAP defines whether or not a configurable hard level cap system is built into the rom based on the value in LEVEL_CAP_VARIABLE
-// if the level is greater than or equal to LEVEL_CAP_VARIABLE, the pokémon will no longer gain experience
-// uncommenting IMPLEMENT_LEVEL_CAP enables the level cap system.  make sure to also uncomment LEVEL_CAP_VARIABLE in the process
-// uncommenting UNCAP_CANDIES_FROM_LEVEL_CAP will allow for rare candies to not be capped by the level cap even with the level cap in place, like run & bun
-// uncommenting ALLOW_LEVEL_CAP_EVOLVE will allow for rare candies to evolve pokemon already at the level cap that can evolve at that level already
-// #define IMPLEMENT_LEVEL_CAP
-// #define LEVEL_CAP_VARIABLE 0x416F
-// #define UNCAP_CANDIES_FROM_LEVEL_CAP
+// IMPLEMENT_LEVEL_CAP enforces Battle-4 badge caps via GetLevelCap() (10 + 4×badges, 80 at 16; 100 after Hall of Fame / gameClear).
+// UNCAP_CANDIES_FROM_LEVEL_CAP lets Rare Candies raise level above the badge cap (EXP still stops at cap).
+// ALLOW_LEVEL_CAP_EVOLVE lets Rare Candy on a mon exactly at cap trigger level-up evolutions (e.g. evolve-at-32 while capped at 32).
+#define IMPLEMENT_LEVEL_CAP
+#define UNCAP_CANDIES_FROM_LEVEL_CAP
 // #define ALLOW_LEVEL_CAP_EVOLVE
 
 // System flags that need to be enabled for the player to use the gimmick. If you want to change them, remember to change them in flags.s as well for consistency
@@ -280,7 +277,7 @@
 // openworld_story_skip_flags.inc on new saves; gates start-city / train / Mahogany OnLoad patchers.
 #define OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS
 
-// OPENWORLD_TESTING_GRANTS enables dev-only extras while prototyping (e.g. all HMs from Mom, silent).
+// OPENWORLD_TESTING_GRANTS enables dev-only extras while prototyping (e.g. 100 Rare Candies + all HMs from Mom).
 // Disable before builds for others or any release candidate.
 #define OPENWORLD_TESTING_GRANTS
 

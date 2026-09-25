@@ -14,6 +14,8 @@ LEVEL_UP_TABLE_SYMBOL = "sLevelUpEvoTablesData"
 LEVEL_UP_ADDR_SYMBOL = "LevelUpEvoTablesFieldAddr"
 SYNTHETIC_TABLE_SYMBOL = "sSyntheticEvoEdgesData"
 SYNTHETIC_ADDR_SYMBOL = "SyntheticEvoEdgesFieldAddr"
+WILD_CAPS_TABLE_SYMBOL = "sWildLevelCaps"
+WILD_CAPS_ADDR_SYMBOL = "WildLevelCapsFieldAddr"
 
 
 def nm_address(elf: Path, symbol: str) -> int:
@@ -67,6 +69,18 @@ def main():
     patch_overlay_bin(args.overlay_bin, synth_var_vma, synth_table_addr)
     print(
         f"Patched {args.overlay_bin}: {SYNTHETIC_ADDR_SYMBOL} @ 0x{synth_var_vma:08X} = 0x{synth_table_addr:08X}"
+    )
+
+    try:
+        wild_table_addr = nm_address(args.field_elf, WILD_CAPS_TABLE_SYMBOL)
+        wild_var_vma = nm_address(args.overlay_elf, WILD_CAPS_ADDR_SYMBOL)
+    except SystemExit:
+        print(f"Skip {WILD_CAPS_ADDR_SYMBOL}: symbol missing", file=sys.stderr)
+        return
+
+    patch_overlay_bin(args.overlay_bin, wild_var_vma, wild_table_addr)
+    print(
+        f"Patched {args.overlay_bin}: {WILD_CAPS_ADDR_SYMBOL} @ 0x{wild_var_vma:08X} = 0x{wild_table_addr:08X}"
     )
 
 

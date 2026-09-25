@@ -10,6 +10,7 @@
 .equ ITEM_PASS, 480
 .equ ITEM_APRICORN_BOX, 468
 .equ ITEM_POKE_BALL, 4
+.equ ITEM_RARE_CANDY, 50
 .equ ITEM_HM01, 420
 .equ ITEM_HM02, 421
 .equ ITEM_HM03, 422
@@ -204,6 +205,7 @@ _story_flag_sweep:
 .endif
     giveitem_no_check ITEM_POKE_BALL, 5
 .if OPENWORLD_TESTING_GRANTS == 1
+    giveitem ITEM_RARE_CANDY, 100, VAR_SPECIAL_RESULT
     giveitem ITEM_HM01, 1, VAR_SPECIAL_RESULT
     giveitem ITEM_HM02, 1, VAR_SPECIAL_RESULT
     giveitem ITEM_HM03, 1, VAR_SPECIAL_RESULT

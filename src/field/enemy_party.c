@@ -18,6 +18,7 @@
 #include "rtc.h"
 #include "save.h"
 #include "script.h"
+#include "player_level_cap.h"
 #include "trainer_data.h"
 
 #ifdef DEBUG_BATTLE_SCENARIOS
@@ -60,47 +61,6 @@ void randomize(int arr[], int n)
 extern u32 gLastPokemonLevelForMoneyCalc;
 
 #ifdef TRAINER_LEVEL_SCALING
-
-/**
- *  @brief population count for an 8-bit badge bitfield
- */
-static u8 PopcountBadges(u8 badgeBits)
-{
-    u8 count = 0;
-
-    while (badgeBits != 0) {
-        count += badgeBits & 1;
-        badgeBits >>= 1;
-    }
-    return count;
-}
-
-/**
- *  @brief count Johto + Kanto badges earned (0–16)
- */
-static u8 CountPlayerBadges(void)
-{
-    void *saveData = SaveBlock2_get();
-    struct PlayerProfile *profile;
-
-    if (saveData == NULL) {
-        return 0;
-    }
-
-    profile = Sav2_PlayerData_GetProfileAddr(saveData);
-    return (u8)(PopcountBadges(profile->johtoBadges) + PopcountBadges(profile->kantoBadges));
-}
-
-/**
- *  @brief player level cap for current badge count (Battle-4)
- */
-static u8 GetPlayerLevelCapForBadges(u8 badgeCount)
-{
-    if (badgeCount >= 16) {
-        return 80;
-    }
-    return (u8)(10 + 4 * badgeCount);
-}
 
 /**
  *  @brief pick a uniform random level in [floor, ceiling] inclusive
@@ -229,14 +189,22 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
     struct PartyPokemon *mons[pokecount];
 
 #ifdef TRAINER_LEVEL_SCALING
-    u8 badgeCount = CountPlayerBadges();
-    u8 trainerLevelCap = GetPlayerLevelCapForBadges(badgeCount);
-    u8 trainerLevelFloor = trainerLevelCap - 4;
+    u8 trainerLevelCap;
+    u8 trainerLevelFloor;
+    BOOL gymLeaderUsesCap;
+    {
+        void *saveData = SaveBlock2_get();
+        struct PlayerProfile *profile = saveData != NULL ? Sav2_PlayerData_GetProfileAddr(saveData) : NULL;
+        u8 badgeCount = profile != NULL ? PlayerProfile_CountBadges(profile) : 0;
+
+        trainerLevelCap = GetPlayerLevelCapForBadges(badgeCount);
+        trainerLevelFloor = trainerLevelCap - 4;
 #if defined(TRAINER_GYM_LEADER_CAP_LEVEL)
-    BOOL gymLeaderUsesCap = IsGymLeaderTrainerClass(bp->trainer_data[num].tr_type);
+        gymLeaderUsesCap = IsGymLeaderTrainerClass(bp->trainer_data[num].tr_type);
 #else
-    BOOL gymLeaderUsesCap = FALSE;
+        gymLeaderUsesCap = FALSE;
 #endif
+    }
 #endif
 
     for (i = 0; i < pokecount; i++) {

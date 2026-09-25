@@ -1812,9 +1812,9 @@ u32 CheckCanUseBallOnDoublesFromBag(struct BattleStruct *sp)
 }
 
 /**
- *  @brief get level cap from the script variable defined by LEVEL_CAP_VARIABLE
+ *  @brief current player level cap (Battle-4 badge ladder; uncapped after Hall of Fame)
  *
- *  @return level cap from LEVEL_CAP_VARIABLE script variable or 100 if it's not set at all
+ *  @return badge-based cap, or 100 after gameClear / when IMPLEMENT_LEVEL_CAP is off
  */
 u32 LONG_CALL GetLevelCap(void)
 {
@@ -1822,11 +1822,24 @@ u32 LONG_CALL GetLevelCap(void)
     return 0;
 #else
 #ifdef IMPLEMENT_LEVEL_CAP
-    u32 levelCap = GetScriptVar(LEVEL_CAP_VARIABLE);
-    if (levelCap > 100 || levelCap == 0) {
-        levelCap = 100;
+    void *saveData = SaveBlock2_get();
+    struct PlayerProfile *profile;
+
+    profile = NULL;
+    if (saveData != NULL) {
+        profile = Sav2_PlayerData_GetProfileAddr(saveData);
+        if (profile != NULL && profile->gameClear) {
+            return 100;
+        }
     }
-    return levelCap;
+    {
+        u8 badgeCount = profile != NULL ? PlayerProfile_CountBadges(profile) : 0;
+
+        if (badgeCount >= 16) {
+            return 80;
+        }
+        return (u32)(10 + 4 * badgeCount);
+    }
 #else
     return 100;
 #endif // IMPLEMENT_LEVEL_CAP
@@ -1834,7 +1847,7 @@ u32 LONG_CALL GetLevelCap(void)
 }
 
 /**
- *  @brief check if the level is at or above the level cap defined in LEVEL_CAP_VARIABLE
+ *  @brief check if the level is at or above GetLevelCap()
  *
  *  @param level level to check
  *  @return TRUE if level >= level cap; FALSE otherwise
@@ -1847,10 +1860,41 @@ u32 LONG_CALL IsLevelAtLevelCap(u32 level)
 #ifdef IMPLEMENT_LEVEL_CAP
 
 /**
- *  @brief try leveling up a PartyPokemon
+ *  @brief clamp total EXP so capped mons show no progress toward the next level
  *
- *  @param mon PartyPokemon to level up
- *  @return TRUE if PartyPokemon should level up and level has been augmented
+ *  Uses the minimum total EXP for the cap level (not 0 — level would desync).
+ *  Skips mons above the cap when UNCAP_CANDIES_FROM_LEVEL_CAP is enabled.
+ */
+static void ClampExperienceForLevelCap(struct PartyPokemon *mon)
+{
+    u8 level = (u8)GetMonData(mon, MON_DATA_LEVEL, NULL);
+    u32 cap = GetLevelCap();
+    u16 species;
+    u32 growthrate;
+    u32 maxexp;
+    u32 exp;
+
+#if defined(UNCAP_CANDIES_FROM_LEVEL_CAP)
+    if (level > cap) {
+        return;
+    }
+#endif
+
+    if (level < cap) {
+        return;
+    }
+
+    species = (u16)GetMonData(mon, MON_DATA_SPECIES, NULL);
+    growthrate = (u32)PokePersonalParaGet(species, PERSONAL_EXP_GROUP);
+    maxexp = (u32)GetExpByGrowthRateAndLevel((int)growthrate, cap);
+    exp = GetMonData(mon, MON_DATA_EXPERIENCE, NULL);
+    if (exp > maxexp) {
+        SetMonData(mon, MON_DATA_EXPERIENCE, &maxexp);
+    }
+}
+
+/**
+ *  @brief try leveling up a PartyPokemon (ARM9 replace @ 0x02070DB4)
  */
 BOOL Pokemon_TryLevelUp(struct PartyPokemon *mon)
 {
@@ -1858,16 +1902,20 @@ BOOL Pokemon_TryLevelUp(struct PartyPokemon *mon)
     u8 level = (u8)(GetMonData(mon, MON_DATA_LEVEL, NULL) + 1);
     u32 exp = GetMonData(mon, MON_DATA_EXPERIENCE, NULL);
     u32 growthrate = (u32)PokePersonalParaGet(species, PERSONAL_EXP_GROUP);
-    u32 maxexp = GetExpByGrowthRateAndLevel((int)growthrate, GetLevelCap());
-    if (exp > maxexp) {
-        exp = maxexp;
-        SetMonData(mon, MON_DATA_EXPERIENCE, &exp);
-    }
-    if (level > GetLevelCap()) {
+    u32 cap = GetLevelCap();
+
+    ClampExperienceForLevelCap(mon);
+    exp = GetMonData(mon, MON_DATA_EXPERIENCE, NULL);
+
+    if (level > cap) {
         return FALSE;
     }
-    if (exp >= GetExpByGrowthRateAndLevel((int)growthrate, level)) {
+
+    if (exp >= (u32)GetExpByGrowthRateAndLevel((int)growthrate, level)) {
         SetMonData(mon, MON_DATA_LEVEL, &level);
+        if (level >= cap) {
+            ClampExperienceForLevelCap(mon);
+        }
         return TRUE;
     }
     return FALSE;

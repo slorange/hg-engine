@@ -385,7 +385,9 @@ arm9 CanUseItemOnMonInParty_hook 020902BC 5
 
 0012 ImplementLevelCap_hook 02245A28 3
 arm9 Pokemon_TryLevelUp 02070DB4 1
+#ifndef UNCAP_CANDIES_FROM_LEVEL_CAP
 arm9 CapRareCandies 0208FEEA 1
+#endif
 
 #endif
 

@@ -216,7 +216,7 @@ SYNTHETIC_EVO_EDGES_TSV := data/synthetic_evolution_thresholds.tsv
 $(SYNTHETIC_EVO_EDGES_C) $(SYNTHETIC_EVO_EDGES_H): $(SYNTHETIC_EVO_EDGES_TSV) $(SYNTHETIC_EVO_EDGES_SCRIPT) include/constants/species.h
 	$(PYTHON) $(SYNTHETIC_EVO_EDGES_SCRIPT)
 
-WILD_LEVEL_CAPS_C := src/wild_level_caps_data.c
+WILD_LEVEL_CAPS_C := src/field/wild_level_caps_data.c
 WILD_LEVEL_CAPS_H := include/constants/generated/wild_level_caps.h
 WILD_LEVEL_CAPS_SCRIPT := scripts/build/gen_wild_level_caps.py
 WILD_LEVEL_CAPS_INPUTS := scripts/dev/Route\ Levels/location_distances.txt scripts/dev/Route\ Levels/starting_cities.txt scripts/dev/Route\ Levels/encounter_area_graph.tsv scripts/dev/Route\ Levels/calculate_location_distances.py include/constants/encounter_tables.h

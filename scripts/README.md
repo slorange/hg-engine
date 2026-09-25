@@ -25,7 +25,7 @@ Python helpers for hg-engine. See `.cursor/rules/agents.mdc` § **Scripts layout
 | `verify_r44_rod_guru_patch.py` | `narcs.mk` |
 | `verify_olivine_rod_guru_scr_seq.py` | `narcs.mk` |
 | `rod_guru_patch_checks.py` | imported by rod guru patcher + verify script |
-| `gen_wild_level_caps.py` | `narcs.mk` → `src/wild_level_caps_data.c` |
+| `gen_wild_level_caps.py` | `narcs.mk` → `src/field/wild_level_caps_data.c` |
 | `patch_level_up_evo_addrs.py` | `Makefile`, `make.py` — patch level-up + synthetic table addresses into overlay 129 |
 | `gen_synthetic_evo_edges.py` | `narcs.mk` → `src/field/synthetic_evo_edges_data.c` |
 
