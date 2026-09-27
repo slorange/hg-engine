@@ -32,7 +32,7 @@ Transportation systems should allow broad world traversal from early in the game
 These include:
 
 - Goldenrod/Saffron Train
-- Olivine/Vermillion SSAqua
+- Olivine/Vermilion **S.S. Aqua** (every day; see [§ SS Aqua](#ss-aqua-olivine--vermilion))
 - Early Fly HM — field use partially unblocked ([HACK-NOTES](documentation/HACK-NOTES.md) § Field HM badge bypass). **Kanto Fly map destinations not yet enabled** — in Kanto the UI still shows Johto only (vanilla likely E4 / SS Aqua gated).
 - Pokemon Center Abra transportation
 - local paid route bypasses where required
@@ -67,9 +67,13 @@ Likely only to cities that have already been visited.
 
 ## SS Aqua (Olivine ↔ Vermilion)
 
-**Status: PARTIALLY IMPLEMENTED** — ticket + story flags from Mom intro; **weekday schedule not fully open**
+**Status: IMPLEMENTED (Sep 2026, playtest OK)** — Mom grants S.S. Ticket + **`FLAG_BOAT_ARRIVED` (235)**; pier ticket sailors allow boarding **every RTC weekday**; gangplank sailors let you walk onto the ship; crossing completes without being forced through the vanilla missing-girl arc.
 
-**Target (DECIDED):** the **S.S. Aqua** runs **every day of the week** (no vanilla “wrong day” lockout). Open-world new saves already set **`FLAG_BOAT_ARRIVED`** and grant the S.S. Ticket for repeat travel ([HACK-NOTES](documentation/HACK-NOTES.md) § Open-world starting inventory); remaining work is **RTC / day-of-week checks** in Olivine and Vermilion port scr_seq (and any ship interior scripts that refuse boarding).
+**Target (DECIDED):** the **S.S. Aqua** runs **every day of the week** (no vanilla “wrong day” lockout).
+
+**Player flow:** Olivine or Vermilion pier → talk to **ticket seaman** (not the idle pier sailors) → gangplank sailor → interior → exit warp at destination. Implementation: `tools/patch_scr_seq_ss_aqua_weekday.py` on scr_seq **152–155** — recipe in [HACK-NOTES § SS Aqua](documentation/HACK-NOTES.md#ss-aqua-olivine--vermilion).
+
+**Known v1 gap:** optional vanilla side dialogue (e.g. engine-room sailor / missing girl) may still trigger if the player seeks it out; **leaving the ship does not require completing the fetch quest.**
 
 **Not the same as:** Kanto **Fly map** destinations ([HACK-NOTES § Fly map](documentation/HACK-NOTES.md#fly-map--kanto-destinations-not-yet)) — still a separate unlock.
 

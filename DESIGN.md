@@ -106,6 +106,7 @@ Hooks and patches: [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md) 
 | Starter pick (grass / fire / water menus → 3 starters, gens 1–4) | Verified | [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) |
 | Dev-only testing grants (e.g. Fly from Mom) | Implemented | Disable before release — see HACK-NOTES |
 | Magnet Train (Goldenrod ↔ Saffron) | Verified | [World-1](DESIGN-WORLD.md#world-1-world-transportation) |
+| S.S. Aqua (Olivine ↔ Vermilion, every day) | Verified | [World-1 § SS Aqua](DESIGN-WORLD.md#ss-aqua-olivine--vermilion) — optional onboard fetch quest remains if triggered |
 | Route 42 paid ferry | Verified | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
 | Route 40 ↔ Cianwood paid ferry | Verified | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
 | Route 31 ↔ Route 45 Dark Cave paid ferry | Implemented | [World-1](DESIGN-WORLD.md#paid-ferry-npcs) |
@@ -150,7 +151,6 @@ Work toward a shippable ROM without [DESIGN-FUTURE.md](DESIGN-FUTURE.md) north-s
 - **Shop pass** — **implemented** in `src/field/mart.c` ([World-7](DESIGN-WORLD.md#world-7-shops)); verify in playtest. Still open: **Headbutt TM** slot, Mom resist berries.
 - **Game Corner Coin income** — prize TMs wired; earning Coins still requires Voltorb Flip ([World-5 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)).
 - **Player level caps** — implemented; **block wild catches above cap** ([Battle-4 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-level-cap)).
-- **SS Aqua every day** — [World-1 § SS Aqua](DESIGN-WORLD.md#ss-aqua-olivine--vermilion).
 - **Wilds-1** + **Wilds-2** — near complete; remaining hooks (Safari, Contest, etc.).
 - **Paid ferry NPCs** — [World-1](DESIGN-WORLD.md#paid-ferry-npcs).
 - Story implementation pass ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) — opening skip, rival removal, Rocket extension, remaining gym rows.

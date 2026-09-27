@@ -664,7 +664,32 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 
 **Route 36 Sudowoodo (Mom intro):** `FLAG_HIDE_ROUTE_36_SUDOWOODO` (**450**) in the same block (see [Remove Sudowoodo block](#remove-sudowoodo-block-route-36--verified)).
 
-**Vanilla cleanup (Mom intro):** with `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS`, `armips/include/openworld_story_skip_flags.inc` sets early-route hide flags, rival/Elm skips, Azalea + Mahogany rocket flags, and **`FLAG_BOAT_ARRIVED` (235)** + **`FLAG_UNK_0F2` (242)** / pret S.S. Ticket from Elm for SS Aqua repeat-travel (ticket item already granted). Mahogany rocket **story flags** are not duplicated on map load when the define is on — `tools/patch_scr_seq_t28_rocket.py` uses `scr_seq_t28_005_onload.s` (`hide_person` only). **Kanto Fly map** is separate — likely `PlayerProfile.gameClear` (Hall of Fame), not flypoint flags; see [Fly map](#fly-map--kanto-destinations-not-yet).
+**Vanilla cleanup (Mom intro):** with `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS`, `armips/include/openworld_story_skip_flags.inc` sets early-route hide flags, rival/Elm skips, Azalea + Mahogany rocket flags, and **`FLAG_BOAT_ARRIVED` (235)** + **`FLAG_UNK_0F2` (242)** / pret S.S. Ticket from Elm for SS Aqua repeat-travel (ticket item already granted). Pier/gangplank scr_seq patches: [§ SS Aqua](#ss-aqua-olivine--vermilion). Mahogany rocket **story flags** are not duplicated on map load when the define is on — `tools/patch_scr_seq_t28_rocket.py` uses `scr_seq_t28_005_onload.s` (`hide_person` only). **Kanto Fly map** is separate — likely `PlayerProfile.gameClear` (Hall of Fame), not flypoint flags; see [Fly map](#fly-map--kanto-destinations-not-yet).
+
+### SS Aqua (Olivine ↔ Vermilion)
+
+**Design:** [World-1 § SS Aqua](../DESIGN-WORLD.md#ss-aqua-olivine--vermilion). **Mom intro** (`openworld_story_skip_flags.inc`) sets **`FLAG_BOAT_ARRIVED` (235)** and grants the S.S. Ticket for open-world repeat travel.
+
+**Build:** `narcs.mk` runs **`tools/patch_scr_seq_ss_aqua_weekday.py`** on four scr_seq members, then **`scripts/build/verify_ss_aqua_weekday_scr_seq.py`**. **In-place bytecode only** — never `build_scr_seq()` on these members (vanilla uses non-sequential empty-slot pointers; rebuilding the offset table silenced all pier scripts).
+
+| scr_seq | Map | What is patched |
+|--------|-----|-----------------|
+| **152** | `P01R0101` Olivine pier | Ticket seaman slot **2** (scriptId **3**): `GetWeekday` → `goto` allow-boarding; `GoToIfUnset FLAG_GAME_CLEAR` → ticket path; embark **`clearflag 235`** → **`setflag 235`** (×2 in slot) |
+| **154** | `P01R0103` Vermilion pier | Ticket seaman slot **1** (scriptId **2**): weekday `goto`; embark **`clearflag 235`** → **`setflag 235`** |
+| **153** | `P01R0102` Olivine gangplank / ship deck | Slot **0** (scriptId **1**): **`GoToIfSet FLAG_BOAT_ARRIVED`** neutralized (rel **0**) — vanilla showed msg **256** “ship not moving” when **235** is set (opposite of pier logic) |
+| **155** | `P01R0104` Vermilion gangplank | Same gangplank fix on slot **0** |
+
+**Who to talk to:** pier **ticket** seaman only for boarding — Olivine zone_event **240** obj **2** (scriptId **3**); Vermilion **386** obj **1** (scriptId **2**). Other pier sailors use empty or facing-only scripts (no dialogue). After the ticket flow, the **gangplank** sailor (scriptId **1** on ship maps **330** / **387**) walks you aboard.
+
+**Onboard first voyage:** With **235** kept set at embark, ship OnLoad (**156** / related) skips the forced captain announcement / missing-girl **mandatory** flow. **Optional:** vanilla cabin NPCs (engine-room sailor, etc.) may still offer the fetch quest if you talk to them; **disembark warps work without completing it** — acceptable for open-world v1; full quest strip not done.
+
+**Pret refs:** `scr_seq_0152_P01R0101.s` (pier), `scr_seq_0153_P01R0102.s` (`scr_seq_P01R0102_000` gangplank), `scr_seq_0154_P01R0103.s`, `scr_seq_0155_P01R0104.s`; msg **256** gangplank block line.
+
+**Verify (after `make`):**
+
+```text
+scripts/build/verify_ss_aqua_weekday_scr_seq.py build/a012/2_152 build/a012/2_154 build/a012/2_153 build/a012/2_155
+```
 
 ### Debug helpers (keep using these)
 
@@ -683,6 +708,7 @@ Vanilla scr_seq for recovery: `build/a012_vanilla/2_<NNN>` (extracted from `rom.
 ### Gotchas
 
 - **scr_seq append corruption:** inserting into the offset table shifts script bodies without updating old pointers → signs and story scripts break silently. `patch_scr_seq_r42_ferry.py` must **extract vanilla bodies and rebuild the table** (`build_scr_seq()` in `tools/patch_scr_seq_r42_ferry.py` / `tools/append_scr_seq_script.py`).
+- **SS Aqua scr_seq:** patch **152–155** in place on the extracted member file (`patch_scr_seq_ss_aqua_weekday.py`). Do **not** rebuild the scr_seq table for pier members — same rule as Route 32 badge NOP patches.
 - **Healthy scr_seq size:** Route 42 member ~**1188 bytes** (8 scripts). Multi‑MB member = corrupt; patcher resets from vanilla when `count != VANILLA_SCRIPT_COUNT` or size > 8 KB.
 - **Duplicate NPCs on rebuild:** zone_event patcher must delete prior ferry objects by id before re-adding.
 - **Sign overlap:** bg-event signs and object NPCs on the same tile fight for interaction; offset NPC one tile from sign.

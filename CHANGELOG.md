@@ -17,6 +17,7 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 - **HM field use** — once a Pokémon knows an HM, you can use it from the party menu without that move's vanilla Gym badge (matches badge-count gym HM grants; map/script gates like Flash caves unchanged). *Fly Kanto destinations still unavailable — Johto map only when in Kanto; see HACK-NOTES.*
 - **Magnet Train** (Goldenrod ↔ Saffron) open from the start — no Power Plant / Machine Part quest.
+- **S.S. Aqua** (Olivine ↔ Vermilion) — board any day with Mom’s ticket; no weekday lockout at the pier; gangplank no longer blocks when **`FLAG_BOAT_ARRIVED`** is set; you are not forced through the first-voyage missing-girl sequence (optional cabin dialogue may still appear if you talk to certain sailors).
 - **Route 42 ferry** — fishermen on both shores; paid warp across the water without Surf.
 - **Route 40 ↔ Cianwood ferry** — fishermen on the Olivine and Cianwood shores ($200); Route 40 Surf gate removed.
 - **Route 31 ↔ Route 45 Dark Cave ferry** — hikers + static Quagsire companions outside both cave mouths ($200).
