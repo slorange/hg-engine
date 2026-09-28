@@ -2,29 +2,27 @@
 
 Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared to vanilla HeartGold/SoulSilver.
 
-Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)`. Agent build workflow: `.cursor/rules/agents.mdc` (local). Design baseline: `[DESIGN.md](DESIGN.md#index-2-current-technical-baseline)`. Known bugs: `[DESIGN.md § Index-5](DESIGN.md#index-5-known-bugs)`.
-
 ### New game & starting experience
 
-- **Starting city** — choose from **18 cities** (Johto + Kanto) in Mom’s cutscene (before starter pick); dynamic home exit warp to your chosen city’s outdoor door; re-enter that door for the same Mom interior.
-- **Starter selection** — three type menus in Mom’s cutscene (grass / fire / water, 4 gens 1–4 options each); receive **one starter per type**; not vanilla 3-ball UI.
 - **Shortened Professor Oak intro** dialogue.
-- **Mom’s grants** at intro — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, **5 Poké Balls**, Pokégear, Town Map card, Mom/Oak/Elm phone numbers; **`FLAG_UNK_09A` (154)** so marts sell Poké Balls without Route 29 tutorial.
-- **Dev testing grants from Mom** — 100 Rare Candies (silent) plus **HMs 01–08** when `OPENWORLD_TESTING_GRANTS` is on; disable before release builds.
-- **Broader story skip at Mom intro** — consolidated flag sweep on new saves (rival hidden, SS Aqua arrived, many Azalea/Mahogany rocket flags, Elm lab errand skipped, etc.; see `openworld_story_skip_flags.inc`). **Known gaps:** Cherrygrove guide tutorial can still run with an invisible NPC ([KB-3](DESIGN.md#index-5-known-bugs)); a Rocket may still block Slowpoke Well ([KB-4](DESIGN.md#index-5-known-bugs)).
+- **Starting city** — choose from **18 cities** at the start of the game
+- **Starter selection** — choose three starters, **one per type**, from gens 1-4 at the start of the game
+- **Mom’s grants** at intro — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, **5 Poké Balls**, Pokégear, Town Map card, Mom/Oak/Elm phone numbers
+- **Dev testing grants from Mom** — 100 Rare Candies (silent) plus **HMs 01–08** when dev testing grants are enabled
+- **Broader story skip at Mom intro** — consolidated flag sweep on new saves (rival hidden, SS Aqua arrived, many Azalea/Mahogany rocket flags, Elm lab errand skipped, etc.)
 
 ### Travel & world access
 
-- **HM field use** — once a Pokémon knows an HM, you can use it from the party menu without that move's vanilla Gym badge (matches badge-count gym HM grants; map/script gates like Flash caves unchanged). *Fly Kanto destinations still unavailable — Johto map only when in Kanto; see HACK-NOTES.*
+- **HM field use** — once a Pokémon knows an HM, you can use it from the party menu without that move's vanilla Gym badge (matches badge-count gym HM grants; map/script gates like Flash caves unchanged). Fly Kanto destinations on the town map are still unavailable when visiting Kanto early.
 - **Magnet Train** (Goldenrod ↔ Saffron) open from the start — no Power Plant / Machine Part quest.
-- **S.S. Aqua** (Olivine ↔ Vermilion) — board any day with Mom’s ticket; no weekday lockout at the pier; gangplank no longer blocks when **`FLAG_BOAT_ARRIVED`** is set; you are not forced through the first-voyage missing-girl sequence (optional cabin dialogue may still appear if you talk to certain sailors).
+- **S.S. Aqua** (Olivine ↔ Vermilion) — board any day with Mom’s ticket; no weekday lockout at the pier; gangplank no longer blocks after the boat-arrived story flag is set; you are not forced through the first-voyage missing-girl sequence (optional cabin dialogue may still appear if you talk to certain sailors).
 - **Route 42 ferry** — fishermen on both shores; paid warp across the water without Surf.
 - **Route 40 ↔ Cianwood ferry** — fishermen on the Olivine and Cianwood shores ($200); Route 40 Surf gate removed.
 - **Route 31 ↔ Route 45 Dark Cave ferry** — hikers + static Quagsire companions outside both cave mouths ($200).
 - **Route 46 → Route 45 ferry** — hiker + static Rhydon at the Route 46 gatehouse end; one-way paid warp to north Route 45 ($200).
 - **Blackthorn ↔ Route 44 ferry** — hikers + static Piloswine companions; paid outdoor warp bypassing Ice Path ($200).
 - **Kanto coastal ferry mesh** — fishermen + Lapras at Pallet Town south shore, Cinnabar Island beach, Seafoam cave mouth, and Route 19 ($200); 3-destination menu (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City labels).
-- **Mom intro** — sets `FLAG_UNLOCKED_WEST_KANTO` and Route 19 shore clearance flags so Fuchsia’s south beach is reachable from the start.
+- **Mom intro** — west Kanto and Route 19 shore clearance so Fuchsia’s south beach is reachable from the start.
 - **Route 4 ledge boost** — blackbelt + Machoke boost you over the ledge toward Mt. Moon for ¥100.
 - **Route 36** — Sudowoodo roadblock removed
 - **Route 32** — badge gate south toward Violet removed.
@@ -53,15 +51,15 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 - **Badge-based player level cap** — party Pokémon stop gaining levels from EXP at **10 + 4×badges** ( **80** at 16 badges; **100** after becoming Champion). **Rare Candies** can still raise level above the current cap; EXP does not.
 - **Full heal after every battle** — HP, PP, and status restored for the party (wild and trainer).
 - **Full-party EXP share (interim)** — every non-fainted party member receives the **full** EXP for each KO (not split); no Exp Share item required.
-- **Post-battle field crash** — known issue when returning to the field after battle ([KB-2](DESIGN.md#index-5-known-bugs)); frequency varies by setup; try with `HEAL_AFTER_BATTLE` disabled to bisect.
+- **Post-battle field crash** — known issue when returning to the field after battle (KB-2); frequency varies by setup.
 
 ### Shops & items
 
-- **Mart redesign** — under `MART_EXPANSION`, `src/field/mart.c` replaces most healing/potion and X-item shelves with **status berries**, **EV power items**, and **vitamins + Rare Candy / PP Up / PP Max** at Goldenrod and Celadon dept stores.
-- **Renewable TMs** — Celadon dept TM floor and Goldenrod 5F sell fixed TM sets (see [World-7](DESIGN-WORLD.md#world-7-shops)).
-- **Game Corner prizes** — Goldenrod and Celadon coin-exchange **TM** and **held-item** menus retargeted per [World-5](DESIGN-WORLD.md#game-corner-tms). All prizes temporarily cost **50 Coins** (playtest shortcut until coin income ships).
-- **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, **TM70 (Flash)**, and late-game gear by **badge count** (not vanilla potion progression). Shelves use **total Johto + Kanto badges** (matches trainer scaling)
-- **Town specialty marts** — evolution stones, trade evo held items, and type-resist berries at themed cities (e.g. Moon Stone at Mt. Moon Square, stones/items per city table in design docs).
+- **Mart redesign** — dept stores emphasize status berries, EV power items, and vitamins over vanilla healing/X-item grind.
+- **Renewable TMs** — Celadon dept TM floor and Goldenrod 5F sell fixed TM sets.
+- **Game Corner prizes** — Goldenrod and Celadon coin-exchange **TM** and **held-item** menus retargeted. All prizes temporarily cost **50 Coins** (playtest shortcut until coin income ships).
+- **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, **Flash TM**, and late-game gear by **badge count** (not vanilla potion progression). Shelves use **total Johto + Kanto badges** (matches trainer scaling)
+- **Town specialty marts** — evolution stones, trade evo held items, and type-resist berries at themed cities (e.g. Moon Stone at Mt. Moon Square).
 - **Trade evolution QoL** — trade-evo **held items** (Metal Coat, Up-Grade, etc.) work when **used on the Pokémon** like stones; **Linking Cord** replaces trade for Kadabra, Machoke, Graveler, Haunter, and similar lines. Buy Linking Cord at **Goldenrod dept 2F (lower)** and **Celadon dept 4F** (¥8000).
 - **Olivine** — Secret Medicine remains on the **second** clerk; first clerk uses the badge shelf only.
 
@@ -76,4 +74,4 @@ Implementation details and IDs: `[documentation/HACK-NOTES.md](documentation/HAC
 
 - **Lt. Surge & Erika** — Cut trees removed outside Gyms; Celadon Gym maze trees removed; Leaders reachable without Cut.
 - **Jasmine** — Secret Medicine sold at Olivine Mart (¥500); pharmacy flow updated; Lighthouse works after purchase.
-- **Johto Gym HM pilot (partial)** — **Falkner, Morty, Jasmine, and Pryce** use badge-count HM rewards after victory (field move + TM flow per open-world HM table). Falkner’s Gym also drops the Sprout Tower gate blocker. *Still rough edges and not all Johto/Kanto Leaders — see HACK-NOTES § Gym Leader HM rewards.*
+- **Johto Gym HM pilot (partial)** — **Falkner, Morty, Jasmine, and Pryce** use badge-count HM rewards after victory (field move + TM flow per open-world HM table). Falkner’s Gym also drops the Sprout Tower gate blocker. Still rough edges and not all Johto/Kanto Leaders.

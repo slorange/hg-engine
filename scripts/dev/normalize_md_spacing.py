@@ -34,6 +34,11 @@ def normalize(lines: list[str]) -> list[str]:
             if prev.lstrip().startswith("|") and line.lstrip().startswith("|"):
                 out.append(line)
                 continue
+            if line.lstrip().startswith("|") and not prev.lstrip().startswith("|"):
+                if out[-1] != "":
+                    out.append("")
+                out.append(line)
+                continue
             if prev.lstrip().startswith(">") and line.lstrip().startswith(">"):
                 out.append(line)
                 continue

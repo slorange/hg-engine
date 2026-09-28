@@ -1,163 +1,101 @@
 # Pokémon Wandering Heart — Story & Cleanup
 
-> Story/script policy and vanilla content removal backlog.
+> Open-world intro and script policy (what vanilla must not do).
 >
-> **Index:** [`DESIGN.md`](DESIGN.md) · **Implementation recipes:** [`documentation/HACK-NOTES.md`](documentation/HACK-NOTES.md)
+> **Index:** [`DESIGN.md`](DESIGN.md)
 
 ## Sections
 
 | Section | Status |
 | ------- | ------ |
-| [Story-1. Story and Script Content](#story-1-story-and-script-content) | PARTIALLY IMPLEMENTED |
-| [Story-2. Vanilla Cleanup Backlog](#story-2-vanilla-cleanup-backlog) | PARTIALLY IMPLEMENTED |
+| [Story-1. Starting City and Home](#story-1-starting-city-and-home) | PARTIALLY IMPLEMENTED |
+| [Story-2. Starter Pokémon and Intro Flow](#story-2-starter-pokémon-and-intro-flow) | IMPLEMENTED |
+| [Story-3. Story and Script Policy](#story-3-story-and-script-policy) | DECIDED |
 
 ---
 
-# Story-1. Story and Script Content
+# Story-1. Starting City and Home
 
 **Status: PARTIALLY IMPLEMENTED**
 
-Field scripts, NPCs, and map obstacles that assume vanilla story order or a New Bark start are removed or rewritten. Target: **any starting city**, **any-order Gyms**.
+The player chooses a **starting city** from **18** Johto and Kanto locations during the Mom cutscene. Starting city affects wild Pokémon level caps — [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps).
 
-**Story flag index:** pret story flags **100–399** (`0x64`–`0x18F`) — see [documentation/HGSS-STORY-FLAGS.md](documentation/HGSS-STORY-FLAGS.md) (add notes as we map skips).
+Each city has a **designated home building** on the overworld (that city’s player-house door). Cities the player did **not** choose keep that building’s vanilla behaviour. When a city **is** chosen, its designated building becomes the **outdoor** home anchor: leaving the canonical **Mom interior** should place the player outside that building, and entering that door should return to the Mom interior ([home wiring](#home-wiring-four-steps)).
 
-## Opening and tutorial — remove
+When the start is **not** New Bark Town, the **interior** linked from New Bark’s player-house door is **displaced** — it loads that start city’s original player-house interior (not the Mom map). Leaving that displaced interior sends the player back to New Bark Town outdoors.
 
-Mom cutscene ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon), [Index-2](DESIGN.md#index-2-current-technical-baseline)) **replaces** the vanilla New Bark opening for city pick, starter, and starting grants. **Vanilla leftovers still present** until cleaned up — see [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog):
+## Home wiring (four steps)
 
-- Elm errand (Mom post-cutscene dialogue still references Elm; lab scripts active)
-- Rival intro, naming, and early battles ([Rival — remove](#rival--remove))
-- Oak visit chain
-- Togepi egg fetch from Mr. Pokémon
-- Cherrygrove guide (Town Map, running shoes tutorial)
-- Route 30 Apricorn Box NPC (Apricorn Box now from Mom)
+Bidirectional home needs four warp behaviours per save:
 
-No replacement fetch quests at other cities unless optional flavour, not service gates.
+| Step | Direction | Requirement |
+| ---- | --------- | ----------- |
+| **1** | Leave Mom interior | Front door → **chosen start city’s** outdoor home door |
+| **2** | Enter start city’s outdoor home door | That door → **Mom interior** |
+| **3** | Enter New Bark player-house door (start ≠ New Bark) | → **displaced** vanilla interior for start city (not Mom cutscene) |
+| **4** | Leave displaced interior | → **New Bark outdoor** door tile |
 
-## Route Cut obstacles — remove
+**Planned v2 for step 2:** leave outdoor doors vanilla in ROM; on map load, retarget **only the start city’s** home-door warp to the Mom interior (same approach as step 1). Steps 3–4 likely need a similar targeted pattern.
 
-**Status: DECIDED — verified for listed locations (Sep 2026)**
+---
 
-Same policy as Gym-adjacent Cut trees ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Surge / Erika Cut trees): players should reach cities and dungeons without story-gated Cut on **travel** routes when HMs unlock from Gym Leaders ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+# Story-2. Starter Pokémon and Intro Flow
 
-| Location | Status |
-|----------|--------|
-| Vermilion / Celadon Gym (Surge, Erika) | **Verified** — trees stripped |
-| **Ilex Forest** (`D36R0101`) | **Verified** — standard cut tree stripped from zone_event **`2_114`** (eventsBank **114**, not map header 117); same recipe as gym trees ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Ilex Forest Cut tree) |
-| **Route 35** | **Verified** — one Cut tree removed on Route 35 for open travel; **not** part of Ilex Forest ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Route 35 Cut tree) |
+**Status: IMPLEMENTED**
 
-Internal puzzles that only need Cut **inside** a optional side area may stay until audited; the **main through-route** should not require Cut.
+During the same Mom cutscene as [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), **three** type menus (grass / fire / water) with **four** species each — player receives **one Pokémon per type** (**3** total). Not the vanilla three-ball bedroom picker.
+
+Long-term options (any non-legendary, curated pools, location-specific starters) remain in [Future-*](DESIGN-FUTURE.md).
+
+## Intro flow
+
+After Professor Oak / name / gender, the player still wakes in the **bedroom** (vanilla map), walks downstairs, and Mom’s cutscene runs:
+
+1. **City picker** — [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home).
+2. **Starter pick** — grass, then fire, then water menus (4 options each).
+3. **Mom grants** — bag, Pass, Pokédex, shoes, etc.
+4. **Exit** — walk out the front door to the chosen city ([Story-1 § Home wiring](DESIGN-STORY.md#home-wiring-four-steps) step 1).
+
+---
+
+# Story-3. Story and Script Policy
+
+**Status: DECIDED**
+
+Vanilla HeartGold and SoulSilver cast the player as the **sole protagonist** of a fixed script: the world waits on Elm’s errand, a named rival, Team Rocket set pieces, and badge order implied by roadblocks and fetch quests. [Index-2 — Game Identity](DESIGN.md#index-2-game-identity) reframes the romhack as a **trainer’s road trip** — you are **one of many travelers**, not the center of a plot the whole region revolves around. That only works if the map and NPCs stop assuming **New Bark → linear opening → prescribed Gym route**.
+
+So we **remove or rewrite** a large share of vanilla story scripting: not to tell a different novel, but to **get out of the player’s way** — any [starting city](DESIGN-STORY.md#story-1-starting-city-and-home), **any-order Gyms**, travel and services without errand gates, and League progression when *you* are ready. What we strip is listed under the **remove** headings below; what we keep is under [What stays](#what-stays). Open implementation and cleanup rows live in **TODO.md** (document map).
+
+Open-world intro replaces the vanilla opening: [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). Prefer disabling a script branch or removing an object over deleting assets.
+
+## What stays
+
+**League arc (reordered, not removed):** collect **16 badges** from Johto and Kanto Gyms in **any order** ([Battle-3](DESIGN-BATTLES.md#battle-3-gyms)), then **Elite Four and Champion** behind the usual endgame gates ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)). No linear rival or fetch chain is required to reach Gyms or the League.
+
+**Postgame legendaries:** vanilla **post–Champion legendary** encounters and quests (e.g. box legends, roaming beasts, Mt. Silver) stay **as HGSS designed them** unless we explicitly decide otherwise — we are not stripping endgame legendaries/mythicals for open-world travel.
+
+**Dex and species scope:** **Completing the Pokédex** remains a **primary goal**. Release scope is **every Gen I–IV species obtainable** in the world ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)); **additional legendary** stories may be added to fill that goal. Broader generations stay [Future-6](DESIGN-FUTURE.md#future-6-expanded-pokédex--generations).
+
+## Route Cut on travel routes — remove
+
+Players should reach cities and dungeons without **story-gated Cut** on main through-routes when HMs come from Gym Leaders ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)). Gym-adjacent Cut trees (Surge, Erika) and selected travel paths (Ilex Forest main path, Route 35) follow the same policy. Optional side areas may still use Cut until audited.
 
 ## Team Rocket — remove
 
-Rocket grunts, hideouts, Radio Tower arc, and related roadblocks must not gate travel, Gyms, or items. Mahogany post-clear on load is the verified pattern (`HACK-NOTES.md`); extend to Goldenrod basement, Radio Tower, etc.
-
-**Partial (Sep 2026):** Mom intro sets many Azalea / Mahogany rocket flags (`armips/include/openworld_story_skip_flags.inc`); **Azalea Town** scr_seq **866** is patched when open-world starting items are on (`tools/patch_scr_seq_t23_azalea.py` — well coord flag flip, rival script nops). **Still open:** at least **one Rocket grunt remains at Slowpoke Well** and can block the entrance ([Index-5 KB-4](DESIGN.md#index-5-known-bugs)). Goldenrod basement and Radio Tower arcs are largely untouched.
+Rocket grunts, hideouts, Radio Tower arc, and related roadblocks must not gate travel, Gyms, or items. Mahogany post-clear on load is the reference pattern; extend to Goldenrod basement, Radio Tower, and remaining grunts until release-complete.
 
 ## Rival — remove
 
-**Status: PARTIALLY IMPLEMENTED**
-
-Remove the rival entirely: no naming, no scripted intro, no mandatory early battles, no badge-tier rematch arc. Strip rival NPCs, battle triggers, and dialogue that assume a persistent rival companion. Optional one-off trainer NPCs may reuse rival-adjacent maps later, but there is **no rival character** in the open-world design.
+No rival character: no naming, scripted intro, mandatory early battles, or badge-tier rematch arc. Strip NPCs, battle triggers, and dialogue that assume a persistent rival. Optional one-off trainers on rival-adjacent maps may return later without a “rival” story role.
 
 ## Gyms — access and story policy
 
 **Rules (all Leaders):**
 
 1. **City-local events only** — pre/post-battle flavour OK if it stays in the Gym town; cut anything that sends the player elsewhere and expects a return.
-2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader; HMs are granted by Gym Leaders per badge order ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). HM/Flash/dungeon gating ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) still applies outside Gyms. Wild **levels** use [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps), not badge guard tiles.
+2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader; HMs are granted by Gym Leaders per badge order ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)). HM/Flash/dungeon gating ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) and endgame badge guards ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) still apply outside Gyms. Wild **levels** use [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps), not badge guard tiles.
 3. **Internal Gym puzzles** — trash cans, maze, etc. stay unless they hard-require an HM.
 
-### Required changes
+Per-Leader gate removals and remaining script strips are tracked in **TODO.md**; policy above is the design source. Starting city must not depend on Elm/rival/New Bark flags.
 
-| Leader | Change |
-|--------|--------|
-| **Bugsy** (Azalea) | Remove Team Rocket — **in progress:** flag sweep + scr_seq **866**; **Slowpoke Well grunt still blocks** (see [Team Rocket — remove](#team-rocket--remove), [KB-4](DESIGN.md#index-5-known-bugs)). |
-| **Clair** (Blackthorn) | Drop 7-badge + Goldenrod Rocket gates. Drop or HM-free the Dragon's Den trial before the badge (Den currently needs Surf + Whirlpool). |
-| **Misty** (Cerulean) | Drop Power Plant / Machine Part / Route 25 chain; Leader available in Gym without leaving town. |
-| **Blue** (Viridian) | Drop “7 Kanto badges first” gate; challengeable at any badge tier. |
-| **Blaine** (Seafoam B4F) | Gym is **not** in a town — no story gates on the Leader once Seafoam is entered. Island reach: [World-1 — paid ferry NPCs](DESIGN-WORLD.md#paid-ferry-npcs). |
-
-### Verified
-
-| Leader | Notes |
-|--------|--------|
-| **Jasmine** (Olivine) | Secret Medicine sold at Olivine Mart (¥500); Lighthouse works after purchase. **Cleanup:** redundant Cianwood pharmacy — [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog). |
-| **Lt. Surge** (Vermilion) | Cut tree outside Gym removed; internal trash-can puzzle unchanged. |
-| **Erika** (Celadon) | City + Gym maze Cut trees removed; Leader reachable without Cut. |
-| **Pryce** (Mahogany) | Rocket skip on load (see above). **Known bug:** crash entering Pryce’s gym room — [KB-5](DESIGN.md#index-5-known-bugs) (not verified fixed). |
-
-Verified in-game Aug–Sep 2026. Field recipes: `documentation/HACK-NOTES.md`.
-
-### OK as-is (city-local or no external gate)
-
-Falkner, Whitney, Morty (Burned Tower is Ecruteak-local), Chuck, Sabrina, Janine, Brock.
-
-After a row is **verified**, check [Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog) for redundant vanilla content to strip. Implementation uses flag-on-load and script skips — same toolchain as HACK-NOTES field recipes; starting city ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) must not depend on Elm/rival/New Bark flags.
-
----
-
-
----
-
-# Story-2. Vanilla Cleanup Backlog
-
-**Status: PARTIALLY IMPLEMENTED**
-
-Track vanilla content that is **obsolete** because we replaced it elsewhere, granted it at game start, or changed the design. These are not new features — they are **removals or script skips** so players do not see duplicate or contradictory content.
-
-Implementation: same toolchain as [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) (`scr_seq`, `zone_event`, text banks, flag-on-load). Prefer disabling a script branch or removing an object over deleting assets.
-
-## Superseded by Mom cutscene / starting grants
-
-| Vanilla content | Why obsolete | Cleanup |
-|-----------------|--------------|---------|
-| Cherrygrove guide (Town Map, running-shoes tutorial) | Mom grants shoes + Town Map card | Skip or shorten guide **trigger scripts** (NPC hidden via flag only — cutscene still runs; [KB-3](DESIGN.md#index-5-known-bugs)) |
-| Route 30 Apricorn Box NPC | Mom grants Apricorn Box + flag 109 | Remove NPC or make flavour-only |
-| Mom post-cutscene Elm errand line | Open-world intro has no Elm fetch | Edit `data/text/545.txt` string 6+; skip Elm lab gate scripts |
-| Mom **seated** talk after intro | Script **0** replaced; sitting scripts still vanilla + partial msg remap | Broken menus/dialogue — [KB-6](DESIGN.md#index-5-known-bugs); rewrite scr_seq **845** slot(s) for post-intro Mom |
-| Vanilla New Bark bedroom starter flow | Starters chosen in Mom script **0** | Bedroom scr_seq **846** already vanilla — verify no `choose_starter` hook |
-
-## Opening / rival / egg (still mostly vanilla)
-
-| Vanilla content | Why obsolete | Cleanup |
-|-----------------|--------------|---------|
-| Professor Elm lab errand and waiting NPCs | No linear New Bark opening | Flag-on-load or script skip in Elm lab scr_seq |
-| Rival intro, naming, Route 22/30 battles | Rival removed ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)) | Strip rival NPCs, naming flow, and battle scripts |
-| Mr. Pokémon / Togepi egg quest | Not part of open-world start | Skip egg give; adjust Violet City references if needed |
-| Professor Oak visit chain | Superseded by direct bedroom wake | Skip Oak trigger scripts on Route 29 / lab |
-
-## Superseded services and items
-
-| Vanilla content | Why obsolete | Cleanup |
-|-----------------|--------------|---------|
-| Cianwood pharmacy free Secret Medicine | Medicine sold in Olivine Mart (`sOlivineMart`); Cianwood clerk sells specialty items only (`sCianwoodPharmacy` in `src/field/mart.c`) | Remove pharmacist **giveitem** scr_seq branch; optional flavour dialogue only |
-| Copycat / S.S. Ticket story (partial) | Pass + Ticket from Mom; train patched | Copycat house repurposed as Saffron home door — displaced-interior scripts still vanilla ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) |
-| Power Plant / Machine Part (partial) | Magnet Train open without quest | Misty Gym still gated — see [Story-1](DESIGN-STORY.md#story-1-story-and-script-content); strip remaining Cerulean/Route 25 hooks when Misty row is done |
-
-## Superseded obstacles and NPC chains
-
-| Vanilla content | Why obsolete | Cleanup |
-|-----------------|--------------|---------|
-| SquirtBottle / Floria flower-shop chain | Route 36 Sudowoodo removed; bottle only existed for that block | Remove or flavour-only the Goldenrod SquirtBottle girl; no functional gate |
-| Sudowoodo encounter scripts (Route 36) | Tree hidden via Mom intro flag | Optional: relocate encounter elsewhere later |
-| Badge gates already patched (R32, R36, Mahogany, …) | Replaced by open travel | Scan for stale coord triggers or talk scripts referencing removed blockers |
-
-## Superseded HM and progression teaching
-
-**Target design:** Gym Leaders grant badge + TM + **next HM in badge order** + family location hint ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)); field use from collection ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)). Until that ships, dev testing may use `OPENWORLD_TESTING_GRANTS` (HM02 from Mom).
-
-| Vanilla content | Why obsolete | Cleanup |
-|-----------------|--------------|---------|
-| Vanilla per-Leader HM gifts (wrong move / wrong Leader) | Replaced by badge-order HM table ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) | Rewrite Leader defeat scripts to grant the correct HM for this badge count |
-| **HM fetch / delivery quests** (Bill's PC, SS Anne, etc.) | HMs come from Gym Leaders, not errands | Remove or skip fetch chains; no NPC should gate an HM behind a side quest |
-| NPCs teaching Cut / Surf / etc. (Bill, HM tutors, story gates) | Leaders grant HMs; collection-based field use | Remove teach scripts; keep obstacles that respect unlocked HM flags |
-| Whirlpool / Waterfall / Strength story gates on routes and dungeons | Badge-count unlock | Replace with badge checks or remove where travel must stay open |
-| Flash / Headbutt tutor & story acquisition | Unlocked via Gym badge order + collection field use ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) | Remove or skip vanilla tutor gates and Flash/Headbutt quest NPCs |
-
-## How to use this section
-
-- When a feature in [Index-2](DESIGN.md#index-2-current-technical-baseline) or [Story-1](DESIGN-STORY.md#story-1-story-and-script-content) is marked **verified**, check whether vanilla duplicates belong here.
-- When implementing a row here, note the scr_seq / zone_event member in `documentation/HACK-NOTES.md` (same as other field recipes).
-- Do **not** treat this as permission to implement [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) — HM order is tentatively decided there; implementation still open.
 ---

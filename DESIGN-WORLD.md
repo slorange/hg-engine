@@ -2,22 +2,39 @@
 
 > Transportation, route gating, HMs, field moves, living trainers, shops, services, and accelerated time.
 >
-> **Index:** `[DESIGN.md](DESIGN.md)` · **Vision:** `[DESIGN-VISION.md](DESIGN-VISION.md)` · **Wilds:** `[DESIGN-WILDS.md](DESIGN-WILDS.md)`
+> **Index:** `[DESIGN.md](DESIGN.md)` · **Wilds:** `[DESIGN-WILDS.md](DESIGN-WILDS.md)` · **Story:** `[DESIGN-STORY.md](DESIGN-STORY.md)`
 
 ## Sections
 
 | Section | Status |
 | ------- | ------ |
+| [World-0. Open-World Principles](#world-0-open-world-principles) | DECIDED |
 | [World-1. World Transportation](#world-1-world-transportation) | PARTIALLY IMPLEMENTED |
-| [World-2. Routes and Content Gating](#world-2-routes-and-content-gating) | PARTIALLY DECIDED |
+| [World-2. Routes and Content Gating](#world-2-routes-and-content-gating) | PARTIALLY IMPLEMENTED (PoC) |
 | [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | PARTIALLY IMPLEMENTED |
-| [World-4. Pokémon Centers](#world-4-pokémon-centers) | DECIDED direction |
-| [World-5. TMs](#world-5-tms) | DECIDED — **core release target** (renewable shop TMs) |
-| [World-6. Evolution Methods (Trade & Stones)](#world-6-evolution-methods-trade--stones) | DECIDED |
-| [World-7. Shops](#world-7-shops) | DECIDED — **core release target** (TMs, evolution items) |
+| [World-4. TMs](#world-4-tms) | DECIDED — **core release target** (renewable shop TMs) |
+| [World-5. Evolution Methods (Trade & Stones)](#world-5-evolution-methods-trade--stones) | DECIDED |
+| [World-6. Shops](#world-6-shops) | DECIDED — **core release target** (TMs, evolution items) |
 | Accelerated day/night cycle | Moved — [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
 | Expanded stone mechanics | Moved — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics) |
+| Pokémon Center hub services | Moved — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) |
+
+---
+
+# World-0. Open-World Principles
+
+**Status: DECIDED**
+
+> **Travel is open. Content can still be dangerous or gated.**
+
+The player should generally be able to **travel between cities regardless of badge count** — trains, ships, and local paid bypasses instead of story errands blocking the map ([World-1](DESIGN-WORLD.md#world-1-world-transportation), [Story-3](DESIGN-STORY.md#story-3-story-and-script-policy)).
+
+That does **not** mean that every route, dungeon, grass patch, encounter, or optional area must be immediately appropriate for a new trainer. Dungeons stay behind **HM and badge-order field unlocks** ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)); a handful of **badge guards** protect endgame corridors such as the League approach ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)). Where geography would force everyone through a high-tier gauntlet, **paid ferries and lifts** offer a way around without closing the region entirely.
+
+Because the player may **start in any of eighteen cities** ([Story-1](DESIGN-STORY.md#story-1-starting-city-and-home)), the world must not behave as if every chosen hometown were late-game: wild levels scale with **distance from that start**, not with badges on the grass ([Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps), [Wilds-2](DESIGN-WILDS.md#wilds-2-wild-pokémon-level-range)), and HM-gated areas can enforce **minimum** caps so a nearby start city does not under-level Whirlpool or Waterfall content. Trainer battles scale with **badges earned**, not with map position ([Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps)), while the player’s own level cap keeps early parties from outleveling the curve. All **sixteen Gyms** remain viable in **any order**; only Victory Road / League and postgame peaks expect the full badge set ([Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
+
+Progression favors **exploration and a large roster**, not route attrition: fights are tuned as **single encounters** with recovery afterward ([Battle-1](DESIGN-BATTLES.md#recovery)), trainer battles aim for **symmetry** with the player ([Battle-1](DESIGN-BATTLES.md#items)), and renewable **TMs, stones, and evolution items** in shops reduce one-shot scavenger hunts ([World-4](DESIGN-WORLD.md#world-4-tms), [World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones), [World-6](DESIGN-WORLD.md#world-6-shops)). Fishing rod tiers and a separate **Water-type catch** track add optional progression off the badge ladder ([Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression)).
 
 ---
 
@@ -25,57 +42,48 @@
 
 **Status: PARTIALLY IMPLEMENTED**
 
-Most traditional story roadblocks should be removed ([Story-1](DESIGN-STORY.md#story-1-story-and-script-content)).
+Most traditional story roadblocks should be removed ([Story-3](DESIGN-STORY.md#story-3-story-and-script-policy)).
 
 Transportation systems should allow broad world traversal from early in the game.
 
 These include:
 
 - Goldenrod/Saffron Train
-- Olivine/Vermilion **S.S. Aqua** (every day; see [§ SS Aqua](#ss-aqua-olivine--vermilion))
-- Early Fly HM — field use partially unblocked ([HACK-NOTES](documentation/HACK-NOTES.md) § Field HM badge bypass). **Kanto Fly map destinations not yet enabled** — in Kanto the UI still shows Johto only (vanilla likely E4 / SS Aqua gated).
-- Pokemon Center Abra transportation
-- local paid route bypasses where required
+- Olivine/Vermilion **S.S. Aqua**
+- local paid route/cave bypasses
+- Pokemon Center Abra transportation before Fly HM unlock
 
+## Paid ferry NPCs
 
+**Status: IMPLEMENTED** 
+
+**Route 42** Blackthorn ↔ Mahogany water gaps.
+
+**Route 40 ↔ Cianwood** — fishermen on the Olivine-side Route 40 beach and Cianwood east shore; **$200** paid warp each way; static Lapras companion sprites; Route 40 Surf gate removed.
+
+**Route 31 ↔ Route 45 (Dark Cave)** — hikers + static Quagsire companions outside both cave entrances; **$200** paid warp each way.
+
+**Route 46 → Route 45 (mountain lift)** — hiker + static Rhydon at the south end of Route 46; **$200** one-way paid warp to north Route 45 near Blackthorn.
+
+**Blackthorn ↔ Route 44 (Ice Path bypass)** — hikers + static Piloswine companions on Blackthorn outdoors and Route 44 bridge area; **$200** paid warp each way (no Ice Path map edits).
+
+**Kanto coastal mesh** — fishermen at Pallet Town south shore, Cinnabar Island beach, Route 20 (Seafoam cave mouth), and Route 19 (south of Fuchsia); **$200** with a **3-destination menu** to any of the other stops (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City).
+
+## SS Aqua (Olivine ↔ Vermilion)
+
+**Status: IMPLEMENTED** — Mom grants S.S. Ticket; pier ticket sailors allow boarding **every day of the week**; crossing completes without being forced through the vanilla missing-girl arc.
+
+**Known v1 gap:** optional vanilla side dialogue (e.g. engine-room sailor / missing girl) is still available if the player seeks it out; **leaving the ship does not require completing the fetch quest.**
 
 ## Abra fast travel
+
+**Status: NOT IMPLEMENTED** 
 
 Pokémon Centers may contain an Abra transportation service.
 
 Travel likely costs money.
 
-Exact destinations/costs remain TBD.
-
-Likely only to cities that have already been visited.
-
-## Paid ferry NPCs
-
-**Status: PARTIALLY IMPLEMENTED** — Route 42, Olivine ↔ Cianwood, Route 31 ↔ Route 45 (Dark Cave), Route 46 → Route 45, Blackthorn ↔ Route 44, and Kanto coastal mesh implemented; coordinate tuning may be needed in-game
-
-**Route 42** (Blackthorn ↔ Mahogany water gaps) is the reference implementation — verified in [Index-2](DESIGN.md#index-2-current-technical-baseline); recipe in `documentation/HACK-NOTES.md`.
-
-**Route 40 ↔ Cianwood** — fishermen on the Olivine-side Route 40 beach and Cianwood east shore; **$200** paid warp each way; static Lapras companion sprites; Route 40 Surf gate removed. Verified Sep 2026 — see HACK-NOTES § Route 40 / Cianwood reference.
-
-**Route 31 ↔ Route 45 (Dark Cave)** — hikers + static Quagsire companions outside both cave entrances; **$200** paid warp each way. Sep 2026 — see HACK-NOTES § Route 31 / Route 45 reference.
-
-**Route 46 → Route 45 (mountain lift)** — hiker + static Rhydon at the south end of Route 46; **$200** one-way paid warp to north Route 45 near Blackthorn. Sep 2026 — see HACK-NOTES § Route 46 → Route 45 reference.
-
-**Blackthorn ↔ Route 44 (Ice Path bypass)** — hikers + static Piloswine companions on Blackthorn outdoors and Route 44 bridge area; **$200** paid warp each way (no Ice Path map edits). Sep 2026 — see HACK-NOTES § Blackthorn / Route 44 reference.
-
-**Kanto coastal mesh** — fishermen + static Lapras at Pallet Town south shore, Cinnabar Island beach, Route 20 (Seafoam cave mouth), and Route 19 (south of Fuchsia); **$200** with a **3-destination menu** to any of the other stops (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City). Sep 2026 — see HACK-NOTES § Kanto coastal ferry mesh reference.
-
-## SS Aqua (Olivine ↔ Vermilion)
-
-**Status: IMPLEMENTED (Sep 2026, playtest OK)** — Mom grants S.S. Ticket + **`FLAG_BOAT_ARRIVED` (235)**; pier ticket sailors allow boarding **every RTC weekday**; gangplank sailors let you walk onto the ship; crossing completes without being forced through the vanilla missing-girl arc.
-
-**Target (DECIDED):** the **S.S. Aqua** runs **every day of the week** (no vanilla “wrong day” lockout).
-
-**Player flow:** Olivine or Vermilion pier → talk to **ticket seaman** (not the idle pier sailors) → gangplank sailor → interior → exit warp at destination. Implementation: `tools/patch_scr_seq_ss_aqua_weekday.py` on scr_seq **152–155** — recipe in [HACK-NOTES § SS Aqua](documentation/HACK-NOTES.md#ss-aqua-olivine--vermilion).
-
-**Known v1 gap:** optional vanilla side dialogue (e.g. engine-room sailor / missing girl) may still trigger if the player seeks it out; **leaving the ship does not require completing the fetch quest.**
-
-**Not the same as:** Kanto **Fly map** destinations ([HACK-NOTES § Fly map](documentation/HACK-NOTES.md#fly-map--kanto-destinations-not-yet)) — still a separate unlock.
+Only to cities that have already been visited.
 
 ---
 
@@ -83,57 +91,17 @@ Likely only to cities that have already been visited.
 
 # World-2. Routes and Content Gating
 
-**Status: PARTIALLY DECIDED** — open-travel principles are firm. **Wild level progression** uses [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) (implemented Sep 2026), **not** badge-guard / encounter-tile wild gating below.
+**Status: PARTIALLY IMPLEMENTED (PoC)** — badge guards for **endgame** access only; not used for wild levels or city-to-city travel.
 
-## Open travel (DECIDED)
+Before [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps), the plan was to gate large parts of the map with badge checks, HMs, guards, and ferries so every city stayed reachable while wild areas stayed “appropriate” for progression. **That model is retired.** Cities stay open via [World-1](DESIGN-WORLD.md#world-1-world-transportation) (ferries, trains, Aqua, etc.); wild difficulty is distance-based ([Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps)), not badge-guarded grass. HM milestone locks for dungeons and routes remain in [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves).
 
-Cities should generally remain accessible regardless of badge count.
+**Badge-guard PoC (in ROM today):** **Route 29 → Route 46** gatehouse — requires **2 badges**. This guard needs to be removed before final release but is our working template for badge-gated content.
 
-Where geography makes a dangerous route **mandatory** for reaching another city, the player should have an alternative transportation option (ferries, paid bypass NPCs — [World-1](DESIGN-WORLD.md#world-1-world-transportation), `HACK-NOTES.md`).
+**Planned badge gates (same pattern as the PoC):**
 
-## Wild progression: World-2 vs Wilds-2 (decided)
-
-Two models were considered for keeping wild areas from being appropriate everywhere at once:
-
-
-| Model                             | How it works                                                                                                             | Status                                                                          |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| **Wilds-2** (distance caps)       | **Starting city + graph distance** sets each area's wild level ceiling; player can enter but fights scale with geography | **Shipped** — [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps), verified Sep 2026 |
-| **World-2** (badge / tile gating) | Block or warn on high-tier **grass, caves, routes** — guards, encounter-tile checks, badge counts                        | **Not used for wild levels** — retained below for HM/League/optional hard zones |
-
-**Decision:** wild **levels** follow **Wilds-2** only. Walking into high-level grass is a risk choice, not a badge-gated tile block. We are **not** adding guard-style or encounter-tile wild level gates across the world.
-
-**Route 29 → Route 46 gatehouse** (2-badge coord gate) remains a verified PoC and scripting template, but is **not** the wild progression model — see [Always needed](#always-needed-regardless-of-wilds-3) for where World-2-style gating still applies.
-
-Gating methods when World-2 *is* used:
-
-- guards;
-- doors;
-- badge/HM checks;
-- encounter-tile checks;
-- alternate paths.
-
-Where guards would feel heavy-handed, encounter-tile gating is lighter: traverse freely on paths, block only stepping onto dangerous encounter tiles with a short message (e.g. *"The wild Pokémon here seem dangerous. You shouldn't enter yet."*).
-
-Some routes may contain both low- and high-progression encounter areas simultaneously (more relevant in a World-2-heavy design).
-
-## Always needed (regardless of Wilds-2)
-
-World-2-style gating **still applies** for non–wild-level concerns:
-
-- **HM / Flash / Headbutt** milestone locks ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) — Surf routes, Flash dungeons (Dark Cave, Rock Tunnel), etc.
-- **Victory Road / Pokémon League** — 16 badges.
-- **Optional hard areas** — dungeons, postgame paths, or similar where distance caps alone are insufficient; light World-2 complements Wilds-2 here.
-- **Vanilla story blockers (should be removed)** — e.g. **Team Rocket at Slowpoke Well (Azalea)** still gates the well on some new saves despite open-world skips; track under [Story-1 — Team Rocket](DESIGN-STORY.md#team-rocket--remove) and [Index-5 KB-4](DESIGN.md#index-5-known-bugs). Not intentional World-2 progression.
-- **Cut obstacles on open routes (verified Sep 2026)** — Ilex Forest main path ([HACK-NOTES](documentation/HACK-NOTES.md) § Remove Ilex Forest Cut tree); Route 35 tree removed separately. Same open-travel intent as Surge/Erika gym trees. Flash / dungeon gates unchanged.
-
-Wild **level** progression uses [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) exclusively (not badge-gated encounter tiles).
-
-## Proof of concept (implemented)
-
-**Route 29 → Route 46 gatehouse** — walk-past coord gate requiring **2 badges** (Zephyr + Hive). See `documentation/HACK-NOTES.md` § Route 46 gate. Scripting template only — **not** used for wild level progression ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps) handles wild levels).
-
----
+- **Route 26** — guard until **13 badges earned** (same count as **Waterfall** field unlock — [World-3](#badge--field-abilities-single-reference)); Kanto-Johto corridor becomes Waterfall gated on both ends.
+- **Route 23** and **Victory Road** / Pokémon League — block until badge requirement for the League is met.
+- **Route 28** and **Mt. Silver** — block until postgame badge requirement is met.
 
 ---
 
@@ -141,46 +109,40 @@ Wild **level** progression uses [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-
 
 # World-3. HMs and Field Moves
 
-**Status: PARTIALLY IMPLEMENTED** — unlock order below decided; Johto Gym HM pilot partial; **collection-based field use** and full Leader grant flow not complete.
+**Status: PARTIALLY IMPLEMENTED** — unlock order below decided; Johto Gym HM pilot partial; full Leader grant flow not complete.
 
-Field abilities unlock by **badges earned** (any Gym order): when badge count hits a row below, the defeating Gym Leader grants that unlock with badge + TM ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)). Vanilla HM fetch quests and tutors are removed ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog)).
+Field abilities unlock by **badges earned** (any Gym order): when badge count hits a row below, the defeating Gym Leader grants that unlock with badge + TM ([Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)). Vanilla HM fetch quests and tutors are removed ([Story-3](DESIGN-STORY.md#story-3-story-and-script-policy)).
 
-**Field use:** eligible species **anywhere in the collection** (party or box) can perform the overworld action — the Pokémon need not know the move. **Battle use:** HMs (and Flash / Headbutt) remain teachable moves if the player wants them in combat.
 
 ## Badge → field abilities (single reference)
 
 
-| Badges | Unlock | Field role | Notes |
-| ------ | ------ | ---------- | ----- |
-| 1 | **Flash** | Light dark dungeons | **Traversal gate** until unlocked (Cannot enter Dark Cave, Rock Tunnel). Not an HM item. |
-| 2 | **Cut** (HM01) | Trees / obstacles | |
-| 3 | **Rock Smash** (HM06) | Break rocks | Separate **Rock Smash** encounter slots when smashing |
-| 4 | **Headbutt** | Tree encounters | `data/Headbutt.c` — not grass table; not an HM item |
-| 5 | **Fly** (HM02) | Fast travel between visited cities | Johto fly map works; **Kanto destinations still locked** — see [HACK-NOTES § Fly map](documentation/HACK-NOTES.md#fly-map--kanto-destinations-not-yet) |
-| 6 | **Surf** (HM03) | Water routes + Surf encounters | |
-| 7 | **Strength** (HM04) | Push boulders | |
-| 10 | **Whirlpool** (HM05) | Clear whirlpools | |
-| 13 | **Waterfall** (HM07) | Climb waterfalls | |
-| 16 | **Rock Climb** (HM08) | Climb rock walls | |
+| Badges | Unlock | Notes |
+| ------ | ------ | ----- |
+| 1 | **Flash** | Dark Cave, Rock Tunnel, blocked until unlocked. Not an HM item. |
+| 2 | **Cut** (HM01) |  |
+| 3 | **Rock Smash** (HM06) |  |
+| 4 | **Headbutt** | Not an HM item |
+| 5 | **Fly** (HM02) |  |
+| 6 | **Surf** (HM03) |  |
+| 7 | **Strength** (HM04) |  |
+| 10 | **Whirlpool** (HM05) |  |
+| 13 | **Waterfall** (HM07) |  |
+| 16 | **Rock Climb** (HM08) |  |
 
 Badge counts not in the table get Badge + TM only
 
-**Unchanged vanilla** (learn move, party menu — not badge-gated, not collection-field): Sweet Scent, Dig, Teleport.
+**Unchanged vanilla** (learn move, party menu — not badge-gated): Sweet Scent, Dig, Teleport.
 
 ## Headbutt & Flash — battle teaching (vanilla vs target)
 
-**Vanilla HGSS:** **Flash** is **TM070** (normal TM teach in battle). **Headbutt is not a TM** — the only teach source is the **Move Tutor** (`TUTOR_HEADBUTT`; first `TUTOR_HEADBUTT` row in tutor data is the only one read). Overworld Headbutt is gated on that tutor chain (Goldenrod → Azalea), not on a machine item.
+**Vanilla HGSS:** **Flash** is a normal TM teach in battle. **Headbutt is not a TM** — tutor-only teach.
 
-**Target (this rom):** Badge **1** / **4** still unlock **collection-based field** Flash and Headbutt ([table above](#badge--field-abilities-single-reference)). Players who want those moves **in battle** need a teach item like any other field-adjacent move.
+**Target (this rom):** Badge **1** / **4** unlock **field** Flash and Headbutt ([table above](#badge--field-abilities-single-reference)) for party use when a Pokémon knows the move. Players who want those moves **in battle** need a teach item like any other field-adjacent move.
 
-**Implementation backlog (not decided):**
+**Open work:** add a **Headbutt TM** (vanilla has none), remove or bypass vanilla tutor gates, audit early learnsets, and sell Flash / Headbutt from badge-gated shops when ready.
 
-1. **Make room for a Headbutt TM** — Vanilla has no Headbutt TM, Tutor only. Repurpose an existing TM number (`src/item.c` machine table, `data/itemdata`, hub mart arrays in `src/field/mart.c`) **or** map Headbutt onto an expanded TM item (`ITEM_TM093+` / HG-Engine TM expansion)
-2. **Headbutt tutor** — Consider removing vanilla tutor NPC ([Story-2](DESIGN-STORY.md#story-2-vanilla-cleanup-backlog))
-3. **Learnset pass** — Audit species with **level-up** Headbutt (`MOVE_HEADBUTT`); Consider removing if any learn it at too low a level (before badge would naturally be acquired)
-4. **Shops** — list **Headbutt TM** (and **Flash / TM070**) after badge requirement met
-
-**Status today:** Johto Gym scripts grant badge + TM only at counts **1** and **4** — no Flash / Headbutt field flags yet ([HACK-NOTES](documentation/HACK-NOTES.md) § Gym HM grants).
+**Status today:** Johto Gym HM pilot grants badge + TM at some counts; Flash / Headbutt field unlock flow is not complete ([Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)).
 
 
 ---
@@ -189,45 +151,11 @@ Badge counts not in the table get Badge + TM only
 
 
 
-# World-4. Pokémon Centers
+# World-4. TMs
 
-**Status: DECIDED direction; exact services expandable**
+**Status: PARTIALLY IMPLEMENTED**
 
-Because healing is automatic ([Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition)), Pokémon Centers no longer need to function primarily as healing stations. Universal PC everywhere / in battle is [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc); vanilla PC locations remain for initial release.
-
-They instead become **trainer service hubs**.
-
-Potential/current services include:
-
-### Abra transportation
-
-A trainer/Abra service can transport the player to other locations for a fee ([World-1](DESIGN-WORLD.md#world-1-world-transportation)).
-
-### Resting
-
-The player can rest to intentionally advance the accelerated in-game clock when [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) is implemented.
-
-### Apricorn crafting
-
-If [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) is implemented, Pokémon Centers may provide distributed Apricorn Ball crafting.
-
-### Additional services
-
-Other useful trainer services can be added as systems develop.
-
----
-
-
-
-# World-5. TMs
-
-**Status: DECIDED — core release target.** Renewable hub TM shelves are **implemented** in `src/field/mart.c` ([World-7 § What we’ve done](DESIGN-WORLD.md#what-weve-done)); **Game Corner TM menus implemented** ([HACK-NOTES § Game Corner TM prizes](documentation/HACK-NOTES.md#game-corner-tm-prizes)); rare overworld TMs unchanged.
-
-TMs remain **consumable**.
-
-However:
-
-> **No TM is permanently finite.**
+TMs remain **consumable**. However **No TM is permanently finite.**
 
 This preserves the decision of spending a TM without creating the classic problem where players hoard their only copy forever.
 
@@ -235,11 +163,11 @@ Different TMs have different renewable sources.
 
 ## Common TMs
 
-Available from shops — see [World-7](DESIGN-WORLD.md#world-7-shops) (major hubs: Goldenrod, Celadon).
+Available from shops — see [World-6](DESIGN-WORLD.md#world-6-shops) (major hubs: Goldenrod, Celadon). **implemented**
 
 ## Game Corner TMs
 
-Coin prizes at the department-store Game Corners (renewable — implemented in scr_seq + text banks; see [HACK-NOTES § Game Corner TM prizes](documentation/HACK-NOTES.md#game-corner-tm-prizes)):
+Coin prizes at the department-store Game Corners **implemented**:
 
 | Location | TM pool |
 | -------- | ------- |
@@ -257,32 +185,17 @@ Coin prizes at the department-store Game Corners (renewable — implemented in s
 
 **Temporary pricing:** all Game Corner TM, held-item, and Pokémon prizes cost **50 Coins** until proper coin income and tiered pricing ship. This is a playtest shortcut only — not the long-term economy.
 
-Prize menus are wired; **earning Coins is still vanilla** — international HGSS replaced slot machines with **Voltorb Flip** on the Game Corner floor (`T25SP0101` / `T07SP0101`). That minigame is **not** the intended long-term coin grind for this rom.
-
-**Requirement:** add at least one **renewable, low-friction** way to obtain Coins without playing Voltorb Flip, so Game Corner TMs stay a practical source alongside dept-store shelves.
-
-**Not decided yet (pick one or combine):**
-
-- **Buy Coins for ¥** — clerk at Goldenrod / Celadon Game Corner or dept store (exchange rate TBD).
-- **Dept-store Coin counter** — same prize clerks also sell Coin bundles.
-- **Restore a simpler casino game** — if technically feasible; slots were removed from non-JP HGSS.
-- **Battle / trainer payout** — small Coin bonus from trainer wins (needs economy tuning vs [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) money policy).
-
-Until this ships, Game Corner TMs are technically buyable but **Coin income is the bottleneck**.
-
-## Rare / overworld TMs
-
-Rare TMs that would traditionally exist as one overworld copy can also become obtainable through [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) living-trainer interactions; **initial release** relies on [World-7](DESIGN-WORLD.md#world-7-shops) hub shelves.
+Prize menus are wired; **earning Coins is still vanilla** (**Voltorb Flip** on the Game Corner floor). Game Corner TMs are buyable in principle but **Coin income is the bottleneck** until something from [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) ships.
 
 ## Gym TMs
 
+**Not implemented**
+
 Each Gym Leader has a **curated TM pool** (table below). Every `(Leader, TM)` row has a **minimum badge count** (authored per TM; not necessarily uniform within a pool).
 
-After the player **defeats** that Leader (first clear or **rematch**), they **choose one TM** from that Leader's pool among entries whose badge requirement is **≤ badges earned** (including the badge just awarded). Same choice rules on rematch — renewable TM source ([Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
+After the player **defeats** that Leader (first clear or **rematch**), they **choose one TM** from that Leader's pool among entries whose badge requirement is **≤ badges earned** (including the badge just awarded). Same choice rules on rematch — renewable TM source ([Battle-3](DESIGN-BATTLES.md#rematches)).
 
-Gym TM picks are intentionally **unlimited** over rematches (no finite TM problem — [World-5](#world-5-tms) policy).
-
-**Implementation:** not shipped; vanilla / pilot scripts still grant a single fixed TM per Leader ([HACK-NOTES](documentation/HACK-NOTES.md) § Gym Leader HM rewards).
+Gym TM picks are intentionally **unlimited** over rematches
 
 ### Leader TM pools
 
@@ -310,64 +223,56 @@ Gym TM picks are intentionally **unlimited** over rematches (no finite TM proble
 
 
 
-# World-6. Evolution Methods (Trade & Stones)
+# World-5. Evolution Methods (Trade & Stones)
 
-**Status: DECIDED** — trade-item use-on-Pokémon and Linking Cord shipped Sep 2026.
+**Status: IMPLEMENTED**
 
 ## Evolution stones
 
-**Shipped:** Every standard evolution stone is **renewably buyable** at themed town marts and dept-store shelves ([World-7 § What we’ve done](DESIGN-WORLD.md#what-weve-done)) — e.g. Fire at Ecruteak, Water at Cerulean, Thunder at Vermilion, Moon at Mt. Moon Square, Sun & Leaf at Celadon 4F — instead of vanilla’s mostly one-off pickups.
+Every standard evolution stone is **renewably buyable** at themed town marts and dept-store shelves ([World-6 § What we’ve done](DESIGN-WORLD.md#what-weve-done)) — e.g. Fire at Ecruteak, Water at Cerulean — instead of vanilla’s mostly one-off pickups.
 
-**Planned:** All evolution stones will also be added to the **Rock Smash item tables** (`src/field/rock_smash_item.c`) as a field source alongside shops.
+Some evolution items also drop from **Rock Smash** as a field source.
 
-Player stone evolution rules are **unchanged** (use a stone on an eligible Pokémon). Optional flexible stone mechanics (type-matching shortcuts, high-level paths without stones) are deferred — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).
-
-## Trade evolutions
-
-QoL changes to trade evolution (held-item use-on-Pokémon, Linking Cord for plain trade lines). **Shipped Sep 2026** — [HACK-NOTES § Trade-item evolution](documentation/HACK-NOTES.md#trade-item-evolution-use-on-pokémon).
+Player stone evolution rules are **unchanged** (use a stone on an eligible Pokémon). Flexible stone mechanics (type-matching shortcuts, high-level paths without stones) are deferred — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).
 
 ### Trade evolutions — with held item
 
-**Shipped:** Evolutions that normally require **trade while holding an item** evolve when the item is **used on the Pokémon** — no trade required ([HACK-NOTES § Trade-item evolution](documentation/HACK-NOTES.md#trade-item-evolution-use-on-pokémon)).
+*Evolutions that normally require **trade while holding an item** evolve when the item is **used on the Pokémon** — no trade required.
 
 Examples: Dragon Scale → Kingdra, Metal Coat → Scizor, Protector → Rhyperior, etc.
 
 ### Trade evolutions — no item
 
-**Shipped:** **Linking Cord** — use on the Pokémon like a stone (`EVO_STONE` + `ITEM_LINKING_CORD` rows for plain trade lines in `data/Evolutions.c`). **Marts:** first slot on Goldenrod dept **2F lower** and Celadon dept **4F** ([World-7 § dept stores](#goldenrod--celadon-department-stores)); ¥8000.
+**Linking Cord** — use on the Pokémon like a stone for plain trade lines. **Marts:** Goldenrod dept **2F lower** and Celadon dept **4F** ([World-6 § dept stores](#goldenrod--celadon-department-stores)).
 
 ---
 
 
 
-# World-7. Shops
+# World-6. Shops
 
-**Status: DECIDED — core release target** — renewable **TMs** ([World-5](DESIGN-WORLD.md#world-5-tms)), **evolution items**, and **held gear** without vanilla’s one-shot consumable grind.
+**Status: IMPLEMENTED** — renewable **TMs** ([World-4](DESIGN-WORLD.md#world-4-tms)), **evolution items**, and **held gear** without vanilla’s one-shot consumable grind.
 
 ## Overall idea
 
-Marts follow [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) (full restore after every battle) and [Battle-3](DESIGN-BATTLES.md#battle-3-core-trainer-battle-philosophy) (no bag items in trainer battles). **Remove** as default shop stock: potions and Full Restore; single-status cures and PP restores; X items, Dire Hit, and Guard Spec; food/healing fluff with no other role (Moomoo Milk, route drinks, etc.) unless repurposed later.
+Marts follow [Battle-1](DESIGN-BATTLES.md#recovery) (full restore after every battle) and [Battle-1](DESIGN-BATTLES.md#items) (no bag items in trainer battles). **Remove** as default shop stock: potions, antidotes, X items, etc.
 
 **Sell:**
 
 | Category | Intent |
 | -------- | ------ |
-| **Poké Balls & repels** | Capture and wild-level risk ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)); specialty balls wait on [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) — **Quick Ball** and **Dusk Ball** stay out of normal shops. |
-| **TMs** | Renewable sets at **Goldenrod / Celadon** dept hubs; Gym **choice pools** and **Game Corner** lists in [World-5](DESIGN-WORLD.md#world-5-tms). |
-| **Evolution items** | Stones and trade-evolution held items at **themed town marts**; **Linking Cord** at Goldenrod dept 2F lower + Celadon 4F ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)). |
+| **Poké Balls & repels** | Capture and wild-level risk ([Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps)); specialty balls wait on [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) — **Quick Ball** and **Dusk Ball** stay out of normal shops. |
+| **TMs** | Renewable sets at **Goldenrod / Celadon** dept hubs; Gym **choice pools** and **Game Corner** lists in [World-4](DESIGN-WORLD.md#world-4-tms). |
+| **Evolution items** | Stones and trade-evolution held items at **themed town marts**; **Linking Cord** at Goldenrod dept 2F lower + Celadon 4F ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)). |
 | **Held items** | **Badge-gated** progression, some on dept **2F**, **20% type boosters** in matching Gym cities |
 | **Utility** | Escape Rope, Poké Doll, vitamins + EV training at hubs. |
 
 
-**Later (not initial release):** [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) living-trainer buy/sell for duplicates and rare TMs — hub marts carry the economy first.
-
 ## What we’ve done
-
-**ROM:** `#define MART_EXPANSION` in `include/config.h` → **`src/field/mart.c`** ([HACK-NOTES § Mart expansion](documentation/HACK-NOTES.md#mart-expansion-srcfieldmartc)). Playtest after edits.
 
 ### Badge-gated shelf (most shops)
 
-`ScrCmd_MartBuy` → `sBadgeMart[]`: Poké / Great / Ultra / Net / Repeat / Timer Balls; Repels; Escape Rope; Poké Doll; Sitrus & Lum Berries; **TM70 (Flash)**; Cleanse Tag; White / Mental / Power Herbs; Muscle Band & Wise Glasses; Big Root; Expert Belt; Light Clay; Metronome; Leftovers; Shell Bell; Focus Sash; Choice Band / Specs / Scarf; Life Orb — each row gated by **minimum badge count** (0–12).
+Poké / Great / Ultra / Net / Repeat / Timer Balls; Repels; Escape Rope; Poké Doll; Sitrus & Lum Berries; **Flash TM**; Cleanse Tag; held battle items through Life Orb — each row gated by **minimum badge count** (0–12).
 
 ### Goldenrod & Celadon department stores
 
@@ -381,7 +286,7 @@ Marts follow [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) (full 
 | **Celadon 4F** | **Linking Cord**, Sun & Leaf Stones, Rindo Berry, Miracle Seed, Grip Claw, Sticky Barb, Shed Shell |
 | **Goldenrod herbs** | Pomeg, Kelpsy, Qualot, Hondew, Grepa, Tamato Berries (replaces powders/roots) |
 
-### Town / route specialty clerks (`std_special_mart` arrays)
+### Town / route specialty clerks
 
 Themed Evolution items, held items, resist berries:
 
@@ -403,15 +308,5 @@ Themed Evolution items, held items, resist berries:
 | Mt. Moon Square | Moon Stone |
 | Mahogany | Poké Ball, Never-Melt Ice, Yache Berry, Razor Claw |
 | Indigo Plateau | Ultra & Timer Balls, Max Repel, Lum Berry, Leftovers, Shell Bell, Focus Sash, Choice Band / Specs / Scarf, Life Orb |
-
-## What’s left to do
-
-**Implementation**
-
-- ~~**Game Corner TM + held-item menus**~~ — **done** ([HACK-NOTES § Game Corner TM prizes](documentation/HACK-NOTES.md#game-corner-tm-prizes)); Pokémon submenu still vanilla.
-- **Game Corner Coin income** — alternative to Voltorb Flip ([World-5 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)); not investigated.
-- **Gym TM choice** — Leader pools + per-TM badge gates + pick-one UI ([World-5 § Gym TMs](DESIGN-WORLD.md#gym-tms)); scripts still grant one fixed TM ([HACK-NOTES](documentation/HACK-NOTES.md) § Gym Leader HM rewards).
-- ~~**Linking Cord** on hub shelves~~ — **done:** Goldenrod 2F lower + Celadon 4F ([HACK-NOTES § Trade-item evolution](documentation/HACK-NOTES.md#trade-item-evolution-use-on-pokémon)).
-- **Headbutt TM** slot and badge-gated shop row alongside Flash ([World-3](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target)).
 
 ---

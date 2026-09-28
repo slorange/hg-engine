@@ -2,7 +2,7 @@
 
 Deferred systems and wishlist items. **Sections are not listed in intended implementation order**
 >
-> **Index:** [`DESIGN.md`](DESIGN.md) · **Core vision:** [`DESIGN-VISION.md`](DESIGN-VISION.md)
+> **Index:** [`DESIGN.md`](DESIGN.md) · **Identity:** [Index-2 — Game Identity](DESIGN.md#index-2-game-identity)
 >
 
 ## Sections
@@ -22,6 +22,8 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-11. Encounter stage selection (wild + trainer)](#future-11-encounter-stage-selection-wild--trainer) |
 | [Future-12. Berry economy & distribution](#future-12-berry-economy--distribution) |
 | [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
+| [Future-14. Other potential changes](#future-14-other-potential-changes) |
+| [Future-15. Wild habitat patches (type coverage)](#future-15-wild-habitat-patches-type-coverage) |
 
 ---
 
@@ -38,7 +40,7 @@ Apricorns become a renewable crafting resource tied to the accelerated game cloc
 
 With the ~30-minute day target, this is a faster renewable economy than vanilla HGSS. Exact quantities and refresh timing remain subject to balance testing.
 
-The player should not need to repeatedly return to Azalea Town merely to craft Apricorn Balls. Pokémon Center crafting or another distributed crafting system is under consideration ([World-4](DESIGN-WORLD.md#world-4-pokémon-centers) notes).
+The player should not need to repeatedly return to Azalea Town merely to craft Apricorn Balls. Pokémon Center crafting or another distributed crafting system is under consideration ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes)).
 
 ### More Apricorn trees
 
@@ -48,7 +50,7 @@ We would like **additional Apricorn trees** across Johto and Kanto so harvesting
 
 **Shop balls** — readily available, generally weaker or reliable bonuses; useful without one infinitely purchasable ball dominating every capture.
 
-**Apricorn balls** — renewable but resource-limited, with stronger specialized bonuses. 
+**Apricorn balls** — renewable but resource-limited, with stronger specialized bonuses.
 
 Intended to avoid: *"Buy 99 Quick Balls and throw one at everything."*
 
@@ -86,7 +88,7 @@ Intended to avoid: *"Buy 99 Quick Balls and throw one at everything."*
 <tr><th>Ball</th><th>Why dropped</th></tr>
 </thead>
 <tbody>
-<tr><td>Heal Ball</td><td>Unnecessary — newly caught Pokémon are auto-healed (<a href="DESIGN-BATTLES.md#battle-2-healing-and-attrition">Battle-2</a>).</td></tr>
+<tr><td>Heal Ball</td><td>Unnecessary — newly caught Pokémon are auto-healed (<a href="DESIGN-BATTLES.md#recovery">Battle-1</a>).</td></tr>
 <tr><td>Luxury Ball</td><td>Role absorbed by redesigned Friend Ball.</td></tr>
 <tr><td>Nest Ball</td><td>Overlaps Level Ball conceptually.</td></tr>
 <tr><td>Dive Ball</td><td>Water-capture overlap with Net ball.</td></tr>
@@ -237,9 +239,9 @@ This is **not fully random**. Species and families must still appear in appropri
 - **Every obtainable family** must be available in at least one location.
 - **Duplicate family locations** are allowed and desirable for common / generalist species.
 - **Habitat compatibility** must be respected:
-  - aquatic / fish families → Surf, fishing, water habitats;
-  - cave species → strongly prefer caves;
-  - Ice species → icy / snowy areas;
+ - aquatic / fish families → Surf, fishing, water habitats;
+ - cave species → strongly prefer caves;
+ - Ice species → icy / snowy areas;
 - Habitat compatibility should often be **weighted** rather than strictly binary. Some families can plausibly live in several environments.
 - **Encounter method compatibility** remains meaningful: fishing, Surf, grass / cave encounters, Headbutt, Rock Smash, etc.
 - **Area identity** should remain coherent. If an area is intended to have a strong type / environment theme, generated families should preserve that theme.
@@ -258,7 +260,7 @@ Generation must be **deterministic from a save-specific world seed**:
 
 ## Gym Leader family location hint
 
-After first Gym clear (alongside badge, HM, TM — see [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)):
+After first Gym clear (alongside badge, HM, TM — see [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)):
 
 The Leader offers to point the player toward **one evolutionary family** matching the Gym's type(s).
 
@@ -278,7 +280,7 @@ The player picks from a curated list of families for that Gym. The Leader names 
 - Blue has no type and will need special handling. Consider giving him a curated list of rare mons unavailable by other gym leaders
 
 ## Technical investigation
-- per-save ecology generation and persistence (`data/Encounters.c` replacement or overlay);
+- per-save ecology generation and persistence (encounter table replacement or overlay);
 - family / habitat tagging data format;
 - Pokédex and trainer hint integration;
 - special / static / legendary encounter policy;
@@ -288,7 +290,7 @@ The player picks from a curated list of families for that Gym. The Leader names 
 
 # Future-6. Expanded Pokédex / generations
 
-**Current scope is:** [Wilds-4](DESIGN-WILDS.md#wilds-4-pokémon-generations--content-scope) — **Gen I–IV plus the Volcarona line**
+**Current scope is:** [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) — **Gen I–IV plus the Volcarona line**
 
 But HG-Engine supports up to gen 9 minus Paradox and DLC.
 
@@ -298,7 +300,11 @@ But HG-Engine supports up to gen 9 minus Paradox and DLC.
 
 ### Randomize species
 
-Replace party species with **random eligible species** from the available dex ([Wilds-4](DESIGN-WILDS.md#wilds-4-pokémon-generations--content-scope)), then apply the same stage rules as release scaling ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented)) so the chosen form fits the level band.
+Replace party species with **random eligible species** from the available dex ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)), then apply the same stage rules as release scaling ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release)) so the chosen form fits the level band.
+
+## Trainer party size vs badge count
+
+Scaling **how many** Pokémon appear on trainer teams by badges (e.g. a late-game Falkner with four birds instead of two) means **generating** new species per slot, not only re-leveling vanilla parties. Same dependency as species randomization above — **deferred** with Future-7. Release keeps **vanilla authored party sizes** ([Battle-1 § Equal Party sizes](DESIGN-BATTLES.md#equal-party-sizes)).
 
 ## Gym rosters
 Gyms (both trainers and leaders) are **monotype by default**, with exceptions:
@@ -353,11 +359,15 @@ Exact wild-battle UI/selection behaviour is a technical design problem.
 
 ## Field party vs full collection
 
-The six field Pokémon: following mon, EXP defaults ([Battle-6](DESIGN-BATTLES.md#battle-6-exp-share)), overworld presentation, convenient ordering.
+The six field Pokémon: following mon, EXP defaults ([Battle-4](DESIGN-BATTLES.md#battle-4-experience)), overworld presentation, convenient ordering.
 
-The entire collection: accessible anywhere including in battle; trainer-battle bench; can satisfy HM field requirements ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+The entire collection: accessible anywhere including in battle; trainer-battle bench.
 
 > **The player's collection is their team.**
+
+### Field HMs from the full collection
+
+An eligible species **anywhere in the collection** (party or box) can perform an unlocked overworld HM / Flash / Headbutt action — **the Pokémon need not know the move** on that slot. Badge unlock order from [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference) still gates *which* field abilities exist; this changes *who* can execute them. **Battle use** stays separate: HMs (and Flash / Headbutt) remain teachable moves for combat when the player wants them on the active roster.
 
 ## Technical investigation
 
@@ -398,7 +408,7 @@ The player should be able to deliberately advance time rather than waiting.
 
 ### Resting at Pokémon Centers / hotels
 
-Allows controlled advancement of time ([World-4](DESIGN-WORLD.md#world-4-pokémon-centers)).
+Allows controlled advancement of time ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes)).
 
 ### Portable resting
 
@@ -417,7 +427,7 @@ A tent, sleeping bag, camping system, or similar mechanic can potentially allow 
 
 # Future-10. Living trainers & interactions
 
-**Not required for initial release.** Initial release: static vanilla trainers with [Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented) scaling. Renewable TMs via [World-5](DESIGN-WORLD.md#world-5-tms) / [World-7](DESIGN-WORLD.md#world-7-shops), not trainer buy/sell economy.
+**Not required for initial release.** Initial release: static vanilla trainers with [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) scaling. Renewable TMs via [World-4](DESIGN-WORLD.md#world-4-tms) / [World-6](DESIGN-WORLD.md#world-6-shops), not trainer buy/sell economy.
 
 ## Living trainers
 
@@ -463,7 +473,7 @@ Some trainers request trades or buy/sell items (sink for duplicates; source for 
 
 ### TMs
 
-Some trainers provide renewable access to otherwise rare TMs ([World-5](DESIGN-WORLD.md#world-5-tms)) — alternative to putting everything in static marts.
+Some trainers provide renewable access to otherwise rare TMs ([World-4](DESIGN-WORLD.md#world-4-tms)) — alternative to putting everything in static marts.
 
 ### Gym advice / other quests
 
@@ -471,7 +481,7 @@ Information about nearby undefeated Gyms or scaled teams; additional lightweight
 
 ## Field population (living trainers)
 
-Map-level trainer generation, movement, and placement — distinct from [Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented) battle-start scaling; location-weighted distributions and non-battle interactions.
+Map-level trainer generation, movement, and placement — distinct from [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) battle-start scaling; location-weighted distributions and non-battle interactions.
 
 ## Technical investigation
 
@@ -482,7 +492,7 @@ Map-level trainer generation, movement, and placement — distinct from [Battle-
 
 # Future-11. Encounter stage selection (wild + trainer)
 
-**Release behaviour** ([Wilds-1 synthetic stages](DESIGN-WILDS.md#synthetic-evolution-stages-wild--trainer), [Battle-4 trainer scaling](DESIGN-BATTLES.md#trainer-scaling-implemented)): after an encounter level is known, `AdjustEncounterSpeciesForLevel()` walks **prevos** through level-up and synthetic edges to the chain root, then walks **forward** applying both edge types (level ≥ `min_level` → step to evolved form; below threshold → lower stage). Verified Sep 2026 for wild rolls and trainer scaling (including devolving authored trade/stone finals). Wild and trainer battles share one ruleset today. Player evolution ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)) — trade-item use-on-Pokémon and Linking Cord shipped; wild/trainer stage adjust is separate.
+**Release behaviour** ([Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution), [Battle-2 trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)): after an encounter level is known, `AdjustEncounterSpeciesForLevel` walks **prevos** through level-up and synthetic edges to the chain root, then walks **forward** applying both edge types (level ≥ `min_level` → step to evolved form; below threshold → lower stage). Verified Sep 2026 for wild rolls and trainer scaling (including devolving authored trade/stone finals). Wild and trainer battles share one ruleset today. Player evolution ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)) — trade-item use-on-Pokémon and Linking Cord shipped; wild/trainer stage adjust is separate.
 
 ## Probabilistic synthetic evolutions
 
@@ -500,7 +510,7 @@ Authoring could extend `synthetic_evolution_thresholds.tsv` (or successor data) 
 
 ## Wild vs trainer vs Gym Leader divergence
 
-Release: **identical** stage logic for wild rolls and trainer battle-start scaling (Gym Leaders use the same path at battle start today — [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
+Release: **identical** stage logic for wild rolls and trainer battle-start scaling (Gym Leaders use the same path at battle start today — [Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
 
 **Wishlist:** separate parameters or TSV views by **encounter context**, with a simple ordering for synthetic-edge certainty:
 
@@ -514,13 +524,13 @@ Release: **identical** stage logic for wild rolls and trainer battle-start scali
 
 Rematches and Elite Four would share the **Gym Leader** tier
 
-Implementation sketch: `AdjustEncounterSpeciesForLevel()` gains a **context** flag (`wild`, `trainer`, `gym_leader`, …) that selects probability tables, tier offsets, or multipliers without duplicating level-up chain logic.
+Implementation sketch: `AdjustEncounterSpeciesForLevel` gains a **context** flag (`wild`, `trainer`, `gym_leader`, …) that selects probability tables, tier offsets, or multipliers without duplicating level-up chain logic.
 
 ---
 
 # Future-12. Berry economy & distribution
 
-Berries stay a meaningful **held-item** layer: the player cannot use Bag items in trainer battles ([Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition)), so automatic berry effects remain one of the main in-battle consumables. Growth via **Berry Pots** is unchanged in role.
+Berries stay a meaningful **held-item** layer: the player cannot use Bag items in trainer battles ([Battle-1](DESIGN-BATTLES.md#items)), so automatic berry effects remain one of the main in-battle consumables. Growth via **Berry Pots** is unchanged in role.
 
 **Scope:** keep **45 of 64** Gen IV berries, all obtainable in-game — no Pokéwalker courses, events, Pal Park, or multiplayer.
 
@@ -537,7 +547,7 @@ Give **Berry Pots at game start** (Mom’s opening conversation), replacing vani
 | Basic | **149–156** (Cheri–Persim) | Status cure, Leppa PP, Oran HP | Starter pack; Goldenrod & Celadon Dept. Stores (partial medicine replacement) |
 | Lum + Sitrus | **157–158** | Full status / 25% max HP | Badge-scaled regular marts (~**6 badges**, tunable) |
 | EV / friendship | **169–174** (Pomeg–Tamato) | −EVs, +friendship | Goldenrod Underground medicine seller (beside Haircut Brothers) |
-| Type-resistance | **184–200** (Occa–Chilan) | Super-effective hit reduction | Themed **local specialty shops** (town ↔ type; detail in [World-7](DESIGN-WORLD.md#world-7-shops) — e.g. Wacan→Vermilion, Passho→Cerulean). Mom’s vanilla resist-berry purchasing **unchanged for now**. |
+| Type-resistance | **184–200** (Occa–Chilan) | Super-effective hit reduction | Themed **local specialty shops** (town ↔ type; detail in [World-6](DESIGN-WORLD.md#world-6-shops) — e.g. Wacan→Vermilion, Passho→Cerulean). Mom’s vanilla resist-berry purchasing **unchanged for now**. |
 | Rare battle | **201–212** (Liechi–Rowap) | Pinch boosts, Enigma heal, Custap priority, Jaboca/Rowap counter | Violet City and Fuchsia City shard traders |
 
 ## Wild Pokémon holds
@@ -576,10 +586,10 @@ Example — Rapidash (natural level **40**):
 - **Stone at any level** (keep the classic convenience).
 - **Also** a **high level-up path** without the stone.
 
-| Stage pattern                                     | Stone                       | Level without stone |
+| Stage pattern | Stone | Level without stone |
 | ------------------------------------------------- | --------------------------- | ------------------- |
-| 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **35**              |
-| 2nd stage, stone-only (e.g. Gloom, Poliwhirl)     | matching stone at any level | **50**              |
+| 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **35** |
+| 2nd stage, stone-only (e.g. Gloom, Poliwhirl) | matching stone at any level | **50** |
 
 ## Open design questions
 
@@ -588,6 +598,25 @@ Example — Rapidash (natural level **40**):
 - Using a stone on a Pokémon with no evolution in that line — no effect?
 - Interaction with [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) evolution exclusions for generated trainer teams.
 
-Shop availability for stones: [World-7](DESIGN-WORLD.md#world-7-shops).
+Shop availability for stones: [World-6](DESIGN-WORLD.md#world-6-shops).
+
+---
+
+# Future-14. Other potential changes
+
+Ideas that do not have their own `Future-*` section yet.
+
+- **Starter selection** could be revisited.
+- **Pokémon Center extras** — trainer hub ideas (Abra travel desk, resting to advance time, distributed Apricorn crafting, other QoL) if [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) / [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) land; vanilla Nurse Joy heal + PC remain fine for initial release.
+- **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
+
+---
+
+# Future-15. Cinnabar Wild habitat
+
+Vanilla Johto / Kanto has almost no wild **Fire** habitat beyond **Burned Tower**.
+
+In Vanilla HGSS, **Cinnabar Island** is a ravaged town and has no encounters. **Add wild encounters** there (themed Fire families, stage-adjusted like other areas) so Fire types are not single-location locked.
+
 
 ---

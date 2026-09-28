@@ -81,7 +81,7 @@
 // commenting this line out disables the building of the new EV/IV viewing system
 #define IMPLEMENT_NEW_EV_IV_VIEWER
 
-// IMPLEMENT_LEVEL_CAP enforces Battle-4 badge caps via GetLevelCap() (10 + 4×badges, 80 at 16; 100 after Hall of Fame / gameClear).
+// IMPLEMENT_LEVEL_CAP enforces Battle-2 badge caps via GetLevelCap() (10 + 4×badges, 80 at 16; 100 after Hall of Fame / gameClear).
 // UNCAP_CANDIES_FROM_LEVEL_CAP lets Rare Candies raise level above the badge cap (EXP still stops at cap).
 // ALLOW_LEVEL_CAP_EVOLVE lets Rare Candy on a mon exactly at cap trigger level-up evolutions (e.g. evolve-at-32 while capped at 32).
 #define IMPLEMENT_LEVEL_CAP

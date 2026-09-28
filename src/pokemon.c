@@ -1812,7 +1812,7 @@ u32 CheckCanUseBallOnDoublesFromBag(struct BattleStruct *sp)
 }
 
 /**
- *  @brief current player level cap (Battle-4 badge ladder; uncapped after Hall of Fame)
+ *  @brief current player level cap (Battle-2 badge ladder; uncapped after Hall of Fame)
  *
  *  @return badge-based cap, or 100 after gameClear / when IMPLEMENT_LEVEL_CAP is off
  */

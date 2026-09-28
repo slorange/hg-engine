@@ -6,7 +6,7 @@ Working notes for this fork so we don’t re-discover the text/data layout every
 
 ## Contents
 
-Implementation recipes and reference notes (no design-status column — see [DESIGN.md](../DESIGN.md) for `Vision-*` / `World-*` / `Battle-*` specs). **Known bugs:** [DESIGN.md § Index-5](../DESIGN.md#index-5-known-bugs). **Agents:** `.cursor/rules/agents.mdc`.
+Implementation recipes only — link **to** [DESIGN.md](../DESIGN.md) / CHANGELOG / [TODO.md](../TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([DESIGN.md Index-1](../DESIGN.md#index-1-instructions-for-coding-agents)). **Known bugs:** [TODO.md § Known bugs](../TODO.md#known-bugs) symptoms + [§ below](#known-bugs-index-3). **Agents:** `.cursor/rules/agents.mdc`.
 
 | Topic | Section |
 | ----- | ------- |
@@ -42,6 +42,55 @@ Implementation recipes and reference notes (no design-status column — see [DES
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
+| Known bugs | [Known bugs (TODO.md)](#known-bugs-index-3) |
+
+## Known bugs (TODO.md)
+
+Symptom list: [TODO.md § Known bugs](../TODO.md#known-bugs). Implementation detail lives below (and in related recipe sections).
+
+### KB-2 — Post-battle return to field crash
+
+**Symptom:** freeze or hard crash when fading back to overworld after a battle.
+
+**Status (Sep 2026):** open again; repro asymmetric (regular for at least one tester; primary dev often no longer reproduces after heal guard pass).
+
+**Related recipe:** [Heal after every battle](#heal-after-every-battle) (heal works; crash is separate timing/hook issue).
+
+**Bisect:** disable `HEAL_AFTER_BATTLE` in `include/config.h`.
+
+**Reporting:** emulator vs hardware, `test.nds` build date, new vs old save, wild vs trainer, party size, cheats/speedup.
+
+### KB-3 — Cherrygrove guide cutscene
+
+**Symptom:** Town Map / running-shoes tutorial cutscene still runs; guide NPC invisible (hidden on new saves via Mom intro flag sweep).
+
+**Design:** [TODO.md — Cherrygrove guide](../TODO.md#superseded-by-mom-cutscene--starting-grants).
+
+**Fix direction:** skip or nop guide **coord / trigger scripts**, not only `FLAG_HIDE_CHERRYGROVE_GUIDE_GENT`.
+
+### KB-4 — Slowpoke Well Rocket grunt
+
+**Symptom:** at least one Team Rocket grunt still blocks Slowpoke Well entrance on some new saves despite Azalea rocket skips.
+
+**Design:** [Story-3 — Team Rocket](../DESIGN-STORY.md#team-rocket--remove).
+
+**Partial work:** `openworld_story_skip_flags.inc`, `tools/patch_scr_seq_t23_azalea.py` (scr_seq member **866**).
+
+### KB-5 — Mahogany Gym Pryce room crash
+
+**Symptom:** crash when entering the last (Pryce) room of the ice puzzle (not necessarily on battle start).
+
+**Suspects:** Mahogany gym scr_seq / zone_event, ice-tile puzzle state, Pryce leader patch (member **932** slot **1** — `scr_seq_pryce_gym_slot1.s`, `tools/patch_scr_seq_gym_pryce.py`). Mahogany **town** rocket skip is separate — [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load). See also [Gym Leader HM rewards](#gym-leader-hm-rewards-johto-pilot).
+
+### KB-6 — Seated Mom dialogue after intro
+
+**Symptom:** after open-world intro, talking to seated Mom shows garbled dialogue or wrong menus (vanilla Elm-fetch flow).
+
+**Design:** [Story-1](../DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](../DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow).
+
+**Related recipe:** [Open-world starting inventory](#open-world-starting-inventory-new-saves) — only script slot **0** rebuilt; scr_seq **845** other slots + **545** text remap may not match sitting-script branches.
+
+---
 
 ## Why the Mom line was hard to find
 
@@ -229,7 +278,7 @@ Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,3
 
 **Status:** verified in-game (Aug 2026). 0 badges, no Cut — Vermilion Gym door, Celadon Gym door, and Erika inside Celadon Gym all reachable.
 
-**Goal:** reach Vermilion and Celadon Gyms (and Erika inside her Gym) without Cut — [Story-1](DESIGN-STORY.md#story-1-story-and-script-content).
+**Goal:** reach Vermilion and Celadon Gyms (and Erika inside her Gym) without Cut — [Story-3](DESIGN-STORY.md#story-3-story-and-script-policy).
 
 | Map | zone_event member | Trees removed |
 |-----|-------------------|---------------|
@@ -255,7 +304,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 **Status:** verified in-game (Sep 2026). 0 badges, no Cut — main path walkable Route 34 ↔ Route 35.
 
-**Goal:** cross **Ilex Forest** (`D36R0101`) without Cut — [Story-1 § Route Cut obstacles](DESIGN-STORY.md#route-cut-obstacles--remove).
+**Goal:** cross **Ilex Forest** (`D36R0101`) without Cut — [Story-3 § Route Cut obstacles](DESIGN-STORY.md#route-cut-obstacles--remove).
 
 | What | ID |
 |------|-----|
@@ -275,7 +324,7 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 **Status:** verified in same playtest as Ilex (Sep 2026); optional open-world cleanup only.
 
-**Goal:** optional open-world cleanup — one standard Cut tree on **Route 35** (`MAP_R35` = **39**, zone_event **036** → `2_036` @ world **(380, 265)**). Not required for Ilex interior; documented separately in [Story-1](DESIGN-STORY.md#route-cut-obstacles--remove).
+**Goal:** optional open-world cleanup — one standard Cut tree on **Route 35** (`MAP_R35` = **39**, zone_event **036** → `2_036` @ world **(380, 265)**). Not required for Ilex interior; documented separately in [Story-3](DESIGN-STORY.md#route-cut-obstacles--remove).
 
 | File | Role |
 |------|------|
@@ -288,7 +337,7 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 **Status:** verified (wild, trainer, flee, and catch tested in-game).
 
-**Design:** [Battle-2](DESIGN-BATTLES.md#battle-2-healing-and-attrition) — full HP/PP/status restore after every battle (wild, trainer, flee; no special exclusions).
+**Design:** [Battle-1](DESIGN-BATTLES.md#recovery) — full HP/PP/status restore after every battle (wild, trainer, flee; no special exclusions).
 
 | What | Where |
 |------|--------|
@@ -299,7 +348,7 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 **Verified:** wild, trainer, flee, and catch all restore HP/PP/status on return to field.
 
-**KB-2 (Sep 2026):** crash when returning to the field after battle — **open again**. Heal logic runs only when `sp->fight_end_flag` is set (`BattleStruct` @ `0x311F`), with EWRAM pointer checks on `bw`, `sp`, and party mons; hook timing unchanged (`Battle_End` → `BattleEndRevertFormChange`). A Sep 2026 guard pass stopped repro for the primary dev (100+ battle ends) but **another tester hits it regularly** — treat as environment- or timing-sensitive, not fixed. Status: [DESIGN.md § Index-5 KB-2](../DESIGN.md#index-5-known-bugs).
+**KB-2 (Sep 2026):** crash when returning to the field after battle — **open again**. Heal logic runs only when `sp->fight_end_flag` is set (`BattleStruct` @ `0x311F`), with EWRAM pointer checks on `bw`, `sp`, and party mons; hook timing unchanged (`Battle_End` → `BattleEndRevertFormChange`). A Sep 2026 guard pass stopped repro for the primary dev (100+ battle ends) but **another tester hits it regularly** — treat as environment- or timing-sensitive, not fixed. Status: [TODO.md KB-2](../TODO.md#known-bugs).
 
 **Agent notes (do not repeat without new evidence):**
 
@@ -319,9 +368,9 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 ## Gym Leader HM rewards (Johto pilot)
 
-**Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass; **Mahogany Gym last-room crash** reported ([KB-5](../DESIGN.md#index-5-known-bugs)). **Whitney** and remaining Johto leaders not started.
+**Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass; **Mahogany Gym last-room crash** reported ([KB-5](../TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
 
-**Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
+**Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
 
 | What | Where |
 |------|--------|
@@ -376,7 +425,7 @@ Flash and Headbutt have **no** `TestBadgeFlag` call in vanilla field-move checks
 
 **Test:** new save with `OPENWORLD_TESTING_GRANTS` → Mom HM02 → teach Fly → party menu Fly without Storm Badge; Goldenrod dept mart still gates shelves by badge count; Gym-granted HM (e.g. Cut as 2nd badge) usable without owning that Leader’s vanilla badge flag.
 
-**Out of scope (for now):** `FLAG_GOT_HM02`, Flash dungeon scripts, Surf map tiles, collection-based field HMs ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+**Out of scope (for now):** `FLAG_GOT_HM02`, Flash dungeon scripts, Surf map tiles, collection-based field HMs ([Future-8 § Field HMs from the full collection](DESIGN-FUTURE.md#field-hms-from-the-full-collection-deferred)).
 
 ### Fly map — Kanto destinations (not yet)
 
@@ -423,7 +472,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 **Status:** verified in-game.
 
-**Design:** interim stand-in until [Battle-6](DESIGN-BATTLES.md#battle-6-exp-share) battle-limit EXP share exists. Every non-fainted party member gets the **full** calculated EXP for each KO (not split). Fainted bench mons still get nothing. No Exp Share item required.
+**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-experience) — full-party EXP per KO (not split). Battle-limit recipients when [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) lands. Fainted bench mons get nothing. No Exp Share item required.
 
 | What | Where |
 |------|--------|
@@ -436,9 +485,9 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 ## Trainer level scaling
 
-**Status:** level band, moves, and stage adjust verified in-game (Sep 2026) — including **devolving** trade/stone finals at low scaled levels (e.g. authored Alakazam → Abra/Kadabra, Vileplume → Oddish/Gloom); Gym Leader cap enabled — Gym trainer band + type filter still open ([Battle-4](DESIGN-BATTLES.md#trainer-scaling-implemented), [Battle-5](DESIGN-BATTLES.md#battle-5-gym-rosters)).
+**Status:** level band, moves, and stage adjust verified in-game (Sep 2026) — including **devolving** trade/stone finals at low scaled levels (e.g. authored Alakazam → Abra/Kadabra, Vileplume → Oddish/Gloom); Gym Leader cap enabled — Gym trainer band + type filter still open ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release), [Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
 
-**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps) — badge count → cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Special-trainer overrides deferred. Generated parties / dynamic battles: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc).
+**Design:** [Battle-2](DESIGN-BATTLES.md#cap-ladder) — badge count → cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Generated parties / dynamic battles: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc).
 
 | Feature | Toggle | Where |
 |---------|--------|--------|
@@ -453,7 +502,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 ## Player badge level cap & Rare Candies
 
-**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps) — EXP stops at badge cap; **Rare Candies may exceed the cap**.
+**Design:** [Battle-2](DESIGN-BATTLES.md#rare-candies) — EXP stops at badge cap; **Rare Candies may exceed the cap**.
 
 | Piece | Where |
 |-------|--------|
@@ -462,7 +511,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 | `IMPLEMENT_LEVEL_CAP` / `UNCAP_CANDIES_FROM_LEVEL_CAP` | `include/config.h` (on) |
 | `ALLOW_LEVEL_CAP_EVOLVE` | Optional — Rare Candy at cap runs level-up evolution check (off by default) |
 | EXP / candy hooks | `ImplementLevelCap_hook` (battle EXP), `Pokemon_TryLevelUp` @ ARM9 (level-up + **EXP clamp at cap** — empty bar), `CanUseItemOnMonInParty`; `CapRareCandies` only when UNCAP off |
-| Wild catch above cap | **Not implemented** — design: [Battle-4 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-level-cap) (error or 0% catch rate) |
+| Wild catch above cap | **Not implemented** — design: [Battle-2 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-cap) (error or 0% catch rate) |
 
 ---
 
@@ -832,13 +881,13 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Toggle:** `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS` in `include/config.h` (on by default). Same switch enables Mom starting grants, `openworld_story_skip_flags.inc`, start-city zone_event patches, Magnet Train scr_seq bypass, and slim Mahogany OnLoad when rocket flags are set at Mom intro.
 
-**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (100 Rare Candies silent + HMs 01–08 from Mom). Party-menu Fly needs **`OPENWORLD_FIELD_MOVES_NO_BADGE_GATE`** ([Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags)). Optional commented **`OPENWORLD_STORY_FLAG_SWEEP`** for flag-range bisect ([Story flag range sweep](#story-flag-range-sweep-dev)). **Disable before builds for others** ([Index-2](DESIGN.md#index-2-current-technical-baseline)).
+**Testing toggle:** `OPENWORLD_TESTING_GRANTS` in `include/config.h` — dev-only extras (100 Rare Candies silent + HMs 01–08 from Mom). Party-menu Fly needs **`OPENWORLD_FIELD_MOVES_NO_BADGE_GATE`** ([Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags)). Optional commented **`OPENWORLD_STORY_FLAG_SWEEP`** for flag-range bisect ([Story flag range sweep](#story-flag-range-sweep-dev)). **Disable before builds for others** ([CHANGELOG § Dev testing grants](../CHANGELOG.md#new-game--starting-experience)).
 
 **Hook:** Mom downstairs cutscene — scr_seq member **845** (`T20R0201`), script slot **0**.
 
 **Loop fix:** keep vanilla init header **618** (OnFrame `var==0`, like retail). Script **0** sets `VAR_SCENE_PLAYERS_HOUSE_1F = 1` on the first frame before any `wait`, so the cutscene cannot re-trigger. Do **not** move this cutscene to OnTransition — that runs too early and crashes on stairs.
 
-**KB-6:** after the cutscene, **seated Mom** talk is broken (weird menus / wrong conversation). Script **0** only — other **845** slots + **545** text remap may not match vanilla sitting behaviour ([Index-5 KB-6](../DESIGN.md#index-5-known-bugs)).
+**KB-6:** after the cutscene, **seated Mom** talk is broken (weird menus / wrong conversation). Script **0** only — other **845** slots + **545** text remap may not match vanilla sitting behaviour ([TODO.md KB-6](../TODO.md#known-bugs)).
 
 **Grants:** Rebuilt script **0** inserts items/shoes/dex after UI unlock fanfares. `std_give_item_verbose` already waits for A per item — do not add extra `wait_button` between grants; one `closemsg` after **all** item grants (including HM02) clears the window.
 
@@ -855,18 +904,18 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 | Phone numbers | `register_gear_number` — Mom (0), Elm (1), Oak (2) |
 | Dev testing grants | `ITEM_RARE_CANDY` ×100 (silent `giveitem`) + `ITEM_HM01`–`ITEM_HM08` when `OPENWORLD_TESTING_GRANTS` is defined; Fly field use via [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags) |
 
-**Starting city / starter (v1 — [Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)):**
+**Starting city / starter (v1 — [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow)):**
 
-**Status (Sep 2026):** **18-city menu**, **three-type starter pick** (grass / fire / water, 4 options each → **3** Pokémon), and **step 1 exit** verified in-game. Outdoor home-door routing (**Vision-3 steps 2–4**) not complete — step 2 was attempted twice and rolled back; see [Home = bidirectional door + interior swap](#home--bidirectional-door--interior-swap).
+**Status (Sep 2026):** **18-city menu**, **three-type starter pick** (grass / fire / water, 4 options each → **3** Pokémon), and **step 1 exit** verified in-game. Outdoor home-door routing (**Story-1 steps 2–4**) not complete — step 2 was attempted twice and rolled back; see [Home = bidirectional door + interior swap](#home--bidirectional-door--interior-swap).
 
 | Step | When | What |
 |------|------|------|
-| 1 | Mom cutscene, before starter menu | **18-city** `ListLocalText` (Vision-3 index **0–17**) → `VAR_PLAYER_START_CITY` (**0x4031**) → `_set_home_dynamic_warp` |
+| 1 | Mom cutscene, before starter menu | **18-city** `ListLocalText` (menu index **0–17**) → `VAR_PLAYER_START_CITY` (**0x4031**) → `_set_home_dynamic_warp` |
 | 2 | Same cutscene | **Three** starter menus (grass / fire / water, 4 options each) → **3×** `give_mon` (not `choose_starter`) → `FLAG_GOT_STARTER` |
 | 3 | Same cutscene | Mom grants (bag, Pokédex, Pass, etc.) — **no post-cutscene teleport** |
-| 4 | Walk to front door **(3, 10)** on 1F | Dynamic exit warp → outdoor home door in chosen city (**Vision-3 step 1 — works**) |
+| 4 | Walk to front door **(3, 10)** on 1F | Dynamic exit warp → outdoor home door in chosen city (**Story-1 home step 1 — works**) |
 
-**Menu index = Wilds-2 table row** (direct lookup in `src/wild_level_caps.c`; no PoC remap).
+**Menu index = Wilds-1 table row** (direct lookup in `src/wild_level_caps.c`; no PoC remap).
 
 ### Starter selection — **not** `choose_starter`
 
@@ -885,7 +934,7 @@ Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/s
 
 - Adding a starter → edit **`scr_seq_t20_mom_script0.s`** (+ string in **`data/text/545.txt`**). Do **not** expect `starters.c` changes to affect Mom’s menu.
 - **`src/starters.c`** + **`hooks`** (`CreateStarter_SetStarterSpecies`, `CreateStarter_CreateMon`) still ship with the engine but are **dead code** unless some other scr_seq calls `choose_starter`. Grep shows **no** open-world scr_seq does — bedroom **846** is vanilla and must stay that way (verify script rejects `choose_starter` there).
-- Old design docs ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) still describe Johto/Kanto YES/NO + 3-ball UI; **implementation superseded** that with type-split text menus (grass / fire / water).
+- Release design ([Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow)): type-split text menus (grass / fire / water), not Johto/Kanto YES/NO + 3-ball UI.
 
 **Pokémon menu:** `FLAG_GOT_BAG` set during Mom cutscene (not bedroom).
 
@@ -906,7 +955,7 @@ Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/s
 
 ### Home = bidirectional door + interior swap
 
-Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Four warp behaviours per save ([Vision-3 four steps](../DESIGN-VISION.md#home-wiring-four-steps)):
+Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Four warp behaviours per save ([Story-1 home wiring](../DESIGN-STORY.md#home-wiring-four-steps)):
 
 | Step | Direction | Status |
 |------|-----------|--------|
@@ -992,7 +1041,7 @@ python scripts/dev/verify_start_city_patch.py
 
 **Change a home door:** recon in `build/a032_vanilla` (member, warp index, x/z, vanilla header) → update **`EXPECTED_DOORS`** in verify script + **`_set_home_dynamic_warp`** branch + warp constant in Mom script. Verify **060** still has exactly 2 warps.
 
-**Dialogue:** Mom intro greet **545** strings **0–1**. Post-cutscene talk still uses vanilla Elm errand strings until [Story-1](DESIGN-STORY.md#story-1-story-and-script-content). Cutscene skips bag/card/save/options `npc_msg`s; fanfares + flags unlock touch menu.
+**Dialogue:** Mom intro greet **545** strings **0–1**. Post-cutscene talk still uses vanilla Elm errand strings until [Story-3](DESIGN-STORY.md#story-3-story-and-script-policy). Cutscene skips bag/card/save/options `npc_msg`s; fanfares + flags unlock touch menu.
 
 **Note:** Test with **new saves** after ROM changes. Story hooks (Elm, rival) still vanilla until Phase 4.
 
@@ -1115,7 +1164,7 @@ Vanilla **`InitMartUI`** drops **`ITEM_POKE_BALL` (4)** from buy lists while Gre
 
 **Toggle:** `#define MART_EXPANSION` in `include/config.h` (on in this fork).
 
-**Design:** [World-7](DESIGN-WORLD.md#world-7-shops) (player-facing summary in [CHANGELOG.md](../CHANGELOG.md) § Shops).
+**Design:** [World-6](DESIGN-WORLD.md#world-6-shops) (player-facing summary in [CHANGELOG.md](../CHANGELOG.md) § Shops).
 
 ### Two clerk models
 
@@ -1147,7 +1196,7 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 ## Trade-item evolution (use on Pokémon)
 
-**Design:** [World-6 § Trade evolutions — with held item](DESIGN-WORLD.md#trade-evolutions--with-held-item) — use the held item **on** the Pokémon (like a stone), no trade required.
+**Design:** [World-5 § Trade evolutions — with held item](DESIGN-WORLD.md#trade-evolutions--with-held-item) — use the held item **on** the Pokémon (like a stone), no trade required.
 
 **Status:** verified in-game Sep 2026.
 
@@ -1167,13 +1216,13 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 **Verify in-game:** buy Metal Coat (Olivine) → use on Scyther → Scizor; Up-Grade (Saffron) on Porygon → Porygon2. Wrong species should show “no effect” like stones.
 
-**Not covered:** `EVO_TRADE_SPECIFIC_MON` (Shelmet/Karrablast). Plain trade lines use **Linking Cord** ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
+**Not covered:** `EVO_TRADE_SPECIFIC_MON` (Shelmet/Karrablast). Plain trade lines use **Linking Cord** ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
 
 ---
 
 ## Game Corner TM prizes
 
-**Design:** [World-5 § Game Corner TMs](../DESIGN-WORLD.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
+**Design:** [World-4 § Game Corner TMs](../DESIGN-WORLD.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
 
 International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlGameCornerPrizeMap` table from pret’s `scrcmd_dppl_prizes.c`). Each prize block embeds an item id and a coin cost. Submenus: **6 TMs + Cancel**, **4 held items + Cancel**, **3 Pokémon + Cancel** (Pokémon menus still vanilla).
 
@@ -1196,7 +1245,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 | Goldenrod | Bright Powder, Quick Claw, Wide Lens, Metronome |
 | Celadon | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
 
-**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut until [World-5 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented) ships; restore tiered costs when coin income is decided.
+**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut until [World-4 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented) ships; restore tiered costs when coin income is decided.
 
 ### Files
 
@@ -1210,7 +1259,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 
 **Verify in-game:** Coin Case → Goldenrod Game Corner → right-hand clerk → TM and held-item submenus; Celadon dept store 5F prize clerk → same. Pokémon submenu still vanilla.
 
-**Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-5 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented).
+**Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-4 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented).
 
 **Changing TMs later:** edit replacement tables in `patch_scr_seq_game_corner.py`, update menu strings in the text banks (keep `{CURSOR_X …}` padding if renaming), rebuild.
 
@@ -1268,7 +1317,7 @@ Field ROM spans `0x023C8000`–`0x023E0000`; overlay **129** sits in the **top**
 
 ## Wild level caps (distance-based) — verified PoC
 
-**Status: verified in-game Sep 2026** — distance level rolls ([Wilds-1 level distribution](DESIGN-WILDS.md#level-distribution)), level-up **and synthetic** stage adjust (e.g. Mareep → Flaaffy, Golbat → Crobat @ 30, trade/stone lines from TSV). Sprite, stats, moves, battle name, and caught mon match the final species. Design: [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps).
+**Status: verified in-game Sep 2026** — distance level rolls ([Wilds-2 level distribution](DESIGN-WILDS.md#level-distribution)), level-up **and synthetic** stage adjust (e.g. Mareep → Flaaffy, Golbat → Crobat @ 30, trade/stone lines from TSV). Sprite, stats, moves, battle name, and caught mon match the final species. Design: [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps), [Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution).
 
 **Toggle:** `IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS` in `include/config.h` (on by default). Comment out to restore vanilla wild levels.
 
@@ -1287,7 +1336,7 @@ levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5  
 
 Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAddr` — `[startCityIndex][encBank]` where `encBank = MapHeader_GetWildEncounterBank(mapId)`.
 
-**Start city var:** Mom menu sets `VAR_PLAYER_START_CITY` (**0x4031**) to Vision-3 index **0–17**; `ResolveStartCityIndex` uses it directly as the Wilds-2 table row (`src/wild_level_caps.c`).
+**Start city var:** Mom menu sets `VAR_PLAYER_START_CITY` (**0x4031**) to menu index **0–17**; `ResolveStartCityIndex` uses it directly as the Wilds-1 table row (`src/wild_level_caps.c`). Index ↔ city names: [Designated home doors](#home--bidirectional-door--interior-swap) table below.
 
 **Example (Saffron start):** Route 37 → **23**, Violet → **23**, Route 31 → **29**, Dark Cave → **35**, Route 30 → **35**. **Example (Pallet start):** Route 1 → **5** (distance 0–1 both cap at starter floor).
 
@@ -1306,7 +1355,7 @@ Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAd
 
 **Not hooked:** Safari Zone (`data/SafariEncounters.c`), Bug Catching Contest (verify in-game path), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`.
 
-**Stage adjust:** `AdjustEncounterSpeciesForLevel()` — (1) `FindEncounterChainBase()` walks level-up prevos (`data/Evolutions.c`) **and** synthetic prevos (`data/synthetic_evolution_thresholds.tsv`) so authored finals devolve; (2) `WalkEncounterStageForLevel()` applies level-up then synthetic **forward** for the rolled/scaled level. Trade, stone, friendship, move-known, etc. **Verified Sep 2026** on wild and trainers. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution QoL: [Trade-item evolution](#trade-item-evolution-use-on-pokémon) + Linking Cord ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones)).
+**Stage adjust:** `AdjustEncounterSpeciesForLevel()` — (1) `FindEncounterChainBase()` walks level-up prevos (`data/Evolutions.c`) **and** synthetic prevos (`data/synthetic_evolution_thresholds.tsv`) so authored finals devolve; (2) `WalkEncounterStageForLevel()` applies level-up then synthetic **forward** for the rolled/scaled level. Trade, stone, friendship, move-known, etc. **Verified Sep 2026** on wild and trainers. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution QoL: [Trade-item evolution](#trade-item-evolution-use-on-pokémon) + Linking Cord ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
 
 ### ARM9 scratch (`armips/asm/wild_level_caps.s`, `rom.ld`)
 
@@ -1335,7 +1384,7 @@ Scratch survives overlay 129 reload; do not reuse these addresses for other feat
 | `DEBUG_WILD_LEVEL_CAP_EXACT` | `include/config.h` | Level = cap exactly (no random roll) |
 | `DEBUG_WILD_LEVEL_CAPS` | `include/debug.h` | melonDS `debug_printf` on cache/apply |
 
-Production: all three **off**; `RollWildLevel(cap)` — adult band **`[⌊0.9×cap⌋−2, cap]`** always; if `cap ≥ 10`, **15%** uniform **2–7** else adult band (never level 1). See [Wilds-1 level distribution](DESIGN-WILDS.md#level-distribution).
+Production: all three **off**; `RollWildLevel(cap)` — adult band **`[⌊0.9×cap⌋−2, cap]`** always; if `cap ≥ 10`, **15%** uniform **2–7** else adult band (never level 1). See [Wilds-2 level distribution](DESIGN-WILDS.md#level-distribution).
 
 ### Editing caps
 
@@ -1435,6 +1484,8 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 ---
 
 ## Fishing Rod guru NPCs
+
+**Design:** [Wilds-4](../DESIGN-WILDS.md#wilds-4-fishing-rod-progression).
 
 **Goal:** One shared fisherman script gives Old → Good → Super Rod based on Pokédex caught Water-type evolutionary families (any catch source). Dialogue is region-agnostic for reuse across gurus.
 

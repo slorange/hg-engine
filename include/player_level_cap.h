@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-/** Battle-4: cap = 10 + 4×badges (80 at 16+). */
+/** Battle-2: cap = 10 + 4×badges (80 at 16+). */
 static inline u8 GetPlayerLevelCapForBadges(u8 badgeCount)
 {
     if (badgeCount >= 16) {

@@ -1,6 +1,6 @@
 # Pokémon Wandering Heart — Wild Encounters & Ecology
 
-> Seeded ecology, wild level ranges, distance caps, fishing, and content scope.
+> Seeded ecology, wild level caps, level rolls, encounter stage, fishing, and content scope.
 >
 > **Index:** [`DESIGN.md`](DESIGN.md) · **World:** [`DESIGN-WORLD.md`](DESIGN-WORLD.md) · **Battles:** [`DESIGN-BATTLES.md`](DESIGN-BATTLES.md)
 
@@ -8,117 +8,23 @@
 
 | Section | Status |
 | ------- | ------ |
-| [Wilds-1. Increased Wild Pokémon Level Range](#wilds-1-increased-wild-pokémon-level-range) | IMPLEMENTED |
-| [Wilds-2. Starting-City Distance-Based Wild Level Caps](#wilds-2-starting-city-distance-based-wild-level-caps) | IMPLEMENTED (near complete) |
-| [Wilds-3. Fishing Rod Progression](#wilds-3-fishing-rod-progression) | PARTIALLY IMPLEMENTED |
-| [Wilds-4. Pokémon Generations / Content Scope](#wilds-4-pokémon-generations--content-scope) | DECIDED (release scope) |
+| [Wilds-1. Starting-City Distance-Based Wild Level Caps](#wilds-1-starting-city-distance-based-wild-level-caps) | PARTIALLY IMPLEMENTED |
+| [Wilds-2. Wild Pokémon Level Range](#wilds-2-wild-pokémon-level-range) | IMPLEMENTED |
+| [Wilds-3. Encounter Stage (Evolution & Devolution)](#wilds-3-encounter-stage-evolution--devolution) | IMPLEMENTED (wild + trainer) |
+| [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | PARTIALLY IMPLEMENTED |
+| [Wilds-5. Pokémon Generations / Content Scope](#wilds-5-pokémon-generations--content-scope) | DECIDED (release scope) |
 | Per-save ecology shuffle | Moved — [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) |
 | Expanded Pokédex / generations | Moved — [Future-6](DESIGN-FUTURE.md#future-6-expanded-pokédex--generations) |
 
----
-
-# Wilds-1. Increased Wild Pokémon Level Range
-
-**Status: IMPLEMENTED** — distance caps ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)), [level distribution](#level-distribution), **stage adjust** (level-up + [synthetic edges](#synthetic-evolution-stages-wild--trainer), shared with trainer battles). Details: `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
-
-Replace narrow per-area wild level bands with a **broad range** from low levels up to an area-specific maximum.
-
-## Current vs proposed model
-
-**Current-style model:** Route X might contain Pokémon around Lv 18–22 only.
-
-**Proposed model:**
-
-- Route X has a **maximum wild level**, e.g. Lv 22.
-- Encounters can occur from approximately **Lv 3 through that maximum**.
-- The full range remains available even at high player progression levels.
-
-After rolling the encounter level, determine the **appropriate evolution stage** for the assigned family.
-
-## Example (simple level-evolution family)
-
-Pidgey family assigned to an area with max level 45:
-
-| Rolled level | Stage |
-|-------------:|-------|
-| 3–17 | Pidgey |
-| 18–35 | Pidgeotto |
-| 36–45 | Pidgeot |
-
-One habitat can therefore naturally contain **multiple stages** of the same evolutionary family.
-
-## Benefits
-
-- Earlier evolution stages never disappear from the world.
-- Dex completion does not require finding a separate low-level area for every family.
-- Ecologies feel **persistent** rather than replacing weak species with strong ones as the player progresses.
-
-## Level distribution
-
-**Implemented (Sep 2026).** Wild levels are never **1** (minimum encounter level **2**).
-
-| Condition | Roll |
-|-----------|------|
-| Area cap below **10** | Adult band only: uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 9 → **6–9**) |
-| Cap **≥ 10**, **15%** “baby” | Uniform **2–7** |
-| Cap **≥ 10**, **85%** “adult” | Uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 10 → **7–10**; cap 60 → **52–60**) |
-
-After rolling, evolution **stage** is chosen from level-up chains plus [synthetic edges](#synthetic-evolution-stages-wild--trainer).
-
-## Synthetic evolution stages (wild + trainer)
-
-Encounter tables still list a base species (e.g. Poliwhirl, Exeggcute). After the rolled level is known, **`AdjustEncounterSpeciesForLevel()`** (`include/encounter_species_stage.h`):
-
-1. Walks **prevos** through linear **`EVO_LEVEL`** chains (`data/Evolutions.c`) **and** synthetic edges (`data/synthetic_evolution_thresholds.tsv`) to find the chain root (so authored Alakazam / Vileplume devolve correctly at low levels).
-2. Walks **forward** from that root, applying level-up thresholds then synthetic edges (level ≥ `min_level`) up to 8 steps. ROM data: `scripts/build/gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py` → field overlay rodata.
-
-**Verified Sep 2026** in-game for wild rolls and trainer scaling (including devolving authored trade/stone finals at low levels). Offline check: `scripts/dev/verify_encounter_stage.py`.
-
-Synthetic thresholds **do not** change player evolution rules ([World-6](DESIGN-WORLD.md#world-6-evolution-methods-trade--stones) QoL is separate from wild/trainer stage adjust). Wild/trainer mons still get moves and stats from the **final** species (`PokeParaSet` / `InitBoxMonMoveset`), same as today.
-
-**Authoring tiers** (each TSV row has an explicit `min_level`; tiers are for filling the sheet, not runtime logic):
-
-| Vanilla method | Stage 1 | Stage 2 |
-|----------------|--------:|--------:|
-| Trade (incl. held item) | 20 | 35 |
-| Stone (incl. location-based — player uses stones; wild/trainer treat as stone tier) | 25 | 35 |
-| Friendship (incl. time-of-day variants) | 20 | 30 |
-| Move-known | HGSS learn level + 1 | — |
-
-**Special:** Piloswine → Mamoswine uses **34** (AncientPower is Lv1/relearner in HGSS; Swinub → Piloswine at 33).
-
-**Branches:** `branch` empty = single outcome; `random50` = pick one row at random for the same `from` + `min_level` (Gloom, Poliwhirl, Clamperl, **Wurmple**).
-
-**Deferred (not in TSV until later):** Eevee, Tyrogue, Shedinja, **gendered** evolutions (Burmy, Combee, Gallade, Froslass, etc.).
-
-**Future enhancements** (probabilistic synthetic edges; wild / trainer / Gym Leader rates): [Future-11](DESIGN-FUTURE.md#future-11-encounter-stage-selection-wild--trainer).
-
-## Separation of concerns
-
-Three independent inputs:
-
-| Input | Determines |
-|-------|------------|
-| Ecology ([Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle); vanilla tables today) | **Which family** can spawn |
-| Area maximum ([Wilds-1](DESIGN-WILDS.md#wilds-1-increased-wild-pokémon-level-range), [Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)) | **Possible encounter levels** |
-| Rolled level + stage rules | **Evolution stage** (level-up tables + synthetic edges) |
+**Encounter pipeline (wild grass/cave/etc.):** [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps) area cap → [Wilds-2](#wilds-2-wild-pokémon-level-range) rolled level → [Wilds-3](#wilds-3-encounter-stage-evolution--devolution) species stage. **Trainer battles** use the same stage rules after their level is set ([Battle-2 § Trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)).
 
 ---
 
+# Wilds-1. Starting-City Distance-Based Wild Level Caps
 
----
+**Status: PARTICIALLY IMPLEMENTED**
 
-# Wilds-2. Starting-City Distance-Based Wild Level Caps
-
-**Status: IMPLEMENTED (near complete)** — distance caps verified in-game (Sep 2026). Remaining gaps: Safari Zone, Bug Catching Contest, roamers/scripted wilds, balance tuning.
-
-**Decision:** distance-from-start-city caps ([Wilds-2](DESIGN-WILDS.md#wilds-2-starting-city-distance-based-wild-level-caps)) replace badge-guard / encounter-tile wild **level** progression. The alternative ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) wild gating) is **not pursued** for general wild levels; World-2 remains for HM/Flash/League and optional hard zones only.
-
-The player can **enter** high-distance areas early; encounters scale from [Wilds-1](DESIGN-WILDS.md#wilds-1-increased-wild-pokémon-level-range) level ranges tied to graph distance — danger is in the fights, not a coord gate on the grass.
-
-**Interaction with [Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps):** wild **levels** may exceed the **player** badge cap; **catching** those Pokémon must be blocked (decided — see [Wild catches above the player level cap](DESIGN-BATTLES.md#wild-catches-above-the-player-level-cap)).
-
-Wild-area difficulty should depend on the player's **chosen starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon)) rather than one fixed world progression curve or badge-count encounter blocks.
+Each area’s **maximum wild level** comes from graph distance from the chosen start city. Actual encounter levels are rolled in [Wilds-2](#level-distribution)
 
 ## World graph
 
@@ -126,21 +32,16 @@ Build a **directional graph** representing the explorable world:
 
 - cities / towns;
 - routes;
-- forests;
 - caves / dungeons;
-- meaningful dungeon subareas / depths;
 - one-way traversal where relevant (e.g. ledges);
-- physical connections between these nodes.
 
 ## Build-time precomputation
 
-For **every valid starting city** ([Vision-3](DESIGN-VISION.md#vision-3-starting-location-and-pokémon) — 18 cities):
+For **every valid starting city** ([Story-1](DESIGN-STORY.md#story-1-starting-city-and-home) — 18 cities, index **0–17**):
 
 1. Shortest-path **exploration distance** from that city to each encounter area on the world graph.
 2. Convert distance → **maximum wild level** (and optional tier for tuning).
 3. Precompute the full matrix **offline** and ship it as a ROM lookup table — **no graph traversal during gameplay**.
-
-Implementation (graph files, generators, runtime hooks): `documentation/HACK-NOTES.md` § **Wild level caps (distance-based)**.
 
 ## Encounter methods (PoC coverage)
 
@@ -156,26 +57,13 @@ Implementation (graph files, generators, runtime hooks): `documentation/HACK-NOT
 | Bug Catching Contest | **Not yet** |
 | Scripted wild battles | **Not hooked** (script levels unchanged) |
 
-## Edge costs (tuning TBD)
+## Edge costs
 
-PoC uses **uniform edge cost = 1** per graph hop. Possible future weighting:
-
-| Connection type | Example cost |
-|-----------------|-------------:|
-| city / town interior connector | 0 or negligible |
-| short connector maps | 1 |
-| SS Aqua / Magnet Train | 1 |
-| normal route traversal | 2 |
-| substantial dungeon | 3+ |
-| deeper dungeon section | additional cost |
-
-Exact weighting should be tuned after generating and inspecting the distance matrix.
+PoC uses **uniform edge cost = 1** per graph hop. Could change edge cost based on route/dungeon size / traversal time. Could reduce town cost.
 
 ## Distance → level cap (PoC formula)
 
-Normal wild encounters use the cap + [Wilds-1 level distribution](#level-distribution). Roamers, Safari, and most scripted wilds are unchanged — see table above.
-
-Player badge level caps run up to **70–80** ([Battle-4](DESIGN-BATTLES.md#battle-4-badge-based-level-caps)). Wild area caps use a lower ceiling (**5–60**) for balance:
+Wild area caps have range (**5–60**):
 
 ```
 levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5
@@ -184,7 +72,6 @@ levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5
 - `route_distance` — shortest graph distance from the chosen starting city to the encounter area.
 - `max_route_distance` — farthest reachable distance for that starting city on the same graph.
 - Integer division; at distance **0–1** → cap **5** (starter town + first connected routes); at max distance → cap **60**.
-- **Starting city:** Mom menu stores Vision-3 index **0–17** in `VAR_PLAYER_START_CITY`; used directly as the Wilds-2 table row.
 
 ### Future level-cap overrides (not in PoC)
 
@@ -193,92 +80,119 @@ levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5
 | Routes **27**, **26**, **23** | **70–80** |
 | Route **28**, **Mt. Silver**, **Cerulean Cave** | **80–90** |
 
-Add as a post-processing step on the generated cap table once base distance scaling is validated in play.
+Add as a post-processing step on the generated cap table.
+
+### HM-gated minimum caps (not in PoC)
+
+Distance-only caps can undershoot when the start city is nearby (e.g. **Whirl Islands** from **Olivine**). **Effective cap = max(distance-based cap, HM-gated minimum)**. For now only these regions need a floor — same post-processing pass as the high-end overrides above. Each floor is the **player level cap** at the badge count that unlocks the gating HM ([Battle-2](DESIGN-BATTLES.md#cap-ladder): `10 + 4 × badges_earned`; badge rows [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference)):
+
+| Areas | Gating HM | Badges for HM | Min cap |
+|-------|-----------|--------------:|--------:|
+| **Dark Cave**, **Rock Tunnel** | Flash | 1 | **14** |
+| **Whirl Islands** | Whirlpool | 10 | **50** |
+| **Routes 26**, **27** | Waterfall | 13 | **62** |
 
 ### Cave depth (future)
 
 PoC treats each cave dungeon as **one graph node** → one cap for every floor. Later, split dungeon subareas into separate graph nodes (or override rows) so deeper HM-gated sections can exceed entrance tiers without per-floor encounter tables.
 
-## Interaction with ecology and level range
-
-- **starting city + graph distance** → area maximum level;
-- **encounters** range from ~Lv 3 to that maximum ([Wilds-1](DESIGN-WILDS.md#wilds-1-increased-wild-pokémon-level-range));
-- **family assignment** uses vanilla tables today; per-save shuffle is [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle).
-
-## Overrides and validation
-
-Still needed:
-
-- optional / endgame regions (League, Mt. Silver paths) can remain naturally distant / high-tier, with optional gates;
-- dungeon **depth** can use separate nodes so deeper HM-gated sections have higher distance / tier than entrances.
-
-## Replayability
-
-- **Starting city** changes the world's difficulty gradient on vanilla species (**implemented** via distance caps).
-- **World seed** / ecology shuffle — [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) adds a second axis when implemented.
-
----
 
 
 ---
 
-# Wilds-3. Fishing Rod Progression
+# Wilds-2. Wild Pokémon Level Range
 
-**Status: PARTIALLY IMPLEMENTED** — Route 44 and Olivine gurus verified; full Johto/Kanto network not complete.
+**Status: IMPLEMENTED** — uses area caps from [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps); stage after roll in [Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution).
 
-Fishing Rod progression is based on the player's experience **catching Water-type Pokémon**, not badge count or geographic progression. This is a **separate progression track** from [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) HM unlocks.
+Add occasional low-level “baby” encounters so early stages stay findable.
 
-The historical Fishing Guru / Fishing Brother NPCs across Johto and Kanto should share the same progression. The player may return to **any one of them** for later Rod upgrades; progression does not require visiting the vanilla Rod locations in order.
+## Design intent
 
-- **Old Rod** — given freely on first interaction.
-- **Good Rod** — awarded after catching Pokémon from **5 unique Water-type evolutionary families**.
-- **Super Rod** — awarded after catching Pokémon from **15 unique Water-type evolutionary families**.
+Many areas will have high level caps (40+), but we don't want a player who's trying to complete the dex to have to breed up hundreds of babies because only the final form is available in the wild.
 
-## Counting rules
+## Level distribution
 
-- Count **evolutionary families**, not individual species.
-- Catching multiple members of the same evolutionary family counts only once.
-  - Example: catching Poliwag, Poliwhirl and Poliwrath still counts as **1 family**.
-- A family qualifies if the player has caught at least one member that is **Water-type**.
-- Either primary or secondary Water typing qualifies.
-- Use Pokédex caught data rather than the player's current collection, so traded away or released Pokémon still count.
-- Branching evolutions remain a single family.
-- The progression should be shared globally between all Fishing Guru / Fishing Brother NPCs.
+| Condition | Roll |
+|-----------|------|
+| Area cap below **10** | Adult band only: uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 9 → **6–9**) |
+| Cap **≥ 10**, **15%** “baby” | Uniform **2–7** |
+| Cap **≥ 10**, **85%** “adult” | Uniform **`[⌊0.9×cap⌋ − 2, cap]`** (e.g. cap 10 → **7–10**; cap 60 → **52–60**) |
 
-This creates a self-contained fishing progression loop:
+After the level is rolled, [Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution) picks the evolution stage for that family.
 
-**Old Rod → catch 5 Water families → Good Rod → access more fishing encounters → catch 15 Water families → Super Rod**
+---
 
-## Fishing Guru locations
+# Wilds-3. Encounter Stage (Evolution & Devolution)
 
-**Target:** a **network** of interchangeable Fishing Guru / Fishing Brother NPCs spread across Johto and Kanto so the player is never far from the next Rod tier — any one of them can award whichever Rod is next.
+**Status: IMPLEMENTED** — shared by **wild encounters** (after [Wilds-2](DESIGN-WILDS.md#level-distribution) roll) and **trainer Pokémon** (after [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) assigns level). Player party evolution ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)) is separate.
 
-**Vanilla HGSS caveat:** HeartGold/SoulSilver does **not** mirror every historical Gen I–IV Rod-giver city. Typical vanilla hooks include **Route 32** (Old Rod) and **Route 12 / Silence Bridge** (Super Rod); **Olivine** has a fishing NPC. **Vermilion and Fuchsia** have no Rod givers in vanilla — add new gurus there if they join the network.
+For both wild and trainer Pokemon, we need to handle the cases where 
+ - A first stage pokemon is now high level
+ - A late stage pokemon is now low level
 
-**Distribution goal:** avoid clustering every guru in mid-Johto / south Kanto. Prefer towns the player already visits (Mart, Gym, ferry) over dead-end-only cells.
+Once **level is fixed**, stage adjust:
+
+1. Walk **prevos** through level-up evolution chains and **synthetic edges** to find the chain root (so authored finals **devolve** at low levels).
+2. Walk **forward** from that root, applying level-up thresholds then synthetic edges (minimum level per edge) up to a bounded number of steps.
+
+Wild and trainer battles use the **same** rules today. Gym Leaders use the same path at battle start ([Battle-3](DESIGN-BATTLES.md#battle-3-gyms)). Wishlist: different evolution rates by context — [Future-11](DESIGN-FUTURE.md#future-11-encounter-stage-selection-wild--trainer).
+
+## Synthetic evolution stages
+
+Synthetic thresholds stand in for trade, stone, friendship, move-known, and similar methods so tables can list one species without every high-level encounter being fully evolved.
+
+**Authoring tiers** (each data row has an explicit `min_level`; tiers guide the sheet, not runtime logic):
+
+| Vanilla method | Stage 1 | Stage 2 |
+|----------------|--------:|--------:|
+| Trade (incl. held item) | 20 | 35 |
+| Stone (incl. location-based) | 25 | 35 |
+| Friendship (incl. time-of-day variants) | 20 | 30 |
+| Move-known | HGSS learn level + 1 | — |
+
+**Special:** Piloswine → Mamoswine uses **34** (AncientPower is Lv1/relearner in HGSS; Swinub → Piloswine at 33).
+
+**Branches:** empty = single outcome; `random50` = pick one row at random for the same source + `min_level` (Gloom, Poliwhirl, Clamperl, Wurmple).
+
+**Deferred until later:** Eevee, Tyrogue, Shedinja, gendered evolutions (Burmy, Combee, Gallade, Froslass, etc.).
+
+Battle presentation (moves, stats, name, caught mon) follows the **resolved** stage species.
+
+---
+
+# Wilds-4. Fishing Rod Progression
+
+**Status: PARTIALLY IMPLEMENTED** — **Route 44** and **Olivine** gurus shipped; wider Johto/Kanto network still open.
+
+Rod tiers advance by **catching Water-type Pokémon**, not badges or visit order — a separate track from [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) HMs. Every Fishing Guru / Fishing Brother shares one global progression; the player can talk to **any** guru for the next rod.
+
+| Rod | Requirement |
+|-----|-------------|
+| **Old** | Free on first guru interaction |
+| **Good** | **5** distinct evolutionary families with at least one **caught** member that is Water-type (primary or secondary) |
+| **Super** | **15** such families |
+
+Count **families**, not species (Poliwag + Poliwrath = 1). Use **Pokédex caught** flags so released or traded Pokémon still count. Branching lines stay one family.
+
+**Guru network** — interchangeable NPCs near routes and coastal towns (some vanilla Rod sites, some new).
 
 | Region | Location | Status | Notes |
 |--------|----------|--------|--------|
-| East Johto | **Route 44** (bridge) | **Implemented** | Verified in-game Sep 2026 |
-| West Johto (coast) | **Olivine City** | **Implemented** | Verified in-game Sep 2026 |
-| South Johto | Route 32 Pokémon Center | Planned | Vanilla Old Rod area |
-| East Johto | **Blackthorn City** | Planned | **Likely new NPC** — local Rod access when surrounding wild caps are high |
-| West Kanto | **Viridian or Pewter** | Planned | **Likely new NPC** |
-| Mid Kanto (coast) | Vermilion City | Planned | **Likely new NPC** |
-| South Kanto | Fuchsia City | Planned | **Likely new NPC** |
-| East Kanto | Route 12 / Silence Bridge | Planned | Vanilla Super Rod area |
-
-Any guru reads the same global progression and offers Old → Good → Super when family counts are met. **Implementation:** `documentation/HACK-NOTES.md` § **Fishing Rod guru NPCs**.
+| North East Johto | Route 44 (bridge) | Implemented | New NPC |
+| North West Johto (coast) | Olivine City | Implemented | Gen 2 & 4 Good Rod location |
+| South Johto | Route 32 Pokémon Center | Planned | Gen 2 & 4 Old Rod location |
+| West Kanto | Viridian | Planned | New NPC |
+| Mid Kanto | Vermilion City | Planned | New NPC, Gen 1 & 3 Old Rod location |
+| South Kanto | Fuchsia City | Planned | New NPC, Gen 1 & 3 Good Rod location |
+| East Kanto | Route 12 / Silence Bridge | Planned | Gens 1 - 4 Super Rod location |
 
 ---
 
-
----
-
-# Wilds-4. Pokémon Generations / Content Scope
+# Wilds-5. Pokémon Generations / Content Scope
 
 **Status: DECIDED (release scope)**
 
-**Ship scope:** **Gen I–IV plus the Volcarona line** (Larvesta, Volcarona). No broad Gen V+ rollout in the first release.
+**Ship scope:** **Gen I–IV plus the Volcarona line**. No broad Gen V+ rollout in the first release.
+
 
 Broader dex / generations: [Future-6](DESIGN-FUTURE.md#future-6-expanded-pokédex--generations).

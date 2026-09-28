@@ -8,6 +8,7 @@ An open-world HeartGold/SoulSilver romhack built on [hg-engine](https://github.c
 | -------- | -------------- |
 | **[DESIGN.md](DESIGN.md)** | Design index — vision, world, battles, wilds, story; what’s implemented vs planned |
 | **[CHANGELOG.md](CHANGELOG.md)** | Player-facing changes vs vanilla HGSS |
+| **[TODO.md](TODO.md)** | Release blockers (bugs, cleanup, Gym gates) — not Future scope |
 | **[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)** | Implementation recipes, IDs, verified patches, msg banks |
 | **`.cursor/rules/agents.mdc`** | **Coding agents:** Docker build, git rules, script layout (local Cursor config; not in git) |
 | **[README (HG-Engine).md](README%20(HG-Engine).md)** | Upstream hg-engine setup (WSL, MSYS2, native `make`, Docker image build) |
@@ -16,11 +17,10 @@ An open-world HeartGold/SoulSilver romhack built on [hg-engine](https://github.c
 
 Linked from [DESIGN.md](DESIGN.md):
 
-- [DESIGN-VISION.md](DESIGN-VISION.md) — core vision, starting city & starters
-- [DESIGN-WORLD.md](DESIGN-WORLD.md) — travel, HMs, shops, ferries
+- [DESIGN-WORLD.md](DESIGN-WORLD.md) — open-world principles, travel, HMs, shops, ferries
 - [DESIGN-WILDS.md](DESIGN-WILDS.md) — wild levels, fishing, ecology
-- [DESIGN-BATTLES.md](DESIGN-BATTLES.md) — gyms, trainer scaling, EXP, healing
-- [DESIGN-STORY.md](DESIGN-STORY.md) — story policy, vanilla cleanup
+- [DESIGN-BATTLES.md](DESIGN-BATTLES.md) — fair trainer fights, badge caps, Gyms, EXP
+- [DESIGN-STORY.md](DESIGN-STORY.md) — intro (Story-1/2), script policy (Story-3); release work in [TODO.md](TODO.md)
 - [DESIGN-FUTURE.md](DESIGN-FUTURE.md) — deferred / parking-lot features
 
 ## Playtesting
