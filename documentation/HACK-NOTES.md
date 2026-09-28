@@ -6,7 +6,7 @@ Working notes for this fork so we don’t re-discover the text/data layout every
 
 ## Contents
 
-Implementation recipes only — link **to** [DESIGN.md](../DESIGN.md) / CHANGELOG / [TODO.md](../TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([DESIGN.md Index-1](../DESIGN.md#index-1-instructions-for-coding-agents)). **Known bugs:** [TODO.md § Known bugs](../TODO.md#known-bugs) symptoms + [§ below](#known-bugs-index-3). **Agents:** `.cursor/rules/agents.mdc`.
+Implementation recipes only — link **to** [DESIGN.md](../DESIGN.md) / CHANGELOG / [TODO.md](../TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([agents.mdc § Design docs](../.cursor/rules/agents.mdc#design-docs-and-agent-boundaries)). **Known bugs:** [TODO.md § Known bugs](../TODO.md#known-bugs) symptoms + [§ below](#known-bugs-index-3). **Agents:** `.cursor/rules/agents.mdc`.
 
 | Topic | Section |
 | ----- | ------- |
@@ -511,7 +511,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 | `IMPLEMENT_LEVEL_CAP` / `UNCAP_CANDIES_FROM_LEVEL_CAP` | `include/config.h` (on) |
 | `ALLOW_LEVEL_CAP_EVOLVE` | Optional — Rare Candy at cap runs level-up evolution check (off by default) |
 | EXP / candy hooks | `ImplementLevelCap_hook` (battle EXP), `Pokemon_TryLevelUp` @ ARM9 (level-up + **EXP clamp at cap** — empty bar), `CanUseItemOnMonInParty`; `CapRareCandies` only when UNCAP off |
-| Wild catch above cap | **Not implemented** — design: [Battle-2 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-cap) (error or 0% catch rate) |
+| Wild catch above cap | `ShouldPreventMonCapture` / `PrintBallBlockedMessage` in `other_battle_calculators.c` — deflect + “too strong” msg when wild level **>** `GetLevelCap()` ([Battle-2 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-cap)) |
 
 ---
 

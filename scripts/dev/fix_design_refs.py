@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # old § number -> (file, Label-N, anchor slug without #)
 REF = {
-    1: ("DESIGN.md", "Index-1", "index-1-instructions-for-coding-agents"),
+    1: (".cursor/rules/agents.mdc", "Agents", "design-docs-and-agent-boundaries"),
     2: ("DESIGN.md", "Index-2", "index-2-game-identity"),
     3: ("DESIGN-WORLD.md", "World-0", "world-0-open-world-principles"),
     4: ("DESIGN-STORY.md", "Story-1", "story-1-starting-city-and-home"),

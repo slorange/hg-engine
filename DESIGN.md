@@ -4,6 +4,8 @@
 >
 > **This index is NOT permission to implement everything described in the sub-docs.**
 
+**Coding agents:** build, git, design boundaries, and doc map usage — [`.cursor/rules/agents.mdc`](.cursor/rules/agents.mdc).
+
 ## Document map
 
 | Document | Prefix | Topics |
@@ -16,40 +18,6 @@
 | CHANGELOG.md | — | Shipped behavior vs vanilla (player-facing; no doc links) |
 | TODO.md | — | **Release blockers** — known bugs, vanilla cleanup, Gym gates, intro/home gaps (not Future scope) |
 | documentation/HACK-NOTES.md | — | Implementation recipes (see `.cursor/rules/agents.mdc`) |
-
-## Sections in this document
-
-| Section |
-| ------- |
-| [Index-1. Instructions for Coding Agents](#index-1-instructions-for-coding-agents) |
-| [Index-2. Game Identity](#index-2-game-identity) |
-
----
-
-# Index-1. Instructions for Coding Agents
-
-This project contains systems that may require substantial changes to Pokémon HeartGold and HG-Engine.
-
-When using this document as development context:
-
-- Only implement features explicitly requested for the current task.
-- Do not interpret the existence of a feature in this document as permission to begin implementing it.
-- Prefer small, incremental changes that leave the ROM buildable and playable.
-- Investigate HG-Engine and HGSS architecture before making invasive engine changes.
-- Identify technical risks before modifying fundamental systems.
-- If the desired design conflicts with HG-Engine or HGSS limitations, explain the limitation and possible alternatives rather than silently changing the design.
-- Do not simplify a design merely because the simpler implementation is easier without discussing the tradeoff first.
-- Configuration should be preferred for balance-sensitive numbers where practical.
-- Preserve compatibility with the existing Docker build process.
-- `rom.nds` and generated ROM files must never be committed.
-- **Git is read-only for agents** unless the user explicitly asks otherwise: do not commit, push, checkout, stash, rebase, reset, or otherwise change repo state. Using `log`, `status`, `diff`, and `show` for context is fine.
-- **The user relies on agents to run builds** when verifying work. Follow `.cursor/rules/agents.mdc` (points to **HACK-NOTES** for recipes). First-time toolchain setup: [README (HG-Engine).md](README%20(HG-Engine).md).
-- **`DESIGN-*.md` = design only** — intent, rules, player-facing behavior; **link to other `DESIGN-*` sections only**. No paths, tools, or IDs in design bodies. **Do not link** to `TODO.md`, `CHANGELOG.md`, or `documentation/HACK-NOTES.md` from design files.
-- **`TODO.md`**, **`HACK-NOTES.md`**, and **`CHANGELOG.md`** sit outside design; they **may link to `DESIGN-*`**. Find them via the document map above, `.cursor/rules/agents.mdc`, or grep by section id (e.g. `Wilds-4`, `Story-3`).
-- **Do not edit `CHANGELOG.md`** unless the user asks — finished, tested, player-visible changes when they are about to commit.
-- **`TODO.md`** — release blockers only (not [DESIGN-FUTURE.md](DESIGN-FUTURE.md) scope). Remove rows when done; do not move Future items into TODO.
-
----
 
 # Index-2. Game Identity
 

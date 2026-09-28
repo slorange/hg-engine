@@ -85,7 +85,10 @@ dumpitem.py
 armips/asm/offset.s
 .vs/
 .vscode/
-.cursor/
+.cursor/*
+!.cursor/rules/
+.cursor/rules/*
+!.cursor/rules/agents.mdc
 rom_gen*.ld
 .idea/
 .zed

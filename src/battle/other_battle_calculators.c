@@ -4705,9 +4705,38 @@ void LONG_CALL HandleTransform(struct BattleStruct *sp)
     }
 }
 
+#if defined(IMPLEMENT_LEVEL_CAP) && !defined(DEBUG_BATTLE_SCENARIOS)
+static BOOL WildLevelExceedsPlayerCap(struct BattleSystem *bsys)
+{
+    struct BattleStruct *sp;
+    u32 battleType;
+    u8 wildLevel;
+
+    battleType = BattleTypeGet(bsys);
+    if (battleType & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_TOTEM | BATTLE_TYPE_LINK | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_PAL_PARK)) {
+        return FALSE;
+    }
+
+    sp = bsys->sp;
+    if (sp == NULL) {
+        return FALSE;
+    }
+
+    wildLevel = sp->battlemon[sp->defence_client].level;
+    return wildLevel > GetLevelCap();
+}
+#endif
+
 BOOL LONG_CALL ShouldPreventMonCapture(struct BattleSystem *bsys)
 {
-    return BattleTypeGet(bsys) & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_TOTEM);
+    if (BattleTypeGet(bsys) & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_TOTEM)) {
+        return TRUE;
+    }
+#if defined(IMPLEMENT_LEVEL_CAP) && !defined(DEBUG_BATTLE_SCENARIOS)
+    return WildLevelExceedsPlayerCap(bsys);
+#else
+    return FALSE;
+#endif
 }
 
 BOOL LONG_CALL ov07_02232F60(void *ballData, s32 ballAnim_Unused);
@@ -4720,13 +4749,21 @@ void LONG_CALL PrintBallBlockedMessage(struct tcb_skill_intp_work *data)
         ov07_02233ECC(data->bms);
         BattleMessage msg;
         BOOL isTrainerBattle = BattleTypeGet(data->bw) & BATTLE_TYPE_TRAINER;
-        // It dodged your thrown Poké Ball! This Pokémon can’t be caught!
-        msg.id = isTrainerBattle ? BATTLE_MSG_TRAINER_BLOCKED_BALL : BATTLE_MSG_DODGED_THROWN_BALL;
+
+        if (isTrainerBattle) {
+            msg.id = BATTLE_MSG_TRAINER_BLOCKED_BALL;
+#if defined(IMPLEMENT_LEVEL_CAP) && !defined(DEBUG_BATTLE_SCENARIOS)
+        } else if (WildLevelExceedsPlayerCap(data->bw)) {
+            msg.id = BATTLE_MSG_WILD_TOO_STRONG_FOR_LEVEL_CAP;
+#endif
+        } else {
+            // It dodged your thrown Poké Ball! This Pokémon can’t be caught!
+            msg.id = BATTLE_MSG_DODGED_THROWN_BALL;
+        }
         msg.tag = TAG_NONE;
         data->work[0] = BattleMSG_Print(data->bw, BattleWorkFightMsgGet(data->bw), &msg, BattleWorkConfigMsgSpeedGet(data->bw));
         data->work[1] = 30;
         data->seq_no = isTrainerBattle ? 27 : 28; // STATE_GET_POKEMON_DONE_NO_STEALING
-        // debug_printf("Case: %d\n", data->seq_no);
     }
 }
 

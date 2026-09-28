@@ -36,6 +36,7 @@ Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared 
 - **Distance-based level caps** — wild levels depend on how far the current area is from your **chosen starting city** (18-city menu index matches the distance table).
 - **Level rolls** — most encounters sit near the area cap; when the cap is high enough, there is a **15%** chance for a low “early route” band instead of a fully scaled level.
 - **Stage and moves** — wild species and moves match the rolled level (including evolutions you would expect at that level).
+- **Wild catch vs. badge cap** — if a wild Pokémon’s level is above your current badge level cap, the ball is deflected with “This Pokémon is too strong for you right now!”
 - **Special evolution lines in the wild** — trade-, stone-, and similar lines can appear as their evolved forms at authored level thresholds in encounters (separate from player trade/stone QoL below).
 
 ### Fishing

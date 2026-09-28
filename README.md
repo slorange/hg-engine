@@ -10,7 +10,7 @@ An open-world HeartGold/SoulSilver romhack built on [hg-engine](https://github.c
 | **[CHANGELOG.md](CHANGELOG.md)** | Player-facing changes vs vanilla HGSS |
 | **[TODO.md](TODO.md)** | Release blockers (bugs, cleanup, Gym gates) — not Future scope |
 | **[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)** | Implementation recipes, IDs, verified patches, msg banks |
-| **`.cursor/rules/agents.mdc`** | **Coding agents:** Docker build, git rules, script layout (local Cursor config; not in git) |
+| **`.cursor/rules/agents.mdc`** | **Coding agents:** Docker build, git rules, script layout |
 | **[README (HG-Engine).md](README%20(HG-Engine).md)** | Upstream hg-engine setup (WSL, MSYS2, native `make`, Docker image build) |
 
 ### Design sub-documents

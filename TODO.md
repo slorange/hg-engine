@@ -28,7 +28,6 @@ Release gaps from design status and partial sections (Future-7/8 excluded).
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Wild catch above player level cap** | [Battle-2 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-cap) | Policy decided; block catch (message or 0% rate) — not in ROM |
 | **Gym defeat rewards (HM + TM choice)** | [Battle-3 § First defeat rewards](DESIGN-BATTLES.md#first-defeat-rewards), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Johto HM pilot partial; Flash / Headbutt field flow incomplete; Gym TM pools + choice UI **not implemented** |
 
 ---
@@ -57,7 +56,6 @@ Release gaps from design status and partial sections (Future-7/8 excluded).
 | **Headbutt TM + Flash / Headbutt field unlock** | [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target) | Headbutt TM (custom), tutor bypass, badge-gated shop sales; field unlock flow incomplete |
 | **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
 | **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Per-Leader pools authored; **minimum badge per TM** + defeat/rematch **choice UI** not implemented |
-| **Magnet Train / Copycat chain (residual)** | [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Vanilla cleanup § Copycat](#superseded-services-and-items) | Train patched for open travel; displaced-interior scripts may still be vanilla |
 
 ---
 
