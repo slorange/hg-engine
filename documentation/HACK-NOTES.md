@@ -781,7 +781,7 @@ Vanilla scr_seq for recovery: `build/a012_vanilla/2_<NNN>` (extracted from `rom.
 - **Healthy scr_seq size:** Route 42 member ~**1188 bytes** (8 scripts). Multi‑MB member = corrupt; patcher resets from vanilla when `count != VANILLA_SCRIPT_COUNT` or size > 8 KB.
 - **Duplicate NPCs on rebuild:** zone_event patcher must delete prior ferry objects by id before re-adding.
 - **Sign overlap:** bg-event signs and object NPCs on the same tile fight for interaction; offset NPC one tile from sign.
-- **land_data ≠ ferry:** walking on water still needs terrain edits; ferries only skip the gap via warp. Failed bridge exports live in `rawdata/changed_maps/route_42/failed attempt at bridge/`; apply manually via `scripts/dev/apply_changed_maps.py` (not in Makefile). Matrix loads land_data member **44** for Route 42 chunks — DSPRE export indices 082–084 ≠ runtime member.
+- **land_data ≠ ferry:** walking on water still needs terrain edits; ferries only skip the gap via warp. **`scripts/dev/apply_changed_maps.py`** runs before ROM pack (`Makefile` `all` target): replaces `base/root/a/0/6/5` members from `rawdata/changed_maps/**/*.bin` (filename must start with **NARC member index**). Skips paths containing **`failed`** (Route 42 bridge experiments stay archived only). **DSPRE:** `map{col}_{row}c` in the export name is matrix cell coords; the numeric prefix is the land_data member (e.g. Cinnabar **`205`** = `map32_15c`). **Do not** confuse `MAP_R42` header id **44** with land_data members **082–084**.
 
 ### Route 42 bridges (abandoned)
 

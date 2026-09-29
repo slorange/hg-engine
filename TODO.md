@@ -39,7 +39,6 @@ Release gaps from design status and partial sections (Future-7/8 excluded).
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
 | **Fishing guru network** | [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression) | Route 44 + Olivine done; Route 32 PC, Viridian, Vermilion, Fuchsia, Route 12 **planned** |
-| **Volcarona line (dex scope)** | [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) | Gen I–IV + Volcarona — species/content not fully in world |
 | **Synthetic stage deferrals** | [Wilds-3 § Synthetic evolution](DESIGN-WILDS.md#synthetic-evolution-stages) | Eevee, Tyrogue, Shedinja, gendered lines — authoring deferred |
 
 ---

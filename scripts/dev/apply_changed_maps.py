@@ -28,6 +28,8 @@ def main() -> int:
     applied = 0
 
     for patch in patches:
+        if any("failed" in part.lower() for part in patch.parts):
+            continue
         match = re.match(r"^(\d+)", patch.name)
         if not match:
             print(f"warning: skipping {patch} (filename must start with member index)", file=sys.stderr)

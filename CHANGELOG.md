@@ -40,6 +40,7 @@ Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared 
 - **Stage and moves** — wild species and moves match the rolled level (including evolutions you would expect at that level).
 - **Wild catch vs. badge cap** — if a wild Pokémon’s level is above your current badge level cap, the ball is deflected with “This Pokémon is too strong for you right now!”
 - **Special evolution lines in the wild** — trade-, stone-, and similar lines can appear as their evolved forms at authored level thresholds in encounters (separate from player trade/stone QoL below).
+- **Cinnabar Island** — walking wild encounters on the island (Slugma, Numel, Koffing, Torkoal, Magmar, rare Ditto and **Larvesta**);
 
 ### Fishing
 

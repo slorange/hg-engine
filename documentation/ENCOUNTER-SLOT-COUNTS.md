@@ -108,7 +108,7 @@ Radio = 2 species per sound (Hoenn or Sinnoh).
 | T06_VERMILION_CITY | 0 | 0 | 0 | 5 | 5 | 5 | 5 | 2 | 0 | 6 |
 | T07_CELADON_CITY | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 6 |
 | T08_FUCHSIA_CITY | 0 | 0 | 0 | 5 | 5 | 5 | 5 | 0 | 0 | 6 |
-| T09_CINNABAR_ISLAND | 0 | 0 | 0 | 5 | 5 | 5 | 5 | 0 | 0 | 0 |
+| T09_CINNABAR_ISLAND | 12 | 12 | 12 | 5 | 5 | 5 | 5 | 0 | 0 | 0 |
 | R48_ROUTE_48 | 12 | 12 | 12 | 0 | 0 | 0 | 0 | 0 | 2 | 6 |
 | R26_ROUTE_26 | 12 | 12 | 12 | 5 | 5 | 5 | 5 | 0 | 2 | 6 |
 | R27_ROUTE_27 | 12 | 12 | 12 | 5 | 5 | 5 | 5 | 0 | 2 | 6 |
