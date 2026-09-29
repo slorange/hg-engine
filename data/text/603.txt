@@ -12,7 +12,7 @@ You put away the {STRVAR_1 8, 0, 0}\nin the {STRVAR_1 18, 1, 0} Pocket. {YESNO 0
 CANCEL
 TECHNICAL MACHINE
 HELD ITEMS
-ROAR\n50 Coins
+SWAGGER\n50 Coins
 SWORDS DANCE\n50 Coins
 REST\n50 Coins
 THIEF\n50 Coins

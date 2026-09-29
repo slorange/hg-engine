@@ -35,6 +35,7 @@ const struct BadgeMartItems sBadgeMart[] = {
     { ITEM_SITRUS_BERRY, 4 },
     { ITEM_LUM_BERRY, 6 },
     { ITEM_TM070, 1 },
+    { ITEM_TM005, 4 },
     { ITEM_CLEANSE_TAG, 1 },
     { ITEM_WHITE_HERB, 3 },
     { ITEM_MENTAL_HERB, 3 },
@@ -140,7 +141,7 @@ u16 sCeladonDepartmentLower2F[] = {
 };
 
 u16 sCeladonDepartment3F[] = {
-    ITEM_TM012, ITEM_TM020, ITEM_TM021, ITEM_TM028, ITEM_TM041, ITEM_TM076, ITEM_TM078, ITEM_TM087, 0xFFFF
+    ITEM_TM012, ITEM_TM020, ITEM_TM021, ITEM_TM028, ITEM_TM041, ITEM_TM076, ITEM_TM078, 0xFFFF
 };
 
 u16 sCeladonDepartment4F[] = {

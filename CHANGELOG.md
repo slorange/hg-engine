@@ -8,7 +8,7 @@ Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared 
 - **Starting city** — choose from **18 cities** at the start of the game
 - **Starter selection** — choose three starters, **one per type**, from gens 1-4 at the start of the game
 - **Mom’s grants** at intro — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, **5 Poké Balls**, Pokégear, Town Map card, Mom/Oak/Elm phone numbers
-- **Dev testing grants from Mom** — 100 Rare Candies (silent) plus **HMs 01–08** when dev testing grants are enabled
+- **Dev testing grants from Mom** — 100 Rare Candies (silent) plus **HMs 01–08**, **5× Flash TM**, and **5× Headbutt TM** when dev testing grants are enabled
 - **Broader story skip at Mom intro** — consolidated flag sweep on new saves (rival hidden, SS Aqua arrived, many Azalea/Mahogany rocket flags, Elm lab errand skipped, etc.)
 
 ### Travel & world access
@@ -62,7 +62,8 @@ Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared 
 - **Mart redesign** — dept stores emphasize status berries, EV power items, and vitamins over vanilla healing/X-item grind.
 - **Renewable TMs** — Celadon dept TM floor and Goldenrod 5F sell fixed TM sets.
 - **Game Corner prizes** — Goldenrod and Celadon coin-exchange **TM** and **held-item** menus retargeted. All prizes temporarily cost **50 Coins** (playtest shortcut until coin income ships).
-- **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, **Flash TM**, and late-game gear by **badge count** (not vanilla potion progression). Shelves use **total Johto + Kanto badges** (matches trainer scaling)
+- **TM05 Headbutt** — **TM05** teaches **Headbutt** in battle (replacing Roar). Species that could learn Headbutt from the HeartGold **move tutor** can also learn it from this TM.
+- **Badge-gated dept 2F** — Goldenrod and Celadon first clerk unlock balls, repels, held items, Flash and Headbutt TM, and late-game gear by **badge count** (not vanilla potion progression). Shelves use **total Johto + Kanto badges** (matches trainer scaling)
 - **Town specialty marts** — evolution stones, trade evo held items, and type-resist berries at themed cities (e.g. Moon Stone at Mt. Moon Square).
 - **Trade evolution QoL** — trade-evo **held items** (Metal Coat, Up-Grade, etc.) work when **used on the Pokémon** like stones; **Linking Cord** replaces trade for Kadabra, Machoke, Graveler, Haunter, and similar lines. Buy Linking Cord at **Goldenrod dept 2F (lower)** and **Celadon dept 4F** (¥8000).
 - **Olivine** — Secret Medicine remains on the **second** clerk; first clerk uses the badge shelf only.

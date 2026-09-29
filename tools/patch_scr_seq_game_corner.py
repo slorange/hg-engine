@@ -2,7 +2,7 @@
 """Retarget Game Corner TM and held-item prize menus (Goldenrod + Celadon).
 
 Goldenrod scr_seq member 910 (T25SP0101):
-  TMs: TM05, TM44, TM46, TM75, TM90, TM92
+  TMs: TM87, TM44, TM46, TM75, TM90, TM92
   Items: Bright Powder, Quick Claw, Wide Lens, Metronome
 
 Celadon scr_seq member 804 (T07R0501 dept 5F):
@@ -40,8 +40,8 @@ def tm_item(tm: int) -> int:
 GOLDENROD_MEMBER = 910
 GOLDENROD_PATCHES: list[ItemPatch] = [
     # TMs (two offsets each: purchase + not-enough-coins nav)
-    (838, tm_item(90), tm_item(5)),
-    (2894, tm_item(90), tm_item(5)),
+    (838, tm_item(90), tm_item(87)),
+    (2894, tm_item(90), tm_item(87)),
     (1255, tm_item(35), tm_item(46)),
     (2969, tm_item(35), tm_item(46)),
     (1394, tm_item(13), tm_item(90)),

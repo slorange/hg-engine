@@ -330,7 +330,7 @@ The user focuses its mind before\nlaunching this attack. It will fail\nif the us
 Sharp, huge claws hook and slash\nthe foe quickly and with great\npower.
 The foe is hit with a pulsing blast\nof water. It may also confuse the\ntarget.
 The user quietly focuses its mind and\ncalms its spirit to raise its Sp. Atk\nand Sp. Def stats.
-The foe is scared off, to be replaced\nby another Pokémon in its party.\nIn the wild, the battle ends.
+The user attacks with its head. It\nmay make the foe flinch. To find\nPokémon, hit trees.
 A move that leaves the foe badly\npoisoned. This poison damage\nworsens every turn.
 Summons a hailstorm that lasts for\nfive turns. The hailstorm damages\nall types except Ice.
 The user tenses its muscles to bulk up\nits body, boosting both its Attack and\nDefense stats.

@@ -18,7 +18,7 @@ static const u16 sMachineMoves[] = {
     MOVE_DRAGON_CLAW, // TM002
     MOVE_WATER_PULSE, // TM003
     MOVE_CALM_MIND, // TM004
-    MOVE_ROAR, // TM005
+    MOVE_HEADBUTT, // TM005 (Headbutt TM — vanilla Roar)
     MOVE_TOXIC, // TM006
     MOVE_HAIL, // TM007
     MOVE_BULK_UP, // TM008

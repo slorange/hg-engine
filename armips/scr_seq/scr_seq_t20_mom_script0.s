@@ -19,6 +19,8 @@
 .equ ITEM_HM06, 425
 .equ ITEM_HM07, 426
 .equ ITEM_HM08, 427
+.equ ITEM_TM005, 332
+.equ ITEM_TM070, 397
 
 .equ MSG_MOM_GREET_M, 0
 .equ MSG_MOM_GREET_F, 1
@@ -214,6 +216,8 @@ _story_flag_sweep:
     giveitem ITEM_HM06, 1, VAR_SPECIAL_RESULT
     giveitem ITEM_HM07, 1, VAR_SPECIAL_RESULT
     giveitem ITEM_HM08, 1, VAR_SPECIAL_RESULT
+    giveitem ITEM_TM070, 5, VAR_SPECIAL_RESULT
+    giveitem ITEM_TM005, 5, VAR_SPECIAL_RESULT
 .endif
     closemsg
     apply_movement OBJ_MOM, _mv_mom_return
