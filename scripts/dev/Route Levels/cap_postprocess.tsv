@@ -1,0 +1,15 @@
+# Post-process wild level caps after distance formula (DESIGN-WILDS.md Wilds-1).
+# kind: fixed = exact cap for graph location; floor = max(distanceCap, value).
+# graph_location must match encounter_area_graph.tsv / location_distances.txt names.
+#
+# kind	graph_location	value
+fixed	23	75
+fixed	Victory Road	75
+fixed	28	85
+fixed	Mt. Silver	85
+fixed	Cerulean Cave	85
+floor	Dark Cave	14
+floor	Rock Tunnel	14
+floor	Whirl Islands	50
+floor	26	62
+floor	27	62

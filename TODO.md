@@ -38,8 +38,6 @@ Release gaps from design status and partial sections (Future-7/8 excluded).
 | ---- | ------ | ----- |
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
-| **Endgame wild cap overrides** | [Wilds-1 § Future level-cap overrides](DESIGN-WILDS.md#future-level-cap-overrides-not-in-poc) | Routes 26–27–23, Route 28, Mt. Silver, Cerulean Cave bands — post-process cap table |
-| **HM-gated minimum wild caps** | [Wilds-1 § HM-gated minimum caps](DESIGN-WILDS.md#hm-gated-minimum-caps-not-in-poc) | e.g. Whirl Islands from Olivine — `max(distance cap, badge HM floor)` |
 | **Fishing guru network** | [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression) | Route 44 + Olivine done; Route 32 PC, Viridian, Vermilion, Fuchsia, Route 12 **planned** |
 | **Volcarona line (dex scope)** | [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) | Gen I–IV + Volcarona — species/content not fully in world |
 | **Synthetic stage deferrals** | [Wilds-3 § Synthetic evolution](DESIGN-WILDS.md#synthetic-evolution-stages) | Eevee, Tyrogue, Shedinja, gendered lines — authoring deferred |

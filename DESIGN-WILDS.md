@@ -73,24 +73,29 @@ levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5
 - `max_route_distance` — farthest reachable distance for that starting city on the same graph.
 - Integer division; at distance **0–1** → cap **5** (starter town + first connected routes); at max distance → cap **60**.
 
-### Future level-cap overrides (not in PoC)
+### Level-cap post-processing (build-time)
 
-| Areas | Intended cap band |
-|-------|-------------------|
-| Routes **27**, **26**, **23** | **70–80** |
-| Route **28**, **Mt. Silver**, **Cerulean Cave** | **80–90** |
+After the distance formula, `scripts/build/gen_wild_level_caps.py` applies rows in `scripts/dev/Route Levels/cap_postprocess.tsv` per encounter area’s graph node (`encounter_area_graph.tsv`):
 
-Add as a post-processing step on the generated cap table.
+| Kind | Meaning |
+|------|---------|
+| **fixed** | Replace distance cap with an exact value (endgame tiers). |
+| **floor** | `max(distance cap, value)` — HM-gated regions where nearby start cities would otherwise undershoot. |
 
-### HM-gated minimum caps (not in PoC)
+**Fixed caps (16-badge vs Waterfall tier):**
 
-Distance-only caps can undershoot when the start city is nearby (e.g. **Whirl Islands** from **Olivine**). **Effective cap = max(distance-based cap, HM-gated minimum)**. For now only these regions need a floor — same post-processing pass as the high-end overrides above. Each floor is the **player level cap** at the badge count that unlocks the gating HM ([Battle-2](DESIGN-BATTLES.md#cap-ladder): `10 + 4 × badges_earned`; badge rows [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference)):
+| Graph location | Wild cap |
+|----------------|--------:|
+| **23**, **Victory Road** | **75** |
+| **28**, **Mt. Silver**, **Cerulean Cave** | **85** |
 
-| Areas | Gating HM | Badges for HM | Min cap |
-|-------|-----------|--------------:|--------:|
-| **Dark Cave**, **Rock Tunnel** | Flash | 1 | **14** |
-| **Whirl Islands** | Whirlpool | 10 | **50** |
-| **Routes 26**, **27** | Waterfall | 13 | **62** |
+**HM floors** (badge tier at HM unlock — [Battle-2](DESIGN-BATTLES.md#cap-ladder), [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference)):
+
+| Graph location | Gating HM | Min cap |
+|----------------|-----------|--------:|
+| **Dark Cave**, **Rock Tunnel** | Flash | **14** |
+| **Whirl Islands** | Whirlpool | **50** |
+| **26**, **27** | Waterfall | **62** |
 
 ### Cave depth (future)
 

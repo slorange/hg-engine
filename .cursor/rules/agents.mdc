@@ -28,7 +28,7 @@ When using [DESIGN.md](DESIGN.md) and `DESIGN-*.md` as context:
 - `rom.nds` and generated ROM files must never be committed.
 - **`DESIGN-*.md` = design only** — intent, rules, player-facing behavior; **link to other `DESIGN-*` sections only**. No paths, tools, or IDs in design bodies. **Do not link** to `TODO.md`, `CHANGELOG.md`, or `documentation/HACK-NOTES.md` from design files.
 - **`TODO.md`**, **`HACK-NOTES.md`**, and **`CHANGELOG.md`** sit outside design; they **may link to `DESIGN-*`**. Find them via the [DESIGN.md document map](DESIGN.md#document-map), this file, or grep by section id (e.g. `Wilds-4`, `Story-3`).
-- **Do not edit `CHANGELOG.md`** unless the user asks — finished, tested, player-visible changes when they are about to commit.
+- **Do not edit `CHANGELOG.md` or `TODO.md`** unless the user asks — finished, tested, player-visible changes when they are about to commit.
 - **`TODO.md`** — release blockers only (not [DESIGN-FUTURE.md](DESIGN-FUTURE.md) scope). Remove rows when done; do not move Future items into TODO.
 
 Implementation recipes and ROM IDs: [documentation/HACK-NOTES.md](documentation/HACK-NOTES.md). First-time toolchain setup: [README (HG-Engine).md](README%20(HG-Engine).md).

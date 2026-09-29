@@ -1332,6 +1332,7 @@ levelCap = 55 × max(0, route_distance − 1) / (max_route_distance − 1) + 5  
 - **Graph data:** `scripts/dev/Route Levels/connections.txt`, `starting_cities.txt`
 - **Distances:** `scripts/dev/Route Levels/calculate_location_distances.py` → `location_distances.txt` (includes `MaxDistance` row per city column)
 - **Enc area → graph node:** `scripts/dev/Route Levels/encounter_area_graph.tsv` (`ENCDATA_*` index → location name)
+- **Post-process:** `scripts/dev/Route Levels/cap_postprocess.tsv` — `fixed` (exact endgame cap) or `floor` (`max(distance, min)`) per graph location name
 - **ROM table:** `scripts/build/gen_wild_level_caps.py` → `src/field/wild_level_caps_data.c` + `include/constants/generated/wild_level_caps.h` (Makefile rule in `narcs.mk`)
 
 Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAddr` — `[startCityIndex][encBank]` where `encBank = MapHeader_GetWildEncounterBank(mapId)`.
@@ -1388,7 +1389,7 @@ Production: all three **off**; `RollWildLevel(cap)` — adult band **`[⌊0.9×c
 
 ### Editing caps
 
-1. Edit graph / distances / encounter mapping under `scripts/dev/Route Levels/`.
+1. Edit graph / distances / encounter mapping under `scripts/dev/Route Levels/`; endgame and HM floors in `cap_postprocess.tsv`.
 2. Re-run `python3 scripts/build/gen_wild_level_caps.py` (or full `make` — `narcs.mk` regenerates the table).
 3. Rebuild `test.nds`.
 
@@ -1410,7 +1411,7 @@ All tracked — nothing belongs in `scripts/local/`:
 | `include/encounter_species_stage.h` | include | `AdjustEncounterSpeciesForLevel` — unified prevo walk + forward stage (wild + trainer) |
 | `scripts/dev/verify_encounter_stage.py` | dev | Offline sanity check for trade/stone devolve cases (Alakazam, Vileplume, …) |
 | `scripts/dev/Route Levels/calculate_location_distances.py` | dev | Regenerate `location_distances.txt` after graph edits |
-| `scripts/dev/Route Levels/*.txt`, `encounter_area_graph.tsv` | dev | Source graph inputs |
+| `scripts/dev/Route Levels/*.txt`, `encounter_area_graph.tsv`, `cap_postprocess.tsv` | dev | Source graph inputs |
 
 **Not in `scripts/local/`:** wild-cap and synthetic-stage tooling is all under `data/`, `scripts/build/`, and `scripts/dev/Route Levels/`. Session throwaways stay gitignored per § Scripts layout.
 

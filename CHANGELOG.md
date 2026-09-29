@@ -34,6 +34,7 @@ Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared 
 ### Wild encounters
 
 - **Distance-based level caps** — wild levels depend on how far the current area is from your **chosen starting city** (18-city menu index matches the distance table).
+- **Endgame and HM-gated wild caps** — selected areas ignore a low distance-only cap: **Flash** dungeons (Dark Cave, Rock Tunnel) floor **14**; **Whirlpool** areas (Whirl Islands) floor **50**; **Waterfall** routes **26** and **27** floor **62**; **Victory Road** fixed **75**; **Route 28**, **Mt. Silver**, and **Cerulean Cave** fixed **85** (same for every start city).
 - **Level rolls** — most encounters sit near the area cap; when the cap is high enough, there is a **15%** chance for a low “early route” band instead of a fully scaled level.
 - **Stage and moves** — wild species and moves match the rolled level (including evolutions you would expect at that level).
 - **Wild catch vs. badge cap** — if a wild Pokémon’s level is above your current badge level cap, the ball is deflected with “This Pokémon is too strong for you right now!”
