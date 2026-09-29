@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import subprocess
 import shutil
 import struct
 import sys
+from pathlib import Path
 from datetime import datetime
 import _io
 import ndspy.codeCompression
@@ -46,6 +48,14 @@ HOOKS = 'hooks'
 ARM_HOOKS = 'armhooks'
 REPOINTS = 'repoints'
 ROUTINE_POINTERS = 'routinepointers'
+ROM = 'rom.nds'
+STALE_FLY_MAP_ARM9_ADDR = 0x0202EE84
+STALE_FLY_MAP_ARM9_LEN = 8
+POKEGEAR_GET_MAP_UNLOCK_ADDR = 0x0202EE70
+POKEGEAR_GET_MAP_UNLOCK_SIG = bytes.fromhex("406800c00f8006000e004770")
+STALE_FLY_MAP_OV101_ADDR = 0x021EA7E4
+STALE_FLY_MAP_OV101_LEN = 8
+HOOK_STUB = bytes.fromhex("00490847")
 
 # step 1:  list folders in a directory
 SOURCE = "src"
@@ -279,6 +289,97 @@ def TryProcessConditionalCompilation(line: str, definesDict: dict, conditionals:
     return False
 
 
+def restore_stale_fly_map_arm9_hook() -> None:
+    """Drop leftover bytes from the removed Pokegear_GetMapUnlockLevel arm9 hook."""
+    if not os.path.isfile("include/config.h"):
+        return
+    with open("include/config.h", "r", encoding="utf-8") as cfg:
+        if not re.search(r"^#define\s+OPENWORLD_FLY_MAP\b", cfg.read(), re.MULTILINE):
+            return
+    if not os.path.isfile(HOOKS):
+        return
+    with open(HOOKS, "r", encoding="utf-8") as hooks_file:
+        if "Pokegear_GetMapUnlockLevel_hook" in hooks_file.read():
+            return
+    if not os.path.isfile(ROM) or not os.path.isfile("base/arm9.bin"):
+        return
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        van_path = os.path.join(tmp, "arm9.bin")
+        subprocess.run(
+            ["tools/ndstool", "-x", ROM, "-9", van_path],
+            check=True,
+            capture_output=True,
+        )
+        with open(van_path, "rb") as van_file:
+            vanilla = van_file.read()
+    off = STALE_FLY_MAP_ARM9_ADDR - 0x02000000
+    if off < 0 or off + STALE_FLY_MAP_ARM9_LEN > len(vanilla):
+        return
+    patch = vanilla[off : off + STALE_FLY_MAP_ARM9_LEN]
+    with open("base/arm9.bin", "r+b") as arm9:
+        arm9.seek(off)
+        current = arm9.read(STALE_FLY_MAP_ARM9_LEN)
+        if current == patch:
+            return
+        arm9.seek(off)
+        arm9.write(patch)
+    print(
+        f"Restored vanilla arm9 @ {STALE_FLY_MAP_ARM9_ADDR:#010x} "
+        "(removed stale Fly map hook)."
+    )
+
+
+def restore_stale_fly_map_overlay101_hook() -> None:
+    """Remove leftover overlay-101 hook stub that branches into overlay 129."""
+    if not os.path.isfile("include/config.h"):
+        return
+    with open("include/config.h", "r", encoding="utf-8") as cfg:
+        if not re.search(r"^#define\s+OPENWORLD_FLY_MAP\b", cfg.read(), re.MULTILINE):
+            return
+    if not os.path.isfile(HOOKS):
+        return
+    with open(HOOKS, "r", encoding="utf-8") as hooks_file:
+        hooks_text = hooks_file.read()
+        if "ov101_021EA7E4_hook" in hooks_text and "0101 ov101_021EA7E4_hook" in hooks_text:
+            return
+    ov_path = "base/overlay/overlay_0101.bin"
+    if not os.path.isfile(ROM) or not os.path.isfile(ov_path) or not os.path.isfile("base/overarm9.bin"):
+        return
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        y9_path = tmp_path / "y9.bin"
+        ov_dir = tmp_path / "overlay"
+        subprocess.run(
+            ["tools/ndstool", "-x", ROM, "-y9", str(y9_path), "-y", str(ov_dir)],
+            check=True,
+            capture_output=True,
+        )
+        van_ov = (ov_dir / "overlay_0101.bin").read_bytes()
+        y9 = y9_path.read_bytes()
+    base = struct.unpack_from("<I", y9, 101 * 0x20 + 4)[0]
+    off = STALE_FLY_MAP_OV101_ADDR - base
+    if off < 0 or off + STALE_FLY_MAP_OV101_LEN > len(van_ov):
+        return
+    patch = van_ov[off : off + STALE_FLY_MAP_OV101_LEN]
+    with open(ov_path, "r+b") as ov:
+        ov.seek(off)
+        current = ov.read(STALE_FLY_MAP_OV101_LEN)
+        if current == patch:
+            return
+        if current[:4] != HOOK_STUB:
+            return
+        ov.seek(off)
+        ov.write(patch)
+    print(
+        f"Restored vanilla overlay 101 @ {STALE_FLY_MAP_OV101_ADDR:#010x} "
+        "(removed stale Fly map hook)."
+    )
+
+
 def install():
     if os.path.isfile(BYTE_REPLACEMENT):
         with open(BYTE_REPLACEMENT, 'r') as replacelist:
@@ -330,6 +431,8 @@ def install():
 
 
 def hook():
+    restore_stale_fly_map_arm9_hook()
+    restore_stale_fly_map_overlay101_hook()
     if os.path.isfile(HOOKS):
         table = GetSymbols()
         with open(HOOKS, 'r') as hookList:

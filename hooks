@@ -586,6 +586,10 @@ arm9 ScrCmd_MartBuy 02048060 1
 arm9 PlayerProfile_TestBadgeFlag_hook 02028F98 1
 #endif
 
+#ifdef OPENWORLD_FLY_MAP
+arm9 Pokegear_GetMapUnlockLevel_hook 0202EE70 0
+#endif
+
 # expand heal blocked moves
 0012 BattleContext_CheckMoveHealBlocked 02252DF8 1
 

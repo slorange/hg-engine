@@ -22,7 +22,7 @@ Implementation recipes only — link **to** [DESIGN.md](../DESIGN.md) / CHANGELO
 | Ilex Forest Cut | [Remove Ilex Forest Cut tree](#remove-ilex-forest-cut-tree--open-travel) |
 | Route 35 Cut tree | [Remove Route 35 Cut tree](#remove-route-35-cut-tree--unrelated-to-ilex) |
 | Post-battle heal | [Heal after every battle](#heal-after-every-battle) |
-| Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) → [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags), [Kanto Fly map](#fly-map--kanto-destinations-not-yet) |
+| Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) → [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags), [Fly map (Kanto)](#fly-map--kanto-destinations) |
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
 | Trainer scaling | [Trainer level scaling](#trainer-level-scaling) |
 | Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies) |
@@ -427,15 +427,35 @@ Flash and Headbutt have **no** `TestBadgeFlag` call in vanilla field-move checks
 
 **Out of scope (for now):** `FLAG_GOT_HM02`, Flash dungeon scripts, Surf map tiles, collection-based field HMs ([Future-8 § Field HMs from the full collection](DESIGN-FUTURE.md#field-hms-from-the-full-collection-deferred)).
 
-### Fly map — Kanto destinations (not yet)
+### Fly map — Kanto destinations
 
-**Status: not implemented** — confirmed in-game Sep 2026.
+**Status: partial** — `OPENWORLD_FLY_MAP` in `include/config.h`. **Kanto map scroll** works via arm9 hook; **Johto ↔ Kanto fly destinations** are still vanilla (pinned — see [Cross-region fly attempts](#cross-region-fly-attempts-pinned)). **`Pokegear_GetMapUnlockLevel`** on linked arm9 at **`0x0202EE70`** (pret getter — **not** **`0x0202EE84`**, mid-function in rebased arm9 → Fly crash). Do **not** hook overlay 101 into overlay 129 (Fly map may unload 129).
 
-Party-menu Fly works in Johto after the [badge bypass](#field-hm-use-without-per-gym-badge-flags) above. When the player is **physically in Kanto** (e.g. Magnet Train to Saffron), the Fly destination UI still lists **Johto cities only** — no Kanto fly points. Vanilla HGSS likely gates the Kanto Fly map on story progress (**Elite Four clear** and/or **SS Aqua Kanto arrival**); neither applies in the open-world shell yet.
+Vanilla gates the Fly / Pokégear map on **`SavePokegear.mapUnlockLevel`** (0 = Johto scroll only, 2 = full Kanto), set by story **`ScrCmd_804`** — not by Mom’s `UpgradePokegear(1)` and **not** by `PlayerProfile.gameClear`. Cross-region spot picking compares each flypoint’s region to **`mapApp->curRegion`** (struct field @ **+0x0E** in overlay 101). Pret’s **`ov101_021EA7E4`** label does **not** line up with the live retail gate (see attempts below).
 
-**Target ([World-1](DESIGN-WORLD.md#world-1-world-transportation), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)):** once HM Fly is unlocked, Fly to **visited cities in both regions** without E4 or SS Aqua story prerequisites.
+| Hook | File | ARM address |
+|------|------|-------------|
+| `Pokegear_GetMapUnlockLevel_hook` (clamp return to ≥ 2) | `src/fly_map_openworld.c` | arm9 `0x0202EE70` |
 
-**ROM work (TBD):** find Fly map / flypoint table init (pret `field_move*.c`, flypoint data) and decouple Kanto destination visibility from `gameClear` / SS Aqua flags — or set the minimum story flags on new saves if a lighter hack suffices.
+Individual cities still require **`FLAG_SYS_FLYPOINT_*`** (Pokémon Center visit). Re-scan after rebases: `python scripts/dev/verify_fly_map_hooks.py` (after `base/` exists).
+
+**Target ([World-1](DESIGN-WORLD.md#world-1-world-transportation), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)):** once HM Fly is unlocked, fly to **visited cities in both regions** without E4 or SS Aqua story prerequisites — without setting `gameClear` on new saves.
+
+#### Cross-region fly attempts (pinned)
+
+Retail overlay **101** load base **`0x021E7740`** (from `rom.nds` + y9). Recon used vanilla extract + Capstone; pret symbol addresses are unreliable on this ROM.
+
+| Attempt | Site | Patch | Result |
+|--------|------|-------|--------|
+| pret region helper | **`0x021EA7E4`** | `01 20 70 47` (`movs r0,#1`; `bx lr`) | **Crash** — wrong code (`ARM9: Undefined instruction` near **`0x021E9730`**) |
+| “Retail” helper entry | **`0x021E814A`** | same 4-byte patch | **No crash, no cross-region** — **no Thumb `BL` callers**; dead on this path |
+| MapApp init (misidentified) | **`0x021EF09C`** | `01 21 81 73` (thought: skip `GetCurrentRegion` + force `curRegion`) | **Crash** on Fly — bytes are **`str r4,[r2,#0x78]`** + **`strb r0,[r0,#0xE]`**, not a `BL`; patch removed the `str` and corrupted MapApp → jump into garbage (**`PC=0x022D0418`**, **`0x00FFFFFF`**) |
+| Fly spot filter (candidate) | **`0x021E81A8`** | `01 21` (`ldrb r1,[r0,#0xE]` → `movs r1,#1`) | **No crash, no cross-region** — may be wrong execution path or not the only gate |
+
+**Verified in-game (kept):** full **Kanto scroll** on Fly map via **`0x0202EE70`** hook only.
+
+**Next time:** find the **live** spot-selection gate (BL/caller graph from party Fly → overlay 101, not pret names); prefer **2-byte** surgical patches after disasm; optional arm9 hook on **`Pokegear_GetCurrentRegion`** only if call site is identifiable. One-off recon lived under **`scripts/local/`** (`_analyze_fly_region.py`, `_capstone_patch.py`, etc.) — not in git.
+
 
 ### Falkner follow-ups (859 / zone_event 365)
 
@@ -713,7 +733,7 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 
 **Route 36 Sudowoodo (Mom intro):** `FLAG_HIDE_ROUTE_36_SUDOWOODO` (**450**) in the same block (see [Remove Sudowoodo block](#remove-sudowoodo-block-route-36--verified)).
 
-**Vanilla cleanup (Mom intro):** with `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS`, `armips/include/openworld_story_skip_flags.inc` sets early-route hide flags, rival/Elm skips, Azalea + Mahogany rocket flags, and **`FLAG_BOAT_ARRIVED` (235)** + **`FLAG_UNK_0F2` (242)** / pret S.S. Ticket from Elm for SS Aqua repeat-travel (ticket item already granted). Pier/gangplank scr_seq patches: [§ SS Aqua](#ss-aqua-olivine--vermilion). Mahogany rocket **story flags** are not duplicated on map load when the define is on — `tools/patch_scr_seq_t28_rocket.py` uses `scr_seq_t28_005_onload.s` (`hide_person` only). **Kanto Fly map** is separate — likely `PlayerProfile.gameClear` (Hall of Fame), not flypoint flags; see [Fly map](#fly-map--kanto-destinations-not-yet).
+**Vanilla cleanup (Mom intro):** with `OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS`, `armips/include/openworld_story_skip_flags.inc` sets early-route hide flags, rival/Elm skips, Azalea + Mahogany rocket flags, and **`FLAG_BOAT_ARRIVED` (235)** + **`FLAG_UNK_0F2` (242)** / pret S.S. Ticket from Elm for SS Aqua repeat-travel (ticket item already granted). Pier/gangplank scr_seq patches: [§ SS Aqua](#ss-aqua-olivine--vermilion). Mahogany rocket **story flags** are not duplicated on map load when the define is on — `tools/patch_scr_seq_t28_rocket.py` uses `scr_seq_t28_005_onload.s` (`hide_person` only). **Kanto Fly map** uses `SavePokegear.mapUnlockLevel`, not `gameClear` — see [Fly map](#fly-map--kanto-destinations).
 
 ### SS Aqua (Olivine ↔ Vermilion)
 

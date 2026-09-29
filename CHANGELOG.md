@@ -13,7 +13,8 @@ Player-facing changes in **Pokémon Wandering Heart** (HG-Engine fork) compared 
 
 ### Travel & world access
 
-- **HM field use** — once a Pokémon knows an HM, you can use it from the party menu without that move's vanilla Gym badge (matches badge-count gym HM grants; map/script gates like Flash caves unchanged). Fly Kanto destinations on the town map are still unavailable when visiting Kanto early.
+- **HM field use** — once a Pokémon knows an HM, you can use it from the party menu without that move's vanilla Gym badge (matches badge-count gym HM grants; map/script gates like Flash caves unchanged).
+- **Fly map (party menu HM02)** — the fly map scrolls to show **both Johto and Kanto** without beating the Elite Four or clearing the game; each city still needs its usual **fly point** (register at that Pokémon Center). Picking a fly spot in the **other** region while you stand in Johto or Kanto is **not** enabled yet.
 - **Magnet Train** (Goldenrod ↔ Saffron) open from the start — no Power Plant / Machine Part quest.
 - **S.S. Aqua** (Olivine ↔ Vermilion) — board any day with Mom’s ticket; no weekday lockout at the pier; gangplank no longer blocks after the boat-arrived story flag is set; you are not forced through the first-voyage missing-girl sequence (optional cabin dialogue may still appear if you talk to certain sailors).
 - **Route 42 ferry** — fishermen on both shores; paid warp across the water without Surf.

@@ -293,6 +293,9 @@
 // from the party menu (FieldMove_Check*). Map/script gates (Flash caves, etc.) unchanged.
 #define OPENWORLD_FIELD_MOVES_NO_BADGE_GATE
 
+// OPENWORLD_FLY_MAP: full Kanto scroll on Fly/town map + cross-region fly spots (flypoint flags unchanged).
+#define OPENWORLD_FLY_MAP
+
 // Champions-specific move configurations. Set to 0 to use Scarlet/Violet values.
 #define CHAMPIONS_POWER_CHANGES         1
 #define CHAMPIONS_TYPE_CHANGES          1
