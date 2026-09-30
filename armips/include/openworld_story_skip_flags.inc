@@ -72,6 +72,9 @@
     setflag FLAG_HIDE_DRAGONS_DEN_RIVAL
     setflag FLAG_HIDE_ROUTE_22_GIOVANNI_RIVAL
 
+// Blackthorn — gym door guard (in-front vs aside); hide in-front so gym is enterable
+    setflag FLAG_HIDE_BLACKTHORN_GYM_GUARD_INFRONT
+
 // Professor Elm lab errand (Falkner patch uses VAR_SCENE_ELMS_LAB = 6)
     clearflag FLAG_ELMS_LAB_PREVENT_PLAYER_ESCAPE
     setvar VAR_SCENE_ELMS_LAB, 6

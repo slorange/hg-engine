@@ -23,7 +23,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-12. Berry economy & distribution](#future-12-berry-economy--distribution) |
 | [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
-| [Future-15. Wild habitat patches (type coverage)](#future-15-wild-habitat-patches-type-coverage) |
 
 ---
 
@@ -44,7 +43,7 @@ The player should not need to repeatedly return to Azalea Town merely to craft A
 
 ### More Apricorn trees
 
-We would like **additional Apricorn trees** across Johto and Kanto so harvesting is not tied to vanilla placement alone. That has **not** been technically investigated yet — see [Technical investigation](#technical-investigation) below.
+We would like **additional Apricorn trees** across Johto and Kanto so harvesting is not tied to vanilla placement alone. Trees are **field objects placed when the map loads**, not part of map geometry — see [Technical investigation](#technical-investigation) for remaining authoring and save-state work.
 
 ## Ball design philosophy
 
@@ -134,11 +133,11 @@ Before implementation:
 - cave-depth detection for Dusk Ball;
 - compatibility with existing item data and shops.
 
-**More trees (existing colours):** map authoring is **very difficult** ([Future-4](#future-4-map-editing--world-connectivity-wishlist)). Unknown whether Apricorns are baked into map assets or placed as field objects after load.
+**More trees (existing colours):** **Confirmed** — Apricorn trees are **not** baked into map terrain or collision art; they are **field objects added after the map loads** (same class as other overworld interactables). Adding trees should not require [Future-4](#future-4-map-editing--world-connectivity-wishlist)-style geometry edits, though **placing objects and wiring harvest scripts** across routes is still non-trivial.
 
 **New Apricorn colours:** item IDs, pick/harvest flow, Kurt or replacement crafting, ball data, UI strings, and **overworld art we do not have** (trees, Apricorn icons, ball graphics).
 
-**Refresh economy** ties to [Future-9](#future-9-accelerated-daynight-cycle) once tree representation is understood.
+**Refresh economy** ties to [Future-9](#future-9-accelerated-daynight-cycle) and per-tree save state (yield, regrowth timers).
 
 ## Open design questions
 
@@ -609,14 +608,3 @@ Ideas that do not have their own `Future-*` section yet.
 - **Starter selection** could be revisited.
 - **Pokémon Center extras** — trainer hub ideas (Abra travel desk, resting to advance time, distributed Apricorn crafting, other QoL) if [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) / [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) land; vanilla Nurse Joy heal + PC remain fine for initial release.
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
-
----
-
-# Future-15. Cinnabar Wild habitat
-
-Vanilla Johto / Kanto has almost no wild **Fire** habitat beyond **Burned Tower**.
-
-In Vanilla HGSS, **Cinnabar Island** is a ravaged town and has no encounters. **Add wild encounters** there (themed Fire families, stage-adjusted like other areas) so Fire types are not single-location locked.
-
-
----

@@ -19,6 +19,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-4** | Slowpoke Well (Azalea) — one Team Rocket grunt still blocks the entrance | Policy: [Story-3 — Team Rocket](DESIGN-STORY.md#team-rocket--remove). |
 | **KB-5** | Mahogany Gym — crash entering the last (Pryce) room of the ice puzzle. | Repro when entering the room, not on battle start. |
 | **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
+| **KB-7** | Violet Gym (Falkner) — Leader unreachable; elevator broken after HM-grant scr_seq patches. | [Gym HM rewards](documentation/HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** / zone_event **365**. |
 
 ---
 
