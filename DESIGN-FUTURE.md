@@ -551,12 +551,11 @@ Give **Berry Pots at game start** (Mom’s opening conversation), replacing vani
 
 ## Wild Pokémon holds
 
-New global rule: any wild species may hold a berry (species-agnostic). If selected, pick uniformly from the **45 supported** Berries. Configurable hold rate - tentative 30%.
+**Implemented**: After the normal species held-item table roll (Buffed odds to **65%** common / **15%** rare / **20%** nothing; **Compound Eyes** lead **70%** / **30%** / **0%**), wilds with no item get a **50%** chance (**100%** with Compound Eyes) of a uniform random berry from the **45 supported** IDs.
 
 ## Open design questions
 
 - Starter quantities for the eight basics; exact Lum/Sitrus badge gate.
-- Wild berry-hold probability
 - Shard trade costs and bundle sizes.
 - Final town assignment per resistance berry
 - Berry Pot growth times/yields (unchanged? What about day/night cycle changes?)

@@ -224,6 +224,13 @@ WILD_LEVEL_CAPS_INPUTS := scripts/dev/Route\ Levels/location_distances.txt scrip
 $(WILD_LEVEL_CAPS_C) $(WILD_LEVEL_CAPS_H): $(WILD_LEVEL_CAPS_INPUTS) $(WILD_LEVEL_CAPS_SCRIPT)
 	$(PYTHON) $(WILD_LEVEL_CAPS_SCRIPT)
 
+WILD_SPECIES_HELD_C := src/field/wild_species_held_items.c
+WILD_SPECIES_HELD_H := include/constants/generated/wild_species_held_items.h
+WILD_SPECIES_HELD_SCRIPT := scripts/build/gen_wild_species_held_items.py
+
+$(WILD_SPECIES_HELD_C) $(WILD_SPECIES_HELD_H): data/Species.c $(WILD_SPECIES_HELD_SCRIPT)
+	$(PYTHON) $(WILD_SPECIES_HELD_SCRIPT)
+
 $(EVOS_NARC): $(EVOS_DEPENDENCIES) $(LEVEL_UP_EVO_TABLES_C)
 	$(CC) $(CFLAGS) -c $(EVOS_DEPENDENCIES) -o $(EVOS_OBJS)
 	$(O2NARC) $(EVOS_OBJS) $@ -n

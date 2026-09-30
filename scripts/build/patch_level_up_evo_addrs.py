@@ -16,6 +16,8 @@ SYNTHETIC_TABLE_SYMBOL = "sSyntheticEvoEdgesData"
 SYNTHETIC_ADDR_SYMBOL = "SyntheticEvoEdgesFieldAddr"
 WILD_CAPS_TABLE_SYMBOL = "sWildLevelCaps"
 WILD_CAPS_ADDR_SYMBOL = "WildLevelCapsFieldAddr"
+WILD_HELD_APPLY_SYMBOL = "WildMonApplyHeldItemForEncounter"
+WILD_HELD_APPLY_ADDR_SYMBOL = "WildMonApplyHeldItemFieldAddr"
 
 
 def nm_address(elf: Path, symbol: str) -> int:
@@ -82,6 +84,17 @@ def main():
     print(
         f"Patched {args.overlay_bin}: {WILD_CAPS_ADDR_SYMBOL} @ 0x{wild_var_vma:08X} = 0x{wild_table_addr:08X}"
     )
+
+    try:
+        apply_addr = nm_address(args.field_elf, WILD_HELD_APPLY_SYMBOL)
+        apply_var_vma = nm_address(args.overlay_elf, WILD_HELD_APPLY_ADDR_SYMBOL)
+    except SystemExit:
+        print(f"Skip {WILD_HELD_APPLY_ADDR_SYMBOL}: symbol missing", file=sys.stderr)
+    else:
+        patch_overlay_bin(args.overlay_bin, apply_var_vma, apply_addr)
+        print(
+            f"Patched {args.overlay_bin}: {WILD_HELD_APPLY_ADDR_SYMBOL} @ 0x{apply_var_vma:08X} = 0x{apply_addr:08X}"
+        )
 
 
 if __name__ == "__main__":

@@ -669,6 +669,10 @@ arm9 EncounterSlot_WildMonSlotRoll_Fishing 02247764 1
 arm9 EncounterSlot_WildMonSlotRoll_RockSmash 0224779C 0
 arm9 EncounterSlot_WildMonSlotRoll_Headbutt 022477C0 0
 
+#ifdef IMPLEMENT_WILD_BERRY_HOLD
+arm9 WildMonSetRandomHeldItem_hook 020721A4 1
+#endif
+
 0012 GetPokemon_CheckIfTrainer_hook 2246704 0
 0012 GetPokemon_BallBlocked_hook 02247094 0
 0012 BattleSystem_AdjustMessageForSide 0223C558 2

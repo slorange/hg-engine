@@ -15,6 +15,10 @@
 #include "bag.h"
 #include "battle.h"
 #include "pokemon.h"
+
+#ifdef IMPLEMENT_WILD_BERRY_HOLD
+#include "wild_berry_hold.h"
+#endif
 #include "rtc.h"
 #include "save.h"
 #include "script.h"
@@ -534,14 +538,17 @@ extern u32 space_for_setmondata;
  */
 BOOL LONG_CALL AddWildPartyPokemon(int inTarget, EncounterInfo *encounterInfo, struct PartyPokemon *encounterPartyPokemon, struct BATTLE_PARAM *encounterBattleParam)
 {
-    int range = 0;
     u8 change_form = 0;
     u8 form_no;
     u16 species;
 
+#ifndef IMPLEMENT_WILD_BERRY_HOLD
+    int range = 0;
+
     if (encounterInfo->isEgg == 0 && encounterInfo->ability == ABILITY_COMPOUND_EYES) {
         range = 1;
     }
+#endif
 
     species = GetMonData(encounterPartyPokemon, MON_DATA_SPECIES, NULL);
 
@@ -551,7 +558,11 @@ BOOL LONG_CALL AddWildPartyPokemon(int inTarget, EncounterInfo *encounterInfo, s
         space_for_setmondata = 0;
     }
 
+#ifdef IMPLEMENT_WILD_BERRY_HOLD
+    WildMonApplyHeldItemForEncounter(encounterPartyPokemon);
+#else
     WildMonSetRandomHeldItem(encounterPartyPokemon, encounterBattleParam->fight_type, range);
+#endif
 
     if (species == SPECIES_UNOWN) {
         change_form = 1;

@@ -30,6 +30,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **Wild catch vs. badge cap** — the player cannot catch a wild Pokémon whose level is above their level cap.
 - **Special evolution lines in the wild** — trade, stone, and similar lines can appear as their evolved forms at set level thresholds.
 - **Cinnabar Island** — walking wild encounters on the island (Slugma, Numel, Koffing, Torkoal, Magmar, rare Ditto and **Larvesta**).
+- **Wild held items** — species table rolls (**65%** common / **15%** rare / **20%** nothing); if still empty, **50%** chance of a random berry. With **Compound Eyes** lead: **70%** common / **30%** rare, then **always** a berry.
 
 ### Fishing
 
