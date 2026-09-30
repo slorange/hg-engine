@@ -65,7 +65,7 @@ Per [Story-3 Gym policy](DESIGN-STORY.md#gyms--access-and-story-policy).
 
 | Leader | Change |
 |--------|--------|
-| **Clair** (Blackthorn) | Drop 7-badge + Goldenrod Rocket gates. Drop or HM-free the Dragon's Den trial before the badge (Den currently needs Surf + Whirlpool). |
+| **Clair** (Blackthorn) | Grant **Rising Badge** after win — [HACK-NOTES § Clair](documentation/HACK-NOTES.md#blackthorn-gym--clair-rising-badge) (battle works with 0 badges; post-win grant still broken). |
 | **Misty** (Cerulean) | Drop Power Plant / Machine Part / Route 25 chain; Leader available in Gym without leaving town. |
 | **Blue** (Viridian) | Drop “7 Kanto badges first” gate; challengeable at any badge tier. |
 

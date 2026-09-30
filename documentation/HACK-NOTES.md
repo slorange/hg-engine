@@ -23,6 +23,7 @@ Implementation recipes only — link **to** [DESIGN.md](../DESIGN.md) / CHANGELO
 | Route 35 Cut tree | [Remove Route 35 Cut tree](#remove-route-35-cut-tree--unrelated-to-ilex) |
 | Post-battle heal | [Heal after every battle](#heal-after-every-battle) |
 | Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) → [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags), [Fly map (Kanto)](#fly-map--kanto-destinations) |
+| Blackthorn Clair | [Blackthorn Gym — Clair (Rising Badge)](#blackthorn-gym--clair-rising-badge) |
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
 | Trainer scaling | [Trainer level scaling](#trainer-level-scaling) |
 | Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies) |
@@ -481,10 +482,29 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 | **Whitney** | **886** | **0** (+ slots 1, 4) | **Hard** — sore-loser state machine (first win = cry, no badge; chase in slot 1; badge on second talk). Inject `.include` only on the badge-grant path; do not replace whole script. |
 | Bugsy | TBD | TBD | Run `inspect_gym_slots.py` after vanilla extract |
 | Chuck | TBD | TBD | |
-| Clair | TBD | TBD | |
+| Clair | **938** | **13** | Open-world Leader battle — [Blackthorn Gym — Clair](#blackthorn-gym--clair-rising-badge); Rising Badge grant **not** verified in-game |
 | Janine | TBD | TBD | Kanto |
 
 **Template for “easy” leaders (Falkner / Morty / Pryce / Jasmine pattern):** one leader slot, copy script skeleton, set badge + TM constants, fix **text indices** (blank-line banks vs compact), wire `narcs.mk` + patch py + verify member.
+
+### Blackthorn Gym — Clair (Rising Badge)
+
+**Status (Sep 2026):** **Partial** — Clair NPC uses a dedicated Leader script; you can **battle and win with zero Johto badges**. After “Take it.” the script still **does not finish** (no reliable Rising Badge in case, fanfare, or league obedience line). Track release gap: [TODO § Clair](../TODO.md#gym-leaders--story-gates).
+
+**Design:** [Story-3 Gyms](../DESIGN-STORY.md#gyms--access-and-story-policy) — drop 7-badge / Goldenrod Rocket gates; grant Rising Badge in-gym without Dragon’s Den trial (Den / HM follow-ups still open).
+
+| What | Where |
+|------|--------|
+| Leader script | scr_seq member **938**, slot **13** — `armips/scr_seq/scr_seq_clair_gym_slot13.s` → `build/clair_gym_slot13.bin` |
+| scr_seq patch | `tools/patch_scr_seq_gym_clair.py` — slot 13 inject; `trainer_battle` **39→35** (fork Leader id); restores vanilla member **940** (Dragon’s Den) |
+| Clair object | zone_event **024** — `tools/patch_zone_event_blackthorn_gym_clair.py` sets obj **1** script **13** |
+| Text | `data/text/631.txt` — msg **3** pre-battle, **5** post-win admit, **14** league obedience; **12** is gym **plaque** (`Certified Trainer!` + name — not Leader dialogue) |
+| Badge grant (attempt) | `GiveJohtoBadgeOpenWorld` → `RunNewCommand` case **3** in `src/script_new_cmds.c` (avoids vanilla `givebadge` when badge case is empty) |
+| Build / verify | `narcs.mk`; `scripts/build/verify_clair_gym_patch.py build/a012/2_938` |
+
+**Flow (target):** pre-battle → Morty-style `trainer_battle` + `check_battle_won` → post-win msg → badge bit + midgame badge var → league line → `SEQ_ME_BADGE`.
+
+**Debug notes:** vanilla slot **0** used `trainer_battle(..., VAR_4094, 1, 0)` (msg **631** path that never reached a working `givebadge` tail). If post-win still dies on `wait_button` / fanfare / `RunNewCommand`, disassemble live slot **13** in `build/a012/2_938` and confirm overlay hook for opcode **208** (`Script_RunNewCmd`).
 
 ---
 

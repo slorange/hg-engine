@@ -3,12 +3,14 @@
 #include "../include/fishing_rod.h"
 #include "../include/repel.h"
 #include "../include/roamer.h"
+#include "../include/save.h"
 #include "../include/script.h"
 #include "../include/types.h"
 
 #define SCRIPT_NEW_CMD_REPEL_USE             0
 #define SCRIPT_NEW_CMD_FISHING_ROD_COUNT     1
 #define SCRIPT_NEW_CMD_FISHING_ROD_REMAINING 2
+#define SCRIPT_NEW_CMD_GIVE_JOHTO_BADGE       3
 
 #define SCRIPT_NEW_CMD_MAX 256
 
@@ -33,6 +35,18 @@ BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
     case SCRIPT_NEW_CMD_FISHING_ROD_REMAINING:
         SetScriptVar(arg0, FishingRod_RemainingForNextTier(ctx->fsys->savedata));
         break;
+
+    case SCRIPT_NEW_CMD_GIVE_JOHTO_BADGE: {
+        u16 badgeId = arg0;
+        struct PlayerProfile *profile = Sav2_PlayerData_GetProfileAddr(ctx->fsys->savedata);
+
+        if (badgeId < 8) {
+            profile->johtoBadges |= (u8)(1u << badgeId);
+        } else if (badgeId < 16) {
+            profile->kantoBadges |= (u8)(1u << (badgeId - 8));
+        }
+        break;
+    }
 
     default:
         break;

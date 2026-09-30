@@ -204,6 +204,10 @@ arm9 GiveMon 020541DC 5
 
 arm9 ScrCmd_GiveEgg 0204D248 1
 0001 ScrCmd_GiveTogepiEgg 022020CC 1
+
+#ifdef GYM_BADGE_COUNT_FIELD_REWARDS
+arm9 ScrCmd_EnableBadge 0204E6E8 1
+#endif
 arm9 sub_0206D328 0206D328 2
 
 arm9 HiddenItemGetUnk3 02040578 1

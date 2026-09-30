@@ -6753,6 +6753,7 @@ FORM_ROCKET_DISGUISE                    equ 1024
 .equ NEW_COMMAND_QUEUE_NEW_REPEL, 0
 .equ NEW_COMMAND_FISHING_ROD_COUNT, 1
 .equ NEW_COMMAND_FISHING_ROD_REMAINING, 2
+.equ NEW_COMMAND_GIVE_JOHTO_BADGE, 3
 
 .macro RunNewCommand,slot,unk
 DummyTextTrap slot, unk
@@ -6768,6 +6769,10 @@ RunNewCommand NEW_COMMAND_FISHING_ROD_COUNT, var
 
 .macro FishingRodRemaining,var
 RunNewCommand NEW_COMMAND_FISHING_ROD_REMAINING, var
+.endmacro
+
+.macro GiveJohtoBadgeOpenWorld,badgeId
+RunNewCommand NEW_COMMAND_GIVE_JOHTO_BADGE, badgeId
 .endmacro
 
 // Dummy

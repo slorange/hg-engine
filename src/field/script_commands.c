@@ -319,6 +319,28 @@ BOOL ScrCmd_DaycareSanitizeMon(SCRIPTCONTEXT *ctx)
     return FALSE;
 }
 
+#ifdef GYM_BADGE_COUNT_FIELD_REWARDS
+/*
+ * Vanilla EnableBadge (scr 295) runs a badge-ceremony task that can abort the
+ * field script without setting the badge when Rising is granted out of order
+ * (e.g. Clair first with an empty badge case). Gym scripts already play fanfare
+ * and dialogue; set the profile bit and continue the script.
+ */
+BOOL ScrCmd_EnableBadge(SCRIPTCONTEXT *ctx)
+{
+    u16 badgeId = ScriptReadHalfword(ctx);
+    struct PlayerProfile *profile = Sav2_PlayerData_GetProfileAddr(ctx->fsys->savedata);
+
+    if (badgeId < 8) {
+        profile->johtoBadges |= (u8)(1u << badgeId);
+    } else if (badgeId < 16) {
+        profile->kantoBadges |= (u8)(1u << (badgeId - 8));
+    }
+
+    return FALSE;
+}
+#endif // GYM_BADGE_COUNT_FIELD_REWARDS
+
 BOOL ScrCmd_WildBattle(SCRIPTCONTEXT *ctx)
 {
     u32 *winFlag = FieldSysGetAttrAddr(ctx->fsys, 24); // SCRIPTENV_BATTLE_WIN_FLAG = 24

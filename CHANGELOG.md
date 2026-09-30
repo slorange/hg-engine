@@ -60,4 +60,5 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 
 - **Lt. Surge & Erika** — Cut trees removed outside Gyms; Celadon Gym maze trees removed; Leaders reachable without Cut.
 - **Jasmine** — Secret Medicine sold at Olivine Mart.
+- **Clair (Blackthorn)** — You can battle Clair with no prior Gym badges and Goldenrod Rockets not cleared
 - **Broader story skip** — Azalea/Mahogany Rocket skipped, Elm lab errand skipped.
