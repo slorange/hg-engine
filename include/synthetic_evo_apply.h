@@ -6,9 +6,9 @@
 #include "types.h"
 
 #define SYNTHETIC_EVO_MAX_CHAIN 8
-#define SYNTHETIC_RANDOM50_MAX 4
+#define SYNTHETIC_RANDOM50_MAX 12
 
-static inline u16 PickSyntheticEvolutionStep(u16 species, u8 level)
+static inline u16 PickSyntheticEvolutionStep(u16 species, u8 level, u32 branchEntropy)
 {
     u16 i;
     u16 bestTo = SPECIES_NONE;
@@ -49,6 +49,9 @@ static inline u16 PickSyntheticEvolutionStep(u16 species, u8 level)
     }
 
     if (randomCount > 0) {
+        if (branchEntropy != 0) {
+            return randomTo[branchEntropy % randomCount];
+        }
         return randomTo[gf_rand() % randomCount];
     }
 
@@ -66,7 +69,7 @@ static inline u16 ApplySyntheticEvolutionEdges(u16 species, u8 level)
     u8 steps;
 
     for (steps = 0; steps < SYNTHETIC_EVO_MAX_CHAIN; steps++) {
-        next = PickSyntheticEvolutionStep(cur, level);
+        next = PickSyntheticEvolutionStep(cur, level, 0);
         if (next == cur || next == SPECIES_NONE) {
             break;
         }

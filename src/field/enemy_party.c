@@ -22,6 +22,7 @@
 #include "rtc.h"
 #include "save.h"
 #include "script.h"
+#include "encounter_species_gender.h"
 #include "player_level_cap.h"
 #include "trainer_data.h"
 
@@ -156,6 +157,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
     // goal:  get rid of massive switch statement with each individual byte.  make the trainer type a bitfield
     u32 id;
+    u32 encounterBranchRoll;
     u16 species = 0, adjustedSpecies = 0, item = 0, ability = 0, level = 0, ball = 0, hp = 0, atk = 0, def = 0, speed = 0, spatk = 0, spdef = 0, ab1 = 0, ab2 = 0;
     u16 offset = 0;
     u16 moves[4];
@@ -229,6 +231,10 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         } else {
             level = PickTrainerLevelInBand(trainerLevelFloor, trainerLevelCap);
         }
+        /* Independent roll for random50 synthetic branches (same global RNG as level). */
+        encounterBranchRoll = gf_rand();
+#else
+        encounterBranchRoll = 0;
 #endif
         gLastPokemonLevelForMoneyCalc = level; // ends up being the last level at the end of the loop that we use for the money calc loop default case
         offset += 2;
@@ -238,17 +244,6 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         offset += 2;
         form_no = (species & 0xF800) >> 11;
         species &= 0x07FF;
-
-#if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
-        {
-            u16 adjusted = AdjustEncounterSpeciesForLevel(species, (u8)level);
-
-            if (adjusted != species) {
-                species = adjusted;
-                form_no = 0;
-            }
-        }
-#endif
 
         // item field - conditional
         if (bp->trainer_data[num].data_type & TRAINER_DATA_TYPE_ITEMS) {
@@ -454,9 +449,16 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
         ChangeToBattleForm(mons[i]);
 
+#if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
+        ApplyEncounterStageAdjustToMon(mons[i], (u8)level, encounterBranchRoll);
+        ResetPartyPokemonAbility(mons[i]);
+#endif
+
 #if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_LEVEL_APPROPRIATE_MOVES)
         InitBoxMonMoveset(&mons[i]->box);
 #endif
+
+        ApplyEncounterGenderAfterStageAdjust(mons[i]);
 
         RecalcPartyPokemonStats(mons[i]); // recalculate stats here
 

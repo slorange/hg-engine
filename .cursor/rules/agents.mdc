@@ -62,6 +62,8 @@ See [`scripts/README.md`](scripts/README.md) for the inventory.
 
 **Rule:** If you edited C/asm, armips scr_seq, `data/text/`, zone_event JSON, `include/config.h`, NARC patchers, or similar — **run a full build and produce `test.nds` before you finish.** Do not hand off source-only changes and expect the user to compile.
 
+**Exception — question-first turns:** When the user’s message is **mainly a question** (explain behavior, design tradeoffs, “why does X happen?”, review, planning), **answer first** using read-only inspection (code, docs, git). Do **not** block the reply on a Docker `make` or treat “finish the turn” as requiring `test.nds`. If the answer leads to ROM-affecting edits, implement after explaining (or after they confirm), **then** build before calling that implementation work done.
+
 **Do not run `tools/armips` or other build tools natively on Windows** — they are meant to run inside the Docker/Linux build environment. Use Docker `make` below.
 
 **User testing workflow:** load **`test.nds`** (repo root) in DeSmuME. That file *is* the deliverable. Use a **new save** after intro/flag/starting-city changes.

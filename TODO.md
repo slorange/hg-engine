@@ -40,8 +40,6 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
 | **Fishing guru network** | [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression) | Route 44 + Olivine done; Route 32 PC, Viridian, Vermilion, Fuchsia, Route 12 **planned** |
-| **Synthetic stage deferrals** | [Wilds-3 § Synthetic evolution](DESIGN-WILDS.md#synthetic-evolution-stages) | Eevee, Tyrogue, Shedinja, gendered lines — authoring deferred |
-
 ---
 
 ## World ([DESIGN-WORLD.md](DESIGN-WORLD.md))

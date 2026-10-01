@@ -53,7 +53,7 @@ static inline u16 FindEncounterChainBase(u16 species)
     return species;
 }
 
-static inline u16 WalkEncounterStageForLevel(u16 species, u8 level)
+static inline u16 WalkEncounterStageForLevel(u16 species, u8 level, u32 branchEntropy)
 {
     u16 cur = species;
     u16 nextLevel;
@@ -63,15 +63,15 @@ static inline u16 WalkEncounterStageForLevel(u16 species, u8 level)
     for (steps = 0; steps < SYNTHETIC_EVO_MAX_CHAIN; steps++) {
         BOOL advanced = FALSE;
 
-        nextLevel = sLevelUpEvoTarget[cur];
-        if (nextLevel != SPECIES_NONE && level >= sLevelUpMinStageLevel[nextLevel]) {
-            cur = nextLevel;
+        nextSynth = PickSyntheticEvolutionStep(cur, level, branchEntropy);
+        if (nextSynth != cur && nextSynth != SPECIES_NONE) {
+            cur = nextSynth;
             advanced = TRUE;
         }
 
-        nextSynth = PickSyntheticEvolutionStep(cur, level);
-        if (nextSynth != cur && nextSynth != SPECIES_NONE) {
-            cur = nextSynth;
+        nextLevel = sLevelUpEvoTarget[cur];
+        if (nextLevel != SPECIES_NONE && level >= sLevelUpMinStageLevel[nextLevel]) {
+            cur = nextLevel;
             advanced = TRUE;
         }
 
@@ -83,11 +83,11 @@ static inline u16 WalkEncounterStageForLevel(u16 species, u8 level)
     return cur;
 }
 
-static inline u16 AdjustEncounterSpeciesForLevel(u16 species, u8 level)
+static inline u16 AdjustEncounterSpeciesForLevel(u16 species, u8 level, u32 branchEntropy)
 {
     species = (u16)(species & 0x07FF);
     species = FindEncounterChainBase(species);
-    return WalkEncounterStageForLevel(species, level);
+    return WalkEncounterStageForLevel(species, level, branchEntropy);
 }
 
 #endif

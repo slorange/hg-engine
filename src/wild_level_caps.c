@@ -7,6 +7,7 @@
 #include "pokemon.h"
 #include "save.h"
 #include "script.h"
+#include "encounter_species_gender.h"
 #include "encounter_species_stage.h"
 #include "types.h"
 
@@ -304,24 +305,7 @@ static u8 ChooseWildLevel(u8 failReason, u8 cap, u8 encBank, u8 usedCachedCap, u
 
 static void ApplyWildSpeciesStageForLevel(struct PartyPokemon *pp, u8 level)
 {
-    u16 species;
-    u16 adjusted;
-    u32 formZero = 0;
-
-    if (LevelUpEvoTablesFieldAddr == 0 || SyntheticEvoEdgesFieldAddr == 0) {
-        return;
-    }
-
-    species = (u16)GetMonData(pp, MON_DATA_SPECIES, NULL);
-    adjusted = AdjustEncounterSpeciesForLevel(species, level);
-
-    if (adjusted == species) {
-        return;
-    }
-
-    SetMonData(pp, MON_DATA_SPECIES, &adjusted);
-    SetMonData(pp, MON_DATA_SPECIES_NAME, NULL);
-    SetMonData(pp, MON_DATA_FORM, &formZero);
+    ApplyEncounterStageAdjustToMon(pp, level, gf_rand());
 }
 
 static void SetWildMonLevel(struct PartyPokemon *pp, u8 level)
@@ -411,6 +395,7 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
     // Stage adjust needs field-overlay rodata; skip safely if build-time patch missing.
     ApplyWildSpeciesStageForLevel(pp, level);
     SetWildMonLevel(pp, level);
+    ApplyEncounterGenderAfterStageAdjust(pp);
     RecalcPartyPokemonStats(pp);
 
     sWildLevelCapDebug.usedCachedCap = usedCachedCap;
