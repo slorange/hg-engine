@@ -67,7 +67,6 @@ Per [Story-3 Gym policy](DESIGN-STORY.md#gyms--access-and-story-policy).
 | Leader | Change |
 |--------|--------|
 | **Clair** (Blackthorn) | Grant **Rising Badge** after win — [HACK-NOTES § Clair](documentation/HACK-NOTES.md#blackthorn-gym--clair-rising-badge) (battle works with 0 badges; post-win grant still broken). |
-| **Misty** (Cerulean) | Drop Power Plant / Machine Part / Route 25 chain; Leader available in Gym without leaving town. |
 | **Blue** (Viridian) | Drop “7 Kanto badges first” gate; challengeable at any badge tier. |
 
 Slowpoke Well grunt ([KB-4](#known-bugs)) is tracked under **Known bugs**, not a Leader row.
@@ -119,7 +118,7 @@ Removals or script skips for obsolete vanilla content. Prefer disabling a branch
 |-----------------|--------------|---------|
 | Cianwood pharmacy free Secret Medicine | Medicine sold in Olivine Mart | Remove free give; optional flavour dialogue only |
 | Copycat / S.S. Ticket story (partial) | Pass + Ticket from Mom; train patched | Displaced-interior scripts still vanilla ([Story-1](DESIGN-STORY.md#story-1-starting-city-and-home)) |
-| Power Plant / Machine Part (partial) | Magnet Train open without quest | Strip Cerulean/Route 25 hooks when Misty gate row is done |
+| Power Plant / Machine Part (partial) | Magnet Train open without quest | Test if power plant is in correct state |
 
 ### Superseded obstacles and NPC chains
 

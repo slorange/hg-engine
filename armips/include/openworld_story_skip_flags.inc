@@ -75,6 +75,19 @@
 // Blackthorn — gym door guard (in-front vs aside); hide in-front so gym is enterable
     setflag FLAG_HIDE_BLACKTHORN_GYM_GUARD_INFRONT
 
+// Cerulean — skip Power Plant / Machine Part / Route 25 date; Misty + trainers in gym (Story-3 / TODO Misty)
+// Vanilla scr_seq 2_149 sets HIDE 595–599 + 777 (empty gym, no Route 25 date). Train patch skips FLAG_RESTORED_POWER (280)
+// without running 2_196 / 2_216, so new saves stay in that limbo unless we set post-date state here.
+    setflag FLAG_RESTORED_POWER
+    setflag FLAG_GOT_POWER_PLANT_MANAGERS_STORY
+    clearflag FLAG_HIDE_CERULEAN_GYM_POPULATION
+    setflag FLAG_HIDE_CERULEAN_GYM_ROCKET
+    setflag FLAG_HIDE_ROUTE_24_ROCKET
+    setflag FLAG_HIDE_ROUTE_25_MISTY
+    setflag FLAG_HIDE_CERULEAN_GYM_MACHINE_PART
+    setflag FLAG_HIDE_ROUTE_25_MISTYS_BOYFRIEND
+    setvar VAR_SCENE_ROUTE_25, 3
+
 // Professor Elm lab errand (Falkner patch uses VAR_SCENE_ELMS_LAB = 6)
     clearflag FLAG_ELMS_LAB_PREVENT_PLAYER_ESCAPE
     setvar VAR_SCENE_ELMS_LAB, 6
