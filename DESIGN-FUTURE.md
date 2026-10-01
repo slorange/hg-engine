@@ -537,7 +537,7 @@ Berries stay a meaningful **held-item** layer: the player cannot use Bag items i
 
 ## Berry Pots & starter supply
 
-Give **Berry Pots at game start** (Mom’s opening conversation), replacing vanilla Route 36 Sudowoodo unlock. Include ~5 of each **basic** berry (Cheri–Persim)
+**Implemented:** Mom intro grants **Berry Pots** and **5× each** basic berry Cheri–Persim.
 
 ## Acquisition by group
 
