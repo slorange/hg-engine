@@ -135,6 +135,10 @@
 // comment out the line below to revert back to Gen 8- behavior
 #define RESTORE_ITEMS_AT_BATTLE_END
 
+// RESTORE_BERRIES_AT_BATTLE_END also restores held berries (requires RESTORE_ITEMS_AT_BATTLE_END).
+// Gen 9+ leaves berries consumed; comment out to match that behavior.
+#define RESTORE_BERRIES_AT_BATTLE_END
+
 // HEAL_AFTER_BATTLE fully restores the player's party (HP, PP, status) when any battle ends
 // comment out the line below to revert to vanilla attrition
 #define HEAL_AFTER_BATTLE
@@ -164,7 +168,7 @@
 // distance-from-start-city caps precomputed from scripts/dev/Route Levels/.
 #define IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
 
-// Wild holds: 65/15/20 species table + 50% Future-12 berry; Compound Eyes 70/30/0 + guaranteed berry if still empty.
+// Wild holds: 65/15/20 species table + 50% World-7 berry pool; Compound Eyes 70/30/0 + guaranteed berry if still empty.
 #define IMPLEMENT_WILD_BERRY_HOLD
 
 // DEBUG_WILD_LEVEL_CAP_EXACT sets wild level to the distance cap exactly (route testing).
@@ -198,7 +202,7 @@
 #define DISABLE_ITEMS_IN_TRAINER_BATTLE
 
 // REUSABLE_TMS will make TMs infinite and hide the quantity number.
-#define REUSABLE_TMS
+//#define REUSABLE_TMS
 
 // DELETABLE_HMS allows HMs to be forgotten, this also makes their quantity reduce, but the infinite TMs change prevents this.
 #define DELETABLE_HMS

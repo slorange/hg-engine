@@ -18,7 +18,7 @@ HELD_PAT = re.compile(
     re.S,
 )
 
-# Wild berry holds use the Future-12 pool; species table keeps non-berry items only.
+# Wild berry holds use the World-7 pool; species table keeps non-berry items only.
 BERRY_HELD_ITEM_RE = re.compile(r"^ITEM_.+_BERRY$")
 
 

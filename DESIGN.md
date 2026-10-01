@@ -10,7 +10,7 @@
 
 | Document | Prefix | Topics |
 | -------- | ------ | ------ |
-| [DESIGN-WORLD.md](DESIGN-WORLD.md) | `World-*` | Open-world principles, travel, gating, HMs, shops, TMs, evolution |
+| [DESIGN-WORLD.md](DESIGN-WORLD.md) | `World-*` | Open-world principles, travel, gating, HMs, shops, berries, TMs, evolution |
 | [DESIGN-WILDS.md](DESIGN-WILDS.md) | `Wilds-*` | Ecology seed, wild levels, fishing, content scope |
 | [DESIGN-BATTLES.md](DESIGN-BATTLES.md) | `Battle-*` | Fair trainer fights, badge caps, Gyms, EXP |
 | [DESIGN-STORY.md](DESIGN-STORY.md) | `Story-*` | Intro (Story-1/2), script policy (Story-3) |

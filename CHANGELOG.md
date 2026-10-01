@@ -41,10 +41,12 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **Badge-based player level cap** — party Pokémon stop gaining levels from EXP at **10 + 4×badges** ( **80** at 16 badges; **100** after becoming Champion). **Rare Candies** can still raise level above the current cap.
 - **Full-party EXP share** — every non-fainted party member receives the **full** EXP for each KO.
 - **Full heal after every battle** — HP, PP, and status restored for the party (wild and trainer).
+- **Consumable held items restored after battle** — if a party Pokémon had a held item at the start of the fight, it is restored when the battle ends, including berries.
 
 ### Shops & items
 
 - **Mart redesign** — dept stores replace vanilla healing/X-item with berries, held items, and EV power items.
+- **Goldenrod herb lady** — sells **Pomeg through Tamato** berries (lower EVs, raise friendship) instead of Revival Herb and stat powders.
 - **Game Corner** — Goldenrod and Celadon coin-exchange **TM** and **held-item** menus retargeted. Prize cost greatly reduced.
 - **TM05 Headbutt** — Roar TM has been replaced by Headbutt.
 - **Badge-gated shop items** — Regular shops unlock balls, repels, held items, Flash and Headbutt TM, and late-game gear by **badge count**.
