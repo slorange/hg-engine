@@ -775,6 +775,7 @@ FLAG_UNK_2F3                                              equ 755
 FLAG_UNK_2F4                                              equ 756
 FLAG_UNK_2F5                                              equ 757
 FLAG_UNK_2F6                                              equ 758
+FLAG_HIDE_VIRIDIAN_GYM_BLUE                               equ FLAG_UNK_2F6
 FLAG_UNK_2F7                                              equ 759
 FLAG_HIDE_VIRIDIAN_CITY_OLD_MAN_OUTSIDE_GYM_LOCKED        equ 760
 FLAG_HIDE_VIRIDIAN_CITY_OLD_MAN_OUTSIDE_GYM_UNLOCKED      equ 761

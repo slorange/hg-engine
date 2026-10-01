@@ -121,3 +121,5 @@ build.log
 # one-off recon / session scripts (see scripts/local/README.md)
 scripts/local/**
 !scripts/local/README.md
+
+data/graphics/for_later/

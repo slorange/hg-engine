@@ -65,4 +65,5 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **Jasmine** — Secret Medicine sold at Olivine Mart.
 - **Clair (Blackthorn)** — You can battle Clair with no prior Gym badges and Goldenrod Rockets not cleared.
 - **Misty (Cerulean)** — Power Plant and Route 25 date chain skipped; Misty in Cerulean Gym from the start.
+- **Blue (Viridian)** — Seven Kanto badge gate removed; Blue in Viridian Gym from the start; overworld appearance on Cinnabar removed.
 - **Broader story skip** — Azalea/Mahogany Rocket skipped, Elm lab errand skipped.

@@ -88,6 +88,13 @@
     setflag FLAG_HIDE_ROUTE_25_MISTYS_BOYFRIEND
     setvar VAR_SCENE_ROUTE_25, 3
 
+// Viridian — Blue in gym without 7 Kanto badges; outdoor “unlocked” old man (Story-3)
+// FLAG_UNK_13A (314): vanilla sets when 7 Kanto badges met; gym coord script + Cinnabar state expect it.
+    setflag FLAG_UNK_13A
+    clearflag FLAG_HIDE_VIRIDIAN_GYM_BLUE
+    setflag FLAG_HIDE_VIRIDIAN_CITY_OLD_MAN_OUTSIDE_GYM_LOCKED
+    clearflag FLAG_HIDE_VIRIDIAN_CITY_OLD_MAN_OUTSIDE_GYM_UNLOCKED
+
 // Professor Elm lab errand (Falkner patch uses VAR_SCENE_ELMS_LAB = 6)
     clearflag FLAG_ELMS_LAB_PREVENT_PLAYER_ESCAPE
     setvar VAR_SCENE_ELMS_LAB, 6

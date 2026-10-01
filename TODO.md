@@ -23,13 +23,13 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 ---
 
-## Battles ([DESIGN-BATTLES.md](DESIGN-BATTLES.md))
-
-Release gaps from design status and partial sections (Future-7/8 excluded).
+## Gyms ([DESIGN-BATTLES.md](DESIGN-BATTLES.md))
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Gym defeat rewards (HM + TM choice)** | [Battle-3 § First defeat rewards](DESIGN-BATTLES.md#first-defeat-rewards), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Johto HM pilot partial; Flash / Headbutt field flow incomplete; Gym TM pools + choice UI **not implemented** |
+| **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
+| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Per-Leader pools authored; **minimum badge per TM** + defeat/rematch **choice UI** not implemented |
+| **Clair** (Blackthorn) | [Story-3 Gym policy](DESIGN-STORY.md#gyms--access-and-story-policy) | Grant **Rising Badge** after win — [HACK-NOTES § Clair](documentation/HACK-NOTES.md#blackthorn-gym--clair-rising-badge) (battle works with 0 badges; post-win grant still broken). |
 
 ---
 
@@ -52,26 +52,11 @@ Release gaps from design status and partial sections (Future-7/8 excluded).
 | **Abra Pokémon Center travel** | [World-1 § Abra fast travel](DESIGN-WORLD.md#abra-fast-travel) | **Not implemented** — visited-cities-only fast travel before Fly |
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |
-| **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
-| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Per-Leader pools authored; **minimum badge per TM** + defeat/rematch **choice UI** not implemented |
 | **Violet / Fuchsia shard traders** | [World-7 § Rare battle berries](DESIGN-WORLD.md#world-7-berry-economy) | Liechi–Rowap via shard exchange menus |
 
 ---
 
 ## Story ([DESIGN-STORY.md](DESIGN-STORY.md))
-
-### Gym Leaders — story gates
-
-Per [Story-3 Gym policy](DESIGN-STORY.md#gyms--access-and-story-policy).
-
-| Leader | Change |
-|--------|--------|
-| **Clair** (Blackthorn) | Grant **Rising Badge** after win — [HACK-NOTES § Clair](documentation/HACK-NOTES.md#blackthorn-gym--clair-rising-badge) (battle works with 0 badges; post-win grant still broken). |
-| **Blue** (Viridian) | Drop “7 Kanto badges first” gate; challengeable at any badge tier. |
-
-Slowpoke Well grunt ([KB-4](#known-bugs)) is tracked under **Known bugs**, not a Leader row.
-
----
 
 ### Intro and home
 

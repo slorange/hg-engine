@@ -740,6 +740,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_913
 	$(PYTHON) tools/patch_scr_seq_gym_clair.py $(SCR_SEQ_DIR)/2_938
 	$(PYTHON) scripts/build/verify_clair_gym_patch.py $(SCR_SEQ_DIR)/2_938
+	$(PYTHON) tools/patch_scr_seq_gym_blue.py $(SCR_SEQ_DIR)/2_743
 	$(PYTHON) tools/patch_scr_seq_game_corner.py $(SCR_SEQ_DIR)/2_910 $(SCR_SEQ_DIR)/2_804
 	$(PYTHON) scripts/build/verify_game_corner_patch.py $(SCR_SEQ_DIR)/2_910 $(SCR_SEQ_DIR)/2_804
 	$(NARCHIVE) create $@ $(SCR_SEQ_DIR) -nf
@@ -781,6 +782,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r45_ferry.py $(ZONE_EVENT_DIR)/2_044
 	$(PYTHON) tools/patch_zone_event_r46_ferry.py $(ZONE_EVENT_DIR)/2_045
 	$(PYTHON) tools/patch_zone_event_kanto_waters_ferry.py $(ZONE_EVENT_DIR)/2_046 $(ZONE_EVENT_DIR)/2_054 $(ZONE_EVENT_DIR)/2_088 $(ZONE_EVENT_DIR)/2_089 $(ZONE_EVENT_DIR)/2_090
+	$(PYTHON) tools/patch_zone_event_cinnabar_blue.py $(ZONE_EVENT_DIR)/2_054
 	$(PYTHON) tools/patch_zone_event_start_city.py $(ZONE_EVENT_DIR)
 	$(PYTHON) scripts/dev/verify_start_city_patch.py
 	$(NARCHIVE) create $@ $(ZONE_EVENT_DIR) -nf
