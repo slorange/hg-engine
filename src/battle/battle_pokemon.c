@@ -1098,14 +1098,21 @@ void BattleEndRevertFormChange(struct BattleSystem *bw)
         }
     }
 
-    // restore items regardless of if it's a trainer battle--this will also overwrite items gained from trainers
+    // restore items regardless of if it's a trainer battle
+    // Avoid SetMonData while an item is already held (unused berry/consumable, or Thief/Covet pickup), or there will be a crash.
     for (i = 0; i < BattleWorkPokeCountGet(bw, 0); i++) {
         u32 battleItem = newBS.itemsToRestore[i];
+        u32 currentItem;
+
         pp = BattleWorkPokemonParamGet(bw, 0, i);
+        currentItem = GetMonData(pp, MON_DATA_HELD_ITEM, NULL);
+        if (currentItem != 0 || battleItem == 0) {
+            continue;
+        }
 #ifdef RESTORE_BERRIES_AT_BATTLE_END
         SetMonData(pp, MON_DATA_HELD_ITEM, &battleItem);
 #else
-        if (!IS_ITEM_BERRY(newBS.itemsToRestore[i])) {
+        if (!IS_ITEM_BERRY(battleItem)) {
             SetMonData(pp, MON_DATA_HELD_ITEM, &battleItem);
         }
 #endif // RESTORE_BERRIES_AT_BATTLE_END
