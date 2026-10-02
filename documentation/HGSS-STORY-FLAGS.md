@@ -1,6 +1,6 @@
 # HGSS story flags (pret)
 
-Working index for **Wandering Heart** story skips ([DESIGN-STORY.md](../DESIGN-STORY.md)). The **Wandering Heart** column lists fork usage from [HACK-NOTES.md](HACK-NOTES.md) and patched scripts.
+Working index for **Wandering Heart** story skips ([DESIGN-STORY.md](DESIGN-STORY.md)). The **Wandering Heart** column lists fork usage from [HACK-NOTES.md](HACK-NOTES.md) and patched scripts.
 
 **Canonical in this repo:** `armips/include/flags.s` (`// Story Flags`, decimal **100–399**). This table uses **pret symbol names** for readability ([pret `flags.h`](https://github.com/pret/pokeheartgold/blob/master/include/constants/flags.h) — same indices; a few names differ, e.g. nurse card). No new flag IDs from pret — only naming / cross-reference.
 

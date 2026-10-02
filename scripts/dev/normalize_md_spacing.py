@@ -53,7 +53,7 @@ def normalize(lines: list[str]) -> list[str]:
 
 
 def main() -> None:
-    path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("DESIGN-BATTLES.md")
+    path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("documentation/DESIGN-BATTLES.md")
     lines = path.read_text(encoding="utf-8").splitlines()
     out = normalize(lines)
     path.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8", newline="\n")

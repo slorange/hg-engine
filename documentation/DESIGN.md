@@ -4,7 +4,7 @@
 >
 > **This index is NOT permission to implement everything described in the sub-docs.**
 
-**Coding agents:** build, git, design boundaries, and doc map usage — [`.cursor/rules/agents.mdc`](.cursor/rules/agents.mdc).
+**Coding agents:** build, git, design boundaries, and doc map usage — [`.cursor/rules/agents.mdc`](../.cursor/rules/agents.mdc).
 
 ## Document map
 
@@ -15,9 +15,9 @@
 | [DESIGN-BATTLES.md](DESIGN-BATTLES.md) | `Battle-*` | Fair trainer fights, badge caps, Gyms, EXP |
 | [DESIGN-STORY.md](DESIGN-STORY.md) | `Story-*` | Intro (Story-1/2), script policy (Story-3) |
 | [DESIGN-FUTURE.md](DESIGN-FUTURE.md) | `Future-*` | Deferred addons |
-| CHANGELOG.md | — | Shipped behavior vs vanilla (player-facing; no doc links) |
-| TODO.md | — | **Release blockers** — known bugs, vanilla cleanup, Gym gates, intro/home gaps (not Future scope) |
-| documentation/HACK-NOTES.md | — | Implementation recipes (see `.cursor/rules/agents.mdc`) |
+| [CHANGELOG.md](../CHANGELOG.md) | — | Shipped behavior vs vanilla (player-facing; no doc links) |
+| [TODO.md](TODO.md) | — | **Release blockers** — known bugs, vanilla cleanup, Gym gates, intro/home gaps (not Future scope) |
+| [HACK-NOTES.md](HACK-NOTES.md) | — | Implementation recipes (see `.cursor/rules/agents.mdc`) |
 
 # Index-2. Game Identity
 

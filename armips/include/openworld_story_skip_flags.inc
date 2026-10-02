@@ -1,5 +1,5 @@
 // Vanilla story skip on new saves — Mom intro (OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS).
-// DESIGN-STORY.md Story-3 / TODO.md (Vanilla cleanup). Mahogany rocket *flags* live here; Mahogany map OnLoad only
+// documentation/DESIGN-STORY.md Story-3 / documentation/TODO.md (Vanilla cleanup). Mahogany rocket *flags* live here; Mahogany map OnLoad only
 // runs hide_person when open-world starting items are on (see scr_seq_t28_005_onload.s).
 
 // Cherrygrove guide / Route 30 (Apricorn Box + shoes from Mom)

@@ -6,7 +6,7 @@ Working notes for this fork so we don’t re-discover the text/data layout every
 
 ## Contents
 
-Implementation recipes only — link **to** [DESIGN.md](../DESIGN.md) / CHANGELOG / [TODO.md](../TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([agents.mdc § Design docs](../.cursor/rules/agents.mdc#design-docs-and-agent-boundaries)). **Known bugs:** [TODO.md § Known bugs](../TODO.md#known-bugs) symptoms + [§ below](#known-bugs-index-3). **Agents:** `.cursor/rules/agents.mdc`.
+Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG / [TODO.md](TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([agents.mdc § Design docs](../.cursor/rules/agents.mdc#design-docs-and-agent-boundaries)). **Known bugs:** [TODO.md § Known bugs](TODO.md#known-bugs) symptoms + [§ below](#known-bugs-index-3). **Agents:** `.cursor/rules/agents.mdc`.
 
 | Topic | Section |
 | ----- | ------- |
@@ -47,7 +47,7 @@ Implementation recipes only — link **to** [DESIGN.md](../DESIGN.md) / CHANGELO
 
 ## Known bugs (TODO.md)
 
-Symptom list: [TODO.md § Known bugs](../TODO.md#known-bugs). Implementation detail lives below (and in related recipe sections).
+Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail lives below (and in related recipe sections).
 
 ### KB-2 — Post-battle return to field crash
 
@@ -65,7 +65,7 @@ Symptom list: [TODO.md § Known bugs](../TODO.md#known-bugs). Implementation det
 
 **Symptom:** Town Map / running-shoes tutorial cutscene still runs; guide NPC invisible (hidden on new saves via Mom intro flag sweep).
 
-**Design:** [TODO.md — Cherrygrove guide](../TODO.md#superseded-by-mom-cutscene--starting-grants).
+**Design:** [TODO.md — Cherrygrove guide](TODO.md#superseded-by-mom-cutscene--starting-grants).
 
 **Fix direction:** skip or nop guide **coord / trigger scripts**, not only `FLAG_HIDE_CHERRYGROVE_GUIDE_GENT`.
 
@@ -73,7 +73,7 @@ Symptom list: [TODO.md § Known bugs](../TODO.md#known-bugs). Implementation det
 
 **Symptom:** at least one Team Rocket grunt still blocks Slowpoke Well entrance on some new saves despite Azalea rocket skips.
 
-**Design:** [Story-3 — Team Rocket](../DESIGN-STORY.md#team-rocket--remove).
+**Design:** [Story-3 — Team Rocket](DESIGN-STORY.md#team-rocket--remove).
 
 **Partial work:** `openworld_story_skip_flags.inc`, `tools/patch_scr_seq_t23_azalea.py` (scr_seq member **866**).
 
@@ -87,7 +87,7 @@ Symptom list: [TODO.md § Known bugs](../TODO.md#known-bugs). Implementation det
 
 **Symptom:** after open-world intro, talking to seated Mom shows garbled dialogue or wrong menus (vanilla Elm-fetch flow).
 
-**Design:** [Story-1](../DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](../DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow).
+**Design:** [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow).
 
 **Related recipe:** [Open-world starting inventory](#open-world-starting-inventory-new-saves) — only script slot **0** rebuilt; scr_seq **845** other slots + **545** text remap may not match sitting-script branches.
 
@@ -349,7 +349,7 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 **Verified:** wild, trainer, flee, and catch all restore HP/PP/status on return to field.
 
-**KB-2 (Sep 2026):** crash when returning to the field after battle — **open again**. Heal logic runs only when `sp->fight_end_flag` is set (`BattleStruct` @ `0x311F`), with EWRAM pointer checks on `bw`, `sp`, and party mons; hook timing unchanged (`Battle_End` → `BattleEndRevertFormChange`). A Sep 2026 guard pass stopped repro for the primary dev (100+ battle ends) but **another tester hits it regularly** — treat as environment- or timing-sensitive, not fixed. Status: [TODO.md KB-2](../TODO.md#known-bugs).
+**KB-2 (Sep 2026):** crash when returning to the field after battle — **open again**. Heal logic runs only when `sp->fight_end_flag` is set (`BattleStruct` @ `0x311F`), with EWRAM pointer checks on `bw`, `sp`, and party mons; hook timing unchanged (`Battle_End` → `BattleEndRevertFormChange`). A Sep 2026 guard pass stopped repro for the primary dev (100+ battle ends) but **another tester hits it regularly** — treat as environment- or timing-sensitive, not fixed. Status: [TODO.md KB-2](TODO.md#known-bugs).
 
 **Agent notes (do not repeat without new evidence):**
 
@@ -369,7 +369,7 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 ## Gym Leader HM rewards (Johto pilot)
 
-**Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass; **Mahogany Gym last-room crash** reported ([KB-5](../TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
+**Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass; **Mahogany Gym last-room crash** reported ([KB-5](TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
 
 **Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
 
@@ -489,9 +489,9 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 ### Blackthorn Gym — Clair (Rising Badge)
 
-**Status (Sep 2026):** **Partial** — Clair NPC uses a dedicated Leader script; you can **battle and win with zero Johto badges**. After “Take it.” the script still **does not finish** (no reliable Rising Badge in case, fanfare, or league obedience line). Track release gap: [TODO § Clair](../TODO.md#gym-leaders--story-gates).
+**Status (Sep 2026):** **Partial** — Clair NPC uses a dedicated Leader script; you can **battle and win with zero Johto badges**. After “Take it.” the script still **does not finish** (no reliable Rising Badge in case, fanfare, or league obedience line). Track release gap: [TODO § Clair](TODO.md#gym-leaders--story-gates).
 
-**Design:** [Story-3 Gyms](../DESIGN-STORY.md#gyms--access-and-story-policy) — drop 7-badge / Goldenrod Rocket gates; grant Rising Badge in-gym without Dragon’s Den trial (Den / HM follow-ups still open).
+**Design:** [Story-3 Gyms](DESIGN-STORY.md#gyms--access-and-story-policy) — drop 7-badge / Goldenrod Rocket gates; grant Rising Badge in-gym without Dragon’s Den trial (Den / HM follow-ups still open).
 
 | What | Where |
 |------|--------|
@@ -757,7 +757,7 @@ Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/l
 
 ### SS Aqua (Olivine ↔ Vermilion)
 
-**Design:** [World-1 § SS Aqua](../DESIGN-WORLD.md#ss-aqua-olivine--vermilion). **Mom intro** (`openworld_story_skip_flags.inc`) sets **`FLAG_BOAT_ARRIVED` (235)** and grants the S.S. Ticket for open-world repeat travel.
+**Design:** [World-1 § SS Aqua](DESIGN-WORLD.md#ss-aqua-olivine--vermilion). **Mom intro** (`openworld_story_skip_flags.inc`) sets **`FLAG_BOAT_ARRIVED` (235)** and grants the S.S. Ticket for open-world repeat travel.
 
 **Build:** `narcs.mk` runs **`tools/patch_scr_seq_ss_aqua_weekday.py`** on four scr_seq members, then **`scripts/build/verify_ss_aqua_weekday_scr_seq.py`**. **In-place bytecode only** — never `build_scr_seq()` on these members (vanilla uses non-sequential empty-slot pointers; rebuilding the offset table silenced all pier scripts).
 
@@ -927,7 +927,7 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 
 **Loop fix:** keep vanilla init header **618** (OnFrame `var==0`, like retail). Script **0** sets `VAR_SCENE_PLAYERS_HOUSE_1F = 1` on the first frame before any `wait`, so the cutscene cannot re-trigger. Do **not** move this cutscene to OnTransition — that runs too early and crashes on stairs.
 
-**KB-6:** after the cutscene, **seated Mom** talk is broken (weird menus / wrong conversation). Script **0** only — other **845** slots + **545** text remap may not match vanilla sitting behaviour ([TODO.md KB-6](../TODO.md#known-bugs)).
+**KB-6:** after the cutscene, **seated Mom** talk is broken (weird menus / wrong conversation). Script **0** only — other **845** slots + **545** text remap may not match vanilla sitting behaviour ([TODO.md KB-6](TODO.md#known-bugs)).
 
 **Grants:** Rebuilt script **0** inserts items/shoes/dex after UI unlock fanfares. `std_give_item_verbose` already waits for A per item — do not add extra `wait_button` between grants; one `closemsg` after **all** item grants (including HM02) clears the window.
 
@@ -995,7 +995,7 @@ Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/s
 
 ### Home = bidirectional door + interior swap
 
-Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Four warp behaviours per save ([Story-1 home wiring](../DESIGN-STORY.md#home-wiring-four-steps)):
+Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Four warp behaviours per save ([Story-1 home wiring](DESIGN-STORY.md#home-wiring-four-steps)):
 
 | Step | Direction | Status |
 |------|-----------|--------|
@@ -1262,7 +1262,7 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 ## Game Corner TM prizes
 
-**Design:** [World-4 § Game Corner TMs](../DESIGN-WORLD.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
+**Design:** [World-4 § Game Corner TMs](DESIGN-WORLD.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
 
 International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlGameCornerPrizeMap` table from pret’s `scrcmd_dppl_prizes.c`). Each prize block embeds an item id and a coin cost. Submenus: **6 TMs + Cancel**, **4 held items + Cancel**, **3 Pokémon + Cancel** (Pokémon menus still vanilla).
 
@@ -1285,7 +1285,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 | Goldenrod | Bright Powder, Quick Claw, Wide Lens, Metronome |
 | Celadon | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
 
-**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut until [World-4 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented) ships; restore tiered costs when coin income is decided.
+**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut until [World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented) ships; restore tiered costs when coin income is decided.
 
 ### Files
 
@@ -1299,7 +1299,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 
 **Verify in-game:** Coin Case → Goldenrod Game Corner → right-hand clerk → TM and held-item submenus; Celadon dept store 5F prize clerk → same. Pokémon submenu still vanilla.
 
-**Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-4 § Coin income](../DESIGN-WORLD.md#coin-income-not-implemented).
+**Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented).
 
 **Changing TMs later:** edit replacement tables in `patch_scr_seq_game_corner.py`, update menu strings in the text banks (keep `{CURSOR_X …}` padding if renaming), rebuild.
 
@@ -1526,7 +1526,7 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 ## Fishing Rod guru NPCs
 
-**Design:** [Wilds-4](../DESIGN-WILDS.md#wilds-4-fishing-rod-progression).
+**Design:** [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression).
 
 **Goal:** One shared fisherman script gives Old → Good → Super Rod based on Pokédex caught Water-type evolutionary families (any catch source). Dialogue is region-agnostic for reuse across gurus.
 

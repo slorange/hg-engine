@@ -6,22 +6,22 @@ An open-world HeartGold/SoulSilver romhack built on [hg-engine](https://github.c
 
 | Document | What it covers |
 | -------- | -------------- |
-| **[DESIGN.md](DESIGN.md)** | Design index — vision, world, battles, wilds, story; what’s implemented vs planned |
+| **[documentation/DESIGN.md](documentation/DESIGN.md)** | Design index — vision, world, battles, wilds, story; what’s implemented vs planned |
 | **[CHANGELOG.md](CHANGELOG.md)** | Player-facing changes vs vanilla HGSS |
-| **[TODO.md](TODO.md)** | Release blockers (bugs, cleanup, Gym gates) — not Future scope |
+| **[documentation/TODO.md](documentation/TODO.md)** | Release blockers (bugs, cleanup, Gym gates) — not Future scope |
 | **[documentation/HACK-NOTES.md](documentation/HACK-NOTES.md)** | Implementation recipes, IDs, verified patches, msg banks |
 | **`.cursor/rules/agents.mdc`** | **Coding agents:** Docker build, git rules, script layout |
 | **[README (HG-Engine).md](README%20(HG-Engine).md)** | Upstream hg-engine setup (WSL, MSYS2, native `make`, Docker image build) |
 
 ### Design sub-documents
 
-Linked from [DESIGN.md](DESIGN.md):
+Linked from [documentation/DESIGN.md](documentation/DESIGN.md):
 
-- [DESIGN-WORLD.md](DESIGN-WORLD.md) — open-world principles, travel, HMs, shops, ferries
-- [DESIGN-WILDS.md](DESIGN-WILDS.md) — wild levels, fishing, ecology
-- [DESIGN-BATTLES.md](DESIGN-BATTLES.md) — fair trainer fights, badge caps, Gyms, EXP
-- [DESIGN-STORY.md](DESIGN-STORY.md) — intro (Story-1/2), script policy (Story-3); release work in [TODO.md](TODO.md)
-- [DESIGN-FUTURE.md](DESIGN-FUTURE.md) — deferred / parking-lot features
+- [documentation/DESIGN-WORLD.md](documentation/DESIGN-WORLD.md) — open-world principles, travel, HMs, shops, ferries
+- [documentation/DESIGN-WILDS.md](documentation/DESIGN-WILDS.md) — wild levels, fishing, ecology
+- [documentation/DESIGN-BATTLES.md](documentation/DESIGN-BATTLES.md) — fair trainer fights, badge caps, Gyms, EXP
+- [documentation/DESIGN-STORY.md](documentation/DESIGN-STORY.md) — intro (Story-1/2), script policy (Story-3); release work in [documentation/TODO.md](documentation/TODO.md)
+- [documentation/DESIGN-FUTURE.md](documentation/DESIGN-FUTURE.md) — deferred / parking-lot features
 
 ## Playtesting
 

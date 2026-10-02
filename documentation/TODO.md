@@ -2,9 +2,9 @@
 
 Work that must ship before **initial release**. [DESIGN-FUTURE.md](DESIGN-FUTURE.md) is intentionally out of scope here.
 
-**Policy** (why we remove vanilla content): [DESIGN-STORY.md § Story-3](DESIGN-STORY.md#story-3-story-and-script-policy). **Recipes:** [documentation/HACK-NOTES.md](documentation/HACK-NOTES.md).
+**Policy** (why we remove vanilla content): [DESIGN-STORY.md § Story-3](DESIGN-STORY.md#story-3-story-and-script-policy). **Recipes:** [HACK-NOTES.md](HACK-NOTES.md).
 
-Once a change has been user tested and commit ready, remove it from this file and update [CHANGELOG.md](CHANGELOG.md) if player-visible.
+Once a change has been user tested and commit ready, remove it from this file and update [CHANGELOG.md](../CHANGELOG.md) if player-visible.
 
 ---
 
@@ -19,7 +19,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-4** | Slowpoke Well (Azalea) — one Team Rocket grunt still blocks the entrance | Policy: [Story-3 — Team Rocket](DESIGN-STORY.md#team-rocket--remove). |
 | **KB-5** | Mahogany Gym — crash entering the last (Pryce) room of the ice puzzle. | Repro when entering the room, not on battle start. |
 | **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
-| **KB-7** | Violet Gym (Falkner) — Leader unreachable; elevator broken after HM-grant scr_seq patches. | [Gym HM rewards](documentation/HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** / zone_event **365**. |
+| **KB-7** | Violet Gym (Falkner) — Leader unreachable; elevator broken after HM-grant scr_seq patches. | [Gym HM rewards](HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** / zone_event **365**. |
 
 ---
 
@@ -29,7 +29,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | ---- | ------ | ----- |
 | **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
 | **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Per-Leader pools authored; **minimum badge per TM** + defeat/rematch **choice UI** not implemented |
-| **Clair** (Blackthorn) | [Story-3 Gym policy](DESIGN-STORY.md#gyms--access-and-story-policy) | Grant **Rising Badge** after win — [HACK-NOTES § Clair](documentation/HACK-NOTES.md#blackthorn-gym--clair-rising-badge) (battle works with 0 badges; post-win grant still broken). |
+| **Clair** (Blackthorn) | [Story-3 Gym policy](DESIGN-STORY.md#gyms--access-and-story-policy) | Grant **Rising Badge** after win — [HACK-NOTES § Clair](HACK-NOTES.md#blackthorn-gym--clair-rising-badge) (battle works with 0 badges; post-win grant still broken). |
 
 ---
 
@@ -46,7 +46,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Cross-region Fly (Johto ↔ Kanto)** | [World-1](DESIGN-WORLD.md#world-1-world-transportation), [Fly map § cross-region attempts](documentation/HACK-NOTES.md#cross-region-fly-attempts-pinned) | Kanto scroll works (`OPENWORLD_FLY_MAP` arm9 hook); destination filter still vanilla; overlay 101 patch sites tried in Sep 2026 all failed or no-op (see HACK-NOTES) |
+| **Cross-region Fly (Johto ↔ Kanto)** | [World-1](DESIGN-WORLD.md#world-1-world-transportation), [Fly map § cross-region attempts](HACK-NOTES.md#cross-region-fly-attempts-pinned) | Kanto scroll works (`OPENWORLD_FLY_MAP` arm9 hook); destination filter still vanilla; overlay 101 patch sites tried in Sep 2026 all failed or no-op (see HACK-NOTES) |
 | **Abra Pokémon Center travel** | [World-1 § Abra fast travel](DESIGN-WORLD.md#abra-fast-travel) | **Not implemented** — visited-cities-only fast travel before Fly |
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |

@@ -1,4 +1,4 @@
-# Post-process wild level caps after distance formula (DESIGN-WILDS.md Wilds-1).
+# Post-process wild level caps after distance formula (documentation/DESIGN-WILDS.md Wilds-1).
 # kind: fixed = exact cap for graph location; floor = max(distanceCap, value).
 # graph_location must match encounter_area_graph.tsv / location_distances.txt names.
 #

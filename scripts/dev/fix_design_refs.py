@@ -102,7 +102,7 @@ def fix(text: str) -> str:
 
 
 def main() -> None:
-    for path in sorted(ROOT.glob("DESIGN*.md")):
+    for path in sorted((ROOT / "documentation").glob("DESIGN*.md")):
         if path.name in ("DESIGN2.md", "DESIGN-FUTURE.md"):
             continue
         original = path.read_text(encoding="utf-8")

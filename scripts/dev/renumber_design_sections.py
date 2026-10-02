@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PATHS = sorted(
-    set(ROOT.glob("DESIGN*.md"))
+    set((ROOT / "documentation").glob("DESIGN*.md"))
     | {ROOT / "documentation" / "HACK-NOTES.md", ROOT / "CHANGELOG.md"}
     | {ROOT / "scripts" / "README.md", ROOT / "scripts" / "dev" / "fix_design_refs.py"}
 )

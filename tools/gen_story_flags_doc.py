@@ -370,7 +370,7 @@ def main() -> None:
     lines = [
         "# HGSS story flags (pret)",
         "",
-        "Working index for **Wandering Heart** story skips ([DESIGN-STORY.md](../DESIGN-STORY.md)). "
+        "Working index for **Wandering Heart** story skips ([DESIGN-STORY.md](DESIGN-STORY.md)). "
         "The **Wandering Heart** column lists fork usage from [HACK-NOTES.md](HACK-NOTES.md) and patched scripts.",
         "",
         "**Canonical in this repo:** `armips/include/flags.s` (`// Story Flags`, decimal **100–399**). "

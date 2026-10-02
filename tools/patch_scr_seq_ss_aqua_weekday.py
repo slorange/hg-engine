@@ -6,7 +6,7 @@ Gangplank (153 / 155): neutralize GoToIfSet FLAG_BOAT_ARRIVED (Mom sets 235 for 
 
 In-place only — do not rebuild the scr_seq offset table.
 
-See DESIGN-WORLD.md § SS Aqua.
+See documentation/DESIGN-WORLD.md § SS Aqua.
 """
 
 from __future__ import annotations

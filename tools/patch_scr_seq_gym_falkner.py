@@ -2,7 +2,7 @@
 """Patch Violet Gym Falkner (scr_seq 859): badge-count HM before TM grant.
 
 Pilot for GYM_BADGE_COUNT_FIELD_REWARDS — replaces Leader script slot 1 only.
-See documentation/HACK-NOTES.md and DESIGN-WORLD.md (HM progression).
+See documentation/HACK-NOTES.md and documentation/DESIGN-WORLD.md (HM progression).
 """
 
 from __future__ import annotations
