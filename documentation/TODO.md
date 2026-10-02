@@ -18,7 +18,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-3** | Cherrygrove guide — Town Map / running-shoes tutorial cutscene still runs; guide NPC is invisible on new saves. | Mom already grants shoes + Town Map. Fix via guide triggers, not hide-flag alone. See [Vanilla cleanup — Mom / intro](#superseded-by-mom-cutscene--starting-grants). |
 | **KB-5** | Mahogany Gym — crash entering the last (Pryce) room of the ice puzzle. | Repro when entering the room, not on battle start. |
 | **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
-| **KB-7** | Violet Gym (Falkner) — Leader unreachable; elevator broken after HM-grant scr_seq patches. | [Gym HM rewards](HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** / zone_event **365**. |
+| **KB-7** | Violet Gym (Falkner) — Elevator attendant still visible; ride **up** works; after beating Falkner, elevator **down** does not work. | [Gym HM rewards](HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** (esp. slot **0** OnLoad, slot **5** elevator) / zone_event **365**. |
 
 ---
 

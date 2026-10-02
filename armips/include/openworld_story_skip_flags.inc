@@ -57,6 +57,9 @@
     setflag FLAG_HIDE_ROCKET_HIDEOUT_B2F_MURKROW_2
     setflag FLAG_HIDE_ROCKET_HIDEOUT_B2F_MURKROW_3
 
+// Olivine — skip gym-area Radio Tower / Elm phone coord (VAR_UNK_4078); scr_seq + zone_event patched too
+    setvar VAR_UNK_4078, 1
+
 // Rival removed — hide overworld appearances; skip naming flow flags
     setflag FLAG_UNK_079
     setflag FLAG_TALKED_TO_MOM_AFTER_NAMING_RIVAL

@@ -84,6 +84,14 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 **Suspects:** Mahogany gym scr_seq / zone_event, ice-tile puzzle state, Pryce leader patch (member **932** slot **1** — `scr_seq_pryce_gym_slot1.s`, `tools/patch_scr_seq_gym_pryce.py`). Mahogany **town** rocket skip is separate — [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load). See also [Gym Leader HM rewards](#gym-leader-hm-rewards-johto-pilot).
 
+**HM patch angle:** Pryce uses the same **slot-1-only** HM table as Morty/Jasmine (`gym_badge_hm_reward.inc` via `patch_slot1`). Those two gyms do **not** show this crash — so KB-5 is **not** strong evidence that the shared HM include is broken. Repro on **room entry** (before talking to Pryce) points at ice-puzzle / other scr_seq slots or map load, not post-battle reward flow. **Bisect:** turn off `GYM_BADGE_COUNT_FIELD_REWARDS` and rebuild; if the last room still crashes, treat as non-HM (puzzle / zone_event).
+
+### KB-7 — Violet Gym elevator after Falkner
+
+**Symptom:** attendant NPC still on the elevator; **up** works; after beating Falkner, **down** does not. Falkner fight and HM/TM grant are OK.
+
+**Likely cause:** Falkner HM work patched slots **1–5** and removed the Sprout gate object, but left slot **0** `violet_gym_init` vanilla — it toggles elevator NPC visibility from Sprout / badge flags that no longer match open-world flow. Not the same class of bug as Morty/Jasmine (no elevator). Details: [Falkner follow-ups](#falkner-follow-ups-859--zone_event-365).
+
 ### KB-6 — Seated Mom dialogue after intro
 
 **Symptom:** after open-world intro, talking to seated Mom shows garbled dialogue or wrong menus (vanilla Elm-fetch flow).
@@ -472,7 +480,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 | 4 | Was empty; obj 2 script 4 | **stub** (`releaseall` / `end`) |
 | 5 | Elevator attendant (engine scripts 10201/10202 on objs 4–5) | **patched** — `violet_gym_elevator` only (vanilla opened with TM/Roost msg **6**) |
 
-**Known rough edges:** elevator attendant **sprites** may still appear (objs 4–5, hide flags 679/680); slot **0** OnLoad untouched; full open-world “no Sprout Tower” path not re-tested on every save state. Falkner recon scripts live in **`scripts/local/`** (`decode_falkner_gym.py`, `disasm_scr_seq.py`, `scan_violet_gym.py`).
+**Known rough edges ([KB-7](TODO.md#known-bugs)):** elevator attendant **visible on the lift** but **up** still works; **after** Zephyr Badge, **down** fails (leader battle itself OK). Likely interaction of vanilla slot **0** `violet_gym_init` (hide flags **679** / **680** for objs 4–5) with post-badge flags — slot **0** still **vanilla** while slots **1–5** are patched. Sprout gate obj removed from zone_event; attendant sprites not hidden on every save path. Falkner recon scripts live in **`scripts/local/`** (`decode_falkner_gym.py`, `disasm_scr_seq.py`, `scan_violet_gym.py`).
 
 **Zone_event 365 (after patch):** 5 objects — Falkner obj0 script 1, trainer obj3 script 2, elevator objs script 10201/10202; **no** obj1 sprout blocker.
 
@@ -1620,4 +1628,6 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 **Patch:** `armips/scr_seq/scr_seq_olivine_rod_guru.s` → `tools/patch_scr_seq_olivine_rod_guru.py` (`2_911`). Zone: `tools/patch_zone_event_olivine_rod_guru.py` (`2_074`). Text: `data/text/604.txt`.
 
 **Verify:** `python3 scripts/build/verify_olivine_rod_guru_scr_seq.py build/a012/2_911` + `python3 scripts/dev/verify_olivine_rod_guru_zone_event.py build/a032/2_074`. In-game: talk to guru west of the “Olivine City” sign → Old Rod flow.
+
+**Gym-area story skip (Radio Tower / Elm phone coord):** vanilla **coord script 2** at world **(272, 239)** (west of the gym) when **`VAR_UNK_4078`** is 0 — not the rival hide flag (**470**). Mom intro sets **4078 → 1** (`openworld_story_skip_flags.inc`); **`tools/patch_scr_seq_olivine_gym_story.py`** NOPs scr_seq **911** slot **2** entry; **`tools/patch_zone_event_olivine_gym_story.py`** removes the coord from **074**.
 
