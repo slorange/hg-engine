@@ -60,6 +60,18 @@
 // Olivine — skip gym-area Radio Tower / Elm phone coord (VAR_UNK_4078); scr_seq + zone_event patched too
     setvar VAR_UNK_4078, 1
 
+// Olivine — lighthouse fetch done: Jasmine in gym, door open, Amphy post-heal (scr_seq 66 patched)
+    setvar VAR_SCENE_LIGHTHOUSE_JASMINE, 2
+    setvar VAR_UNK_410E, 1
+    setflag FLAG_UNK_1D7
+    setflag FLAG_UNK_1D8
+    setflag FLAG_UNK_1DA
+    setflag FLAG_UNK_1DB
+    setflag FLAG_UNK_96A
+    clearflag FLAG_HIDE_JASMINE_IN_GYM
+    clearflag FLAG_HIDE_OLIVINE_GYM_GENTLEMAN
+    clearflag FLAG_HIDE_OLIVINE_GYM_GIRL
+
 // Rival removed — hide overworld appearances; skip naming flow flags
     setflag FLAG_UNK_079
     setflag FLAG_TALKED_TO_MOM_AFTER_NAMING_RIVAL

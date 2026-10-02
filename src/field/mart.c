@@ -98,7 +98,7 @@ u16 sEcruteakMart[] = {
 };
 
 u16 sOlivineMart[] = {
-    ITEM_SECRET_MEDICINE, ITEM_METAL_COAT, ITEM_BABIRI_BERRY, 0xFFFF
+    ITEM_METAL_COAT, ITEM_BABIRI_BERRY, 0xFFFF
 };
 
 u16 sCianwoodPharmacy[] = {

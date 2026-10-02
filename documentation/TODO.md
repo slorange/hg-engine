@@ -67,6 +67,10 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 Displaced-interior NPC/script cleanup: [Vanilla cleanup](#vanilla-cleanup-backlog) (Copycat / Saffron home, etc.).
 
+### Olivine Gym lighthouse-gossip NPCs
+
+Mom intro skips the lighthouse fetch but **`clearflag FLAG_HIDE_OLIVINE_GYM_GENTLEMAN/GIRL` (476/477)** still reveals the two vanilla gym NPCs (zone_event **080**, scr_seq **913** scripts **2–3**, text **606**) — dialogue assumes Amphy / Jasmine at the lighthouse. **Hide flags alone do not disable interaction** (invisible ghost talk reported in testing). Need a verified fix on **`2_080`** / **913** / **606**: remove or replace NPCs, NOP talk scripts, or rewrite lines — not outdoor Olivine **074**. Recipe context: [HACK-NOTES § Olivine Secret Medicine](HACK-NOTES.md#olivine-secret-medicine-jasmine).
+
 ---
 
 ## Vanilla cleanup backlog
@@ -99,6 +103,7 @@ Removals or script skips for obsolete vanilla content. Prefer disabling a branch
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
 | Cianwood pharmacy free Secret Medicine | Medicine sold in Olivine Mart | Remove free give; optional flavour dialogue only |
+| Olivine Gym gossip NPCs (476/477) | Lighthouse fetch skipped on new saves | [Story § Olivine Gym](TODO.md#olivine-gym-lighthouse-gossip-npcs) — zone **080**, not city **074** |
 | Copycat / S.S. Ticket story (partial) | Pass + Ticket from Mom; train patched | Displaced-interior scripts still vanilla ([Story-1](DESIGN-STORY.md#story-1-starting-city-and-home)) |
 | Power Plant / Machine Part (partial) | Magnet Train open without quest | Test if power plant is in correct state |
 

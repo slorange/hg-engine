@@ -1242,6 +1242,10 @@ Vanilla **`InitMartUI`** drops **`ITEM_POKE_BALL` (4)** from buy lists while Gre
 
 **Text:** Lighthouse dialogue in `data/text/094.txt` (msg bank **094**, map `D27R0107`). Edits lines 0–1 (local mart hint) and 3 (item name).
 
+**Lighthouse trap (medicine before Jasmine door):** vanilla `scr_seq` **66** slot **0** jumps straight to the heal scene when **`FLAG_GOT_SECRETPOTION`** (185) is set, skipping the door beat that sets **`FLAG_UNK_1D8`** (472). Mom intro sets post-quest lighthouse state (`VAR_SCENE_LIGHTHOUSE_JASMINE` → **2**, **`FLAG_UNK_1D8`**, **`clearflag FLAG_HIDE_JASMINE_IN_GYM`**, **`clearflag FLAG_HIDE_OLIVINE_GYM_GENTLEMAN/GIRL` (476/477)**, … in `openworld_story_skip_flags.inc`). **`tools/patch_scr_seq_olivine_lighthouse.py`** neutralizes OnLoad door-stop script **4** and fixes the potion **`goto_if`** so medicine no longer skips the scene compare. New saves: battle Jasmine in the Gym without doing the fetch; lighthouse top is optional (healthy Amphy dialogue).
+
+**Olivine Gym gossip NPCs (open follow-up):** map **`MAP_T27GYM0101`** (header **80**) → zone_event member **080** (not scr_seq member **913**). Vanilla **obj 1** script **3** @ **(9, 2)**, **obj 2** script **2** @ **(3, 2)** — msg bank **606** lighthouse flavour. Mom intro clears hide **476/477** so they render like post-fetch vanilla. **`setflag` hide alone still allows invisible-tile talk** (do not rely on flags only). Tried removing objs via zone patch — user still saw ghost dialogue (verify map member **080** in-game before further edits). Proper fix: remove or repoint objs on **080**, and/or NOP scr_seq **913** slots **2–3**, and/or replace **606** strings — see [TODO.md § Olivine Gym gossip NPCs](TODO.md#olivine-gym-lighthouse-gossip-npcs).
+
 ---
 
 ## Mart expansion (`src/field/mart.c`)
