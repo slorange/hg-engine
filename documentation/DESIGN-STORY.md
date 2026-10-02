@@ -74,7 +74,7 @@ Open-world intro replaces the vanilla opening: [Story-1](DESIGN-STORY.md#story-1
 
 **Postgame legendaries:** vanilla **post–Champion legendary** encounters and quests (e.g. box legends, roaming beasts, Mt. Silver) stay **as HGSS designed them** unless we explicitly decide otherwise — we are not stripping endgame legendaries/mythicals for open-world travel.
 
-**Dex and species scope:** **Completing the Pokédex** remains a **primary goal**. Release scope is **every Gen I–IV species obtainable** in the world ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)); **additional legendary** stories may be added to fill that goal. Broader generations stay [Future-6](DESIGN-FUTURE.md#future-6-expanded-pokédex--generations).
+**Dex and species scope:** **Completing the Pokédex** remains a **primary goal**. Release scope is **every Gen I–IV species obtainable** in the world ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)); **additional legendary** stories may be added to fill that goal. Broader generations stay [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes).
 
 ## Route Cut on travel routes — remove
 

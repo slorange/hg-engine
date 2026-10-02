@@ -14,7 +14,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
 | [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
 | [Future-5. Per-save wild ecology shuffle](#future-5-per-save-wild-ecology-shuffle) |
-| [Future-6. Expanded Pokédex / generations](#future-6-expanded-pokédex--generations) |
 | [Future-7. Generated trainer & Gym parties](#future-7-generated-trainer--gym-parties) |
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-9. Accelerated day/night cycle](#future-9-accelerated-daynight-cycle) |
@@ -283,14 +282,6 @@ The player picks from a curated list of families for that Gym. The Leader names 
 - Pokédex and trainer hint integration;
 - special / static / legendary encounter policy;
 - grass-tile-specific encounter sets (if used alongside distance caps).
-
----
-
-# Future-6. Expanded Pokédex / generations
-
-**Current scope is:** [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) — **Gen I–IV plus the Volcarona line**
-
-But HG-Engine supports up to gen 9 minus Paradox and DLC.
 
 ---
 
@@ -567,6 +558,7 @@ Shop availability for stones: [World-6](DESIGN-WORLD.md#world-6-shops).
 
 Ideas that do not have their own `Future-*` section yet.
 
+- **Expanded Pokédex / generations** — release scope stays [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) (Gen I–IV plus the Volcarona line); HG-Engine could extend through Gen IX minus Paradox and DLC.
 - **Starter selection** could be revisited.
 - **Pokémon Center extras** — trainer hub ideas (Abra travel desk, resting to advance time, distributed Apricorn crafting, other QoL) if [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) / [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) land; vanilla Nurse Joy heal + PC remain fine for initial release.
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.

@@ -769,6 +769,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_violet_gym.py $(ZONE_EVENT_DIR)/2_365
 	$(PYTHON) tools/patch_zone_event_blackthorn_gym_clair.py $(ZONE_EVENT_DIR)/2_024
 	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
+	$(PYTHON) tools/patch_zone_event_t23_azalea.py $(ZONE_EVENT_DIR)/2_071
 	$(PYTHON) tools/patch_zone_event_r44_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rod_guru.py $(ZONE_EVENT_DIR)/2_043
 	$(PYTHON) tools/patch_zone_event_r44_ferry.py $(ZONE_EVENT_DIR)/2_043

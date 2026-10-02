@@ -14,7 +14,7 @@
 | [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | PARTIALLY IMPLEMENTED |
 | [Wilds-5. Pokémon Generations / Content Scope](#wilds-5-pokémon-generations--content-scope) | DECIDED (release scope) |
 | Per-save ecology shuffle | Moved — [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) |
-| Expanded Pokédex / generations | Moved — [Future-6](DESIGN-FUTURE.md#future-6-expanded-pokédex--generations) |
+| Expanded Pokédex / generations | Moved — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) |
 
 **Encounter pipeline (wild grass/cave/etc.):** [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps) area cap → [Wilds-2](#wilds-2-wild-pokémon-level-range) rolled level → [Wilds-3](#wilds-3-encounter-stage-evolution--devolution) species stage. **Trainer battles** use the same stage rules after their level is set ([Battle-2 § Trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)).
 
@@ -200,4 +200,4 @@ Count **families**, not species (Poliwag + Poliwrath = 1). Use **Pokédex caught
 **Ship scope:** **Gen I–IV plus the Volcarona line**. No broad Gen V+ rollout in the first release.
 
 
-Broader dex / generations: [Future-6](DESIGN-FUTURE.md#future-6-expanded-pokédex--generations).
+Broader dex / generations: [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes).

@@ -30,6 +30,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42](#route-42-reference-verified), [Route 40 / Cianwood](#route-40--cianwood-reference-verified), [Route 31 / Route 45](#route-31--route-45-dark-cave-reference) |
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
 | Story NPC removal | [Removing / skipping story NPCs](#removing--skipping-story-npcs-reusable-recipe) |
+| Apricorn trees / new OW gfx | [Apricorn & custom overworld graphics (Future-1)](#apricorn--custom-overworld-graphics-future-1) |
 | Mom intro / start city | [Open-world starting inventory](#open-world-starting-inventory-new-saves) → [Starter menu](#starter-selection--not-choose_starter), [Home warps](#home--bidirectional-door--interior-swap) |
 | Story flag sweep (dev) | [Story flag range sweep (dev)](#story-flag-range-sweep-dev) |
 | HGSS story flags (pret) | [HGSS-STORY-FLAGS.md](HGSS-STORY-FLAGS.md) — index **100–399**; add Wandering Heart notes as we map skips |
@@ -75,7 +76,7 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 **Design:** [Story-3 — Team Rocket](DESIGN-STORY.md#team-rocket--remove).
 
-**Partial work:** `openworld_story_skip_flags.inc`, `tools/patch_scr_seq_t23_azalea.py` (scr_seq member **866**).
+**Partial work:** `openworld_story_skip_flags.inc`, `tools/patch_scr_seq_t23_azalea.py` (scr_seq member **866**), `tools/patch_zone_event_t23_azalea.py` (zone_event **071** — remove well entrance obj **0** @ **434,461**).
 
 ### KB-5 — Mahogany Gym Pryce room crash
 
@@ -914,6 +915,41 @@ Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanil
 - **coord events** — Mahogany east exit also had a **coord script** blocking walk-through; remove from zone_event coords table, not just the object.
 - **Idempotent patchers** — match on `(obj_id, script, x, z)`; raise if vanilla object missing (catches wrong member / already-wrong base).
 - **Do not commit `build/`** — patchers re-seed from `rom.nds` each rebuild.
+
+---
+
+## Apricorn & custom overworld graphics (Future-1)
+
+**Design:** [Future-1 — Apricorn economy](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) (renewable harvest, new colours such as purple/grey, distributed crafting TBD). Trees are **field objects** placed at map load, not map terrain — placement is zone_event + scr_seq, not Future-4 geometry edits.
+
+### Verified gotcha: do not use `03xx` filenames in `data/graphics/overworlds/`
+
+Sources under `data/graphics/overworlds/*.png` compile to `build/pokemonow/1_<name>.btx0` and repack **`pokemonow.narc`** (`narcs.mk`). For **`1_*`** assets, the **numeric suffix matches the gfx index** referenced from `gOWTagToFileNum` in `src/field/overworld_table.c`.
+
+Follower Pokémon use **`MON_OVERWORLD_GFX_START` (297) + internal species id**:
+
+```c
+#define MON_FOLLOWER_ENTRY(species, cbparams) \
+    { .tag = ..., .gfx = MON_OVERWORLD_GFX_START + species, ... },
+```
+
+So **`0300.png` is not a “free” custom slot** — gfx **300** is **Venusaur** (`SPECIES_VENUSAUR` = 3 → 297 + 3). Adding or replacing **`1_0300.btx0`** without retuning the whole table **inserts or overwrites that narc index**. On a **full / clean** NARC rebuild, every follower (and static OW) with **gfx ≥ 300** can load the **wrong** sheet (**off by one**): e.g. **Turtwig (387 → gfx 684) showing Deoxys (386 → gfx 683)**, **Totodile showing Typhlosion**, and an Apricorn tree object bound to gfx **300** looking like **Venusaur** / the wrong prop.
+
+**Do not** park new Apricorn tree art at **`0300.png`** (or any **`03xx`** that collides with `297 + SPECIES_*` for a real species).
+
+### Safe patterns for new Apricorn tree colours
+
+| Layer | Vanilla reference | New colour (e.g. purple) |
+| ----- | ----------------- | ------------------------ |
+| Field tree gfx | Tags **262–269** → gfx **251–258**; sources **`0251.png`–`0258.png`** + matching **`.json`** + **`*_pl.pal`** | Pick an **unused gfx index below 297**, name sources **`0NNN.png`** with **`NNN` = that gfx index** (same layout as **`0257.png`** / **`0257.json`** for a 3-frame coloured tree). Register **tag → gfx** in `overworld_table.c` (apricorn trees use callback **`0x5647`** like existing bonguri rows). |
+| Bag icon | `data/graphics/item/red_apricorn.png` etc. | New PNG + `data/graphics/itemgra.mk` row + item id in `include/constants/item.h` + msg banks (`222`, `830`, `831`–`833`, …). |
+| Map placement | `obj_*_bonguri` in zone_event | New objects + harvest scr_seq; save tree state in `APRICORN_TREE` (`include/save.h`). |
+
+**Alternative:** [HGSS new overworlds guide](https://ds-pokemon-hacking.github.io/docs/generation-iv/guides/hgss-new_overworlds/hgss-new_overworlds.md) — props under **`data/graphics/overworlds/custom/`** → **`2_*.btx0`**, then wire **tag / gfx** explicitly (see comment block at top of `overworld_table.c` and **`narcs.mk`**). Do not assume the filename number is safe unless it matches an unused **gfx** slot in the table.
+
+**More context:** [Overworld System Documentation](wiki/Overworld-System-Documentation.md), [Editing Pokémon Data § overworlds](wiki/Editing-Pokémon-Data.md) (`0297` = Bulbasaur follower filename example).
+
+**Rebuild:** after OW or item gfx changes, full Docker `make` so `test.nds` gets a fresh `pokemonow.narc` / itemgra — verify followers on a new save, not only the new tree.
 
 ---
 
