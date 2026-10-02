@@ -16,9 +16,9 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | -- | ------- | ----- |
 | **KB-2** | Crash when returning to the field after a battle (freeze or hard crash on fade to overworld). | Open again (Sep 2026); repro is asymmetric across testers. Related: [Battle-1](DESIGN-BATTLES.md#recovery) post-battle heal. |
 | **KB-3** | Cherrygrove guide — Town Map / running-shoes tutorial cutscene still runs; guide NPC is invisible on new saves. | Mom already grants shoes + Town Map. Fix via guide triggers, not hide-flag alone. See [Vanilla cleanup — Mom / intro](#superseded-by-mom-cutscene--starting-grants). |
-| **KB-5** | Mahogany Gym — crash entering the last (Pryce) room of the ice puzzle. | Repro when entering the room, not on battle start. |
 | **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
 | **KB-7** | Violet Gym (Falkner) — Elevator attendant still visible; ride **up** works; after beating Falkner, elevator **down** does not work. | [Gym HM rewards](HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** (esp. slot **0** OnLoad, slot **5** elevator) / zone_event **365**. |
+| **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
 
 ---
 

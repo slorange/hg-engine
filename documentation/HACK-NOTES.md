@@ -78,14 +78,6 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 **Partial work:** `openworld_story_skip_flags.inc`, `tools/patch_scr_seq_t23_azalea.py` (scr_seq member **866**), `tools/patch_zone_event_t23_azalea.py` (zone_event **071** — remove well entrance obj **0** @ **434,461**).
 
-### KB-5 — Mahogany Gym Pryce room crash
-
-**Symptom:** crash when entering the last (Pryce) room of the ice puzzle (not necessarily on battle start).
-
-**Suspects:** Mahogany gym scr_seq / zone_event, ice-tile puzzle state, Pryce leader patch (member **932** slot **1** — `scr_seq_pryce_gym_slot1.s`, `tools/patch_scr_seq_gym_pryce.py`). Mahogany **town** rocket skip is separate — [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load). See also [Gym Leader HM rewards](#gym-leader-hm-rewards-johto-pilot).
-
-**HM patch angle:** Pryce uses the same **slot-1-only** HM table as Morty/Jasmine (`gym_badge_hm_reward.inc` via `patch_slot1`). Those two gyms do **not** show this crash — so KB-5 is **not** strong evidence that the shared HM include is broken. Repro on **room entry** (before talking to Pryce) points at ice-puzzle / other scr_seq slots or map load, not post-battle reward flow. **Bisect:** turn off `GYM_BADGE_COUNT_FIELD_REWARDS` and rebuild; if the last room still crashes, treat as non-HM (puzzle / zone_event).
-
 ### KB-7 — Violet Gym elevator after Falkner
 
 **Symptom:** attendant NPC still on the elevator; **up** works; after beating Falkner, **down** does not. Falkner fight and HM/TM grant are OK.
@@ -378,7 +370,7 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 ## Gym Leader HM rewards (Johto pilot)
 
-**Status:** **Morty** verified in-game Sep 2026. **Falkner** leader HM + elevator mostly working but not polished (see follow-ups). **Pryce** / **Jasmine** build + bytecode verify only — need in-game pass; **Mahogany Gym last-room crash** reported ([KB-5](TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
+**Status:** **Jasmine** and **Pryce** verified in-game. **Morty** leader HM OK; pre–Burned Tower elder line blank ([KB-8](TODO.md#known-bugs)). **Falkner** elevator follow-ups ([KB-7](TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
 
 **Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
 
@@ -390,9 +382,9 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 | Shared text | `data/text/854.txt` — level cap, HM names, TM intro |
 | Falkner | scr_seq **859** — slots **1–5** patched; zone_event **365** sprout gate obj removed (`tools/patch_zone_event_violet_gym.py`) |
 | Morty | member **922**, slot **1** — `scr_seq_morty_gym_slot1.s`, `data/text/614.txt` |
-| Pryce | member **932**, slot **1** — `scr_seq_pryce_gym_slot1.s`, `data/text/622.txt` |
+| Pryce | member **932** — **append-only** HM patch ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); `data/text/622.txt` |
 | Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, `data/text/606.txt` |
-| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine}.py` — Falkner uses shared `patch_script_slot()` from falkner module |
+| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine}.py` — Falkner/Morty/Jasmine use `patch_script_slot()` / `patch_slot1()`; **Pryce is special** (do not rebuild 932) |
 | Verify | `scripts/build/verify_falkner_gym_hm_patch.py build/a012/2_859 build/a012/2_922 build/a012/2_932 build/a012/2_913` |
 | Recon | `scripts/dev/inspect_gym_slots.py` (after `build/a012_vanilla` exists) — leader trainer id per slot |
 
@@ -403,6 +395,30 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 **Flow:** win dialogue → `GiveBadge` → receipt → `SEQ_ME_BADGE` → shared level-cap line → **`count_badges`** → HM line (if row) + `SEQ_ME_WAZA` + silent `giveitem` → shared TM intro + fanfare + TM + Leader flavor text.
 
 **Test:** beat a Gym as **2nd** badge → Cut; as **5th** → Fly; badge **1** or **4** → no HM, TM only.
+
+### Mahogany Gym — Pryce scr_seq 932
+
+**Do not** patch Pryce with `patch_slot1()` / `build_scr_seq()` like Morty or Jasmine. Member **932** is only **528 bytes** and **two** script entries with retail-specific layout:
+
+| Slot | File offset | Role |
+|------|-------------|------|
+| **0** | **190** | Ice puzzle, entering the last room, Pryce battle, badge fanfare (`trainer_battle` @ **222** in vanilla) |
+| **1** | **10** | Short flag script (~25 bytes), **not** the Leader talk script |
+
+Rebuilding the offset table (or replacing “slot 1” with a full Leader script) breaks slot **0** → crash when entering Pryce’s room. Bisect: `GYM_BADGE_COUNT_FIELD_REWARDS` off leaves vanilla **932** and confirms the HM patch path, not ice tiles alone.
+
+**Working approach** (`tools/patch_scr_seq_gym_pryce.py`, verified in-game Oct 2026):
+
+1. Copy the retail **528-byte** member verbatim (offset table: slot **0** → **190**, slot **1** → **10**).
+2. Leave bytes **190–315** unchanged (room entry through `SEQ_ME_BADGE` + `wait_fanfare`).
+3. Replace the vanilla TM tail (**315–528**) with opcode **22** `goto` to bytecode appended at file offset **528** (pad remainder with `scr_end` / zero).
+4. Append `armips/scr_seq/scr_seq_pryce_gym_hm_ext.s` → `build/pryce_gym_hm_ext.bin` (`gym_badge_hm_reward.inc` + TM07 grant).
+
+`scripts/build/verify_falkner_gym_hm_patch.py` accepts HM bytecode in the appended tail (whole-member scan for **932**). Recon: `scripts/dev/decode_pryce_932.py`, `scripts/dev/inspect_gym_slots.py` on `build/a012_vanilla/2_932`.
+
+`scr_seq_pryce_gym_slot1.s` is a **Morty-style skeleton only** — not wired into the retail 932 patcher; keep for reference if 932 is ever restructured.
+
+Mahogany **town** rocket skip is unrelated — [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load).
 
 ### Field HM use without per-Gym badge flags
 

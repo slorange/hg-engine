@@ -3,9 +3,18 @@
 
 from __future__ import annotations
 
+import re
 import struct
 import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+CONFIG = ROOT / "include/config.h"
+
+
+def gym_hm_rewards_enabled() -> bool:
+    text = CONFIG.read_text(encoding="utf-8")
+    return re.search(r"^#define\s+GYM_BADGE_COUNT_FIELD_REWARDS\b", text, re.MULTILINE) is not None
 
 GIVEITEM = 125
 GIVEITEM_VERBOSE = 2033
@@ -49,6 +58,9 @@ def find_leader_slot(data: bytes) -> int | None:
         body = script_body(data, index)
         if struct.pack("<H", COUNT_BADGES) in body and extern_msg in body:
             return index
+    # Mahogany 932: HM grant is appended after the retail blob (not in a script slot).
+    if struct.pack("<H", COUNT_BADGES) in data and extern_msg in data:
+        return -1
     return None
 
 
@@ -60,8 +72,12 @@ def verify(path: Path) -> int:
         print("FAIL: no script slot with badge-count HM grant bytecode")
         return 1
 
-    slot = script_body(data, slot_index)
-    print(f"{path}: {len(data)} bytes, slot{slot_index}={len(slot)} bytes")
+    if slot_index == -1:
+        slot = data
+        print(f"{path}: {len(data)} bytes, appended HM block (932 layout)")
+    else:
+        slot = script_body(data, slot_index)
+        print(f"{path}: {len(data)} bytes, slot{slot_index}={len(slot)} bytes")
 
     if struct.pack("<H", COUNT_BADGES) not in slot:
         print(f"FAIL: count_badges opcode missing in slot {slot_index}")
@@ -102,6 +118,10 @@ def main(argv: list[str]) -> int:
     if len(argv) < 2:
         print(f"usage: {argv[0]} <build/a012/2_NNN> [...]", file=sys.stderr)
         return 1
+
+    if not gym_hm_rewards_enabled():
+        print("SKIP: GYM_BADGE_COUNT_FIELD_REWARDS disabled in include/config.h")
+        return 0
 
     rc = 0
     for arg in argv[1:]:
