@@ -1,4 +1,5 @@
-// Shared post-badge level cap + badge-count HM grant (World-3 table, no Flash/Headbutt).
+// Shared post-badge level cap + badge-count HM grant (World-3 table).
+// Badge 1 / 4: shop availability lines only (field unlock + mart stock TBD).
 // Include after badge fanfare; leader script must define label _tm_grant immediately after.
 //
 // Text: data/text/854.txt
@@ -15,6 +16,8 @@
 .equ MSG_GYM_HM07_WATERFALL, 7
 .equ MSG_GYM_HM08_ROCK_CLIMB, 8
 .equ MSG_GYM_TM_INTRO, 9
+.equ MSG_GYM_FLASH_IN_MARTS, 10
+.equ MSG_GYM_HEADBUTT_IN_MARTS, 11
 
 .equ ITEM_HM01, 420
 .equ ITEM_HM02, 421
@@ -45,8 +48,12 @@ _gym_cap_show:
     wait_button
     closemsg
 
-// --- HM by total badge count (after this badge) ---
+// --- HM / shop hints by total badge count (after this badge) ---
     count_badges VAR_SPECIAL_x8000
+    compare VAR_SPECIAL_x8000, 1
+    goto_if_eq _gym_shop_b1
+    compare VAR_SPECIAL_x8000, 4
+    goto_if_eq _gym_shop_b4
     compare VAR_SPECIAL_x8000, 2
     goto_if_eq _gym_hm_b2
     compare VAR_SPECIAL_x8000, 3
@@ -63,6 +70,18 @@ _gym_cap_show:
     goto_if_eq _gym_hm_b13
     compare VAR_SPECIAL_x8000, 16
     goto_if_eq _gym_hm_b16
+    goto _tm_grant
+
+_gym_shop_b1:
+    non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_FLASH_IN_MARTS
+    wait_button
+    closemsg
+    goto _tm_grant
+
+_gym_shop_b4:
+    non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_HEADBUTT_IN_MARTS
+    wait_button
+    closemsg
     goto _tm_grant
 
 _gym_hm_b2:

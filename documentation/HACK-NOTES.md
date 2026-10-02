@@ -390,7 +390,7 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 **Text bank indexing:** `msgenc` treats every line as a message index, including blank lines. Vanilla dumps of `558.txt` / `614.txt` have a blank line between each string — leader scripts must use indices **0, 2, 4, 6, 8** for pre / post / badge / TM / already-beaten. **`622.txt` compacted (0–4).** `606.txt` keeps two placeholder lines at 3–4 so TM = 5 and already-beaten = 6 (Steelix trade strings stay at 7+). **Before editing any gym text bank, list indices** (`msgenc` line = index) — wrong indices cause blank lines or wrong dialogue (Pryce TM-after-blank, Morty post-battle blank, Falkner elevator TM preamble).
 
-**HM rows (badges earned → reward):** 2 Cut, 3 Rock Smash, 5 Fly, 6 Surf, 7 Strength, 10 Whirlpool, 13 Waterfall, 16 Rock Climb. All other counts: badge + TM only.
+**HM rows (badges earned → reward):** 2 Cut, 3 Rock Smash, 5 Fly, 6 Surf, 7 Strength, 10 Whirlpool, 13 Waterfall, 16 Rock Climb. **1** / **4**: bank **854** lines — Flash / Headbutt TMs **in Poké Marts** (messaging only until mart tables ship). Other counts without an HM row: badge + TM only.
 
 **Flow:** win dialogue → `GiveBadge` → receipt → `SEQ_ME_BADGE` → shared level-cap line → **`count_badges`** → HM line (if row) + `SEQ_ME_WAZA` + silent `giveitem` → shared TM intro + fanfare + TM + Leader flavor text.
 
