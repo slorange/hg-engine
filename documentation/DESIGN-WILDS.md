@@ -11,7 +11,7 @@
 | [Wilds-1. Starting-City Distance-Based Wild Level Caps](#wilds-1-starting-city-distance-based-wild-level-caps) | PARTIALLY IMPLEMENTED |
 | [Wilds-2. Wild Pokémon Level Range](#wilds-2-wild-pokémon-level-range) | IMPLEMENTED |
 | [Wilds-3. Encounter Stage (Evolution & Devolution)](#wilds-3-encounter-stage-evolution--devolution) | IMPLEMENTED (wild + trainer) |
-| [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | PARTIALLY IMPLEMENTED |
+| [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | IMPLEMENTED |
 | [Wilds-5. Pokémon Generations / Content Scope](#wilds-5-pokémon-generations--content-scope) | DECIDED (release scope) |
 | Per-save ecology shuffle | Moved — [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) |
 | Expanded Pokédex / generations | Moved — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) |
@@ -167,9 +167,9 @@ Battle presentation (moves, stats, name, caught mon) follows the **resolved** st
 
 # Wilds-4. Fishing Rod Progression
 
-**Status: PARTIALLY IMPLEMENTED** — **Route 44** and **Olivine** gurus shipped; wider Johto/Kanto network still open.
+**Status: IMPLEMENTED (Oct 2026)** — Shared rod script + **ten** guru sites; table below.
 
-Rod tiers advance by **catching Water-type Pokémon**, not badges or visit order — a separate track from [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) HMs. Every Fishing Guru / Fishing Brother shares one global progression; the player can talk to **any** guru for the next rod.
+Rod tiers advance by **catching Water-type Pokémon**, not badges or visit order — a separate track from [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) HMs. Every shipped guru uses the same progression; the player can talk to any of them for the next rod.
 
 | Rod | Requirement |
 |-----|-------------|
@@ -177,19 +177,21 @@ Rod tiers advance by **catching Water-type Pokémon**, not badges or visit order
 | **Good** | **5** distinct evolutionary families with at least one **caught** member that is Water-type (primary or secondary) |
 | **Super** | **15** such families |
 
-Count **families**, not species (Poliwag + Poliwrath = 1). Use **Pokédex caught** flags so released or traded Pokémon still count. Branching lines stay one family.
+Count **families**, not species (Poliwag + Poliwrath = 1). Use Pokédex caught flags so released or traded Pokémon still count. Branching lines stay one family.
 
-**Guru network** — interchangeable NPCs near routes and coastal towns (some vanilla Rod sites, some new).
+**Guru network** — interchangeable **new** fishermen (sprite 347, no Yes/No before grant). Any shipped guru can hand out the next tier per [Wilds-4](#wilds-4-fishing-rod-progression) counts.
 
-| Region | Location | Status | Notes |
-|--------|----------|--------|--------|
-| North East Johto | Route 44 (bridge) | Implemented | New NPC |
-| North West Johto (coast) | Olivine City | Implemented | Gen 2 & 4 Good Rod location |
-| South Johto | Route 32 Pokémon Center | Planned | Gen 2 & 4 Old Rod location |
-| West Kanto | Viridian | Planned | New NPC |
-| Mid Kanto | Vermilion City | Planned | New NPC, Gen 1 & 3 Old Rod location |
-| South Kanto | Fuchsia City | Planned | New NPC, Gen 1 & 3 Good Rod location |
-| East Kanto | Route 12 / Silence Bridge | Planned | Gens 1 - 4 Super Rod location |
+| Region | Location | Notes |
+|--------|----------|--------|
+| North East Johto | Route 44 | world (568, 183) |
+| North West Johto | Olivine City | world (273, 248) |
+| Central Johto | Route 34 (Day-Care) | world (358, 409) |
+| South Johto | Route 32 Pokémon Center | Interior local (4, 15) (classic brother spot) |
+| North Kanto | Route 24 / 25 border | world (1320, 65) — **duplicate** on events **025** + **026** (map seam) |
+| West Kanto | Viridian City | world (1023, 264) |
+| Mid Kanto | Vermilion City | world (1298, 304) |
+| South Kanto | Fuchsia City | world (1230, 430) |
+| East Kanto | Route 12 / Silence Bridge | world (1429, 319) |
 
 ---
 

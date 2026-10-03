@@ -34,7 +34,8 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 
 ### Fishing
 
-- **Rod gurus** — fishermen in **Olivine City** and on **Route 44** grant **Old / Good / Super Rod** based on how many Pokémon you have caught from water encounters.
+- **Rod progression** — **Old**, **Good**, and **Super Rod** tiers advance by catching distinct **Water-type evolutionary families** (Pokédex caught flags), not by badges or visit order. **Good Rod** at **5** families; **Super Rod** at **15**. Any guru can hand out the next rod you qualify for.
+- **Rod gurus** — At Route 44, Route 34 (Day-Care), Olivine City, Route 32 Pokémon Center, Route 24, Viridian City, Vermilion City, Fuchsia City, and Route 12.
 
 ### Battles & QoL
 

@@ -1556,7 +1556,14 @@ Use **DSPRE’s map matrix** to estimate where something lives, then patch the *
 | Map | Header id | `eventsBank` | `scriptsBank` | `msgBank` | Coords in zone_event |
 |-----|-----------|--------------|---------------|-----------|----------------------|
 | Route 44 | **46** | **043** | **257** | **404** | **world** |
+| Route 34 | **38** | **035** | **237** | **384** | **world** |
 | Olivine City | **77** | **074** | **911** | **604** | **world** |
+| Viridian City | **50** | **047** | **741** | **452** | **world** |
+| Vermilion City | **54** | **051** | **776** | **483** | **world** |
+| Route 12 | **20** | **017** | **199** | **348** | **world** |
+| Fuchsia City | **56** | **053** | **807** | **512** | **world** |
+| Route 24 | **28** | **025** | **215** | **362** | **world** |
+| Route 25 | **29** | **026** | **216** | **363** | **world** (R24/25 border guru) |
 
 Headbutt index **074** = Azalea Town; zone_event **074** = Olivine outdoors — same number, unrelated namespaces.
 
@@ -1592,7 +1599,26 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 **Design:** [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression).
 
+**Ship status (Oct 2026):** **Ten** guru sites patched (nine outdoor/matrix + **Route 32 PC** interior). Build hooks in `narcs.mk`, text in `data/text/*.txt`, `scripts/build/check_rod_guru_text.py`. **R32 PC 1F** guru **obj 4** @ local **(4, 15)** (retail Fishing Brother tile; shared script, no Yes/No). Tier logic is global (`src/fishing_rod.c`, flags 117/189, Super = `hasitem`).
+
 **Goal:** One shared fisherman script gives Old → Good → Super Rod based on Pokédex caught Water-type evolutionary families (any catch source). Dialogue is region-agnostic for reuse across gurus.
+
+**Inventory (all guru sites):**
+
+| Location | zone_event | scr_seq | msg | Patch prefix |
+|----------|------------|---------|-----|--------------|
+| Route 44 | `2_043` | `2_257` | 404 | `r44_rod_guru` |
+| Route 34 | `2_035` | `2_237` | 384 | `r34_rod_guru` |
+| Olivine | `2_074` | `2_911` | 604 | `olivine_rod_guru` |
+| Viridian | `2_047` | `2_741` | 452 | `viridian_rod_guru` |
+| Vermilion | `2_051` | `2_776` | 483 | `vermilion_rod_guru` |
+| Route 12 | `2_017` | `2_199` | 348 | `r12_rod_guru` |
+| Fuchsia | `2_053` | `2_807` | 512 | `fuchsia_rod_guru` |
+| Route 24 | `2_025` | `2_215` | 362 | `r24_rod_guru` |
+| Route 25 | `2_026` | `2_216` | 363 | `r25_rod_guru` (mirror — same tile as R24) |
+| Route 32 PC 1F | `2_163` | `2_233` | 381 | `r32pc_rod_guru` (**local** coords) |
+
+**Matrix seam rule:** If a guru vanishes when crossing a route/city header boundary, duplicate the **same world `(x, z)`** on **both** adjacent `eventsBank` members and append the guru script to **both** `scriptsBank` members (different msg banks). Documented example: Route 24/25 below.
 
 **Progression:** `FISHING_ROD_GOOD_FAMILIES` (default **5**) and `FISHING_ROD_SUPER_FAMILIES` (default **15**) in `include/config.h` / `armips/include/config.s`. Super Rod ownership is `hasitem(ITEM_SUPER_ROD)` — no save flag.
 
@@ -1648,6 +1674,93 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 **Patch:** `armips/scr_seq/scr_seq_olivine_rod_guru.s` → `tools/patch_scr_seq_olivine_rod_guru.py` (`2_911`). Zone: `tools/patch_zone_event_olivine_rod_guru.py` (`2_074`). Text: `data/text/604.txt`.
 
 **Verify:** `python3 scripts/build/verify_olivine_rod_guru_scr_seq.py build/a012/2_911` + `python3 scripts/dev/verify_olivine_rod_guru_zone_event.py build/a032/2_074`. In-game: talk to guru west of the “Olivine City” sign → Old Rod flow.
+
+**Route 34 (Day-Care / Goldenrod approach):**
+
+| Layer | ID | Notes |
+|-------|-----|--------|
+| Map header | `MAP_R34` = **38** | pret `[MAP_ROUTE_34]` |
+| zone_event | member **035** — obj **16**, sprite **347**, script **14**, world **(358, 409)**, facing **west**, **`type=0`** | DSPRE cell **(11, 12)** local **(6, 25)** |
+| scr_seq | member **237** — guru in **slot 13** (scriptId **14**) | Vanilla **13** slots (Day-Care story, signs, …) |
+| msg bank | **384** | Vanilla **0–49**; guru lines **50–54** |
+
+**Patch:** `armips/scr_seq/scr_seq_r34_rod_guru.s` → `tools/patch_scr_seq_r34_rod_guru.py` (`2_237`). Zone: `tools/patch_zone_event_r34_rod_guru.py` (`2_035`). Text: `data/text/384.txt`.
+
+**Verify:** `python3 scripts/build/verify_r34_rod_guru_scr_seq.py build/a012/2_237` + `python3 scripts/dev/verify_r34_rod_guru_zone_event.py build/a032/2_035`.
+
+**Viridian City:**
+
+| Layer | ID | Notes |
+|-------|-----|--------|
+| Map header | `MAP_VIRIDIAN` = **50** | pret `[MAP_VIRIDIAN]` |
+| zone_event | member **047** — obj **8**, sprite **347**, script **13**, world **(1023, 264)**, facing **west**, **`type=0`** | Matrix cell **(31, 8)** local **(31, 8)** |
+| scr_seq | member **741** — guru in **slot 12** (scriptId **13**) | Vanilla **12** slots (signs, TM man, …) |
+| msg bank | **452** | Vanilla **0–11**; guru lines **12–16** |
+
+**Patch:** `armips/scr_seq/scr_seq_viridian_rod_guru.s` → `tools/patch_scr_seq_viridian_rod_guru.py` (`2_741`). Zone: `tools/patch_zone_event_viridian_rod_guru.py` (`2_047`). Text: `data/text/452.txt`.
+
+**Verify:** `python3 scripts/build/verify_viridian_rod_guru_scr_seq.py build/a012/2_741` + `python3 scripts/dev/verify_viridian_rod_guru_zone_event.py build/a032/2_047`.
+
+**Vermilion City:**
+
+| Layer | ID | Notes |
+|-------|-----|--------|
+| Map header | `MAP_VERMILION` = **54** | pret `[MAP_VERMILION]` |
+| zone_event | member **051** — obj **19**, script **15**, world **(1298, 304)**, facing **north**, **`type=0`** | Cell **(40, 9)** local **(18, 16)** |
+| scr_seq | member **776** — slot **14** (scriptId **15**) | Vanilla **14** slots |
+| msg bank | **483** | Vanilla **0–23**; guru **24–28** |
+
+**Patch:** `scr_seq_vermilion_rod_guru.s` / `patch_scr_seq_vermilion_rod_guru.py` (`2_776`); zone `patch_zone_event_vermilion_rod_guru.py` (`2_051`); `data/text/483.txt`.
+
+**Route 12 (Silence Bridge):**
+
+| Layer | ID | Notes |
+|-------|-----|--------|
+| Map header | `MAP_R12` = **20** | pret `[MAP_ROUTE_12]` |
+| zone_event | member **017** — obj **19**, script **7**, world **(1429, 319)**, facing **south**, **`type=0`** | Cell **(44, 9)** local **(21, 31)** |
+| scr_seq | member **199** — slot **6** (scriptId **7**) | Vanilla **6** slots (signs + Snorlax) |
+| msg bank | **348** | Vanilla **0–3**; guru **4–8** |
+
+**Patch:** `scr_seq_r12_rod_guru.s` / `patch_scr_seq_r12_rod_guru.py` (`2_199`); zone `patch_zone_event_r12_rod_guru.py` (`2_017`); `data/text/348.txt`.
+
+**Fuchsia City:**
+
+| Layer | ID | Notes |
+|-------|-----|--------|
+| Map header | `MAP_FUCHSIA` = **56** | pret `[MAP_FUCHSIA]` |
+| zone_event | member **053** — obj **7**, script **11**, world **(1230, 430)**, facing **north**, **`type=0`** | Cell **(38, 13)** local **(14, 14)** |
+| scr_seq | member **807** — slot **10** (scriptId **11**) | Vanilla **10** slots |
+| msg bank | **512** | Vanilla **0–15**; guru **16–20** |
+
+**Patch:** `scr_seq_fuchsia_rod_guru.s` / `patch_scr_seq_fuchsia_rod_guru.py` (`2_807`); zone `patch_zone_event_fuchsia_rod_guru.py` (`2_053`); `data/text/512.txt`.
+
+**Route 24 / 25 border (Cerulean ↔ Nugget Bridge):**
+
+The guru tile **(1320, 65)** sits on the **R24/R25 matrix seam**. Only one `eventsBank` loads per map header — approach from **Cerulean** uses **025** / scr_seq **215** / msg **362**; from **Route 25 above** uses **026** / **216** / **363**. **Duplicate the same world object on both members** (shared coords, separate scriptId/msg bank per map).
+
+| Map | Header | zone_event | scr_seq | msg | Guru object |
+|-----|--------|------------|---------|-----|-------------|
+| Route 24 | **28** | **025** obj **3** script **6** | **215** slot **5** | **362** **10–14** | `patch_zone_event_r24_rod_guru.py` |
+| Route 25 | **29** | **026** obj **16** script **11** | **216** slot **10** | **363** **20–24** | `patch_zone_event_r25_rod_guru.py` |
+
+**Patch:** `scr_seq_r24_rod_guru.s` + `scr_seq_r25_rod_guru.s`; `data/text/362.txt` + `data/text/363.txt`.
+
+**Route 32 Pokémon Center 1F (interior — verified in-game Oct 2026):**
+
+Outdoor warp reference: world **(468, 419)** = cell **(14, 13)** local **(20, 3)** on Route 32 matrix — **not** used for interior object placement.
+
+| Layer | ID | Notes |
+|-------|-----|--------|
+| Map header | `MAP_ROUTE_32_POKECENTER_1F` | pret `[MAP_ROUTE_32_POKECENTER_1F]` — **interior**, not Route 32 outdoors (`MAP_R32` / events **033**) |
+| zone_event | member **163** | Guru obj **4**, sprite **347**, script **5**, **local (4, 15)** — replaces vanilla brother script **2**; removes Apricorn obj **5** @ **(12, 12)** |
+| scr_seq | member **233** — guru **slot 4** (scriptId **5**) | Vanilla **4** scripts (brother + signs + Apricorn); append guru |
+| msg bank | **381** | Vanilla **0–11**; guru **12–16** |
+
+**Patch:** `scr_seq_r32pc_rod_guru.s` / `patch_scr_seq_r32pc_rod_guru.py` (`2_233`); zone `patch_zone_event_r32pc_rod_guru.py` (`2_163`); `data/text/381.txt`.
+
+**Verify:** `python3 scripts/build/verify_r32pc_rod_guru_scr_seq.py build/a012/2_233` + `python3 scripts/dev/verify_r32pc_rod_guru_zone_event.py build/a032/2_163`.
+
+**PC / interior coords:** Map header `eventsBank` / `scriptsBank` / `msgBank` come from pret `map_headers.h` — **not** the outdoor Route header (R32 outdoors = events **033**). Object **(x, z)** on interiors are **local** to the room matrix; do not use `find_zone_event_member.py --world` for Poké Center floors.
 
 **Gym-area story skip (Radio Tower / Elm phone coord):** vanilla **coord script 2** at world **(272, 239)** (west of the gym) when **`VAR_UNK_4078`** is 0 — not the rival hide flag (**470**). Mom intro sets **4078 → 1** (`openworld_story_skip_flags.inc`); **`tools/patch_scr_seq_olivine_gym_story.py`** NOPs scr_seq **911** slot **2** entry; **`tools/patch_zone_event_olivine_gym_story.py`** removes the coord from **074**.
 

@@ -719,8 +719,24 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) scripts/build/verify_r44_rod_guru_patch.py $(SCR_SEQ_DIR)/2_257
 	$(PYTHON) tools/patch_scr_seq_t30_ferry.py $(SCR_SEQ_DIR)/2_941
 	$(PYTHON) tools/patch_scr_seq_kanto_waters_ferry.py $(SCR_SEQ_DIR)/2_735 $(SCR_SEQ_DIR)/2_958 $(SCR_SEQ_DIR)/2_960 $(SCR_SEQ_DIR)/2_961 $(SCR_SEQ_DIR)/2_815
+	$(PYTHON) tools/patch_scr_seq_r34_rod_guru.py $(SCR_SEQ_DIR)/2_237
+	$(PYTHON) scripts/build/verify_r34_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_237
 	$(PYTHON) tools/patch_scr_seq_olivine_rod_guru.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) scripts/build/verify_olivine_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_911
+	$(PYTHON) tools/patch_scr_seq_viridian_rod_guru.py $(SCR_SEQ_DIR)/2_741
+	$(PYTHON) scripts/build/verify_viridian_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_741
+	$(PYTHON) tools/patch_scr_seq_vermilion_rod_guru.py $(SCR_SEQ_DIR)/2_776
+	$(PYTHON) scripts/build/verify_vermilion_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_776
+	$(PYTHON) tools/patch_scr_seq_r12_rod_guru.py $(SCR_SEQ_DIR)/2_199
+	$(PYTHON) scripts/build/verify_r12_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_199
+	$(PYTHON) tools/patch_scr_seq_fuchsia_rod_guru.py $(SCR_SEQ_DIR)/2_807
+	$(PYTHON) scripts/build/verify_fuchsia_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_807
+	$(PYTHON) tools/patch_scr_seq_r24_rod_guru.py $(SCR_SEQ_DIR)/2_215
+	$(PYTHON) scripts/build/verify_r24_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_215
+	$(PYTHON) tools/patch_scr_seq_r25_rod_guru.py $(SCR_SEQ_DIR)/2_216
+	$(PYTHON) scripts/build/verify_r25_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_216
+	$(PYTHON) tools/patch_scr_seq_r32pc_rod_guru.py $(SCR_SEQ_DIR)/2_233
+	$(PYTHON) scripts/build/verify_r32pc_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_233
 	$(PYTHON) tools/patch_scr_seq_olivine_gym_story.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) tools/patch_scr_seq_olivine_lighthouse.py $(SCR_SEQ_DIR)/2_066
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
@@ -775,9 +791,25 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r44_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_r44_rod_guru.py $(ZONE_EVENT_DIR)/2_043
 	$(PYTHON) tools/patch_zone_event_r44_ferry.py $(ZONE_EVENT_DIR)/2_043
+	$(PYTHON) tools/patch_zone_event_r34_rod_guru.py $(ZONE_EVENT_DIR)/2_035
+	$(PYTHON) scripts/dev/verify_r34_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_035
 	$(PYTHON) tools/patch_zone_event_t30_ferry.py $(ZONE_EVENT_DIR)/2_086
 	$(PYTHON) tools/patch_zone_event_olivine_rod_guru.py $(ZONE_EVENT_DIR)/2_074
 	$(PYTHON) scripts/dev/verify_olivine_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_074
+	$(PYTHON) tools/patch_zone_event_viridian_rod_guru.py $(ZONE_EVENT_DIR)/2_047
+	$(PYTHON) scripts/dev/verify_viridian_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_047
+	$(PYTHON) tools/patch_zone_event_vermilion_rod_guru.py $(ZONE_EVENT_DIR)/2_051
+	$(PYTHON) scripts/dev/verify_vermilion_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_051
+	$(PYTHON) tools/patch_zone_event_r12_rod_guru.py $(ZONE_EVENT_DIR)/2_017
+	$(PYTHON) scripts/dev/verify_r12_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_017
+	$(PYTHON) tools/patch_zone_event_fuchsia_rod_guru.py $(ZONE_EVENT_DIR)/2_053
+	$(PYTHON) scripts/dev/verify_fuchsia_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_053
+	$(PYTHON) tools/patch_zone_event_r24_rod_guru.py $(ZONE_EVENT_DIR)/2_025
+	$(PYTHON) scripts/dev/verify_r24_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_025
+	$(PYTHON) tools/patch_zone_event_r25_rod_guru.py $(ZONE_EVENT_DIR)/2_026
+	$(PYTHON) scripts/dev/verify_r25_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_026
+	$(PYTHON) tools/patch_zone_event_r32pc_rod_guru.py $(ZONE_EVENT_DIR)/2_163
+	$(PYTHON) scripts/dev/verify_r32pc_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_163
 	$(PYTHON) tools/patch_zone_event_olivine_gym_story.py $(ZONE_EVENT_DIR)/2_074
 	$(PYTHON) tools/patch_zone_event_w40_surf_gate.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_w40_ferry.py $(ZONE_EVENT_DIR)/2_091

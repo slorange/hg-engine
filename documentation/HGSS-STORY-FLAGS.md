@@ -27,7 +27,7 @@ Regenerate: `python tools/gen_story_flags_doc.py` (edit `WANDERING_HEART_NOTES` 
 | 114 | 0x72 | `FLAG_UNK_072` |  |
 | 115 | 0x73 | `FLAG_GOT_TM51_FROM_FALKNER` | Falkner gym patch: TM51 reward `setflag`. |
 | 116 | 0x74 | `FLAG_UNK_074` |  |
-| 117 | 0x75 | `FLAG_GOT_OLD_ROD` | Olivine + Route 44 rod gurus; `src/fishing_rod.c` gates rods on this flag. |
+| 117 | 0x75 | `FLAG_GOT_OLD_ROD` | Rod gurus + Route 32 PC vanilla brother; `src/fishing_rod.c` syncs from item/flag. |
 | 118 | 0x76 | `FLAG_UNK_076` |  |
 | 119 | 0x77 | `FLAG_UNK_077` |  |
 | 120 | 0x78 | `FLAG_UNK_078` |  |
@@ -99,7 +99,7 @@ Regenerate: `python tools/gen_story_flags_doc.py` (edit `WANDERING_HEART_NOTES` 
 | 186 | 0xBA | `FLAG_GOT_TM01_FROM_CHUCK` |  |
 | 187 | 0xBB | `FLAG_GOT_HM02` |  |
 | 188 | 0xBC | `FLAG_UNK_0BC` |  |
-| 189 | 0xBD | `FLAG_GOT_GOOD_ROD` | Rod gurus Good Rod tier; `src/fishing_rod.c`. |
+| 189 | 0xBD | `FLAG_GOT_GOOD_ROD` | Shipped rod gurus (Good tier); `src/fishing_rod.c`. |
 | 190 | 0xBE | `FLAG_TRADE_OLIVINE_CITY_KRABBY_VOLTORB` |  |
 | 191 | 0xBF | `FLAG_GOT_LOAN_SHUCKLE` |  |
 | 192 | 0xC0 | `FLAG_UNK_0C0` |  |

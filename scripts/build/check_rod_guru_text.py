@@ -6,7 +6,18 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-FILES = (ROOT / "data/text/404.txt", ROOT / "data/text/604.txt")
+FILES = (
+    ROOT / "data/text/404.txt",
+    ROOT / "data/text/604.txt",
+    ROOT / "data/text/384.txt",
+    ROOT / "data/text/452.txt",
+    ROOT / "data/text/483.txt",
+    ROOT / "data/text/348.txt",
+    ROOT / "data/text/512.txt",
+    ROOT / "data/text/362.txt",
+    ROOT / "data/text/363.txt",
+    ROOT / "data/text/381.txt",
+)
 
 
 def main() -> int:
@@ -17,6 +28,9 @@ def main() -> int:
             failed = True
             continue
         text = path.read_text(encoding="utf-8")
+        marker = "Here, take this Old Rod"
+        if marker in text:
+            text = text[text.index(marker) :]
         if "{YESNO" in text.upper():
             print(f"FAIL: {path} still contains Yes/No prompt", file=sys.stderr)
             failed = True
