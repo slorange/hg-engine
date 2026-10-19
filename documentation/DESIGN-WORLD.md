@@ -16,6 +16,7 @@
 | [World-5. Evolution Methods (Trade & Stones)](#world-5-evolution-methods-trade--stones) | DECIDED |
 | [World-6. Shops](#world-6-shops) | DECIDED — **core release target** (TMs, evolution items) |
 | [World-7. Berry economy](#world-7-berry-economy) | PARTIALLY IMPLEMENTED |
+| [World-8. Item acquisition channels](#world-8-item-acquisition-channels) | PARTIALLY IMPLEMENTED |
 | Accelerated day/night cycle | Moved — [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
 | Expanded stone mechanics | Moved — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics) |
@@ -340,6 +341,67 @@ Mom intro grants **Berry Pots** and **5× each** basic berry **Cheri through Per
 
 ## Wild Pokémon holds
 
-**Implemented:** In addition to the table above, every supported berry can be a wild Pokémon's **held-item**. After the normal species held-item table roll (buffed to **65%** common / **15%** rare / **20%** nothing; **Compound Eyes** lead **70%** / **30%** / **0%**), wilds with no item get a **50%** chance (**100%** with Compound Eyes) of a uniform random berry from the **45** supported berries.
+**Implemented:** In addition to the table above, every supported berry can be a wild Pokémon's **held-item**. After the normal species held-item table roll (buffed to **65%** common / **15%** rare / **20%** nothing; **Compound Eyes** lead **70%** / **30%** / **0%**), wilds with no item get a **50%** chance (**100%** with Compound Eyes) of a uniform random berry from the **45** supported berries, or a random apricorn.
+
+---
+
+# World-8. Item acquisition channels
+
+**Status: PARTIALLY IMPLEMENTED** — not every row or channel in this section is required for **initial release**; ship channels independently as scope allows.
+
+The matrix below is the target for **where** each item category may appear. **Berries** follow [World-7](#world-7-berry-economy). **Apricorn Balls** and tree harvest are [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance); this table covers **Apricorns** as items from minigames and milestones.
+
+<table>
+<colgroup>
+<col style="width:14%">
+<col style="width:12%">
+<col style="width:11%">
+<col style="width:9%">
+<col style="width:9%">
+<col style="width:11%">
+<col style="width:11%">
+<col style="width:11%">
+</colgroup>
+<thead>
+<tr><th>Item category</th><th><a href="#world-6-shops">Shops</a><br><em>Implemented</em></th><th>Ground / Hidden</th><th>Bug Contest</th><th>Pokéathlon</th><th>Battle Frontier</th><th>Pokédex rewards</th><th><a href="#world-4-tms">Game Corner</a><br><em>Implemented</em></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Treasures</strong> (sellables)</td><td>—</td><td>✓</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td><strong>Evolution stones / items</strong></td><td>Themed shops</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>✓</td><td>—</td></tr>
+<tr><td><strong>Rare Candies</strong></td><td>Dept. Store</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>✓</td><td>—</td></tr>
+<tr><td><strong>Held items</strong></td><td>Badge-gated</td><td>✓</td><td>—</td><td>—</td><td>Only the best</td><td>—</td><td>✓</td></tr>
+<tr><td><strong>TMs</strong></td><td>Dept. Store / Gym</td><td>✓</td><td>—</td><td>—</td><td>Only the best</td><td>—</td><td>✓</td></tr>
+<tr><td><strong>PP Up / PP Max</strong></td><td>Dept. Store</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td><strong>Vitamins</strong></td><td>Dept. Store</td><td>✓</td><td>—</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td><strong>Bottle Caps</strong></td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+<tr><td><strong>Mints</strong></td><td>—</td><td>✓</td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+<tr><td><strong>Ability Capsules / Patches</strong></td><td>—</td><td>✓</td><td>✓</td><td>—</td><td>✓</td><td>✓</td><td>—</td></tr>
+<tr><td><strong>Master Balls</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>✓</td><td>—</td></tr>
+<tr><td><strong>Pokémon</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td><strong>Apricorns</strong></td><td>—</td><td>—</td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+</tbody>
+</table>
+
+## Ground and hidden items
+
+Replace vanilla static per-spot ground and hidden items with rolls from the curated **rare-item list** above.
+
+## Bug-Catching Contest, Pokéathlon, and Battle Frontier
+
+Curated prize lists aligned with the matrix (not the ground/hidden random pool, not vanilla HGSS menus). Postgame menus can be **renewable but effort-gated** where balance calls for infinite access without shop trivialization.
+
+**Bug-Catching Contest:** The player **does not choose** the reward — stock prizes that are **always useful**, not situational duds (e.g. the wrong mint or evolution stone for their current party).
+
+**Pokéathlon:** Exchange or prize menus stock items from the rows/columns where they are marked ✓.
+
+**Battle Frontier:** Offer **every rare item that shops do not sell**, so endgame players can still obtain the full rare-item set with work. **Held items** and **TMs** on the Frontier still emphasize top-tier options where the matrix notes **only the best**.
+
+## Pokédex milestone rewards
+
+**Pokédex completion thresholds** grant rare items. Milestones are **curated** (specific rewards at specific counts), not random rolls from the ground/hidden pool. Exact items, amounts, and thresholds TBD.
+
+## Mints, Bottle Caps, Ability Capsules and Patches
+
+Add these items to the game with sources per the matrix. Expect **one-time** overworld acquisition (including **Ground / Hidden** where marked) plus **effort-gated, renewable postgame** acquisition through Pokéathlon, Battle Frontier, Bug Contest, and Pokédex milestones as applicable. Likely also include a way to change **Hidden Power** type (exact item TBD).
 
 ---

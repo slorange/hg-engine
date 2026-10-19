@@ -19,6 +19,8 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
 | **KB-7** | Violet Gym (Falkner) — Elevator attendant still visible; ride **up** works; after beating Falkner, elevator **down** does not work. | [Gym HM rewards](HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** (esp. slot **0** OnLoad, slot **5** elevator) / zone_event **365**. |
 | **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
+| **KB-9** | Crash when leaving **Mahogany Gym** (returning to the field after exit). | |
+| **KB-10** | **Route 41 Surf encounters** confirmed weird (gens V+, and a Bulbasaur with "---" name that crashes the game if caught)  | Unsure if this is Route 41 specific or global. Needs investigation and testing across maps. |
 
 ---
 
@@ -38,6 +40,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | ---- | ------ | ----- |
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
+| **Wild held items — Apricorns** | | Add Apricorns to wild Pokémon held-item pools |
 
 ---
 
@@ -50,6 +53,20 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |
 | **Violet / Fuchsia shard traders** | [World-7 § Rare battle berries](DESIGN-WORLD.md#world-7-berry-economy) | Liechi–Rowap via shard exchange menus |
+| **National Pokédex from start** | [Story-3](DESIGN-STORY.md#story-3-story-and-script-policy) | Unlock National Dex at new game — no Kanto / Professor Oak gate |
+| **Move relearner — easy access** | | **Every Pokémon Center** is the target UX. Architecture choice: (1) one hub Center + warps with tracked return + dynamic exit, (2) patch every Center when adding features, or (3) hook Nurse Joy / PC interaction globally (may not cover new NPCs e.g. Abra teleporter). |
+| **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels) | Replace static per-spot item lists with random generation from the curated rare-item list |
+
+---
+
+## Battles & Pokémon systems ([DESIGN-BATTLES.md](DESIGN-BATTLES.md))
+
+| Item | Design | Notes |
+| ---- | ------ | ----- |
+| **Day Care respects level cap** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Day Care EXP must not raise Pokémon above the current badge-based player cap. Unconfirmed, needs investigation or testing |
+| **Hidden Ability rates** | | Wild **10%** HA; ordinary trainers **20%**; Gym trainers **30%** |
+| **Trainer IVs / EVs** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Scale trainer **EVs** with badges; **higher IVs** for Gym Leaders |
+| **HM removal via move replace** | [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) | HMs removable through normal move replacement, not only the Move Deleter |
 
 ---
 

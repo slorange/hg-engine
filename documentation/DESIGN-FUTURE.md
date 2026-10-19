@@ -19,6 +19,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-9. Accelerated day/night cycle](#future-9-accelerated-daynight-cycle) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Encounter stage selection (wild + trainer)](#future-11-encounter-stage-selection-wild--trainer) |
+| [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
 | [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
 
@@ -120,6 +121,13 @@ New Apricorn colours may be introduced. Colours signal ball identity rather than
 </tbody>
 </table>
 
+## Other ball ideas
+
+- **Precision Ball** — increased catch rate when the target has exactly **1 HP** remaining.
+- **Weather Ball** — increased catch rate during active weather (rain, sun, hail, sandstorm).
+- **Pokédex Ball** — catch rate scales with **Pokédex completion percentage**.
+- **Reversal Ball** — catch multiplier rises as the species' **base catch rate** falls (rarer species easier to catch).
+
 ## Technical investigation
 
 Before implementation:
@@ -158,7 +166,8 @@ Possible system:
 - NPC dialogue/world changes;
 - quests/events;
 - potentially special legendary/mythical content;
-- Darkrai/Lunala-related content depending on generation scope.
+- Darkrai/Lunala-related content depending on generation scope;
+- **Ursaring → Ursaluna** (or equivalent full-moon evolution hook for cross-gen lines).
 
 Do not implement Moon Ball capture rules without this broader system.
 
@@ -517,6 +526,85 @@ Implementation sketch: `AdjustEncounterSpeciesForLevel` gains a **context** flag
 
 ---
 
+# Future-12. Unown collection quest
+
+Collect all **28 Unown forms** across Johto and Kanto. Each **unique form** registered in the Pokédex **permanently** improves **all Unown** in the player’s collection. Completing forms also improves **Hidden Power globally** for every Pokémon (not only Unown).
+
+## Progression
+
+Scaling is linear from 0 unique forms registered to 28.
+
+| Track | At 0 forms | At 28 forms |
+| ----- | ---------- | ----------- |
+| **BST** | 44 / 66 / 44 / 66 / 44 / 44 (**308** total) | 100 / 150 / 100 / 150 / 100 / 100 (**700** total) |
+| **Hidden Power (all Pokémon)** | **60** BP, fixed base power (not IV-dependent) | **100** BP, same fixed-power rule |
+| **Catch rate (Unown)** | **255** | **3** |
+
+- **Hidden Power type** remains **IV-dependent** today; a dedicated item changes type (align with [World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels) Hidden Power plans).
+- **Ability (Unown only):** custom ability — all **damaging** moves deal **+33%**; Unown is **typeless** (no weaknesses, resistances, or STAB).
+- **Wild held item:** **50%** chance to hold **TM10 (Hidden Power)**.
+
+## Moveset
+
+| Level | Moves |
+| ----- | ----- |
+| 1 | Secret Power, Ancient Power, Ominous Wind, Silver Wind, Hidden Power |
+| 15 | Teleport |
+| 30 | Safeguard |
+| 45 | Recover |
+| 60 | Perish Song |
+
+## Encounter locations
+
+Each location’s **theme word** lists the **unique letter forms** that can appear there. Letters may overlap between locations.
+
+| Location | Theme / available forms |
+| -------- | ------------------------ |
+| Ruins of Alph | RUINS + ALPH + UNOWN |
+| Dark Cave | DARK |
+| Union Cave | UNION |
+| Slowpoke Well | SLOW |
+| Ilex Forest | ILEX |
+| Sprout Tower | GROW |
+| Burned Tower | FIRE |
+| Bell Tower | BELL |
+| Mt. Mortar | MORTAR |
+| Lake of Rage | RAGE |
+| Ice Path | ICE |
+| Dragon's Den | DRAGON |
+| Whirl Islands | WHIRL |
+| Mt. Moon | MOON |
+| Rock Tunnel | ROCK |
+| Diglett's Cave | DIG |
+| Seafoam Islands | FROST |
+| Victory Road | VICTORY |
+| Tohjo Falls | TOHJO |
+| Cinnabar | MAGMA |
+
+### Endgame and exclusive forms
+
+- **Q**, **Z**, **!**, **?** — one each from a **Johto roamer**, **Kanto roamer**, **Mt. Silver**, and **Cerulean Cave** (exact assignments TBD).
+- **V** and **Y** — **Victory Road only** ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) **16-badge** gate).
+
+### Wild encounter rules
+
+- At each designated location, **5%** of wild encounters are **Unown** instead of the normal slot species.
+- When Unown is selected, pick **uniformly** among that location’s allowed forms; otherwise use normal encounter tables.
+- Applies to **grass**, **cave**, **Surf**, **Rock Smash**, and **Headbutt**.
+- **Ruins of Alph** needs a special case — vanilla-style **100% Unown** areas remain; do not double-stack the 5% rule blindly.
+
+### UX and postgame hooks
+
+- **Caught indicator:** Prefer showing the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
+- Unown collection may grant **clues** or **unlock options** for legendary / mythical postgame content ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) — TBD).
+
+## Open design questions
+
+- How global Hidden Power BP scales per form vs only at milestones.
+- Roamer / Mt. Silver / Cerulean Cave assignments for **!** and **?**.
+
+---
+
 # Future-13. Expanded stone mechanics
 
 Evolution stones become more flexible for the matching **elemental type** (Fire Stone on Fire-types, Water Stone on Water-types, etc.).
@@ -558,7 +646,13 @@ Shop availability for stones: [World-6](DESIGN-WORLD.md#world-6-shops).
 
 Ideas that do not have their own `Future-*` section yet.
 
-- **Expanded Pokédex / generations** — release scope stays [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) (Gen I–IV plus the Volcarona line); HG-Engine could extend through Gen IX minus Paradox and DLC.
+- **Expanded Pokédex / generations** — release scope stays [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) (Gen I–IV plus the Volcarona line); HG-Engine could extend through Gen IX minus Paradox and DLC. Include selected cross-gen evolutions when scope expands — e.g. **Sylveon**, **Kleavor**, **Wyrdeer**, **Annihilape**, **Farigiraf**, **Dudunsparce** (methods TBD per line).
 - **Starter selection** could be revisited.
 - **Pokémon Center extras** — trainer hub ideas (Abra travel desk, resting to advance time, distributed Apricorn crafting, other QoL) if [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) / [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) land; vanilla Nurse Joy heal + PC remain fine for initial release.
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
+- **Ability tiers** — rank abilities into tiers to set odds for trainer and Gym Leader Pokémon.
+- **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
+- **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
+- **Pokémon balance** — every species reasonably viable; encounter rarity roughly reflects power; adjust BST, abilities, and learnsets as needed.
+- **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …).
+- **Battle AI** — increase switching for type matchups when no good damaging move is available.
