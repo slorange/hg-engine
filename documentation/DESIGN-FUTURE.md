@@ -22,6 +22,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
 | [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
+| [Priority](#priority) |
 
 ---
 
@@ -656,3 +657,36 @@ Ideas that do not have their own `Future-*` section yet.
 - **Pokémon balance** — every species reasonably viable; encounter rarity roughly reflects power; adjust BST, abilities, and learnsets as needed.
 - **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …).
 - **Battle AI** — increase switching for type matchups when no good damaging move is available.
+
+---
+
+# Priority
+
+Working scores for what to build next. [Future-14](#future-14-other-potential-changes) is a list of leftovers, not one feature, so it has no row.
+
+**Score** = Vision + Excitement + Uniqueness + Presence − 2 × Difficulty. Difficulty is counted twice because a hard item should have to clear a higher bar, and the other columns tend to rise and fall together. The Difficulty column itself still means “higher is harder.” Ties break toward the higher Vision score.
+
+| Column | What it measures |
+| ------ | ---------------- |
+| **Score** | Vision + Excitement + Uniqueness + Presence − 2×Difficulty. |
+| **Vision** | How much the road-trip identity needs this. A **5** means the hack is about it. |
+| **Excitement** | How much we want to work on it. |
+| **Difficulty** | Expected effort and risk. Higher is harder. Only unlimited moves is a **5**. Subtracted twice in the total. |
+| **Uniqueness** | How unlike other romhacks this is. A **1** is common hack craft. |
+| **Presence** | How often a player feels it on a normal run. A **1** is a single side track; a **5** shows up every session. |
+| **Depends on** | What should exist first. |
+
+| Item | Score | Vision | Excitement | Difficulty | Uniqueness | Presence | Depends on |
+| ---- | :---: | :----: | :--------: | :--------: | :--------: | :------: | ---------- |
+| [Future-5](#future-5-per-save-wild-ecology-shuffle) Wild ecology | 13 | 5 | 5 | 3 | 4 | 5 | — |
+| [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | Prerequisite: [Future-7](#future-7-generated-trainer--gym-parties) |
+| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Future-5](#future-5-per-save-wild-ecology-shuffle), [Future-7](#future-7-generated-trainer--gym-parties) |
+| [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | Pays off with [Future-8](#future-8-dynamic-battle-rosters--universal-pc) |
+| [Future-13](#future-13-expanded-stone-mechanics) Stone rules | 9 | 2 | 3 | 1 | 3 | 3 | — |
+| [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | [Future-9](#future-9-accelerated-daynight-cycle) for tree refresh |
+| [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |
+| [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
+| [Future-11](#future-11-encounter-stage-selection-wild--trainer) Stage rates | 5 | 1 | 1 | 1 | 2 | 3 | — |
+| [Future-9](#future-9-accelerated-daynight-cycle) Accelerated clock | 4 | 3 | 2 | 3 | 1 | 4 | — |
+| [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
+| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | [Future-9](#future-9-accelerated-daynight-cycle); Moon Ball also wants [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) |
