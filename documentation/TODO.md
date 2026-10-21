@@ -52,7 +52,6 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |
 | **Violet / Fuchsia shard traders** | [World-7 § Rare battle berries](DESIGN-WORLD.md#world-7-berry-economy) | Liechi–Rowap via shard exchange menus |
-| **National Pokédex from start** | [Story-3](DESIGN-STORY.md#story-3-story-and-script-policy) | Unlock National Dex at new game — no Kanto / Professor Oak gate |
 | **Move relearner — easy access** | | **Every Pokémon Center** is the target UX. Architecture choice: (1) one hub Center + warps with tracked return + dynamic exit, (2) patch every Center when adding features, or (3) hook Nurse Joy / PC interaction globally (may not cover new NPCs e.g. Abra teleporter). |
 | **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels) | Replace static per-spot item lists with random generation from the curated rare-item list |
 

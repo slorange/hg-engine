@@ -178,6 +178,8 @@ _mom_begin:
     give_running_shoes
     setflag FLAG_GOT_POKEDEX
     GivePokedex
+    // Oak's National Dex upgrade (not a story flag): sets Pokedex + PlayerProfile nat-dex bits
+    nat_dex_flag_action 1, VAR_SPECIAL_RESULT
     setflag FLAG_GOT_POKEGEAR
     setflag FLAG_UNK_09A
     play_fanfare SEQ_ME_ITEM

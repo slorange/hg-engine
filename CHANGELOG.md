@@ -8,6 +8,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **Starting city** — choose from **18 cities** at the start of the game.
 - **Starter selection** — choose three starters, **one per type**, from Gen 1–4 at the start of the game.
 - After starter selection, the player receives — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, Berry Pots, 5 of each basic berry, 5 Poké Balls, Pokégear.
+- **National Pokédex** — unlocked from the start
 
 ### Travel & world access
 

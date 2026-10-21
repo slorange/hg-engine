@@ -1013,6 +1013,7 @@ So **`0300.png` is not a “free” custom slot** — gfx **300** is **Venusaur*
 | Poké Balls | `ITEM_POKE_BALL` (4) ×5; marts need **`FLAG_UNK_09A` (154)** — `setflag` with Pokégear ([Mart Poké Ball](#mart-poké-ball)) |
 | Running shoes | `give_running_shoes` |
 | Pokédex | `FLAG_GOT_POKEDEX` + `GivePokedex` |
+| National Dex | `nat_dex_flag_action 1, VAR_SPECIAL_RESULT` (opcode 477) after `GivePokedex` — save bits on Pokedex + PlayerProfile, same as Oak’s upgrade. Not a story flag. `ALWAYS_HAVE_NATIONAL_DEX` in `armips/include/config.s` is a separate getter patch (also changes Bug Contest levels); leave off when Mom grants it. |
 | Pokégear | `FLAG_GOT_POKEGEAR` + fanfare |
 | Town Map card | `UpgradePokegear(1)` only — **do not** use `town_map` / `WorldMapScreen` (cmd 157); it opens the map UI during `lockall` and softlocks on close |
 | Phone numbers | `register_gear_number` — Mom (0), Elm (1), Oak (2) |
