@@ -341,7 +341,7 @@ Mom intro grants **Berry Pots** and **5× each** basic berry **Cheri through Per
 
 ## Wild Pokémon holds
 
-**Implemented:** In addition to the table above, every supported berry can be a wild Pokémon's **held-item**. After the normal species held-item table roll (buffed to **65%** common / **15%** rare / **20%** nothing; **Compound Eyes** lead **70%** / **30%** / **0%**), wilds with no item get a **50%** chance (**100%** with Compound Eyes) of a uniform random berry from the **45** supported berries, or a random apricorn.
+**Implemented:** In addition to the table above, every supported berry can be a wild Pokémon's **held-item**, and so can the seven Apricorn colours. After the normal species held-item table roll (buffed to **65%** common / **15%** rare / **20%** nothing; **Compound Eyes** lead **70%** / **30%** / **0%**), wilds with no item get a **50%** chance (**100%** with Compound Eyes) of a fallback hold. That hold is **50%** a uniform random berry from the **45** supported berries and **50%** a uniform random Apricorn.
 
 ---
 

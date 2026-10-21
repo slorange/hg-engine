@@ -168,7 +168,8 @@
 // distance-from-start-city caps precomputed from scripts/dev/Route Levels/.
 #define IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
 
-// Wild holds: 65/15/20 species table + 50% World-7 berry pool; Compound Eyes 70/30/0 + guaranteed berry if still empty.
+// Wild holds: species table 65/15/20 (Compound Eyes 70/30/0). If still empty, 50% fallback
+// hold (100% with Compound Eyes); that hold is 50% World-7 berry / 50% Apricorn.
 #define IMPLEMENT_WILD_BERRY_HOLD
 
 // DEBUG_WILD_LEVEL_CAP_EXACT sets wild level to the distance cap exactly (route testing).

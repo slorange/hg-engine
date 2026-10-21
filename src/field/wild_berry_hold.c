@@ -64,10 +64,23 @@ static const u16 sWildBerryHoldPool[] = {
     ITEM_ROWAP_BERRY,
 };
 
+static const u16 sWildApricornHoldPool[] = {
+    ITEM_RED_APRICORN,
+    ITEM_YELLOW_APRICORN,
+    ITEM_BLUE_APRICORN,
+    ITEM_GREEN_APRICORN,
+    ITEM_PINK_APRICORN,
+    ITEM_WHITE_APRICORN,
+    ITEM_BLACK_APRICORN,
+};
+
 /*
  * pret: one roll 0–99 — if chance >= holdMin, common when chance < commonMax else rare.
  * Normal: 20 / 85 → 20% nothing, 65% common, 15% rare.
  * Compound Eyes (lead): 0 / 70 → 70% common, 30% rare, 0% nothing.
+ *
+ * If that roll is still empty: 50% chance of a fallback hold (100% with Compound Eyes).
+ * The fallback hold is 50% a World-7 berry and 50% one of the seven Apricorns.
  */
 static const u8 sWildHeldItemOdds[2][2] = {
     { 20, 85 },
@@ -75,10 +88,24 @@ static const u8 sWildHeldItemOdds[2][2] = {
 };
 
 #define WILD_BERRY_HOLD_FALLBACK_PERCENT 50
+#define WILD_APRICORN_HOLD_PERCENT 50
 
 static u16 RollRandomBerry(void)
 {
     return sWildBerryHoldPool[gf_rand() % NELEMS(sWildBerryHoldPool)];
+}
+
+static u16 RollRandomApricorn(void)
+{
+    return sWildApricornHoldPool[gf_rand() % NELEMS(sWildApricornHoldPool)];
+}
+
+static u16 RollFallbackHeldItem(void)
+{
+    if ((gf_rand() % 100) < WILD_APRICORN_HOLD_PERCENT) {
+        return RollRandomApricorn();
+    }
+    return RollRandomBerry();
 }
 
 static u32 PlayerLeadHasCompoundEyes(void)
@@ -157,9 +184,9 @@ static void WildMonSetRandomHeldItemImpl(struct PartyPokemon *pokemon, u32 battl
 
     if (item == ITEM_NONE) {
         if (isCompoundEyes != 0) {
-            item = RollRandomBerry();
+            item = RollFallbackHeldItem();
         } else if ((gf_rand() % 100) < WILD_BERRY_HOLD_FALLBACK_PERCENT) {
-            item = RollRandomBerry();
+            item = RollFallbackHeldItem();
         }
     }
 
