@@ -13,7 +13,6 @@
 #include "bag.h"
 #include "battle.h"
 #include "overlay.h"
-#include "heal_after_battle.h"
 #include "pokemon.h"
 
 #ifdef DEBUG_BATTLE_SCENARIOS
@@ -1123,10 +1122,6 @@ void BattleEndRevertFormChange(struct BattleSystem *bw)
         newBS.itemsToRestore[i] = 0;
     }
 #endif // RESTORE_ITEMS_AT_BATTLE_END
-
-#ifdef HEAL_AFTER_BATTLE
-    HealAfterBattle_HealParty(bw);
-#endif // HEAL_AFTER_BATTLE
 
 #ifdef DEBUG_BATTLE_SCENARIOS
 

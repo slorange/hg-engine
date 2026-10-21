@@ -1,5 +1,6 @@
 #include "../include/repel.h"
 
+#include "../include/heal_after_battle.h"
 #include "../include/bag.h"
 #include "../include/constants/file.h"
 #include "../include/constants/item.h"
@@ -12,6 +13,10 @@ u16 ALIGN4 CurrentRepelType = 0;
 
 bool32 PlayerStepEvent_RepelCounterDecrement(SaveData *saveData, FieldSystem *fieldSystem)
 {
+#ifdef HEAL_AFTER_BATTLE
+    HealAfterBattle_HealPartyOnFieldStep(saveData);
+#endif // HEAL_AFTER_BATTLE
+
     void *roamerSaveData = EncDataSave_GetSaveDataPtr(saveData);
     u8 *repel_addr = SaveData_GetRepelPtr(roamerSaveData);
 

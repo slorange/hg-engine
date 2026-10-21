@@ -52,15 +52,17 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 ### KB-2 — Post-battle return to field crash
 
-**Symptom:** freeze or hard crash when fading back to overworld after a battle.
+**Symptom:** freeze or hard crash when fading back to overworld after a battle (e.g. undefined instruction, debugger **`LDMIA with Empty Rlist`** after party RAM is corrupt).
 
-**Status (Sep 2026):** open again; repro asymmetric (regular for at least one tester; primary dev often no longer reproduces after heal guard pass).
+**Status (Oct 2026):** **removed from [TODO.md](TODO.md#known-bugs)** — no longer reproduces on current ROM with **heal deferred to overworld step** ([Heal after every battle](#heal-after-every-battle)). Treat as **latent** if we move heal back into battle teardown without a verified post-sync hook.
 
-**Related recipe:** [Heal after every battle](#heal-after-every-battle) (heal works; crash is separate timing/hook issue).
+**Cause (when heal ran in battle):** calling save/party heal during or immediately after `Battle_End` party sync — overlay 12 stubs, `StoreFieldSysPtr`, `WIPE_SYS_EndCheck`, and guessed **`0xEB6`** epilogue hooks all crashed or clobbered instructions. Heal at **`BattleEndRevertFormChange`** alone was overwritten by vanilla sync afterward.
+
+**Mitigation (shipping):** `HealAfterBattle_HealPartyOnFieldStep` from the repel **step** hook only; **`BattleEndRevertFormChange`** at **`Battle_End` @ overlay 12 `0xB90`** (form/items only — no heal in battle overlay).
 
 **Bisect:** disable `HEAL_AFTER_BATTLE` in `include/config.h`.
 
-**Reporting:** emulator vs hardware, `test.nds` build date, new vs old save, wild vs trainer, party size, cheats/speedup.
+**Reporting (if it returns):** emulator vs hardware, `test.nds` build date, new vs old save, wild vs trainer, party size, cheats/speedup.
 
 ### KB-3 — Cherrygrove guide cutscene
 
@@ -337,34 +339,46 @@ Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **
 
 ## Heal after every battle
 
-**Status:** verified (wild, trainer, flee, and catch tested in-game).
+**Status:** **workaround shipped** — full party heal on **every overworld step** (`PlayerStepEvent_RepelCounterDecrement`); user-tested stable on DeSmuME and phone emulator (Oct 2026). Not design-perfect; target is **post-battle** apply ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes), [Battle-1](DESIGN-BATTLES.md#recovery)).
 
 **Design:** [Battle-1](DESIGN-BATTLES.md#recovery) — full HP/PP/status restore after every battle (wild, trainer, flee; no special exclusions).
 
 | What | Where |
 |------|--------|
 | Toggle | `HEAL_AFTER_BATTLE` in `include/config.h` (enabled by default; comment out to disable) |
-| Hook | `Battle_End` → `BattleEndRevertFormChange` → `HealAfterBattle_HealParty(bw)` in `src/battle/heal_after_battle.c` |
-| Heal impl | Battle-work party, then save (`SaveBlock2_get()`), with EWRAM pointer checks |
+| Form / items hook | `Battle_End` @ overlay 12 **`0x0B90`** → `BattleEndRevertFormChange` only (no heal in battle overlay) |
+| Heal impl | `src/heal_after_battle.c` → **`build/linked.o`** (ARM9 extension, same link unit as `src/repel.c`); **`PokeParty_GetPokeCount`** + **`Party_GetMonByIndex`** + **`MON_DATA_SPECIES_EXISTS`**; HP/status as **`u16`** |
+| Field apply | **`HealAfterBattle_HealPartyOnFieldStep(saveData)`** — pass **`saveData` from the step hook**, not `gFieldSysPtr->savedata` |
 | Logic | Nurse Joy–equivalent: max HP, clear status, `RestoreBoxMonPP` |
 
-**Verified:** wild, trainer, flee, and catch all restore HP/PP/status on return to field.
+**Step-heal limitations (why we still want end-of-battle):**
 
-**KB-2 (Sep 2026):** crash when returning to the field after battle — **open again**. Heal logic runs only when `sp->fight_end_flag` is set (`BattleStruct` @ `0x311F`), with EWRAM pointer checks on `bw`, `sp`, and party mons; hook timing unchanged (`Battle_End` → `BattleEndRevertFormChange`). A Sep 2026 guard pass stopped repro for the primary dev (100+ battle ends) but **another tester hits it regularly** — treat as environment- or timing-sensitive, not fixed. Status: [TODO.md KB-2](TODO.md#known-bugs).
+- Party stays injured on the field until the **first full step** — follower sprite/order can lag (e.g. lead fainted in battle) until party menu refresh.
+- **Turn-in-place** (no step) can enter another battle without heal.
+- **Back-to-back trainer chains** at one tile can run multiple fights with no step between.
+- A **pending heal flag** in ARM9 scratch (near wild-cap scratch @ **`0x021FF940`**) was tried; apply-on-step/menu was flaky — not shipped; step heal runs unconditionally each step when the toggle is on.
+
+**Oct 2026 — party corruption (“Bad Eggs”):** iterating **`party->members[i]`** or using **`party->count`** instead of **`Party_GetMonByIndex`** / **`PokeParty_GetPokeCount`** caused **`SetMonData`** on wrong memory — checksum failures, Bad Eggs in slots 1+, possible **`LDMIA with Empty Rlist`** on later battles. **Corrupted saves are not repaired by a fixed ROM**; test on a new save.
 
 **Agent notes (do not repeat without new evidence):**
 
 | Attempt | Result |
 | -------- | ------ |
-| Pending flag + heal on `StoreFieldSysPtr` (ARM9) | No heal — field overlay usually stays loaded during wild battles; hook often never runs after battle. If you hook `StoreFieldSysPtr`, preserve **`r0`** across any `bl` (vanilla needs it). |
-| `HealAfterBattle_*` in **ARM9 main** called from battle overlay @ `Battle_End` | **Consistent crash** before fade — battle overlay build uses **`-mno-long-calls`**; do not `bl` main from overlay 12/130 stubs. |
-| Save party only at start of `Battle_End` | No heal — vanilla overwrites save party after the hook returns. |
+| Pending flag + heal on `StoreFieldSysPtr` (ARM9) | **Crash before fade** if pending is set — heal during `Battle_End` party sync. Do not call heal from `StoreFieldSysPtr`; preserve **`r0`** if adding other logic there. |
+| Pending flag + heal on step/menu only | Stable but heal often **did not run** (flag/trigger/save pointer issues). |
+| Overlay 12 hook @ **`0xEB6`** (any stub) | **Crash before fade** — 8-byte patch clobbers post-`pop` insns; bad branch (e.g. PC **`0x021E3FA0`**, undef **`0x0100091F`**). On a dirty tree, re-extract overlay 12 from **`rom.nds`** or patch vanilla bytes back @ **`0xDE8` / `0xEB6`**. |
+| `HealAfterBattle_*` C from battle overlay @ `Battle_End` | **Crash** — do not `bl` save/party code from overlay 12/130 stubs. |
+| Heal in `BattleEndRevertFormChange` / start of `Battle_End` | No lasting heal — vanilla overwrites save party after sync. |
 | Heal on `UnloadOverlayByID(OVERLAY_BATTLE)` | No heal — path did not run reliably in testing. |
+| `WIPE_SYS_EndCheck` hook | **Load/overworld crash** — do not skip first 8 bytes of vanilla; restore @ **`0x0200FB5C`**. |
 | Second hook @ overlay `080011A2` (“end of `Battle_End`”) | **Battle-start crash** — site is not battle-end-only. Removing the hook from `hooks` **does not** revert bytes in `base/overlay/overlay_0012.bin`. |
+| Heal every step (safe iteration) | **Works** for HP/PP/status; see limitations above. |
 
-**If KB-2 or heal regressions return:** bisect with `HEAL_AFTER_BATTLE` off in `config.h`. For **battle-start** crash after overlay experiments, re-extract overlay 12 from `rom.nds` (preferred) or restore 10 vanilla bytes @ `080011A2` through `080011AB` (`Hook(..., reg 0)` = 6-byte stub + 4-byte pointer; full span `10 BD 70 47 00 00 F8 B5 92 B0`). Helper: `python scripts/local/check_overlay12_hook.py`. For **end-of-battle** crash only, the next real fix is a **verified** hook after vanilla party sync (decomp/xref) — not another guessed offset.
+**If [KB-2](#kb-2--post-battle-return-to-field-crash) or heal regressions return:** bisect with `HEAL_AFTER_BATTLE` off in `config.h`. For **battle-start** crash after overlay experiments, re-extract overlay 12 from `rom.nds` (preferred) or restore 10 vanilla bytes @ `080011A2` through `080011AB`. Helper: `python scripts/local/check_overlay12_hook.py`. For **end-of-battle** heal, use a **verified** hook after vanilla party sync (decomp/xref) — not another guessed offset; consider vanilla **`heal_party`** scr cmd **282** or decomp heal helper instead of hand-rolled `SetMonData` loops.
 
-**Commit shape (Sep 2026):** `include/heal_after_battle.h`, `src/battle/heal_after_battle.c`, call from `BattleEndRevertFormChange` in `battle_pokemon.c`. No `bytereplacement` for overlay 12 unless you intentionally want a team-wide band-aid for stale local overlays.
+**Files:** `include/heal_after_battle.h`, `src/heal_after_battle.c`, call from `src/repel.c`. No overlay-12 heal hook in **`hooks`**.
+
+**`bytereplacement` (repo tool):** at pack time, **`scripts/build/make.py`** writes literal hex bytes into **`base/arm9.bin`** or **`base/overlay/overlay_NNNN.bin`** (see [DS code injection — bytereplacement](https://ds-pokemon-hacking.github.io/docs/generation-iv/guides/hgss-code_injection/#bytereplacement)). Used elsewhere in this fork for table sizes and hook stubs. **Not part of the shipped step-heal fix** — only needed if you experimentally patched overlay 12 / WIPE and need to undo bytes without a full **`make restore_build`**.
 
 ---
 
@@ -1471,7 +1485,7 @@ Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAd
 | `sWildCapCache` | `0x021FF930` | 8 |
 | `sLevelUpEvoTablesRuntimePtr` | `0x021FF940` | 4 |
 
-`0x021FF940` is zeroed in `armips/asm/wild_level_caps.s` but unused — overlay 129 uses patched pointers into **field overlay rodata**, not ARM9 scratch.
+`0x021FF940` is zeroed in `armips/asm/wild_level_caps.s` but unused — overlay 129 uses patched pointers into **field overlay rodata**, not ARM9 scratch. (KB-2 work briefly considered a pending-heal byte in scratch after **`0x021FF940`**; step heal does not use it.)
 
 Stage tables live in **contiguous field overlay rodata** (`sLevelUpEvoTablesData`, `sSyntheticEvoEdgesData`). Do not pin them with a linker hole — that bloated the field overlay past `0x023D8000` and clobbered overlay 129.
 

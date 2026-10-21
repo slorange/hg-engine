@@ -647,6 +647,7 @@ Shop availability for stones: [World-6](DESIGN-WORLD.md#world-6-shops).
 
 Ideas that do not have their own `Future-*` section yet.
 
+- **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
 - **Expanded Pokédex / generations** — release scope stays [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) (Gen I–IV plus the Volcarona line); HG-Engine could extend through Gen IX minus Paradox and DLC. Include selected cross-gen evolutions when scope expands — e.g. **Sylveon**, **Kleavor**, **Wyrdeer**, **Annihilape**, **Farigiraf**, **Dudunsparce** (methods TBD per line).
 - **Starter selection** could be revisited.
 - **Pokémon Center extras** — trainer hub ideas (Abra travel desk, resting to advance time, distributed Apricorn crafting, other QoL) if [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) / [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) land; vanilla Nurse Joy heal + PC remain fine for initial release.

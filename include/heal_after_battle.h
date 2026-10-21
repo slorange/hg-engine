@@ -2,11 +2,10 @@
 #define HEAL_AFTER_BATTLE_H
 
 #include "config.h"
-
-struct BattleSystem;
+#include "types.h"
 
 #ifdef HEAL_AFTER_BATTLE
-void HealAfterBattle_HealParty(struct BattleSystem *bw);
+void LONG_CALL HealAfterBattle_HealPartyOnFieldStep(void *saveData);
 #endif // HEAL_AFTER_BATTLE
 
 #endif // HEAL_AFTER_BATTLE_H
