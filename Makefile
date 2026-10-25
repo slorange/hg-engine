@@ -316,6 +316,11 @@ $(BASE)/arm9.bin: $(ROMNAME) $(NDSTOOL) $(VENV_ACTIVATE)
 	$(NARCHIVE) extract $(FILESYS)/a/0/2/8 -o $(BUILD)/a028/ -nf
 
 all: $(OUTPUT) $(OVERLAY_OUTPUTS) $(WILD_LEVEL_CAPS_C) $(LEVEL_UP_EVO_TABLES_C) $(SYNTHETIC_EVO_EDGES_C) $(WILD_SPECIES_HELD_C) $(TOOLS) $(BASE)/arm9.bin
+
+# Future-5: run after editing data/ecology/ecology_families.tsv or ecology_locations.tsv (not part of every make).
+ecology-compat:
+	$(PYTHON) scripts/build/gen_ecology_compatibility.py
+	$(PYTHON) scripts/dev/verify_ecology_compatibility.py
 	@# find and delete macOS and windows files
 	find . \( -name "*.DS_Store" -o -name "*:Zone.Identifier" \) -delete
 	$(PYTHON) scripts/build/make.py $(CFLAGS)

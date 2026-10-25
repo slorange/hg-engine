@@ -42,6 +42,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
 | Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
+| Wild ecology shuffle (Future-5) | [Per-save ecology (pre-ROM)](#per-save-wild-ecology-shuffle-future-5--pre-rom) → [Files](#ecology-file-shorthand), [Compat rules](#ecology-compat-prebuild-rules), [Generation](#ecology-assignment-gen-core), [Typed land](#typed-locations-land-theme-slots) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
 | Known bugs | [Known bugs (TODO.md)](#known-bugs-index-3) |
@@ -93,6 +94,20 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 **Design:** [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow).
 
 **Related recipe:** [Open-world starting inventory](#open-world-starting-inventory-new-saves) — only script slot **0** rebuilt; scr_seq **845** other slots + **545** text remap may not match sitting-script branches.
+
+### KB-10 — Surf wild encounters (wrong species)
+
+**Symptom ([TODO.md](TODO.md#known-bugs)):** Surf shows wrong Pokémon (e.g. Gen V+ **Cetoddle**); A **Bulbasaur** with `"---"` that crashes the game if caught
+
+**Status (Oct 2026):** **Investigation paused** — not fixed. [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) will replace fixed species tables later, but a broken surf pipeline or crash still needs a **minimal** fix before release; do not assume ecology shuffle fixes hooks.
+
+**Data check:** `data/Encounters.c` / built `encounters.narc` / `test.nds` — **surf slots match vanilla** (e.g. Route 41 Tentacool / Tentacruel / Mantine). Wrong species is not “bad NARC authoring” for surf tables.
+
+**Method split (in-game):** **Grass** and **Old Rod** species look **correct**; **Surf** species wrong → narrows to **surf encounter setup** (`WildWaterEncSingle` / `SetEncountData` type **1** vs grass **0** / fishing **2**), not global encounter NARC.
+
+**Wild level cap debug (separate issue):** With `DEBUG_WILD_LEVEL_CAP_LEVELS` on ([debug toggles](#debug-toggles-turn-off-for-normal-play)), enemy level **5** appeared on **grass, fishing, and surf** — not surf-only. In `src/wild_level_caps.c`, level **5** = `WLC_FAIL_ENCBANK_NA` (`MapHeader_GetWildEncounterBank(mapId)` returned **`ENCDATA_NA` (255)**). Species can still come from the vanilla table path while cap lookup fails on the `mapId` from `ResolveMapId` (`SaveBlock2` → `LocalFieldData.currentPosition.mapId`, fallback `fsys->location`, often **`MAP_EVERYWHERE` (0)**). Inspect ARM9 scratch `sWildLevelCapDebug` @ **`0x021FF910`** (`mapId`, `encBank`, `failReason`) if cap plumbing is revisited. Toggle left **off** after this pass.
+
+**Hooks / refs:** [Wild level caps pipeline](#runtime-pipeline); `WildWaterEncSingle` @ `0x022474E0` when `IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS`; overlay `SetEncountData` ~`0x02247B64`.
 
 ---
 
@@ -1500,7 +1515,7 @@ Scratch survives overlay 129 reload; do not reuse these addresses for other feat
 
 | Define | File | Effect |
 |--------|------|--------|
-| `DEBUG_WILD_LEVEL_CAP_LEVELS` | `include/debug.h` | Level = diagnostic code (4–9 fail) or exact table cap on success |
+| `DEBUG_WILD_LEVEL_CAP_LEVELS` | `include/debug.h` | Level = diagnostic code (4–9 fail) or exact table cap on success. **KB-10 pass:** level **5** (`encBank == NA`) on grass/fish/surf — [KB-10](#kb-10--surf-wild-encounters-wrong-species) |
 | `DEBUG_WILD_LEVEL_CAP_EXACT` | `include/config.h` | Level = cap exactly (no random roll) |
 | `DEBUG_WILD_LEVEL_CAPS` | `include/debug.h` | melonDS `debug_printf` on cache/apply |
 
@@ -1542,6 +1557,163 @@ All tracked — nothing belongs in `scripts/local/`:
 2. Run `python3 scripts/dev/verify_encounter_stage.py` (optional — catches obvious threshold mistakes).
 3. Full `make` (or `python3 scripts/build/gen_synthetic_evo_edges.py`) regenerates field rodata.
 4. Rebuild `test.nds` — confirm both patch lines in the build log.
+
+---
+
+## Per-save wild ecology shuffle (Future-5 — pre-ROM)
+
+**Design:** [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle). Player-facing rules live in design docs; this section is the **implementation recipe** for authoring, prebuild compat, and offline assignment tests.
+
+**Status (Oct 2026):** **Compat + assignment only** — no new-game hook, no save format, no encounter-table overlay in `test.nds` yet. Vanilla wild tables still drive in-game encounters. Surf pipeline issues ([KB-10](#kb-10--surf-wild-encounters-wrong-species)) are separate; do not assume ecology work fixes them.
+
+**Goal:** At new game, assign shuffleable **families** to placement **groups** (shared ENCDATA ids) and methods; persist per save; hooks read assignment instead of static NARC species. Current deliverable: regenerate **eco-csr** + inspect **`build/ecology/ecology_assignment.tsv`** via host tool.
+
+### Ecology file shorthand
+
+| Shorthand | Path | Role |
+|-----------|------|------|
+| **eco-fam** | `data/ecology/ecology_families.tsv` | Author families (habitat columns, rarity, demand, Avoid Tag, …) |
+| **eco-loc** | `data/ecology/ecology_locations.tsv` | Author groups (ENCDATA symbols, Water, Habitat, Types, method presence) |
+| **gen-compat** | `scripts/build/gen_ecology_compatibility.py` | TSV → ROM CSR + human dumps |
+| **dump-fam** | `data/ecology/ecology_compat_by_family.tsv` | Audit: where each family *may* appear (split by `type_match`) |
+| **dump-grp** | `data/ecology/ecology_compat_by_group.tsv` | Audit: who *may* appear per group / method / `type_match` |
+| **compat-h** | `include/constants/generated/ecology_compat.h` | C structs, counts, `ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` |
+| **eco-csr** | `src/field/ecology_compat_data.c` | Committed compat tables (group-indexed CSR) |
+| **eco-strings** | `src/field/ecology_strings_data.c` | Group/family names (host **ecologygen** + debug; not required in ROM yet) |
+| **gen-core** | `src/field/ecology_generate.c`, `include/ecology/ecology_generate.h` | Per-seed assignment (shared with future ROM) |
+| **ecologygen** | `tools/ecologygen` (build: `tools/source/ecologygen/`) | Host CLI over **eco-csr** |
+| **run-eco** | `scripts/dev/run_ecology_generate.py` | Regen compat (optional), build **ecologygen**, write **assign** |
+| **assign** | `build/ecology/ecology_assignment.tsv` | One deterministic test world (not committed) |
+
+**Pipeline:** **eco-fam + eco-loc** → **gen-compat** → **eco-csr** + **dump-*** → **gen-core** + **eco-csr** → **assign** (via **run-eco**).
+
+### Workflow (agents)
+
+1. Edit **eco-fam** / **eco-loc**.
+2. **`make ecology-compat`** — runs **gen-compat** + `scripts/dev/verify_ecology_compatibility.py`, then repacks ROM (see `Makefile`; heavier than a table-only regen).
+3. For assignment experiments only:  
+   `python scripts/dev/run_ecology_generate.py --seed 0xDEADBEEF`  
+   On Windows (no native `gcc`), **run-eco** builds **ecologygen** inside Docker automatically.
+4. Commit: **eco-fam**, **eco-loc**, **dump-fam**, **dump-grp**, **eco-csr**, **compat-h**, **eco-strings** (+ **gen-compat** / **gen-core** when logic changes). **assign** and **ecologygen** binary stay gitignored.
+
+Normal **`make`** does **not** re-run **gen-compat**; it only compiles committed **eco-csr** if linked later.
+
+### Ecology compat (prebuild) rules
+
+**gen-compat** builds edges `(family, group, method)` stored in **eco-csr** (land list + per-method buckets). Families with `Special` or `Encounter Methods` = 0 are excluded from shuffle.
+
+| Check | Source | Notes |
+|--------|--------|--------|
+| Habitat | eco-fam Field/Mountain/Forest/Cave/Ruins/Tower vs eco-loc `Habitat` | Land only |
+| Wet/Dry | eco-fam `Wet/Dry` vs eco-loc `Water` | Land / headbutt / rock smash. **Water** column is comma-separated: `Dry`, `Fresh`, `Salt`, `Cave` (salt = sea). Surf/rod ignore `Dry` for water-type rules. |
+| Required Tag | eco-fam `Required Tag` must appear in eco-loc `Types` | Inclusion when tag set |
+| **Avoid Tag** | eco-fam `Avoid Tag` (comma types) ∩ eco-loc `Types` | **Hard exclude** entire group for that family |
+| Land time | eco-fam `Nocturnal` vs group period mask | Intersection must be non-empty for land |
+| Fishing / Surfing | eco-fam vs method | Surf vs Fish vs Both |
+| Water type (family) | Salt/Fresh/Cave… vs non-Dry water tokens on group | Surf / rods |
+| **Type overlap** | Type1, Type2, Type (Vibe) vs eco-loc `Types` | Sets edge flag **`ECOLOGY_EDGE_TYPE_MATCH`** — **not** a hard filter (except themed land fill; see below) |
+
+Groups whose name contains **Bug Catching Contest** are skipped (`ECOLOGY_GROUP_FLAG_SHUFFLE` off). BCC families use separate authoring.
+
+**Version:** `ECOLOGY_COMPAT_VERSION` = first 4 bytes of SHA256(**eco-fam** + **eco-loc**).
+
+### Slot budgets (shuffle targets)
+
+Derived in **gen-compat** from eco-loc columns (presence = `> 0`, not the numeric value):
+
+| Method | Slots when present |
+|--------|-------------------|
+| Land | **6** total (shared across time — not 12×3) |
+| Surf | **3** |
+| Old Rod | **2** |
+| Good Rod | **1** |
+| Super Rod | **1** |
+| Headbutt | **3** |
+| Rock Smash | **2** |
+
+**Morning / Day / Night** on eco-loc: which **periods exist** (`landPeriodMask`), not slot counts. Runtime (future) rolls only slots whose **`land_time`** mask matches the current period.
+
+**Rods (future in-game):** Good Rod encounter roll = pool(**Old** ∪ **Good**); Super Rod = **Old** ∪ **Good** ∪ **Super**. **assign** / **gen-core** still fill three separate buckets for inspection; merge at hook time.
+
+### Ecology assignment (gen-core)
+
+**Entry:** `EcologyGenerateWorld(seed, outSlots, outLandSlotTimeMasks, …)` in **gen-core**. Deterministic LCG (`1664525` / `1013904223`).
+
+**Phase A — demand:** Each family needs `Encounter Methods` distinct `(group, method)` placements (deduped). Order: shuffled family list. Rod placements respect rarity tier gates (below).
+
+**Phase B — fill:** Remaining empty slots per bucket, weighted random from compat CSR.
+
+**Rarity pick weights** (phase B; enum order Normal, Common, Rare, Very Rare):
+
+| Tier | Weight |
+|------|--------|
+| Normal (blank Rarity) | 9 |
+| Common | 27 |
+| Rare | 3 |
+| Very Rare | 1 |
+
+(×3 steps toward Common; **not** the inverted table that briefly favored Very Rare.)
+
+**Type boost:** **×5** on pick weight when `ECOLOGY_EDGE_TYPE_MATCH` — **only on untyped locations** (no `Types` on eco-loc). Typed locations use theme slots instead (below).
+
+**Rod rarity gates** (assignment only; compat lists may still list other rarities):
+
+| Rod | Allowed rarities |
+|-----|------------------|
+| Old | Common only |
+| Good | Common + Normal |
+| Super | All tiers |
+
+**Land time on assign:** Each land slot gets effective mask = family nocturnal mask ∩ group period mask. **assign** column **`land_time`**: blank = all periods at that location; else `Morning`, `Night`, `Morning, Night`, etc.
+
+### Typed locations (land theme slots)
+
+When eco-loc **`Types`** is non-empty, **gen-compat** stores `sEcologyGroupLocationTypeCount[group]`.
+
+**Land fill:**
+
+1. Target themed slots = **`ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` (2) × type count** (e.g. Fire → 2; Fire + Ghost → 4), capped by land capacity (6).
+2. Until target met: pick only **`type_match`** land compat entries; **rarity weights only** (no ×5).
+3. Remaining land slots: pick from **non–type_match** pool only (no themed weight boost).
+4. If themed pool cannot satisfy target, fall back to general pool for unfilled themed slots (see audit).
+
+**Demand phase** can still place **type_match** families on themed routes **before** fill, so **assign** may show **more** than 2 themed families on single-type routes (e.g. three Fire lines on Cinnabar). Hard cap including demand is not implemented yet.
+
+**Untyped locations:** all land compat eligible; **×5** type flag boost applies if any edge had flag (unusual without `Types`).
+
+### Typed land pool shortfalls (audit)
+
+Compare **dump-grp** Land `type_match=1` family count vs **2 × |Types|** for groups **with land**. Insufficient themed compat (Oct 2026 data):
+
+- **0 themed families:** National Park Bug Catching Contest (Bug), Route 10 (Electric), Route 4/9/24 (Water).
+- **1 themed family (need 2):** Route 37, Route 38 (Ghost — only Drifloon).
+
+Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); land theme guarantee does not apply there.
+
+Re-run audit after eco-fam edits:  
+`python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
+
+### ROM integration (not done)
+
+| Piece | Status |
+|-------|--------|
+| **eco-csr** in field overlay | Generated; **not** wired in overlay link / hooks |
+| New-game seed + save blob | TBD |
+| Encounter hook / ENCDATA fan-out | TBD — pattern reference: [Wild level caps runtime](#runtime-pipeline) |
+| Rod pool merge at encounter time | TBD |
+
+When linking **eco-csr**, watch [Overlay 129 / field rodata budget](#overlay-129-32-kib-engine-overlay) (dual CSR was dropped earlier for size).
+
+### Scripts (Future-5)
+
+| Path | Bucket | Role |
+|------|--------|------|
+| `scripts/build/gen_ecology_compatibility.py` | build | **gen-compat** |
+| `scripts/dev/verify_ecology_compatibility.py` | dev | Sanity + regen via **make ecology-compat** |
+| `scripts/dev/run_ecology_generate.py` | dev | **run-eco** |
+| `tools/source/ecologygen/` | tools | Host **ecologygen** (`-DECOLOGY_STANDALONE`) |
+
+See also [`scripts/README.md`](../scripts/README.md) ecology bullets.
 
 ---
 

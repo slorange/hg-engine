@@ -1,0 +1,343 @@
+group_name	encounter_type	type_match	families
+Azalea Town	Headbutt	0	Aipom, Cherubi, Farfetch'd, Hoothoot, Mankey, Murkrow, Natu, Pachirisu, Pidgey, Spearow, Starly, Sudowoodo, Swablu, Taillow
+Azalea Town	Headbutt	1	Burmy, Caterpie, Combee, Heracross, Ledyba, Nincada, Pineco, Spinarak, Weedle, Wurmple
+Bell Tower	Land	0	Abra, Bronzor, Chimecho, Growlithe, Hoothoot, Murkrow, Rattata, Vulpix
+Bell Tower	Land	1	Drifloon, Duskull, Gastly, Misdreavus, Shuppet
+Blackthorn City	Surf	0	Buizel, Carvanha, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Blackthorn City	Surf	1	Dratini
+Blackthorn City	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Blackthorn City	Fishing	1	Dratini
+Burned Tower	Land	0	Baltoy, Beldum, Bronzor, Chimecho, Grimer, Koffing, Lunatone, Natu, Solrock
+Burned Tower	Land	1	Duskull, Gastly, Misdreavus, Sableye, Shuppet
+Celadon City	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Celadon City	Surf	1	Lotad
+Celadon City	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Celadon City	Headbutt	0	Aipom, Burmy, Caterpie, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Celadon City	Headbutt	1	Cherubi
+Cerulean Cave	Land	0	Aron, Bagon, Baltoy, Corphish, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Onix, Paras, Poliwag, Psyduck, Rhyhorn, Sableye, Shroomish, Shuckle, Slowpoke, Sneasel, Snorunt, Solrock, Swinub, Wooper, Zubat
+Cerulean Cave	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Cerulean Cave	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Cerulean Cave	Rock Smash	0	Diglett, Geodude, Krabby, Nosepass, Sableye, Shuckle
+Cerulean City	Surf	0	Dratini
+Cerulean City	Surf	1	Buizel, Carvanha, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Cerulean City	Fishing	0	Dratini
+Cerulean City	Fishing	1	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Cerulean City	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Cherrygrove City	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Cherrygrove City	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Cherrygrove City	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Cianwood City	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Cianwood City	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Cianwood City	Rock Smash	0	Diglett, Geodude, Krabby, Nosepass, Sableye, Shuckle
+Cinnabar Island	Land	0	Abra, Absol, Bidoof, Buizel, Buneary, Chansey, Chimecho, Clefairy, Corphish, Croagunk, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Farfetch'd, Girafarig, Glameow, Gulpin, Jigglypuff, Kangaskhan, Krabby, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Marill, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Phanpy, Pikachu, Pinsir, Plusle, Poliwag, Poochyena, Psyduck, Ralts, Rattata, Rhyhorn, Sandshrew, Scyther, Sentret, Seviper, Shellos, Shinx, Skarmory, Skitty, Skorupi, Slakoth, Slowpoke, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Tauros, Teddiursa, Venonat, Voltorb, Whismur, Wooper, Yanma, Zangoose, Zigzagoon
+Cinnabar Island	Land	1	Growlithe, Houndour, Larvesta, Magmar, Numel, Ponyta, Slugma, Torkoal, Vulpix
+Cinnabar Island	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Shellos, Slowpoke, Staryu, Tentacool, Wailmer, Wingull
+Cinnabar Island	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellos, Slowpoke, Staryu, Tentacool
+Cliff Cave	Land	0	Aron, Bagon, Baltoy, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Mawile, Nosepass, Numel, Onix, Paras, Rhyhorn, Sableye, Shroomish, Shuckle, Sneasel, Snorunt, Solrock, Swinub, Trapinch, Zubat
+Cliff Cave	Land	1	Machop, Meditite
+Cliff Cave	Rock Smash	0	Diglett, Geodude, Nosepass, Sableye, Shuckle, Skorupi
+Cliff Edge Gate	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Cliff Edge Gate	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Dark Cave	Land	0	Aron, Bagon, Baltoy, Corphish, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Onix, Paras, Poliwag, Psyduck, Rhyhorn, Sableye, Shroomish, Shuckle, Slowpoke, Sneasel, Snorunt, Solrock, Swinub, Wooper, Zubat
+Dark Cave	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Dark Cave	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Dark Cave	Rock Smash	0	Diglett, Geodude, Krabby, Nosepass, Sableye, Shuckle
+Diglett's Cave	Land	0	Aron, Bagon, Baltoy, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Mawile, Meditite, Nosepass, Numel, Onix, Paras, Rhyhorn, Sableye, Shroomish, Shuckle, Sneasel, Snorunt, Solrock, Swinub, Trapinch, Zubat
+Dragon's Den	Surf	0	Carvanha, Chinchou, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Dragon's Den	Surf	1	Dratini
+Dragon's Den	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Dragon's Den	Fishing	1	Dratini
+Ecruteak City	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Ecruteak City	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Ecruteak City	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Fuchsia City	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Fuchsia City	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Fuchsia City	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Starly, Sudowoodo, Swablu, Taillow, Wurmple
+Fuchsia City	Headbutt	1	Spinarak, Weedle
+Ice Path	Land	0	Aron, Baltoy, Duskull, Gastly, Grimer, Koffing, Larvitar, Lunatone, Machop, Mawile, Meditite, Nosepass, Sableye, Shuckle, Solrock, Zubat
+Ice Path	Land	1	Jynx, Sneasel, Snorunt, Swinub
+Ilex Forest	Land	0	Aipom, Bellsprout, Buneary, Carnivine, Cherubi, Duskull, Exeggcute, Farfetch'd, Gastly, Hoothoot, Mankey, Misdreavus, Murkrow, Natu, Nidoran♀, Nidoran♂, Oddish, Pachirisu, Pikachu, Poochyena, Roselia, Seedot, Shroomish, Shuppet, Slakoth, Stantler, Sudowoodo, Taillow, Tangela, Teddiursa, Tropius, Vulpix, Zigzagoon
+Ilex Forest	Land	1	Burmy, Caterpie, Combee, Heracross, Illumise, Kricketot, Ledyba, Nincada, Paras, Pineco, Pinsir, Scyther, Spinarak, Venonat, Volbeat, Weedle, Wurmple, Yanma
+Ilex Forest	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Ilex Forest	Surf	1	Surskit
+Ilex Forest	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Ilex Forest	Headbutt	0	Aipom, Cherubi, Farfetch'd, Hoothoot, Mankey, Murkrow, Natu, Pachirisu, Pidgey, Spearow, Starly, Sudowoodo, Swablu, Taillow
+Ilex Forest	Headbutt	1	Burmy, Caterpie, Combee, Heracross, Ledyba, Nincada, Pineco, Spinarak, Weedle, Wurmple
+Lake of Rage	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Lake of Rage	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Lake of Rage	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Mt. Moon	Land	0	Aron, Bagon, Baltoy, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Mawile, Meditite, Nosepass, Numel, Onix, Paras, Rhyhorn, Sableye, Shroomish, Shuckle, Sneasel, Snorunt, Solrock, Swinub, Trapinch, Zubat
+Mt. Moon Outside	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Mt. Moon Outside	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Mt. Mortar	Land	0	Aron, Bagon, Baltoy, Corphish, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Onix, Paras, Poliwag, Psyduck, Rhyhorn, Sableye, Shroomish, Shuckle, Slowpoke, Sneasel, Snorunt, Solrock, Swinub, Wooper, Zubat
+Mt. Mortar	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Mt. Mortar	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Mt. Silver Inside	Land	0	Aron, Bagon, Baltoy, Corphish, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Onix, Paras, Poliwag, Psyduck, Rhyhorn, Sableye, Shroomish, Shuckle, Slowpoke, Sneasel, Snorunt, Solrock, Swinub, Wooper, Zubat
+Mt. Silver Inside	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Mt. Silver Inside	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Mt. Silver Outside	Land	0	Absol, Aron, Beldum, Larvitar, Machop, Makuhita, Mankey, Nosepass, Skarmory, Teddiursa
+Mt. Silver Outside	Land	1	Sneasel, Snorunt, Snover, Swinub
+Mt. Silver Outside	Surf	0	Buizel, Carvanha, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Mt. Silver Outside	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Mt. Silver Outside	Headbutt	0	Aipom, Burmy, Caterpie, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Mt. Silver Pokémon Center Area	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Mt. Silver Pokémon Center Area	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Mt. Silver Pokémon Center Area	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Mt. Silver Pokémon Center Area	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+National Park	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Voltorb, Vulpix, Whismur, Zangoose, Zigzagoon
+National Park	Land	1	Pinsir, Scyther, Skorupi, Venonat, Yanma
+National Park	Headbutt	0	Aipom, Cherubi, Farfetch'd, Hoothoot, Mankey, Murkrow, Natu, Pachirisu, Pidgey, Spearow, Starly, Sudowoodo, Swablu, Taillow
+National Park	Headbutt	1	Burmy, Caterpie, Combee, Heracross, Ledyba, Nincada, Pineco, Spinarak, Weedle, Wurmple
+New Bark Town	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+New Bark Town	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+New Bark Town	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Olivine City	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Olivine City	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Pallet Town	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Pallet Town	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Pallet Town	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Pewter City	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Swablu, Taillow, Weedle, Wurmple
+Pewter City	Headbutt	1	Nincada, Sudowoodo
+Rock Tunnel	Land	0	Bagon, Baltoy, Cubone, Diglett, Duskull, Gastly, Gible, Grimer, Jynx, Koffing, Machop, Mawile, Meditite, Numel, Paras, Sableye, Shroomish, Sneasel, Snorunt, Swinub, Trapinch, Zubat
+Rock Tunnel	Land	1	Aron, Geodude, Larvitar, Lunatone, Nosepass, Onix, Rhyhorn, Shuckle, Solrock
+Rock Tunnel	Rock Smash	0	Diglett, Sableye, Skorupi
+Rock Tunnel	Rock Smash	1	Geodude, Nosepass, Shuckle
+Route 1	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Scyther, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 1	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 10	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 10	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 10	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 11	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Makuhita, Mankey, Mawile, Meditite, Meowth, Miltank, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pinsir, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Scyther, Seedot, Sentret, Seviper, Shroomish, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 11	Land	1	Electabuzz, Electrike, Magnemite, Mareep, Minun, Pikachu, Plusle, Shinx, Voltorb
+Route 11	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 11	Headbutt	1	Pachirisu
+Route 12	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Route 12	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 12	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 13	Land	0	Abra, Absol, Bellsprout, Bidoof, Buizel, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Corphish, Croagunk, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Gulpin, Hoppip, Jigglypuff, Kangaskhan, Krabby, Lickitung, Lotad, Machop, Magnemite, Makuhita, Mankey, Mareep, Marill, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Poliwag, Poochyena, Psyduck, Ralts, Rattata, Rhyhorn, Roselia, Scyther, Seedot, Sentret, Seviper, Shellos, Shinx, Shroomish, Skarmory, Skitty, Slakoth, Slowpoke, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Wooper, Yanma, Zangoose, Zigzagoon
+Route 13	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Route 13	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 13	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 14	Land	0	Abra, Absol, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Numel, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Sandshrew, Scyther, Seedot, Sentret, Shinx, Shroomish, Skarmory, Skitty, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 14	Land	1	Bellsprout, Ekans, Gulpin, Nidoran♀, Nidoran♂, Oddish, Roselia, Seviper, Skorupi, Stunky, Venonat
+Route 14	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Starly, Sudowoodo, Swablu, Taillow, Wurmple
+Route 14	Headbutt	1	Spinarak, Weedle
+Route 15	Land	0	Abra, Absol, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Numel, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Sandshrew, Scyther, Seedot, Sentret, Shinx, Shroomish, Skarmory, Skitty, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 15	Land	1	Bellsprout, Ekans, Gulpin, Nidoran♀, Nidoran♂, Oddish, Roselia, Seviper, Skorupi, Stunky, Venonat
+Route 15	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Starly, Sudowoodo, Swablu, Taillow, Wurmple
+Route 15	Headbutt	1	Spinarak, Weedle
+Route 16	Land	0	Abra, Absol, Bidoof, Buneary, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Sandshrew, Scyther, Sentret, Seviper, Shinx, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snubbull, Spoink, Stantler, Stunky, Swablu, Swinub, Tauros, Teddiursa, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 16	Land	1	Bellsprout, Carnivine, Exeggcute, Hoppip, Oddish, Roselia, Seedot, Shroomish, Snover, Sunkern, Tangela, Tropius
+Route 16	Headbutt	0	Aipom, Burmy, Caterpie, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 16	Headbutt	1	Cherubi
+Route 17	Land	0	Abra, Absol, Bidoof, Buneary, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Electabuzz, Electrike, Farfetch'd, Girafarig, Glameow, Growlithe, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Numel, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Sandshrew, Scyther, Sentret, Shinx, Skarmory, Skitty, Slakoth, Sneasel, Snubbull, Spoink, Stantler, Swablu, Swinub, Tauros, Teddiursa, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 17	Land	1	Bellsprout, Carnivine, Ekans, Exeggcute, Gulpin, Hoppip, Nidoran♀, Nidoran♂, Oddish, Roselia, Seedot, Seviper, Shroomish, Skorupi, Snover, Stunky, Sunkern, Tangela, Tropius, Venonat
+Route 18	Land	0	Abra, Absol, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Numel, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Sandshrew, Scyther, Seedot, Sentret, Shinx, Shroomish, Skarmory, Skitty, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 18	Land	1	Bellsprout, Ekans, Gulpin, Nidoran♀, Nidoran♂, Oddish, Roselia, Seviper, Skorupi, Stunky, Venonat
+Route 18	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Starly, Sudowoodo, Swablu, Taillow, Wurmple
+Route 18	Headbutt	1	Spinarak, Weedle
+Route 19	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Remoraid, Shellos, Slowpoke, Staryu, Wailmer, Wingull
+Route 19	Surf	1	Qwilfish, Seel, Spheal, Tentacool
+Route 19	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Remoraid, Shellos, Slowpoke, Staryu
+Route 19	Fishing	1	Qwilfish, Shellder, Tentacool
+Route 19	Rock Smash	0	Krabby, Nosepass, Sableye, Shuckle
+Route 2	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Oddish, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Roselia, Scyther, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 2	Land	1	Cubone, Numel, Phanpy, Rhyhorn, Sandshrew, Swinub
+Route 2	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Swablu, Taillow, Weedle, Wurmple
+Route 2	Headbutt	1	Nincada, Sudowoodo
+Route 20	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Shellos, Slowpoke, Staryu, Tentacool, Wailmer, Wingull
+Route 20	Surf	1	Seel, Spheal
+Route 20	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellos, Slowpoke, Staryu, Tentacool
+Route 20	Fishing	1	Shellder
+Route 21	Land	0	Abra, Absol, Bellsprout, Bidoof, Buizel, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Corphish, Croagunk, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Gulpin, Hoppip, Jigglypuff, Kangaskhan, Krabby, Lickitung, Lotad, Machop, Magnemite, Makuhita, Mankey, Mareep, Marill, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Poliwag, Poochyena, Psyduck, Ralts, Rattata, Rhyhorn, Roselia, Scyther, Seedot, Sentret, Seviper, Shellos, Shinx, Shroomish, Skarmory, Skitty, Slakoth, Slowpoke, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Wooper, Yanma, Zangoose, Zigzagoon
+Route 21	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Route 21	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 21	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 22	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 22	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 22	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 22	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 24	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 24	Surf	0	Dratini
+Route 24	Surf	1	Buizel, Carvanha, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 24	Fishing	0	Dratini
+Route 24	Fishing	1	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 25	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 25	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 25	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 25	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 26	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 26	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Route 26	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 26	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 27	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 27	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Route 27	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 27	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 28	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 28	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 28	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 28	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 29	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Scyther, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 29	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 3	Land	0	Absol, Bagon, Beldum, Cacnea, Machop, Makuhita, Mankey, Skarmory, Skorupi, Sneasel, Snorunt, Snover, Teddiursa
+Route 3	Land	1	Aron, Cubone, Diglett, Geodude, Gible, Gligar, Hippopotas, Larvitar, Nosepass, Onix, Phanpy, Rhyhorn, Sandshrew, Swinub, Trapinch
+Route 3	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Swablu, Taillow, Weedle, Wurmple
+Route 3	Headbutt	1	Nincada, Sudowoodo
+Route 30	Land	0	Abra, Absol, Bellsprout, Bidoof, Buizel, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Corphish, Croagunk, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Gulpin, Hoppip, Jigglypuff, Kangaskhan, Krabby, Lickitung, Lotad, Machop, Magnemite, Makuhita, Mankey, Mareep, Marill, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Poliwag, Poochyena, Psyduck, Ralts, Rattata, Rhyhorn, Roselia, Scyther, Seedot, Sentret, Seviper, Shellos, Shinx, Shroomish, Skarmory, Skitty, Slakoth, Slowpoke, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Wooper, Yanma, Zangoose, Zigzagoon
+Route 30	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 30	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 30	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 31	Land	0	Abra, Absol, Bellsprout, Bidoof, Buizel, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Corphish, Croagunk, Cubone, Ditto, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Girafarig, Glameow, Gulpin, Jigglypuff, Kangaskhan, Krabby, Lickitung, Lotad, Machop, Magnemite, Makuhita, Mankey, Mareep, Marill, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Poliwag, Poochyena, Psyduck, Ralts, Rattata, Rhyhorn, Roselia, Seedot, Sentret, Seviper, Shellos, Shinx, Shroomish, Skitty, Slakoth, Slowpoke, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swinub, Tangela, Tauros, Teddiursa, Venonat, Voltorb, Vulpix, Whismur, Wooper, Zangoose, Zigzagoon
+Route 31	Land	1	Doduo, Drifloon, Farfetch'd, Hoppip, Scyther, Skarmory, Swablu, Tropius, Yanma
+Route 31	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 31	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 31	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Heracross, Mankey, Nincada, Pachirisu, Pineco, Spinarak, Sudowoodo, Weedle, Wurmple
+Route 31	Headbutt	1	Combee, Farfetch'd, Hoothoot, Ledyba, Murkrow, Natu, Pidgey, Spearow, Starly, Swablu, Taillow
+Route 32	Land	0	Abra, Absol, Bellsprout, Bidoof, Buizel, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Corphish, Croagunk, Cubone, Ditto, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Girafarig, Glameow, Gulpin, Jigglypuff, Kangaskhan, Krabby, Lickitung, Lotad, Machop, Magnemite, Makuhita, Mankey, Mareep, Marill, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Poliwag, Poochyena, Psyduck, Ralts, Rattata, Rhyhorn, Roselia, Seedot, Sentret, Seviper, Shellos, Shinx, Shroomish, Skitty, Slakoth, Slowpoke, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swinub, Tangela, Tauros, Teddiursa, Venonat, Voltorb, Vulpix, Whismur, Wooper, Zangoose, Zigzagoon
+Route 32	Land	1	Doduo, Drifloon, Farfetch'd, Hoppip, Scyther, Skarmory, Swablu, Tropius, Yanma
+Route 32	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer
+Route 32	Surf	1	Mantine, Wingull
+Route 32	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 32	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Heracross, Mankey, Nincada, Pachirisu, Pineco, Spinarak, Sudowoodo, Weedle, Wurmple
+Route 32	Headbutt	1	Combee, Farfetch'd, Hoothoot, Ledyba, Murkrow, Natu, Pidgey, Spearow, Starly, Swablu, Taillow
+Route 33	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Voltorb, Vulpix, Whismur, Zangoose, Zigzagoon
+Route 33	Land	1	Pinsir, Scyther, Skorupi, Venonat, Yanma
+Route 33	Headbutt	0	Aipom, Cherubi, Farfetch'd, Hoothoot, Mankey, Murkrow, Natu, Pachirisu, Pidgey, Spearow, Starly, Sudowoodo, Swablu, Taillow
+Route 33	Headbutt	1	Burmy, Caterpie, Combee, Heracross, Ledyba, Nincada, Pineco, Spinarak, Weedle, Wurmple
+Route 34	Land	0	Abra, Absol, Bellsprout, Buizel, Carnivine, Chimecho, Corphish, Croagunk, Cubone, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Gulpin, Hoppip, Krabby, Lotad, Machop, Magnemite, Makuhita, Mankey, Mareep, Meditite, Minun, Nidoran♀, Nidoran♂, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Poliwag, Poochyena, Psyduck, Rhyhorn, Roselia, Scyther, Seedot, Seviper, Shellos, Shinx, Shroomish, Skarmory, Slowpoke, Sneasel, Snover, Spoink, Stunky, Sunkern, Swinub, Tangela, Tropius, Venonat, Voltorb, Vulpix, Wooper, Yanma
+Route 34	Land	1	Bidoof, Buneary, Chansey, Clefairy, Ditto, Doduo, Farfetch'd, Girafarig, Glameow, Jigglypuff, Kangaskhan, Lickitung, Marill, Mawile, Meowth, Miltank, Mr. Mime, Ralts, Rattata, Sentret, Skitty, Slakoth, Snubbull, Stantler, Swablu, Tauros, Teddiursa, Whismur, Zangoose, Zigzagoon
+Route 34	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Route 34	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 34	Headbutt	0	Burmy, Caterpie, Cherubi, Combee, Heracross, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pineco, Spinarak, Sudowoodo, Weedle, Wurmple
+Route 34	Headbutt	1	Aipom, Farfetch'd, Hoothoot, Pidgey, Spearow, Starly, Swablu, Taillow
+Route 35	Land	0	Abra, Absol, Bellsprout, Buizel, Carnivine, Chimecho, Corphish, Croagunk, Cubone, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Gulpin, Hoppip, Krabby, Lotad, Machop, Magnemite, Makuhita, Mankey, Mareep, Meditite, Minun, Nidoran♀, Nidoran♂, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Poliwag, Poochyena, Psyduck, Rhyhorn, Roselia, Scyther, Seedot, Seviper, Shellos, Shinx, Shroomish, Skarmory, Slowpoke, Sneasel, Snover, Spoink, Stunky, Sunkern, Swinub, Tangela, Tropius, Venonat, Voltorb, Vulpix, Wooper, Yanma
+Route 35	Land	1	Bidoof, Buneary, Chansey, Clefairy, Ditto, Doduo, Farfetch'd, Girafarig, Glameow, Jigglypuff, Kangaskhan, Lickitung, Marill, Mawile, Meowth, Miltank, Mr. Mime, Ralts, Rattata, Sentret, Skitty, Slakoth, Snubbull, Stantler, Swablu, Tauros, Teddiursa, Whismur, Zangoose, Zigzagoon
+Route 35	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 35	Surf	1	Marill
+Route 35	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 35	Fishing	1	Marill
+Route 35	Headbutt	0	Burmy, Caterpie, Cherubi, Combee, Heracross, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pineco, Spinarak, Sudowoodo, Weedle, Wurmple
+Route 35	Headbutt	1	Aipom, Farfetch'd, Hoothoot, Pidgey, Spearow, Starly, Swablu, Taillow
+Route 36	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Girafarig, Glameow, Growlithe, Gulpin, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Seedot, Sentret, Seviper, Shinx, Shroomish, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swinub, Tangela, Tauros, Teddiursa, Venonat, Voltorb, Vulpix, Whismur, Zangoose, Zigzagoon
+Route 36	Land	1	Doduo, Drifloon, Farfetch'd, Hoppip, Scyther, Skarmory, Swablu, Tropius, Yanma
+Route 36	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Heracross, Mankey, Nincada, Pachirisu, Pineco, Spinarak, Sudowoodo, Weedle, Wurmple
+Route 36	Headbutt	1	Combee, Farfetch'd, Hoothoot, Ledyba, Murkrow, Natu, Pidgey, Spearow, Starly, Swablu, Taillow
+Route 37	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Scyther, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 37	Land	1	Drifloon
+Route 37	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 38	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Scyther, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 38	Land	1	Drifloon
+Route 38	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 39	Land	0	Abra, Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Chimecho, Clefairy, Cubone, Ditto, Doduo, Drifloon, Drowzee, Ekans, Electabuzz, Electrike, Exeggcute, Farfetch'd, Girafarig, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Makuhita, Mankey, Mareep, Meditite, Meowth, Miltank, Minun, Mr. Mime, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Ralts, Rattata, Rhyhorn, Roselia, Sandshrew, Scyther, Seedot, Sentret, Seviper, Shinx, Shroomish, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Spoink, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 39	Land	1	Magnemite, Mawile, Skarmory
+Route 39	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 4	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 4	Surf	0	Dratini
+Route 4	Surf	1	Buizel, Carvanha, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 4	Fishing	0	Dratini
+Route 4	Fishing	1	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 4	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 40	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Route 40	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 41	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Route 41	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Route 42	Land	0	Absol, Aron, Beldum, Larvitar, Machop, Makuhita, Mankey, Nosepass, Skarmory, Teddiursa
+Route 42	Land	1	Sneasel, Snorunt, Snover, Swinub
+Route 42	Surf	0	Buizel, Carvanha, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 42	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 42	Headbutt	0	Aipom, Burmy, Caterpie, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 43	Land	0	Absol, Aron, Beldum, Larvitar, Machop, Makuhita, Mankey, Nosepass, Skarmory, Teddiursa
+Route 43	Land	1	Sneasel, Snorunt, Snover, Swinub
+Route 43	Surf	0	Buizel, Carvanha, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 43	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 43	Headbutt	0	Aipom, Burmy, Caterpie, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 44	Land	0	Absol, Aron, Beldum, Larvitar, Machop, Makuhita, Mankey, Nosepass, Skarmory, Teddiursa
+Route 44	Land	1	Sneasel, Snorunt, Snover, Swinub
+Route 44	Surf	0	Buizel, Carvanha, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 44	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 44	Headbutt	0	Aipom, Burmy, Caterpie, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 45	Land	0	Absol, Aron, Beldum, Cubone, Diglett, Geodude, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 45	Land	1	Bagon, Gible
+Route 45	Surf	0	Buizel, Carvanha, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 45	Surf	1	Dratini
+Route 45	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 45	Fishing	1	Dratini
+Route 45	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 46	Land	0	Absol, Aron, Bagon, Beldum, Cacnea, Cubone, Diglett, Geodude, Gible, Gligar, Hippopotas, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Sandshrew, Skarmory, Skorupi, Sneasel, Snorunt, Snover, Swinub, Teddiursa, Trapinch
+Route 46	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 47	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 47	Land	1	Machop, Makuhita, Mankey
+Route 47	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 47	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Route 47	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Hoothoot, Ledyba, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 47	Headbutt	1	Heracross, Mankey
+Route 48	Land	0	Absol, Aron, Bagon, Beldum, Cacnea, Cubone, Diglett, Geodude, Gible, Gligar, Hippopotas, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Sandshrew, Skarmory, Skorupi, Sneasel, Snorunt, Snover, Swinub, Teddiursa, Trapinch
+Route 48	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 5	Land	0	Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Clefairy, Cubone, Ditto, Doduo, Drifloon, Ekans, Electabuzz, Electrike, Farfetch'd, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meowth, Miltank, Minun, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Rattata, Rhyhorn, Roselia, Sandshrew, Scyther, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 5	Land	1	Abra, Chimecho, Drowzee, Exeggcute, Girafarig, Meditite, Mr. Mime, Ralts, Spoink
+Route 5	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 5	Headbutt	1	Natu
+Route 6	Land	0	Absol, Bellsprout, Bidoof, Buizel, Buneary, Carnivine, Chansey, Clefairy, Corphish, Croagunk, Cubone, Ditto, Doduo, Drifloon, Ekans, Farfetch'd, Glameow, Gulpin, Hoppip, Jigglypuff, Kangaskhan, Krabby, Lickitung, Lotad, Machop, Makuhita, Mankey, Marill, Mawile, Meowth, Miltank, Nidoran♀, Nidoran♂, Oddish, Phanpy, Pinsir, Poliwag, Poochyena, Psyduck, Rattata, Rhyhorn, Roselia, Scyther, Seedot, Sentret, Seviper, Shellos, Shroomish, Skarmory, Skitty, Slakoth, Sneasel, Snover, Snubbull, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Vulpix, Whismur, Wooper, Yanma, Zangoose, Zigzagoon
+Route 6	Land	1	Abra, Chimecho, Drowzee, Electabuzz, Electrike, Exeggcute, Girafarig, Magnemite, Mareep, Meditite, Minun, Mr. Mime, Pikachu, Plusle, Ralts, Shinx, Slowpoke, Spoink, Voltorb
+Route 6	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Surskit, Wooper
+Route 6	Surf	1	Slowpoke
+Route 6	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Wooper
+Route 6	Fishing	1	Slowpoke
+Route 6	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Nincada, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 6	Headbutt	1	Natu, Pachirisu
+Route 7	Land	0	Absol, Bidoof, Buneary, Chansey, Clefairy, Cubone, Ditto, Doduo, Drifloon, Ekans, Electabuzz, Electrike, Farfetch'd, Glameow, Growlithe, Gulpin, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meowth, Miltank, Minun, Nidoran♀, Nidoran♂, Numel, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Rattata, Rhyhorn, Sandshrew, Scyther, Sentret, Seviper, Shinx, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snubbull, Stantler, Stunky, Swablu, Swinub, Tauros, Teddiursa, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 7	Land	1	Abra, Bellsprout, Carnivine, Chimecho, Drowzee, Exeggcute, Girafarig, Hoppip, Meditite, Mr. Mime, Oddish, Ralts, Roselia, Seedot, Shroomish, Snover, Spoink, Sunkern, Tangela, Tropius
+Route 7	Headbutt	0	Aipom, Burmy, Caterpie, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 7	Headbutt	1	Cherubi, Natu
+Route 8	Land	0	Absol, Bellsprout, Bidoof, Buneary, Carnivine, Chansey, Clefairy, Cubone, Ditto, Doduo, Drifloon, Ekans, Electabuzz, Electrike, Farfetch'd, Glameow, Growlithe, Gulpin, Hoppip, Houndour, Jigglypuff, Kangaskhan, Lickitung, Machop, Magnemite, Makuhita, Mankey, Mareep, Mawile, Meowth, Miltank, Minun, Nidoran♀, Nidoran♂, Numel, Oddish, Phanpy, Pikachu, Pinsir, Plusle, Ponyta, Poochyena, Rattata, Rhyhorn, Roselia, Sandshrew, Scyther, Seedot, Sentret, Seviper, Shinx, Shroomish, Skarmory, Skitty, Skorupi, Slakoth, Sneasel, Snover, Snubbull, Stantler, Stunky, Sunkern, Swablu, Swinub, Tangela, Tauros, Teddiursa, Tropius, Venonat, Voltorb, Vulpix, Whismur, Yanma, Zangoose, Zigzagoon
+Route 8	Land	1	Abra, Chimecho, Drowzee, Exeggcute, Girafarig, Meditite, Mr. Mime, Ralts, Spoink
+Route 8	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Route 8	Headbutt	1	Natu
+Route 9	Land	0	Absol, Aron, Bagon, Beldum, Cubone, Diglett, Geodude, Gible, Gligar, Larvitar, Machop, Makuhita, Mankey, Nosepass, Onix, Phanpy, Rhyhorn, Skarmory, Sneasel, Snorunt, Snover, Swinub, Teddiursa
+Route 9	Surf	0	Dratini
+Route 9	Surf	1	Buizel, Carvanha, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Route 9	Fishing	0	Dratini
+Route 9	Fishing	1	Barboach, Buizel, Carvanha, Corphish, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Ruins of Alph Inside	Land	0	Baltoy, Beldum, Bronzor, Chimecho, Duskull, Gastly, Grimer, Koffing, Lunatone, Misdreavus, Natu, Sableye, Shuppet, Solrock
+Ruins of Alph Outside	Land	0	Baltoy, Beldum, Bronzor, Chimecho, Duskull, Gastly, Grimer, Koffing, Lunatone, Misdreavus, Natu, Sableye, Shuppet, Solrock
+Ruins of Alph Outside	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Ruins of Alph Outside	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Ruins of Alph Outside	Rock Smash	0	Diglett, Geodude, Krabby, Nosepass, Sableye, Shuckle
+Safari Zone Gate Outside	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Seafoam Islands	Land	0	Aron, Baltoy, Corphish, Duskull, Gastly, Grimer, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Poliwag, Psyduck, Sableye, Shuckle, Slowpoke, Solrock, Wooper, Zubat
+Seafoam Islands	Land	1	Jynx, Sneasel, Snorunt, Spheal, Swinub
+Seafoam Islands	Surf	0	Carvanha, Chinchou, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Slowpoke, Staryu, Wooper
+Seafoam Islands	Surf	1	Seel, Spheal
+Seafoam Islands	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Slowpoke, Staryu, Wooper
+Seafoam Islands	Fishing	1	Shellder
+Slowpoke Well	Land	0	Aron, Bagon, Baltoy, Corphish, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Onix, Paras, Poliwag, Psyduck, Rhyhorn, Sableye, Shroomish, Shuckle, Slowpoke, Sneasel, Snorunt, Solrock, Swinub, Wooper, Zubat
+Slowpoke Well	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Slowpoke Well	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Sprout Tower	Land	0	Abra, Bronzor, Chimecho, Duskull, Gastly, Growlithe, Misdreavus, Rattata, Shuppet, Vulpix
+Sprout Tower	Land	1	Drifloon, Hoothoot, Murkrow
+Tohjo Falls	Land	0	Aron, Bagon, Baltoy, Corphish, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Onix, Paras, Poliwag, Psyduck, Rhyhorn, Sableye, Shroomish, Shuckle, Slowpoke, Sneasel, Snorunt, Solrock, Swinub, Wooper, Zubat
+Tohjo Falls	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Tohjo Falls	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Union Cave	Land	0	Aron, Bagon, Baltoy, Corphish, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Onix, Paras, Poliwag, Psyduck, Rhyhorn, Sableye, Shroomish, Shuckle, Slowpoke, Sneasel, Snorunt, Solrock, Swinub, Wooper, Zubat
+Union Cave	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Union Cave	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
+Vermilion City	Surf	0	Buizel, Corsola, Finneon, Horsea, Magikarp, Mantine, Psyduck, Qwilfish, Remoraid, Seel, Shellos, Slowpoke, Spheal, Staryu, Tentacool, Wailmer, Wingull
+Vermilion City	Fishing	0	Buizel, Clamperl, Corsola, Finneon, Horsea, Krabby, Luvdisc, Magikarp, Psyduck, Qwilfish, Remoraid, Shellder, Shellos, Slowpoke, Staryu, Tentacool
+Vermilion City	Rock Smash	0	Diglett, Geodude, Krabby, Nosepass, Sableye, Shuckle
+Vermilion City	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Vermilion City	Headbutt	1	Pachirisu
+Victory Road	Land	0	Aron, Bagon, Baltoy, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Mawile, Meditite, Nosepass, Numel, Onix, Paras, Rhyhorn, Sableye, Shroomish, Shuckle, Sneasel, Snorunt, Solrock, Swinub, Trapinch, Zubat
+Victory Road	Rock Smash	0	Diglett, Geodude, Nosepass, Sableye, Shuckle, Skorupi
+Violet City	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Violet City	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Violet City	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Heracross, Mankey, Nincada, Pachirisu, Pineco, Spinarak, Sudowoodo, Weedle, Wurmple
+Violet City	Headbutt	1	Combee, Farfetch'd, Hoothoot, Ledyba, Murkrow, Natu, Pidgey, Spearow, Starly, Swablu, Taillow
+Viridian City	Surf	0	Buizel, Carvanha, Dratini, Finneon, Goldeen, Lotad, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Surskit, Wooper
+Viridian City	Fishing	0	Barboach, Buizel, Carvanha, Corphish, Dratini, Feebas, Finneon, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Shellos, Slowpoke, Wooper
+Viridian City	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Viridian Forest	Land	0	Aipom, Bellsprout, Buneary, Burmy, Carnivine, Caterpie, Cherubi, Combee, Duskull, Exeggcute, Farfetch'd, Gastly, Heracross, Hoothoot, Illumise, Kricketot, Ledyba, Mankey, Misdreavus, Murkrow, Natu, Nidoran♀, Nidoran♂, Nincada, Oddish, Pachirisu, Paras, Pikachu, Pineco, Pinsir, Poochyena, Roselia, Scyther, Seedot, Shroomish, Shuppet, Slakoth, Spinarak, Stantler, Sudowoodo, Taillow, Tangela, Teddiursa, Tropius, Venonat, Volbeat, Vulpix, Weedle, Wurmple, Yanma, Zigzagoon
+Viridian Forest	Headbutt	0	Aipom, Burmy, Caterpie, Cherubi, Combee, Farfetch'd, Heracross, Hoothoot, Ledyba, Mankey, Murkrow, Natu, Nincada, Pachirisu, Pidgey, Pineco, Spearow, Spinarak, Starly, Sudowoodo, Swablu, Taillow, Weedle, Wurmple
+Whirl Islands	Land	0	Aron, Bagon, Baltoy, Corphish, Cubone, Diglett, Duskull, Gastly, Geodude, Gible, Grimer, Jynx, Koffing, Larvitar, Lunatone, Machop, Marill, Mawile, Meditite, Nosepass, Onix, Paras, Poliwag, Psyduck, Rhyhorn, Sableye, Shroomish, Shuckle, Slowpoke, Sneasel, Snorunt, Solrock, Swinub, Wooper, Zubat
+Whirl Islands	Surf	0	Carvanha, Chinchou, Dratini, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Seel, Slowpoke, Spheal, Staryu, Wooper
+Whirl Islands	Fishing	0	Barboach, Carvanha, Chinchou, Clamperl, Corphish, Dratini, Feebas, Goldeen, Magikarp, Marill, Poliwag, Psyduck, Qwilfish, Relicanth, Shellder, Slowpoke, Staryu, Wooper
