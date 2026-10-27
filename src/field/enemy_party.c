@@ -17,7 +17,6 @@
 #include "pokemon.h"
 
 #ifdef IMPLEMENT_WILD_BERRY_HOLD
-#include "wild_berry_hold.h"
 #endif
 #include "rtc.h"
 #include "save.h"
@@ -561,7 +560,14 @@ BOOL LONG_CALL AddWildPartyPokemon(int inTarget, EncounterInfo *encounterInfo, s
     }
 
 #ifdef IMPLEMENT_WILD_BERRY_HOLD
-    WildMonApplyHeldItemForEncounter(encounterPartyPokemon);
+    {
+        int range = 0;
+
+        if (encounterInfo->isEgg == 0 && encounterInfo->ability == ABILITY_COMPOUND_EYES) {
+            range = 1;
+        }
+        WildMonSetRandomHeldItem(encounterPartyPokemon, encounterBattleParam->fight_type, range);
+    }
 #else
     WildMonSetRandomHeldItem(encounterPartyPokemon, encounterBattleParam->fight_type, range);
 #endif

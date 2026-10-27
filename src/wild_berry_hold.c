@@ -13,8 +13,10 @@
 #include "save.h"
 #include "types.h"
 
-extern const u16 sWildSpeciesHeldCommon[WILD_SPECIES_HELD_ITEM_COUNT];
-extern const u16 sWildSpeciesHeldRare[WILD_SPECIES_HELD_ITEM_COUNT];
+#if defined(OVERLAY129)
+u32 WildSpeciesHeldCommonFieldAddr = 0;
+u32 WildSpeciesHeldRareFieldAddr = 0;
+#endif
 
 static const u16 sWildBerryHoldPool[] = {
     ITEM_CHERI_BERRY,
@@ -146,8 +148,16 @@ static u16 RollSpeciesTableHeldItem(u16 species, u32 isCompoundEyes)
         return ITEM_NONE;
     }
 
+#if defined(OVERLAY129)
+    if (WildSpeciesHeldCommonFieldAddr == 0 || WildSpeciesHeldRareFieldAddr == 0) {
+        return ITEM_NONE;
+    }
+    item1 = ((const u16 *)(u32)WildSpeciesHeldCommonFieldAddr)[species];
+    item2 = ((const u16 *)(u32)WildSpeciesHeldRareFieldAddr)[species];
+#else
     item1 = sWildSpeciesHeldCommon[species];
     item2 = sWildSpeciesHeldRare[species];
+#endif
 
     if (item1 == item2 && item1 != ITEM_NONE) {
         return item1;

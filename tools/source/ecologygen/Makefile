@@ -3,9 +3,9 @@ CFLAGS := -std=c11 -O2 -Wall -Wextra -DECOLOGY_STANDALONE -I../../../include
 TARGET := ../../../tools/ecologygen
 
 SRCS := main.c \
-	../../../src/field/ecology_generate.c \
-	../../../src/field/ecology_compat_data.c \
-	../../../src/field/ecology_strings_data.c
+	../../../src/ecology_generate.c \
+	ecology_compat_data.c \
+	ecology_strings_data.c
 
 OBJS := $(SRCS:%.c=%.o)
 

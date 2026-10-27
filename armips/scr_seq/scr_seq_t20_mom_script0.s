@@ -68,6 +68,7 @@
 .equ MSG_MENU_PIPLUP, 33
 .equ MSG_FIRE_PROMPT, 34
 .equ MSG_WATER_PROMPT, 35
+.equ MSG_ECOLOGY_GENERATING, 69
 
 .equ SPECIES_CHIKORITA, 152
 .equ SPECIES_CYNDAQUIL, 155
@@ -239,6 +240,10 @@ _story_flag_sweep:
     giveitem ITEM_HM08, 1, VAR_SPECIAL_RESULT
     giveitem ITEM_TM070, 5, VAR_SPECIAL_RESULT
     giveitem ITEM_TM005, 5, VAR_SPECIAL_RESULT
+.endif
+.if IMPLEMENT_ECOLOGY_GENERATION == 1
+    npc_msg MSG_ECOLOGY_GENERATING
+    RunNewCommand NEW_COMMAND_ECOLOGY_GENERATE, 0
 .endif
     closemsg
     apply_movement OBJ_MOM, _mv_mom_return

@@ -203,3 +203,13 @@ $(HIDDEN_ITEM_PARAMS_BIN): $(HIDDEN_ITEM_PARAMS_DEPENDENCIES)
 	$(OBJCOPY) -O binary $(HIDDEN_ITEM_PARAMS_OBJS) $@
 
 NARC_FILES += $(HIDDEN_ITEM_PARAMS_BIN)
+
+ECOLOGY_COMPAT_BIN := $(BUILD)/ecology/ecology_compat.bin
+ECOLOGY_COMPAT_TARGET := $(BUILD)/a028/9_19
+ECOLOGY_COMPAT_DEPS := data/ecology/ecology_families.tsv data/ecology/ecology_locations.tsv scripts/build/gen_ecology_compatibility.py
+
+$(ECOLOGY_COMPAT_BIN): $(ECOLOGY_COMPAT_DEPS)
+	$(PYTHON) scripts/build/gen_ecology_compatibility.py
+
+NARC_FILES += $(ECOLOGY_COMPAT_BIN)
+REQUIRED_DIRECTORIES += $(BUILD)/ecology

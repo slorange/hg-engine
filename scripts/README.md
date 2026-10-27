@@ -26,9 +26,9 @@ Python helpers for hg-engine. See `.cursor/rules/agents.mdc` § **Scripts layout
 | `verify_olivine_rod_guru_scr_seq.py` | `narcs.mk` |
 | `rod_guru_patch_checks.py` | imported by rod guru patcher + verify script |
 | `gen_wild_level_caps.py` | `narcs.mk` → `src/field/wild_level_caps_data.c` |
-| `gen_ecology_compatibility.py` | `narcs.mk` → `src/field/ecology_compat_data.c` (Future-5 prebuild) |
+| `gen_ecology_compatibility.py` | `data/codetables.mk` → `build/ecology/ecology_compat.bin` (NARC **9_19**) + host tables under `tools/source/ecologygen/` |
 | `gen_wild_species_held_items.py` | `narcs.mk` → `src/field/wild_species_held_items.c` |
-| `patch_level_up_evo_addrs.py` | `Makefile`, `make.py` — patch field pointers into overlay 129 `build/output.bin` (evo tables, wild caps, `WildMonApplyHeldItemFieldAddr`) |
+| `patch_level_up_evo_addrs.py` | `Makefile`, `make.py` — patch field **data** pointers into overlay 129 `build/output.bin` (evo tables, wild caps, wild held-item tables) |
 | `gen_synthetic_evo_edges.py` | `narcs.mk` → `src/field/synthetic_evo_edges_data.c` |
 
 ## `dev/` highlights
@@ -50,9 +50,11 @@ Placement / text recon: `find_zone_event_member.py`, `find_msg_text.py` (see HAC
 
 **Synthetic evolution stages:** `data/synthetic_evolution_thresholds.tsv` → `scripts/build/gen_synthetic_evo_edges.py` → `src/field/synthetic_evo_edges_data.c` (see `narcs.mk`). Sanity check: `python3 scripts/dev/verify_encounter_stage.py`.
 
-**Ecology compatibility (Future-5):** Edit `data/ecology/ecology_families.tsv` / `ecology_locations.tsv`, then **`make ecology-compat`**. Commit `ecology_compat_by_family.tsv`, `ecology_compat_by_group.tsv`, `src/field/ecology_compat_data.c`, `include/constants/generated/ecology_compat.h`. Normal **`make`** only compiles the committed `.c`.
+**Ecology compatibility (Future-5):** Edit `data/ecology/ecology_families.tsv` / `ecology_locations.tsv`, then **`make ecology-compat`** or a full **`make test.nds`**. Commit dumps + `tools/source/ecologygen/ecology_compat_data.c`, `ecology_strings_data.c`, `include/constants/generated/ecology_compat.h` when TSV authoring changes.
 
-**Ecology test generation:** Shared C core in `src/field/ecology_generate.c` (same code intended for new-game ROM later). Run `python scripts/dev/run_ecology_generate.py --seed 0xDEADBEEF` → `build/ecology/ecology_assignment.tsv`. Rebuild host tool: `make -C tools/source/ecologygen`.
+**Ecology test generation:** Host core in `tools/source/ecologygen/ecology_generate.c`; ROM copy in `src/ecology_generate.c`. Run `python scripts/dev/run_ecology_generate.py --seed 0xDEADBEEF` → `build/ecology/ecology_assignment.tsv`. Rebuild host tool: `make -C tools/source/ecologygen`.
+
+**Overlay 129 verify:** `python3 scripts/dev/verify_overlay129_field_addrs.py` after code changes that touch wild caps or berry hold.
 
 Test runner: `scripts/dev/run_tests.sh` (also used by CI).
 

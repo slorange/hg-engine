@@ -12,20 +12,13 @@
 #include "types.h"
 
 #ifdef IMPLEMENT_WILD_BERRY_HOLD
-u32 WildMonApplyHeldItemFieldAddr = 0;
-
-typedef void (*WildMonApplyHeldItemFn)(struct PartyPokemon *pp);
+#include "wild_berry_hold.h"
 
 static void TryApplyWildEncounterHeldItem(struct PartyPokemon *pp)
 {
-    WildMonApplyHeldItemFn apply;
-
-    if (pp == NULL || WildMonApplyHeldItemFieldAddr == 0) {
-        return;
+    if (pp != NULL) {
+        WildMonApplyHeldItemForEncounter(pp);
     }
-
-    apply = (WildMonApplyHeldItemFn)(WildMonApplyHeldItemFieldAddr | 1);
-    apply(pp);
 }
 #endif
 

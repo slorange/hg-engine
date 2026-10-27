@@ -172,6 +172,9 @@
 // hold (100% with Compound Eyes); that hold is 50% World-7 berry / 50% Apricorn.
 #define IMPLEMENT_WILD_BERRY_HOLD
 
+// Per-save wild ecology on first Mom intro (Future-5 PoC). Generation only; encounters not wired yet.
+#define IMPLEMENT_ECOLOGY_GENERATION
+
 // DEBUG_WILD_LEVEL_CAP_EXACT sets wild level to the distance cap exactly (route testing).
 // Comment out for random levels in [WILD_LEVEL_CAP_MIN, cap].
 // #define DEBUG_WILD_LEVEL_CAP_EXACT
