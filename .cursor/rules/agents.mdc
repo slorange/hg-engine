@@ -71,7 +71,7 @@ See [`scripts/README.md`](scripts/README.md) for the inventory.
 **Agent build command** (this machine, repo at `e:\Code\hg-engine`):
 
 ```bat
-docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make -j24
+docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make test.nds -j24
 ```
 
 **One-time Docker image** (only if `hg-engine` image is missing or Dockerfile changed):
@@ -101,7 +101,7 @@ See **[Build and verification](#build-and-verification)** below for build types,
 **Default (agents):** full ROM, non-interactive:
 
 ```bat
-docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make -j24
+docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make test.nds -j24
 ```
 
 **One-time image:** `docker build -t hg-engine e:\Code\hg-engine`
@@ -121,7 +121,8 @@ Upstream native/WSL/MSYS2 setup (without Docker): [README (HG-Engine).md](README
 
 | Command | Use when | Output / notes |
 |---------|----------|----------------|
-| `make -j24` | Default — verify any change end-to-end | Full **`test.nds`**: C/asm (`src/`, `asm/`), `data/*.c`, armips, NARC rebuild, overlays |
+| `make test.nds -j24` | Default — verify any change end-to-end | Full **`test.nds`**: C/asm, NARCs (`move_narc`), armips, overlay 129 inject, repack |
+| `make -j24` | Code/objects only | **`build/output.bin`** + overlays — **does not** produce a playable `test.nds` |
 | `make build/narc/scr_seq.narc build/narc/zone_event.narc NOSCAN=1` | Iterating on scr_seq / zone_event only | NARCs only; still repack `test.nds` before in-game test |
 | `make scr_seq_clean && make -j24` | Suspect scr_seq corruption or duplicate NPCs after patch | Clears scr_seq build artifacts, then full rebuild |
 | `make clean_code && make -j24` | C/asm changed but objects seem stale | Drops compiled code objects only |

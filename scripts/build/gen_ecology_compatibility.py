@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import re
+import struct
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -15,12 +16,15 @@ FAMILIES_TSV = ROOT / "data/ecology/ecology_families.tsv"
 LOCATIONS_TSV = ROOT / "data/ecology/ecology_locations.tsv"
 SPECIES_H = ROOT / "include/constants/species.h"
 ENCOUNTER_H = ROOT / "include/constants/encounter_tables.h"
-OUT_C = ROOT / "src/field/ecology_compat_data.c"
+OUT_C = ROOT / "tools/source/ecologygen/ecology_compat_data.c"
 OUT_H = ROOT / "include/constants/generated/ecology_compat.h"
 OUT_DUMP_FAMILY = ROOT / "data/ecology/ecology_compat_by_family.tsv"
 OUT_DUMP_GROUP = ROOT / "data/ecology/ecology_compat_by_group.tsv"
-OUT_STRINGS_C = ROOT / "src/field/ecology_strings_data.c"
+OUT_STRINGS_C = ROOT / "tools/source/ecologygen/ecology_strings_data.c"
 OUT_STRINGS_H = ROOT / "include/constants/generated/ecology_strings.h"
+OUT_BIN = ROOT / "build/ecology/ecology_compat.bin"
+
+ECOLOGY_COMPAT_BLOB_MAGIC = 0x314F4345  # 'ECO1' little-endian
 
 SPECIES_RE = re.compile(r"#define\s+(SPECIES_[A-Z0-9_]+)\s+(\d+)")
 ENCOUNTER_RE = re.compile(r"\s*ENCDATA_([A-Z0-9_]+)\s*=\s*(\d+)")
@@ -766,14 +770,31 @@ def method_mask(methods: set[int]) -> int:
     return mask
 
 
-def write_source(
-    path: Path,
-    version: int,
+def align4(offset: int) -> int:
+    return (offset + 3) & ~3
+
+
+@dataclass
+class CompatTables:
+    family_info: list[tuple[int, int, int, int, int, int]]
+    group_info: list[tuple[int, int, int, int, int]]
+    encdata_ids: list[int]
+    land_entries: list[tuple[int, int, int]]
+    land_offsets: list[int]
+    bucket_entries: list[tuple[int, int, int]]
+    bucket_offsets: list[int]
+    group_flags: list[int]
+    method_slots: list[int]
+    location_type_count: list[int]
+    max_slots: int
+    total_slots: int
+
+
+def prepare_compat_tables(
     families: list[Family],
     groups: list[Group],
     edges: list[Edge],
-) -> tuple[int, int]:
-    # By-group land + other buckets (by-family view lives in build/ecology_compat_dump.tsv only)
+) -> CompatTables:
     land_lists: list[list[Edge]] = [[] for _ in groups]
     bucket_lists: list[list[Edge]] = [[] for _ in groups for _ in range(METHOD_COUNT)]
 
@@ -784,54 +805,187 @@ def write_source(
             idx = edge.group_id * METHOD_COUNT + edge.method
             bucket_lists[idx].append(edge)
 
-    group_land_rows: list[str] = []
-    group_land_offsets = [0]
+    land_entries: list[tuple[int, int, int]] = []
+    land_offsets = [0]
     for land_edges in land_lists:
         for edge in sorted(land_edges, key=lambda e: e.family_id):
-            group_land_rows.append(f"        {{ {edge.family_id}, {edge.flags}, 0 }},")
-        group_land_offsets.append(len(group_land_rows))
+            land_entries.append((edge.family_id, edge.flags, 0))
+        land_offsets.append(len(land_entries))
 
-    group_bucket_rows: list[str] = []
-    group_bucket_offsets = [0]
+    bucket_entries: list[tuple[int, int, int]] = []
+    bucket_offsets = [0]
     for bucket_edges in bucket_lists:
         for edge in sorted(bucket_edges, key=lambda e: e.family_id):
-            group_bucket_rows.append(f"        {{ {edge.family_id}, {edge.flags}, 0 }},")
-        group_bucket_offsets.append(len(group_bucket_rows))
+            bucket_entries.append((edge.family_id, edge.flags, 0))
+        bucket_offsets.append(len(bucket_entries))
 
-    encdata_flat: list[str] = []
-    group_info_rows: list[str] = []
+    encdata_ids: list[int] = []
+    group_info: list[tuple[int, int, int, int, int]] = []
     enc_offset = 0
     for group in groups:
         for enc_id in group.encdata_ids:
-            encdata_flat.append(f"    {enc_id},")
-        group_info_rows.append(
-            "    { "
-            f"{enc_offset}, {len(group.encdata_ids)}, {group.land_period_mask}, "
-            f"{method_mask(group.methods)}, {group.water_mask} }},"
+            encdata_ids.append(enc_id)
+        group_info.append(
+            (
+                enc_offset,
+                len(group.encdata_ids),
+                group.land_period_mask,
+                method_mask(group.methods),
+                group.water_mask,
+            )
         )
         enc_offset += len(group.encdata_ids)
 
-    group_flag_rows = [
-        f"    {ECOLOGY_GROUP_FLAG_SHUFFLE if not group.skip else 0},"
-        for group in groups
-    ]
-    group_type_count_rows = [f"    {len(group.location_types)}," for group in groups]
-    slot_rows: list[str] = []
+    group_flags = [ECOLOGY_GROUP_FLAG_SHUFFLE if not group.skip else 0 for group in groups]
+    location_type_count = [len(group.location_types) for group in groups]
+    method_slots: list[int] = []
     max_slots = 0
     total_slots = 0
     for group in groups:
         for slot_count in group.method_slots:
-            slot_rows.append(f"    {slot_count},")
+            method_slots.append(slot_count)
             max_slots = max(max_slots, slot_count)
             total_slots += slot_count
 
-    family_info_rows = []
-    for fam in families:
-        family_info_rows.append(
-            "    { "
-            f"{fam.base_species}, {fam.index}, {fam.rarity}, {fam.demand}, "
-            f"{stored_land_time_mask(fam.land_time_mask)}, 0 }},"
+    family_info = [
+        (
+            fam.base_species,
+            fam.index,
+            fam.rarity,
+            fam.demand,
+            stored_land_time_mask(fam.land_time_mask),
+            0,
         )
+        for fam in families
+    ]
+
+    return CompatTables(
+        family_info=family_info,
+        group_info=group_info,
+        encdata_ids=encdata_ids,
+        land_entries=land_entries,
+        land_offsets=land_offsets,
+        bucket_entries=bucket_entries,
+        bucket_offsets=bucket_offsets,
+        group_flags=group_flags,
+        method_slots=method_slots,
+        location_type_count=location_type_count,
+        max_slots=max_slots,
+        total_slots=total_slots,
+    )
+
+
+def write_binary_blob(
+    path: Path,
+    version: int,
+    families: list[Family],
+    groups: list[Group],
+    tables: CompatTables,
+) -> None:
+    header_size = struct.calcsize("<IIHHHHHHIIIIIIIIII")
+
+    family_bytes = b"".join(struct.pack("<HHBBBB", *row) for row in tables.family_info)
+    group_bytes = b"".join(struct.pack("<HBBBB", *row) for row in tables.group_info)
+    enc_bytes = bytes(tables.encdata_ids)
+    land_bytes = b"".join(struct.pack("<HBB", *row) for row in tables.land_entries)
+    land_off_bytes = struct.pack(f"<{len(tables.land_offsets)}H", *tables.land_offsets)
+    bucket_bytes = b"".join(struct.pack("<HBB", *row) for row in tables.bucket_entries)
+    bucket_off_bytes = struct.pack(f"<{len(tables.bucket_offsets)}H", *tables.bucket_offsets)
+    flags_bytes = bytes(tables.group_flags)
+    slots_bytes = bytes(tables.method_slots)
+    type_count_bytes = bytes(tables.location_type_count)
+
+    section_data = [
+        family_bytes,
+        group_bytes,
+        enc_bytes,
+        land_bytes,
+        land_off_bytes,
+        bucket_bytes,
+        bucket_off_bytes,
+        flags_bytes,
+        slots_bytes,
+        type_count_bytes,
+    ]
+
+    cursor = header_size
+    offsets: list[int] = []
+    blob_pieces: list[bytes] = []
+    for data in section_data:
+        pad = align4(cursor) - cursor
+        if pad:
+            blob_pieces.append(b"\x00" * pad)
+            cursor += pad
+        offsets.append(cursor)
+        blob_pieces.append(data)
+        cursor += len(data)
+
+    (
+        off_family,
+        off_groups,
+        off_enc,
+        off_land_entries,
+        off_land_offsets,
+        off_bucket_entries,
+        off_bucket_offsets,
+        off_flags,
+        off_slots,
+        off_type_count,
+    ) = offsets
+
+    header = struct.pack(
+        "<IIHHHHHHIIIIIIIIII",
+        ECOLOGY_COMPAT_BLOB_MAGIC,
+        version,
+        len(families),
+        len(groups),
+        len(tables.land_entries),
+        len(tables.bucket_entries),
+        len(enc_bytes),
+        header_size,
+        off_family,
+        off_groups,
+        off_enc,
+        off_land_entries,
+        off_land_offsets,
+        off_bucket_entries,
+        off_bucket_offsets,
+        off_flags,
+        off_slots,
+        off_type_count,
+    )
+    if len(header) != header_size:
+        raise RuntimeError(f"Ecology compat header size {len(header)} != {header_size}")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(header + b"".join(blob_pieces))
+
+
+def write_source(
+    path: Path,
+    version: int,
+    families: list[Family],
+    groups: list[Group],
+    edges: list[Edge],
+) -> tuple[int, int]:
+    tables = prepare_compat_tables(families, groups, edges)
+
+    group_land_rows = [f"        {{ {a}, {b}, {c} }}," for a, b, c in tables.land_entries]
+    group_bucket_rows = [f"        {{ {a}, {b}, {c} }}," for a, b, c in tables.bucket_entries]
+    encdata_flat = [f"    {enc_id}," for enc_id in tables.encdata_ids]
+    group_info_rows = [
+        "    { "
+        f"{enc_off}, {enc_cnt}, {land_mask}, {meth_mask}, {water} }},"
+        for enc_off, enc_cnt, land_mask, meth_mask, water in tables.group_info
+    ]
+    group_flag_rows = [f"    {flag}," for flag in tables.group_flags]
+    group_type_count_rows = [f"    {count}," for count in tables.location_type_count]
+    slot_rows = [f"    {count}," for count in tables.method_slots]
+    family_info_rows = [
+        "    { "
+        f"{base}, {dex}, {rarity}, {demand}, {land_time}, {pad} }},"
+        for base, dex, rarity, demand, land_time, pad in tables.family_info
+    ]
 
     def fmt_offset_array(values: list[int]) -> str:
         return ", ".join(str(v) for v in values)
@@ -859,7 +1013,7 @@ const EcologyGroupLandEntry sEcologyGroupLandEntries[] = {{
 }};
 
 const u16 sEcologyGroupLandOffsets[ECOLOGY_NUM_GROUPS + 1] = {{
-    {fmt_offset_array(group_land_offsets)}
+    {fmt_offset_array(tables.land_offsets)}
 }};
 
 const EcologyGroupBucketEntry sEcologyGroupBucketEntries[] = {{
@@ -867,7 +1021,7 @@ const EcologyGroupBucketEntry sEcologyGroupBucketEntries[] = {{
 }};
 
 const u16 sEcologyGroupBucketOffsets[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT + 1] = {{
-    {fmt_offset_array(group_bucket_offsets)}
+    {fmt_offset_array(tables.bucket_offsets)}
 }};
 
 const u8 sEcologyGroupFlags[ECOLOGY_NUM_GROUPS] = {{
@@ -884,7 +1038,7 @@ const u8 sEcologyGroupLocationTypeCount[ECOLOGY_NUM_GROUPS] = {{
 """,
         encoding="utf-8",
     )
-    return max_slots, total_slots
+    return tables.max_slots, tables.total_slots
 
 
 def main() -> None:
@@ -906,7 +1060,9 @@ def main() -> None:
     edges = build_edges(families, groups)
     version = compat_version([args.families, args.locations])
 
+    tables = prepare_compat_tables(families, groups, edges)
     max_slots, total_slots = write_source(args.out_c, version, families, groups, edges)
+    write_binary_blob(OUT_BIN, version, families, groups, tables)
     write_header(args.out_h, version, len(families), len(groups), len(edges), max_slots, total_slots)
     write_strings_header(OUT_STRINGS_H, len(families), len(groups))
     write_strings_source(OUT_STRINGS_C, families, groups)
@@ -917,6 +1073,7 @@ def main() -> None:
     print(f"Placement groups: {len(groups)}")
     print(f"Compatibility edges: {len(edges)}")
     print(f"Wrote {args.out_c}")
+    print(f"Wrote {OUT_BIN} ({OUT_BIN.stat().st_size} bytes)")
     print(f"Wrote {args.out_h}")
     print(f"Wrote dumps {args.dump_family} and {args.dump_group}")
     print(f"Wrote {OUT_STRINGS_C} and {OUT_STRINGS_H}")

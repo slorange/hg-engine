@@ -286,10 +286,18 @@ $(foreach src, $(ALL_C_SRCS), $(eval $(call SRC_OBJ_INC_DEFINE,$(patsubst $(C_SU
 endif
 
 # wild_level_caps.c in overlay 129; large tables live in field overlay — pointers patched in build/output.bin.
-$(BUILD)/wild_level_caps.o: $(C_SUBDIR)/wild_level_caps.c $(LEVEL_UP_EVO_TABLES_H) $(SYNTHETIC_EVO_EDGES_H) $(LEARNSETS_HEADER) $(BATTLETESTS_HEADER) | $(dir $(BUILD)/wild_level_caps.o)
+$(BUILD)/wild_level_caps.o: $(C_SUBDIR)/wild_level_caps.c $(WILD_LEVEL_CAPS_H) $(LEVEL_UP_EVO_TABLES_H) $(SYNTHETIC_EVO_EDGES_H) $(LEARNSETS_HEADER) $(BATTLETESTS_HEADER) | $(dir $(BUILD)/wild_level_caps.o)
 	$(CC) -MMD -MF $(basename $(BUILD)/wild_level_caps.o).d $(CFLAGS) -DOVERLAY129 -c $(C_SUBDIR)/wild_level_caps.c -o $(BUILD)/wild_level_caps.o
 
 -include $(BUILD)/wild_level_caps.d
+
+# wild_berry_hold.c in overlay 129; species held tables live in field overlay — pointers patched in build/output.bin.
+$(BUILD)/wild_berry_hold.o: $(C_SUBDIR)/wild_berry_hold.c $(WILD_SPECIES_HELD_H) | $(dir $(BUILD)/wild_berry_hold.o)
+	$(CC) -MMD -MF $(basename $(BUILD)/wild_berry_hold.o).d $(CFLAGS) -DOVERLAY129 -c $(C_SUBDIR)/wild_berry_hold.c -o $(BUILD)/wild_berry_hold.o
+
+-include $(BUILD)/wild_berry_hold.d
+
+$(BUILD)/field/wild_level_caps_data.o: $(WILD_LEVEL_CAPS_H)
 
 define ASM_OBJ_INC_DEFINE
 # these should have similar dependency scanning, but we do not currently use them in a way conducive to it
@@ -316,6 +324,21 @@ $(BASE)/arm9.bin: $(ROMNAME) $(NDSTOOL) $(VENV_ACTIVATE)
 	$(NARCHIVE) extract $(FILESYS)/a/0/2/8 -o $(BUILD)/a028/ -nf
 
 all: $(OUTPUT) $(OVERLAY_OUTPUTS) $(WILD_LEVEL_CAPS_C) $(LEVEL_UP_EVO_TABLES_C) $(SYNTHETIC_EVO_EDGES_C) $(WILD_SPECIES_HELD_C) $(TOOLS) $(BASE)/arm9.bin
+
+# Playable ROM: code + all NARCs + armips + overlay 129 inject + repack (same sequence as release builds).
+$(BUILDROM): all move_narc $(TOOLS) $(ARMIPS) $(NDSTOOL) $(VENV_ACTIVATE)
+	$(PYTHON) scripts/build/make.py $(CFLAGS)
+	$(ARMIPS) armips/global.s $(ARMIPS_FLAGS)
+	$(PYTHON) -c "from tools.restore_overlay53_baseline import save_reference_snapshot; save_reference_snapshot()"
+ifeq ($(OAK_INTRO_PATCH),1)
+	$(PYTHON) tools/patch_overlay_oak_intro.py
+else
+	$(PYTHON) tools/restore_overlay53_baseline.py
+endif
+	$(NARCHIVE) create $(FILESYS)/a/0/2/8 $(BUILD)/a028/ -nf
+	$(PYTHON) scripts/dev/apply_changed_maps.py
+	$(NDSTOOL) -c $(BUILDROM) -9 $(BASE)/arm9.bin -7 $(BASE)/arm7.bin -y9 $(BASE)/overarm9.bin -y7 $(BASE)/overarm7.bin -d $(FILESYS) -y $(BASE)/overlay -t $(BASE)/banner.bin -h $(BASE)/header.bin
+	@echo "Done.  See output $(BUILDROM)."
 
 # Future-5: run after editing data/ecology/ecology_families.tsv or ecology_locations.tsv (not part of every make).
 ecology-compat:
@@ -563,6 +586,9 @@ move_narc: $(NARC_FILES)
 
 	@echo "hidden item params:"
 	cp $(HIDDEN_ITEM_PARAMS_BIN) $(HIDDEN_ITEM_PARAMS_TARGET)
+
+	@echo "ecology compat blob:"
+	cp $(ECOLOGY_COMPAT_BIN) $(ECOLOGY_COMPAT_TARGET)
 
 update_machine_moves: $(VENV_ACTIVATE)
 	$(PYTHON) scripts/build/update_machine_moves.py --descriptions --sprites

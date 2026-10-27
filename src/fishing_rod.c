@@ -2,24 +2,28 @@
 #include "../include/fishing_rod.h"
 
 #include "../include/bag.h"
-#include "../include/constants/file.h"
+#include "../include/constants/file.h" /* HEAPID_DEFAULT */
 #include "../include/constants/item.h"
 #include "../include/constants/species.h"
 #include "../include/pokedex.h"
 #include "../include/pokemon.h"
 #include "../include/save.h"
 #include "../include/script.h"
+#include "../include/types.h"
 
 #define FISHING_ROD_FAMILY_CAP (MAX_SPECIES_INCLUDING_FORMS + 1)
 
 #define FLAG_GOT_OLD_ROD  117
 #define FLAG_GOT_GOOD_ROD 189
 
-static u16 sFamilyParent[FISHING_ROD_FAMILY_CAP];
+static u16 *sFamilyParent = NULL;
 static BOOL sFamiliesInitialized = FALSE;
 
 static u16 family_find(u16 species)
 {
+    if (sFamilyParent == NULL) {
+        return species;
+    }
     if (sFamilyParent[species] != species) {
         sFamilyParent[species] = family_find(sFamilyParent[species]);
     }
@@ -42,6 +46,12 @@ static void fishing_rod_init_families(void)
     u32 i;
 
     if (sFamiliesInitialized) {
+        return;
+    }
+
+    sFamilyParent = (u16 *)sys_AllocMemory(
+        HEAPID_DEFAULT, FISHING_ROD_FAMILY_CAP * sizeof(u16));
+    if (sFamilyParent == NULL) {
         return;
     }
 
@@ -103,6 +113,9 @@ u16 LONG_CALL CountCaughtWaterTypeFamilies(SaveData *saveData)
     u16 count = 0;
 
     fishing_rod_init_families();
+    if (sFamilyParent == NULL) {
+        return 0;
+    }
 
     for (species = 0; species < FISHING_ROD_FAMILY_CAP; species++) {
         familySeen[species] = FALSE;

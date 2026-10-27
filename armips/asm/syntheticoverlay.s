@@ -17,10 +17,10 @@
 load_arm9_expansion: // load the narc subfile with arm9 expansion data
     push {r2, lr}
 
-// load overlay 129 as arm9 expansion
+// load overlay 129 as arm9 expansion (sync NoInit — type 2 async can finish after init runs)
     mov r0, #129
-    mov r1, #2
-    bl HandleLoadOverlay129 // HandleLoadOverlay(129, 2) // noinit load
+    mov r1, #1
+    bl HandleLoadOverlay129 // HandleLoadOverlay(129, 1)
 
     mov r0, #0
     mov r0, #0
@@ -31,9 +31,7 @@ load_arm9_expansion: // load the narc subfile with arm9 expansion data
 
 HandleLoadOverlay129:
 	push {r3-r7, lr}
-	mov r4, r1
-	mov r1, #0
-	mvn r1, r1
+	// r0/r1 stay as overlay id / load type (2 = noinit async); skip hooked 0x02006FF8 prologue
 	ldr r2, =0x02007000|1 // HandleLoadOverlay+8, need normal loading for the first one
 	bx r2
 

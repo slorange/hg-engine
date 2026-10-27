@@ -1,11 +1,13 @@
 #include "ecology/ecology_generate.h"
 
 #include "constants/generated/ecology_compat.h"
+#include "ecology/ecology_compat_access.h"
 
 #ifdef ECOLOGY_STANDALONE
 #include <stdlib.h>
 #else
-#include "global.h"
+#include "constants/file.h"
+#include "types.h"
 #endif
 
 typedef struct EcologyEdgeRef {
@@ -73,10 +75,17 @@ static bool8 EcologyFamilyAllowedOnMethod(u8 method, u8 rarity)
 
 static u16 EcologyRandRange(EcologyRng *rng, u16 limit)
 {
+    u32 r;
     if (limit <= 1) {
         return 0;
     }
-    return (u16)(EcologyRngNext(rng) % limit);
+    r = EcologyRngNext(rng);
+    return (u16)(r % (u32)limit);
+}
+
+static bool8 EcologySlotIndexValid(u16 slotIndex, u16 outSlotCapacity)
+{
+    return slotIndex < outSlotCapacity;
 }
 
 static void EcologyShuffleU16(EcologyRng *rng, u16 *items, u16 count)
@@ -95,35 +104,40 @@ static bool8 EcologyGroupShuffleable(u8 groupId)
     if (groupId >= ECOLOGY_NUM_GROUPS) {
         return FALSE;
     }
-    return (sEcologyGroupFlags[groupId] & ECOLOGY_GROUP_FLAG_SHUFFLE) != 0;
+    return (ECO_GROUP_FLAGS(groupId) & ECOLOGY_GROUP_FLAG_SHUFFLE) != 0;
 }
 
 static u8 EcologyGroupMethodCapacity(u8 groupId, u8 method)
 {
     u16 index = EcologyGroupMethodIndex(groupId, method);
-    return sEcologyGroupMethodSlots[index];
+    u8 capacity = ECO_METHOD_SLOTS(index);
+
+    if (capacity > ECOLOGY_GEN_MAX_SLOTS_PER_BUCKET) {
+        return 0;
+    }
+    return capacity;
 }
 
 static u16 EcologyLandEntryCount(u8 groupId)
 {
-    return sEcologyGroupLandOffsets[groupId + 1] - sEcologyGroupLandOffsets[groupId];
+    return ECO_LAND_OFFSETS(groupId + 1) - ECO_LAND_OFFSETS(groupId);
 }
 
 static EcologyGroupLandEntry EcologyLandEntryAt(u8 groupId, u16 index)
 {
-    return sEcologyGroupLandEntries[sEcologyGroupLandOffsets[groupId] + index];
+    return ECO_LAND_ENTRIES(ECO_LAND_OFFSETS(groupId) + index);
 }
 
 static u16 EcologyBucketEntryCount(u8 groupId, u8 method)
 {
     u16 bucketIndex = EcologyGroupMethodIndex(groupId, method);
-    return sEcologyGroupBucketOffsets[bucketIndex + 1] - sEcologyGroupBucketOffsets[bucketIndex];
+    return ECO_BUCKET_OFFSETS(bucketIndex + 1) - ECO_BUCKET_OFFSETS(bucketIndex);
 }
 
 static EcologyGroupBucketEntry EcologyBucketEntryAt(u8 groupId, u8 method, u16 index)
 {
     u16 bucketIndex = EcologyGroupMethodIndex(groupId, method);
-    return sEcologyGroupBucketEntries[sEcologyGroupBucketOffsets[bucketIndex] + index];
+    return ECO_BUCKET_ENTRIES(ECO_BUCKET_OFFSETS(bucketIndex) + index);
 }
 
 static u16 EcologyCollectFamilyEdges(u16 familyId, EcologyEdgeRef *out, u16 outMax)
@@ -169,7 +183,7 @@ static u16 EcologyCollectFamilyEdges(u16 familyId, EcologyEdgeRef *out, u16 outM
                 }
                 if (!EcologyFamilyAllowedOnMethod(
                         method,
-                        sEcologyFamilyInfo[entry.familyId].rarity)) {
+                        ECO_FAMILY_INFO(entry.familyId).rarity)) {
                     continue;
                 }
                 if (written >= outMax) {
@@ -208,7 +222,7 @@ static u16 EcologyDedupeEdgeRefs(EcologyEdgeRef *edges, u16 count)
 
 static u8 EcologyResolveFamilyLandTimeMask(u16 familyId)
 {
-    u8 mask = sEcologyFamilyInfo[familyId].landTimeMask;
+    u8 mask = ECO_FAMILY_INFO(familyId).landTimeMask;
     if (mask == 0) {
         return ECOLOGY_TIME_ALL;
     }
@@ -218,7 +232,7 @@ static u8 EcologyResolveFamilyLandTimeMask(u16 familyId)
 u8 EcologyEffectiveLandTimeMask(u8 groupId, u16 familyId)
 {
     u8 familyMask = EcologyResolveFamilyLandTimeMask(familyId);
-    u8 groupMask = sEcologyGroups[groupId].landPeriodMask;
+    u8 groupMask = ECO_GROUPS(groupId).landPeriodMask;
     if (groupMask == 0) {
         groupMask = ECOLOGY_TIME_ALL;
     }
@@ -231,6 +245,7 @@ static bool8 EcologyTryAssignSlot(
     u8 method,
     u16 *outSlots,
     u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
     const u16 *slotBases,
     u16 *bucketFill,
     u16 *familyPlacementCount)
@@ -244,11 +259,14 @@ static bool8 EcologyTryAssignSlot(
     if (capacity == 0 || fill >= capacity) {
         return FALSE;
     }
-    if (!EcologyFamilyAllowedOnMethod(method, sEcologyFamilyInfo[familyId].rarity)) {
+    if (!EcologyFamilyAllowedOnMethod(method, ECO_FAMILY_INFO(familyId).rarity)) {
         return FALSE;
     }
 
     slotIndex = (u16)(base + fill);
+    if (!EcologySlotIndexValid(slotIndex, outSlotCapacity)) {
+        return FALSE;
+    }
     outSlots[slotIndex] = familyId;
     if (outLandSlotTimeMasks != NULL && method == ECOLOGY_METHOD_LAND) {
         outLandSlotTimeMasks[slotIndex] = EcologyEffectiveLandTimeMask(groupId, familyId);
@@ -293,7 +311,7 @@ static u16 EcologyPickWeightedLandFamily(
             continue;
         }
         totalWeight += EcologyPickWeightEx(
-            sEcologyFamilyInfo[entry.familyId].rarity,
+            ECO_FAMILY_INFO(entry.familyId).rarity,
             entry.flags,
             applyTypeBoost);
     }
@@ -312,7 +330,7 @@ static u16 EcologyPickWeightedLandFamily(
             continue;
         }
         weight = EcologyPickWeightEx(
-            sEcologyFamilyInfo[entry.familyId].rarity,
+            ECO_FAMILY_INFO(entry.familyId).rarity,
             entry.flags,
             applyTypeBoost);
         cursor += weight;
@@ -325,7 +343,7 @@ static u16 EcologyPickWeightedLandFamily(
 
 static u8 EcologyTypedLandSlotTarget(u8 groupId)
 {
-    u8 typeCount = sEcologyGroupLocationTypeCount[groupId];
+    u8 typeCount = ECO_LOCATION_TYPE_COUNT(groupId);
     u16 landCapacity;
     u16 target;
 
@@ -365,12 +383,17 @@ static void EcologyAssignLandSlot(
     u16 familyId,
     u16 *outSlots,
     u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
     u16 layoutIndex,
     const u16 *slotBases,
     u16 *bucketFill,
     u16 *familyPlacementCount)
 {
     u16 slotIndex = (u16)(slotBases[layoutIndex] + bucketFill[layoutIndex]);
+
+    if (!EcologySlotIndexValid(slotIndex, outSlotCapacity)) {
+        return;
+    }
     outSlots[slotIndex] = familyId;
     if (outLandSlotTimeMasks != NULL) {
         outLandSlotTimeMasks[slotIndex] = EcologyEffectiveLandTimeMask(groupId, familyId);
@@ -384,6 +407,7 @@ static void EcologyFillLandBucket(
     u8 groupId,
     u16 *outSlots,
     u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
     u16 layoutIndex,
     const u16 *slotBases,
     u16 *bucketFill,
@@ -393,10 +417,15 @@ static void EcologyFillLandBucket(
     u8 typeTarget = EcologyTypedLandSlotTarget(groupId);
     bool8 typed = typeTarget > 0;
     u16 picked;
+    u16 guard = 0;
 
     while (bucketFill[layoutIndex] < capacity) {
         u16 typeMatched = EcologyCountLandTypeMatchSlots(
             groupId, outSlots, layoutIndex, slotBases, bucketFill[layoutIndex]);
+
+        if (++guard > (u16)(capacity + 8u)) {
+            break;
+        }
 
         if (typed && typeMatched < typeTarget) {
             picked = EcologyPickWeightedLandFamily(rng, groupId, TRUE, FALSE, FALSE);
@@ -417,6 +446,7 @@ static void EcologyFillLandBucket(
             picked,
             outSlots,
             outLandSlotTimeMasks,
+            outSlotCapacity,
             layoutIndex,
             slotBases,
             bucketFill,
@@ -439,7 +469,7 @@ static u16 EcologyPickWeightedFamily(EcologyRng *rng, u8 groupId, u8 method)
     count = EcologyBucketEntryCount(groupId, method);
     for (i = 0; i < count; i++) {
         EcologyGroupBucketEntry entry = EcologyBucketEntryAt(groupId, method, i);
-        u8 rarity = sEcologyFamilyInfo[entry.familyId].rarity;
+        u8 rarity = ECO_FAMILY_INFO(entry.familyId).rarity;
         if (!EcologyFamilyAllowedOnMethod(method, rarity)) {
             continue;
         }
@@ -452,7 +482,7 @@ static u16 EcologyPickWeightedFamily(EcologyRng *rng, u8 groupId, u8 method)
     cursor = 0;
     for (i = 0; i < count; i++) {
         EcologyGroupBucketEntry entry = EcologyBucketEntryAt(groupId, method, i);
-        u8 rarity = sEcologyFamilyInfo[entry.familyId].rarity;
+        u8 rarity = ECO_FAMILY_INFO(entry.familyId).rarity;
         u16 weight;
         if (!EcologyFamilyAllowedOnMethod(method, rarity)) {
             continue;
@@ -473,17 +503,22 @@ u16 EcologyGenSlotLayoutBase(u8 groupId, u8 method, const u16 *slotBases)
 
 u16 EcologyGenBuildSlotLayout(u16 *slotBasesOut)
 {
-    u16 cursor = 0;
+    u32 cursor = 0;
     u8 groupId;
     for (groupId = 0; groupId < ECOLOGY_NUM_GROUPS; groupId++) {
         u8 method;
         for (method = 0; method < ECOLOGY_METHOD_COUNT; method++) {
             u16 index = EcologyGroupMethodIndex(groupId, method);
-            slotBasesOut[index] = cursor;
-            cursor = (u16)(cursor + EcologyGroupMethodCapacity(groupId, method));
+            u8 capacity = EcologyGroupMethodCapacity(groupId, method);
+
+            slotBasesOut[index] = (u16)cursor;
+            cursor += capacity;
+            if (cursor > (u32)ECOLOGY_GEN_TOTAL_SLOTS) {
+                return 0;
+            }
         }
     }
-    return cursor;
+    return (u16)cursor;
 }
 
 bool8 EcologyGenerateWorld(
@@ -494,15 +529,20 @@ bool8 EcologyGenerateWorld(
     EcologyGenStats *statsOut)
 {
     EcologyRng rng;
+#ifdef ECOLOGY_STANDALONE
     u16 slotBases[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];
     u16 bucketFill[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];
     u16 familyPlacementCount[ECOLOGY_NUM_FAMILIES];
     u16 familyOrder[ECOLOGY_NUM_FAMILIES];
-#ifdef ECOLOGY_STANDALONE
-    EcologyEdgeRef *edgeScratch;
 #else
-    static EcologyEdgeRef sEdgeScratch[ECOLOGY_NUM_EDGES];
+    /* Called from overlay 129 script context — keep ~3.5 KiB off the script stack. */
+    u16 *slotBases;
+    u16 *bucketFill;
+    u16 *familyPlacementCount;
+    u16 *familyOrder;
+    u32 layoutSlots = (u32)ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT;
 #endif
+    EcologyEdgeRef *edgeScratch;
     u16 totalSlots;
     u16 familyId;
     u8 groupId;
@@ -511,9 +551,43 @@ bool8 EcologyGenerateWorld(
         return FALSE;
     }
 
+#ifndef ECOLOGY_STANDALONE
+    if (gEcologyCompatView == NULL) {
+        return FALSE;
+    }
+
+    slotBases = (u16 *)sys_AllocMemory(HEAPID_DEFAULT, layoutSlots * sizeof(u16));
+    bucketFill = (u16 *)sys_AllocMemory(HEAPID_DEFAULT, layoutSlots * sizeof(u16));
+    familyPlacementCount =
+        (u16 *)sys_AllocMemory(HEAPID_DEFAULT, ECOLOGY_NUM_FAMILIES * sizeof(u16));
+    familyOrder = (u16 *)sys_AllocMemory(HEAPID_DEFAULT, ECOLOGY_NUM_FAMILIES * sizeof(u16));
+    if (slotBases == NULL || bucketFill == NULL || familyPlacementCount == NULL
+        || familyOrder == NULL) {
+        if (slotBases != NULL) {
+            sys_FreeMemoryEz(slotBases);
+        }
+        if (bucketFill != NULL) {
+            sys_FreeMemoryEz(bucketFill);
+        }
+        if (familyPlacementCount != NULL) {
+            sys_FreeMemoryEz(familyPlacementCount);
+        }
+        if (familyOrder != NULL) {
+            sys_FreeMemoryEz(familyOrder);
+        }
+        return FALSE;
+    }
+#endif
+
     EcologyRngInit(&rng, seed);
     totalSlots = EcologyGenBuildSlotLayout(slotBases);
-    if (totalSlots > outSlotCapacity) {
+    if (totalSlots == 0 || totalSlots > outSlotCapacity) {
+#ifndef ECOLOGY_STANDALONE
+        sys_FreeMemoryEz(slotBases);
+        sys_FreeMemoryEz(bucketFill);
+        sys_FreeMemoryEz(familyPlacementCount);
+        sys_FreeMemoryEz(familyOrder);
+#endif
         return FALSE;
     }
 
@@ -530,6 +604,9 @@ bool8 EcologyGenerateWorld(
             bucketFill[index] = 0;
             for (fill = 0; fill < capacity; fill++) {
                 u16 slotIndex = (u16)(slotBases[index] + fill);
+                if (!EcologySlotIndexValid(slotIndex, outSlotCapacity)) {
+                    break;
+                }
                 outSlots[slotIndex] = 0xFFFF;
                 if (outLandSlotTimeMasks != NULL) {
                     outLandSlotTimeMasks[slotIndex] = 0;
@@ -546,18 +623,25 @@ bool8 EcologyGenerateWorld(
 
 #ifdef ECOLOGY_STANDALONE
     edgeScratch = (EcologyEdgeRef *)malloc(sizeof(EcologyEdgeRef) * ECOLOGY_NUM_EDGES);
+#else
+    edgeScratch = (EcologyEdgeRef *)sys_AllocMemory(
+        HEAPID_DEFAULT, sizeof(EcologyEdgeRef) * ECOLOGY_NUM_EDGES);
+#endif
     if (edgeScratch == NULL) {
+#ifndef ECOLOGY_STANDALONE
+        sys_FreeMemoryEz(slotBases);
+        sys_FreeMemoryEz(bucketFill);
+        sys_FreeMemoryEz(familyPlacementCount);
+        sys_FreeMemoryEz(familyOrder);
+#endif
         return FALSE;
     }
-#else
-    edgeScratch = sEdgeScratch;
-#endif
 
     EcologyShuffleU16(&rng, familyOrder, ECOLOGY_NUM_FAMILIES);
 
     for (familyId = 0; familyId < ECOLOGY_NUM_FAMILIES; familyId++) {
         u16 orderedFamily = familyOrder[familyId];
-        const EcologyFamilyInfo *info = &sEcologyFamilyInfo[orderedFamily];
+        const EcologyFamilyInfo *info = &ECO_FAMILY_INFO(orderedFamily);
         u16 edgeCount = EcologyCollectFamilyEdges(orderedFamily, edgeScratch, ECOLOGY_NUM_EDGES);
         u16 demand = info->demand;
         u16 assignedPairs = 0;
@@ -581,6 +665,7 @@ bool8 EcologyGenerateWorld(
                     edge.method,
                     outSlots,
                     outLandSlotTimeMasks,
+                    outSlotCapacity,
                     slotBases,
                     bucketFill,
                     familyPlacementCount)) {
@@ -608,18 +693,26 @@ bool8 EcologyGenerateWorld(
                     groupId,
                     outSlots,
                     outLandSlotTimeMasks,
+                    outSlotCapacity,
                     layoutIndex,
                     slotBases,
                     bucketFill,
                     familyPlacementCount);
             } else {
+                u16 guard = 0;
                 while (bucketFill[layoutIndex] < capacity) {
                     u16 picked = EcologyPickWeightedFamily(&rng, groupId, method);
                     u16 slotIndex;
+                    if (++guard > (u16)(capacity + 8u)) {
+                        break;
+                    }
                     if (picked == 0xFFFF) {
                         break;
                     }
                     slotIndex = (u16)(slotBases[layoutIndex] + bucketFill[layoutIndex]);
+                    if (!EcologySlotIndexValid(slotIndex, outSlotCapacity)) {
+                        break;
+                    }
                     outSlots[slotIndex] = picked;
                     if (outLandSlotTimeMasks != NULL && method == ECOLOGY_METHOD_LAND) {
                         outLandSlotTimeMasks[slotIndex] =
@@ -643,6 +736,12 @@ bool8 EcologyGenerateWorld(
 
 #ifdef ECOLOGY_STANDALONE
     free(edgeScratch);
+#else
+    sys_FreeMemoryEz(edgeScratch);
+    sys_FreeMemoryEz(slotBases);
+    sys_FreeMemoryEz(bucketFill);
+    sys_FreeMemoryEz(familyPlacementCount);
+    sys_FreeMemoryEz(familyOrder);
 #endif
     return TRUE;
 }

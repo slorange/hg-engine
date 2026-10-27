@@ -28,7 +28,7 @@ Python helpers for hg-engine. See `.cursor/rules/agents.mdc` § **Scripts layout
 | `gen_wild_level_caps.py` | `narcs.mk` → `src/field/wild_level_caps_data.c` |
 | `gen_ecology_compatibility.py` | `narcs.mk` → `src/field/ecology_compat_data.c` (Future-5 prebuild) |
 | `gen_wild_species_held_items.py` | `narcs.mk` → `src/field/wild_species_held_items.c` |
-| `patch_level_up_evo_addrs.py` | `Makefile`, `make.py` — patch field pointers into overlay 129 `build/output.bin` (evo tables, wild caps, `WildMonApplyHeldItemFieldAddr`) |
+| `patch_level_up_evo_addrs.py` | `Makefile`, `make.py` — patch field pointers into overlay 129 `build/output.bin` (evo tables, wild caps, wild species held tables) |
 | `gen_synthetic_evo_edges.py` | `narcs.mk` → `src/field/synthetic_evo_edges_data.c` |
 
 ## `dev/` highlights

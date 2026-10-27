@@ -42,7 +42,8 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
 | Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
-| Wild ecology shuffle (Future-5) | [Per-save ecology (pre-ROM)](#per-save-wild-ecology-shuffle-future-5--pre-rom) → [Files](#ecology-file-shorthand), [Compat rules](#ecology-compat-prebuild-rules), [Generation](#ecology-assignment-gen-core), [Typed land](#typed-locations-land-theme-slots) |
+| Wild ecology shuffle (Future-5) | [Per-save ecology (Future-5)](#per-save-wild-ecology-shuffle-future-5--pre-rom) → [ROM hook (PoC)](#ecology-rom-integration-poc-oct-2026), [Files](#ecology-file-shorthand), [129↔131 crashes](#overlay-129-vs-field-overlay-131--load-overlap), [Compat rules](#ecology-compat-prebuild-rules) |
+| Overlay 129 / field crashes | [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) — undefined instruction when 129 calls 131 **code** |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
 | Known bugs | [Known bugs (TODO.md)](#known-bugs-index-3) |
@@ -108,6 +109,28 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 **Wild level cap debug (separate issue):** With `DEBUG_WILD_LEVEL_CAP_LEVELS` on ([debug toggles](#debug-toggles-turn-off-for-normal-play)), enemy level **5** appeared on **grass, fishing, and surf** — not surf-only. In `src/wild_level_caps.c`, level **5** = `WLC_FAIL_ENCBANK_NA` (`MapHeader_GetWildEncounterBank(mapId)` returned **`ENCDATA_NA` (255)**). Species can still come from the vanilla table path while cap lookup fails on the `mapId` from `ResolveMapId` (`SaveBlock2` → `LocalFieldData.currentPosition.mapId`, fallback `fsys->location`, often **`MAP_EVERYWHERE` (0)**). Inspect ARM9 scratch `sWildLevelCapDebug` @ **`0x021FF910`** (`mapId`, `encBank`, `failReason`) if cap plumbing is revisited. Toggle left **off** after this pass.
 
 **Hooks / refs:** [Wild level caps pipeline](#runtime-pipeline); `WildWaterEncSingle` @ `0x022474E0` when `IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS`; overlay `SetEncountData` ~`0x02247B64`.
+
+### KB-11 — Undefined instruction from overlay 129 → field **code** calls
+
+**Symptom:** `ARM9: Undefined instruction: 0x........` with PC in overlay **129** range (`0x023D8xxx`) or jumping into garbage; often **first wild** after new game, or during **Mom intro** if 129 calls field overlay **131** functions.
+
+**Cause:** Overlay **129** and field overlay **131** share overlapping ARM9 load windows ([memory map](#memory-map-arm9)). Only one overlay’s **code** is reliably mapped at a time. **`patch_level_up_evo_addrs.py`** is for **read-only field rodata** (tables in `src/field/`). Patching a pointer to a **function** in 131 and calling it from 129 while 131 is unloaded executes non-code → undefined instruction.
+
+**Not ecology encounter wiring:** Future-5 does **not** replace `encounters.narc` yet. Crashes came from **existing** hooks that already run on 129 (wild level caps, berry hold on the encounter hook) plus **Mom ecology gen** on 129 — same failure class.
+
+**Why it surfaced during ecology work (Oct 2026):**
+
+| Factor | Notes |
+|--------|--------|
+| Pre-existing pattern | Sep 2026 wild berry rework (`TryApplyWildEncounterHeldItem` in `src/wild_level_caps.c`) patched **`WildMonApplyHeldItemFieldAddr`** → `WildMonApplyHeldItemForEncounter` in **field** overlay — data-pointer pattern misapplied to **code**. Often “worked” while 131 stayed resident during overworld walking. |
+| Ecology on Mom | Heavy **`EcologyRunNewGameGeneration`** on overlay **129** (scr_seq **845** / `RunNewCommand` case **4**) changed **overlay load order** after intro; first grass hook could be the first 129 path with 131 **not** loaded. |
+| Large rodata in 131 | Early ecology CSR in field rodata bloated 131 and **stomped 129** (bedroom undefined instruction) — fixed by moving compat to **NARC** + gen in 129. |
+
+**Fix (wild berry hold, Oct 2026):** Move **`src/wild_berry_hold.c`** into overlay **129** (with **`WildMonSetRandomHeldItem_hook`**). Encounter path calls **`WildMonApplyHeldItemForEncounter`** directly from `wild_level_caps.c`. Species held **tables** stay in **`src/field/wild_species_held_items.c`**; 129 uses patched **`WildSpeciesHeldCommonFieldAddr`** / **`WildSpeciesHeldRareFieldAddr`** (data only). Field **`AddWildPartyPokemon`** uses ARM9 **`WildMonSetRandomHeldItem`** → hook in 129 (do not call 129 from 131 directly).
+
+**Verify after link:** `python3 scripts/dev/verify_overlay129_field_addrs.py` (Docker). **`build/output.bin`** must be patched **after** both **`build/field_linked.o`** and **`build/linked.o`** exist (`Makefile` `$(OUTPUT)` rule; also `make.py` `writeall()`).
+
+**Rule for new features:** From 129, **only** dereference patched **data** pointers into 131. All hot-path **logic** that runs on the wild encounter hook belongs in **`src/`** (129). See [Overlay 129 vs field overlay 131](#overlay-129-vs-field-overlay-131--load-overlap).
 
 ---
 
@@ -1427,13 +1450,26 @@ Field ROM spans `0x023C8000`–`0x023E0000`; overlay **129** sits in the **top**
 | Small constants / hot path code | Root **`src/`** / **`asm/`** if budget allows |
 | Cross-battle scratch that must survive 129 reload | **ARM9 fixed RAM** — see `rom.ld` + [wild caps scratch table](#arm9-scratch-armipsasmwild_level_capss-romld) (`0x021FF900` region). Not the same as field pointers |
 
-**Working examples:** `LevelUpEvoTablesFieldAddr`, `SyntheticEvoEdgesFieldAddr`, `WildLevelCapsFieldAddr` in `src/wild_level_caps.c` → tables in `src/field/level_up_evo_tables.c`, `synthetic_evo_edges_data.c`, `wild_level_caps_data.c`.
+**Working examples (data pointers only):** `LevelUpEvoTablesFieldAddr`, `SyntheticEvoEdgesFieldAddr`, `WildLevelCapsFieldAddr` in `src/wild_level_caps.c` → tables in `src/field/level_up_evo_tables.c`, `synthetic_evo_edges_data.c`, `wild_level_caps_data.c`. Wild berry hold: **`WildSpeciesHeldCommonFieldAddr`** / **`WildSpeciesHeldRareFieldAddr`** in `src/wild_berry_hold.c` → `src/field/wild_species_held_items.c`.
 
 **Anti-patterns:**
 
 - Linking multi-kilobyte `.rodata` into root `src/` (bloats `output.bin` fast).
 - Reserving field space with a linker hole that pushes field content into **`0x023D8000+`** (clobbered 129 in past experiments).
 - Hooks that assume field overlay layout without using patched pointers (129 reloads; field addresses move per build).
+- **Calling field overlay functions from 129** via a patched function pointer (see [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)). Tables OK; **code** must live in 129 or run under ARM9 hooks that only target 129 while it is loaded.
+
+### Overlay 129 vs field overlay 131 — load overlap
+
+129 is the default home for **encounter hooks** (`asm/other_hook.s` → `src/wild_level_caps.c`, berry hold, future ecology encounter fan-out). Field overlay 131 holds **big read-only tables** and **field-only** helpers (`src/field/enemy_party.c`, mart, …).
+
+**Mom intro** runs field scr_seq on overlay **129** (same slot as engine hooks). Long-running C on 129 (ecology generation) is OK **if all callees are in 129 or ARM9** — do not `LONG_CALL` into 131 mid-script.
+
+**Ecology compat size:** Do **not** link full CSR compat into field rodata or root `src/` rodata (~38 KiB+). Ship **`build/ecology/ecology_compat.bin`** as code-addon **`CODE_ADDON_ECOLOGY_COMPAT` (19)** in NARC `a/0/2/8` member **`9_19`**; load on heap in **`EcologyCompatLoadFromFilesystem`** (`src/ecology_load.c`).
+
+**Stale duplicates:** `src/field/ecology_*.c` may still exist on disk but **ROM path** uses **`src/ecology_generate.c`**, **`src/ecology_load.c`**, **`src/ecology_script.c`** linked into 129 only — delete field copies when cleaning tree.
+
+**129 budget (Oct 2026):** `wc -c build/output.bin` ~**31 KiB** / 32 KiB after ecology + wild berry hold in 129; re-measure after every addition.
 
 **Failed approach (home warps):** mid/tail hook on `Field_InitMapEvents` inside overlay 129 — overlap / wrong thunk; abandoned ([failed approaches](#failed-approaches-save-future-dev-time)).
 
@@ -1485,6 +1521,7 @@ Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAd
 | Stage adjust | `include/encounter_species_stage.h` | `AdjustEncounterSpeciesForLevel` walks prevos (level-up + synthetic), then forward to the stage matching level (`data/synthetic_evolution_thresholds.tsv` → `sSyntheticEvoEdgesData` in field overlay). Overlay 129: patched `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` |
 | Species display | `ApplyWildSpeciesStageForLevel` in `src/wild_level_caps.c` | After `SetMonData(MON_DATA_SPECIES, …)`, call `SetMonData(MON_DATA_SPECIES_NAME, NULL)` — same as `PokeParaSet` — or battle/caught UI keeps the encounter-table name while sprite/stats use the new species |
 | Level write | `src/wild_level_caps.c` | Roll level → adjust species → set exp + `MON_DATA_LEVEL` → `RecalcPartyPokemonStats` |
+| Held item (if `IMPLEMENT_WILD_BERRY_HOLD`) | `TryApplyWildEncounterHeldItem` in `src/wild_level_caps.c` → `WildMonApplyHeldItemForEncounter` in **`src/wild_berry_hold.c`** (129) | Species tables via patched pointers into field rodata — **not** a cross-overlay function call ([KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)) |
 
 **Map ID:** read from `SaveBlock2` → `LocalFieldData.currentPosition.mapId` (not `fsys->location`, which is often `MAP_EVERYWHERE` during encounters).
 
@@ -1505,7 +1542,7 @@ Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAd
 
 Stage tables live in **contiguous field overlay rodata** (`sLevelUpEvoTablesData`, `sSyntheticEvoEdgesData`). Do not pin them with a linker hole — that bloated the field overlay past `0x023D8000` and clobbered overlay 129.
 
-**Build-time patch:** `scripts/build/patch_level_up_evo_addrs.py` runs after `field_linked.o` + `linked.o` exist; patches overlay 129 **`LevelUpEvoTablesFieldAddr`**, **`SyntheticEvoEdgesFieldAddr`**, and **`WildLevelCapsFieldAddr`** in `build/output.bin` (also from `scripts/build/make.py`). Table source: **`src/field/wild_level_caps_data.c`** (generated). If **`WildLevelCapsFieldAddr`** is **0**, cap lookup fails closed to min level. If evo pointers are **0**, wild stage adjust is skipped (`ApplyWildSpeciesStageForLevel` guard in `src/wild_level_caps.c`).
+**Build-time patch:** `scripts/build/patch_level_up_evo_addrs.py` runs after `field_linked.o` + `linked.o` exist; patches overlay 129 **`LevelUpEvoTablesFieldAddr`**, **`SyntheticEvoEdgesFieldAddr`**, **`WildLevelCapsFieldAddr`**, **`WildSpeciesHeldCommonFieldAddr`**, **`WildSpeciesHeldRareFieldAddr`** in `build/output.bin` (also from `scripts/build/make.py`). Table source: **`src/field/wild_level_caps_data.c`** (generated). If **`WildLevelCapsFieldAddr`** is **0**, cap lookup fails closed to min level. If evo pointers are **0**, wild stage adjust is skipped (`ApplyWildSpeciesStageForLevel` guard in `src/wild_level_caps.c`).
 
 Scratch survives overlay 129 reload; do not reuse these addresses for other features without updating `rom.ld`.
 
@@ -1537,7 +1574,8 @@ All tracked — nothing belongs in `scripts/local/`:
 |------|--------|------|
 | `scripts/build/gen_wild_level_caps.py` | build | Cap table → `src/field/wild_level_caps_data.c` (`narcs.mk`) |
 | `scripts/build/gen_level_up_evo_tables.py` | build | Stage tables → `src/field/level_up_evo_tables.c` + `include/constants/generated/level_up_evo_tables.h` |
-| `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr`, `SyntheticEvoEdgesFieldAddr`, `WildLevelCapsFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
+| `scripts/build/patch_level_up_evo_addrs.py` | build | Patch field **data** pointers into `build/output.bin` (`Makefile`, `make.py`) |
+| `scripts/dev/verify_overlay129_field_addrs.py` | dev | Post-`make` check that all five pointer slots match `field_linked.o` symbols |
 | `scripts/build/gen_synthetic_evo_edges.py` | build | TSV → `src/field/synthetic_evo_edges_data.c` + generated header (`narcs.mk`) |
 | `data/synthetic_evolution_thresholds.tsv` | data | Authoring source for synthetic stage edges (`from`, `to`, `min_level`, `branch`) |
 | `include/species_stage_for_level.h` | include | `AdjustSpeciesForLevel` (level-up forward bands only; used internally) |
@@ -1564,9 +1602,11 @@ All tracked — nothing belongs in `scripts/local/`:
 
 **Design:** [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle). Player-facing rules live in design docs; this section is the **implementation recipe** for authoring, prebuild compat, and offline assignment tests.
 
-**Status (Oct 2026):** **Compat + assignment only** — no new-game hook, no save format, no encounter-table overlay in `test.nds` yet. Vanilla wild tables still drive in-game encounters. Surf pipeline issues ([KB-10](#kb-10--surf-wild-encounters-wrong-species)) are separate; do not assume ecology work fixes them.
+**Status (Oct 2026):** **PoC on new game** — Mom runs generation; **no save blob**, **no encounter hook** — vanilla `encounters.narc` still drives species. Offline **assign** + host **ecologygen** unchanged. Surf pipeline ([KB-10](#kb-10--surf-wild-encounters-wrong-species)) is separate.
 
-**Goal:** At new game, assign shuffleable **families** to placement **groups** (shared ENCDATA ids) and methods; persist per save; hooks read assignment instead of static NARC species. Current deliverable: regenerate **eco-csr** + inspect **`build/ecology/ecology_assignment.tsv`** via host tool.
+**Toggle:** `#define IMPLEMENT_ECOLOGY_GENERATION` in `include/config.h` (Mom message + gen call; safe to disable for bisect).
+
+**Goal (remaining):** Persist per-save assignment; encounter / ENCDATA fan-out reads assignment instead of static tables; rod pool merge at roll time ([design](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle)).
 
 ### Ecology file shorthand
 
@@ -1578,14 +1618,29 @@ All tracked — nothing belongs in `scripts/local/`:
 | **dump-fam** | `data/ecology/ecology_compat_by_family.tsv` | Audit: where each family *may* appear (split by `type_match`) |
 | **dump-grp** | `data/ecology/ecology_compat_by_group.tsv` | Audit: who *may* appear per group / method / `type_match` |
 | **compat-h** | `include/constants/generated/ecology_compat.h` | C structs, counts, `ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` |
-| **eco-csr** | `src/field/ecology_compat_data.c` | Committed compat tables (group-indexed CSR) |
-| **eco-strings** | `src/field/ecology_strings_data.c` | Group/family names (host **ecologygen** + debug; not required in ROM yet) |
-| **gen-core** | `src/field/ecology_generate.c`, `include/ecology/ecology_generate.h` | Per-seed assignment (shared with future ROM) |
-| **ecologygen** | `tools/ecologygen` (build: `tools/source/ecologygen/`) | Host CLI over **eco-csr** |
+| **eco-blob** | `build/ecology/ecology_compat.bin` | Binary CSR from **gen-compat**; packed to NARC **`a/0/2/8`** member **`9_19`** (`CODE_ADDON_ECOLOGY_COMPAT` in `include/constants/file.h`) |
+| **eco-strings** | `tools/source/ecologygen/ecology_strings_data.c` | Group/family names (host **ecologygen** debug; not in ROM) |
+| **gen-core** | `src/ecology_generate.c`, `include/ecology/ecology_generate.h` | Per-seed assignment — **overlay 129**; same TU with **`ECOLOGY_STANDALONE`** for host tool |
+| **eco-load** | `src/ecology_load.c`, `include/ecology/ecology_compat_view.h` | Heap load + bind blob from filesystem NARC |
+| **eco-script** | `src/ecology_script.c`, `include/ecology/ecology_script.h` | `EcologyRunNewGameGeneration` — trainer id seed, discard slot buffers after run |
+| **ecologygen** | `tools/ecologygen` (build: `tools/source/ecologygen/`) | Host CLI (standalone compat `.c` under `tools/source/ecologygen/`) |
 | **run-eco** | `scripts/dev/run_ecology_generate.py` | Regen compat (optional), build **ecologygen**, write **assign** |
 | **assign** | `build/ecology/ecology_assignment.tsv` | One deterministic test world (not committed) |
 
-**Pipeline:** **eco-fam + eco-loc** → **gen-compat** → **eco-csr** + **dump-*** → **gen-core** + **eco-csr** → **assign** (via **run-eco**).
+**Pipeline:** **eco-fam + eco-loc** → **gen-compat** → **eco-blob** + **dump-*** → **gen-core** + loaded blob → **assign** (via **run-eco**).
+
+### Ecology ROM integration (PoC, Oct 2026)
+
+| Piece | Status |
+|-------|--------|
+| **gen-compat** → **eco-blob** | `scripts/build/gen_ecology_compatibility.py`; `data/codetables.mk` + `move_narc` copies into **`build/a028/9_19`** |
+| Load compat at runtime | `EcologyCompatLoadFromFilesystem` / `EcologyCompatBindBlob` — **heap**, not field rodata |
+| New-game trigger | `armips/scr_seq/scr_seq_t20_mom_script0.s` — message **`MSG_ECOLOGY_GENERATING`** (`data/text/545.txt`); `RunNewCommand` **case 4** → `EcologyRunNewGameGeneration` in `src/script_new_cmds.c` |
+| Generation | `EcologyGenerateWorld(profile->id, …)`; layout scratch on heap in ROM path; **results not saved** |
+| Encounter hook / save format | **Not wired** — vanilla wild tables |
+| Overlay budget | All ecology **code** in 129; compat **data** in NARC ([129 vs 131](#overlay-129-vs-field-overlay-131--load-overlap)) |
+
+**Agent build note:** `make -j24` produces **`build/output.bin`** and overlays; repack **`test.nds`** with **`python3 scripts/build/make.py`** then **`ndstool -c test.nds …`** (see `Makefile` **`ecology-compat`** target for full NARC + ROM sequence). After C changes, confirm **`verify_overlay129_field_addrs.py`** if touching field tables or 129 pointers.
 
 ### Workflow (agents)
 
@@ -1594,9 +1649,9 @@ All tracked — nothing belongs in `scripts/local/`:
 3. For assignment experiments only:  
    `python scripts/dev/run_ecology_generate.py --seed 0xDEADBEEF`  
    On Windows (no native `gcc`), **run-eco** builds **ecologygen** inside Docker automatically.
-4. Commit: **eco-fam**, **eco-loc**, **dump-fam**, **dump-grp**, **eco-csr**, **compat-h**, **eco-strings** (+ **gen-compat** / **gen-core** when logic changes). **assign** and **ecologygen** binary stay gitignored.
+4. Commit: **eco-fam**, **eco-loc**, **dump-fam**, **dump-grp**, **compat-h** (+ **gen-compat** / **gen-core** when logic changes). **eco-blob** is build output (regenerated by **gen-compat** / full make when TSVs change). **assign** and **ecologygen** binary stay gitignored.
 
-Normal **`make`** does **not** re-run **gen-compat**; it only compiles committed **eco-csr** if linked later.
+Normal **`make`** runs **gen-compat** when TSV deps change (`data/codetables.mk`); ROM loads blob from NARC, not from committed `.c` CSR in field overlay.
 
 ### Ecology compat (prebuild) rules
 
@@ -1693,16 +1748,15 @@ Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); 
 Re-run audit after eco-fam edits:  
 `python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
 
-### ROM integration (not done)
+### ROM integration (still TBD)
 
 | Piece | Status |
 |-------|--------|
-| **eco-csr** in field overlay | Generated; **not** wired in overlay link / hooks |
-| New-game seed + save blob | TBD |
-| Encounter hook / ENCDATA fan-out | TBD — pattern reference: [Wild level caps runtime](#runtime-pipeline) |
+| Save blob + reload on load | TBD |
+| Encounter hook / ENCDATA fan-out | TBD — follow [wild caps runtime](#runtime-pipeline) (129 hook, field tables or NARC, no 129→131 **code** calls) |
 | Rod pool merge at encounter time | TBD |
 
-When linking **eco-csr**, watch [Overlay 129 / field rodata budget](#overlay-129-32-kib-engine-overlay) (dual CSR was dropped earlier for size).
+Do **not** link full compat CSR into field or 129 rodata — use NARC + heap ([overlay budget](#overlay-129-vs-field-overlay-131--load-overlap)).
 
 ### Scripts (Future-5)
 

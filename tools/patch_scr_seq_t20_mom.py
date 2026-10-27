@@ -46,6 +46,13 @@ def armips_flags() -> list[str]:
     flags.extend(
         ["-equ", "OPENWORLD_TESTING_GRANTS", "1" if config_flag("OPENWORLD_TESTING_GRANTS") else "0"]
     )
+    flags.extend(
+        [
+            "-equ",
+            "IMPLEMENT_ECOLOGY_GENERATION",
+            "1" if config_flag("IMPLEMENT_ECOLOGY_GENERATION") else "0",
+        ]
+    )
     sweep = config_flag("OPENWORLD_STORY_FLAG_SWEEP")
     flags.extend(["-equ", "OPENWORLD_STORY_FLAG_SWEEP", "1" if sweep else "0"])
     if not sweep:

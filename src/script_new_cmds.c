@@ -1,5 +1,6 @@
 #include "../include/config.h"
 #include "../include/constants/file.h"
+#include "../include/ecology/ecology_script.h"
 #include "../include/fishing_rod.h"
 #include "../include/repel.h"
 #include "../include/roamer.h"
@@ -11,6 +12,7 @@
 #define SCRIPT_NEW_CMD_FISHING_ROD_COUNT     1
 #define SCRIPT_NEW_CMD_FISHING_ROD_REMAINING 2
 #define SCRIPT_NEW_CMD_GIVE_JOHTO_BADGE       3
+#define SCRIPT_NEW_CMD_ECOLOGY_GENERATE       4
 
 #define SCRIPT_NEW_CMD_MAX 256
 
@@ -47,6 +49,12 @@ BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
         }
         break;
     }
+
+#ifdef IMPLEMENT_ECOLOGY_GENERATION
+    case SCRIPT_NEW_CMD_ECOLOGY_GENERATE:
+        EcologyRunNewGameGeneration(ctx->fsys->savedata);
+        break;
+#endif
 
     default:
         break;
