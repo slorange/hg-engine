@@ -3,6 +3,6 @@
 
 #include "../types.h"
 
-void EcologyRunNewGameGeneration(void *saveData);
+BOOL EcologyEnsureWorldGenerated(void *saveData);
 
 #endif

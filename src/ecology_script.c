@@ -11,29 +11,20 @@
 #include "../include/types.h"
 #include "../include/ecology/ecology_save.h"
 
-void EcologyRunNewGameGeneration(void *saveData)
+static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
 {
-    struct PlayerProfile *profile = Sav2_PlayerData_GetProfileAddr(saveData);
-    u32 seed;
     u16 *slots;
     u8 *landMasks;
     void *compatBlob;
-
-    if (profile == NULL) {
-        return;
-    }
+    EcologyWorldSave *eco;
+    BOOL ok = FALSE;
 
     compatBlob = EcologyCompatLoadFromFilesystem();
     if (compatBlob == NULL || !EcologyCompatBindBlob(compatBlob)) {
         if (compatBlob != NULL) {
             sys_FreeMemoryEz(compatBlob);
         }
-        return;
-    }
-
-    seed = profile->id;
-    if (seed == 0) {
-        seed = 1u;
+        return FALSE;
     }
 
     slots = (u16 *)sys_AllocMemory(HEAPID_DEFAULT, ECOLOGY_GEN_TOTAL_SLOTS * sizeof(u16));
@@ -47,12 +38,11 @@ void EcologyRunNewGameGeneration(void *saveData)
         }
         EcologyCompatUnbind();
         sys_FreeMemoryEz(compatBlob);
-        return;
+        return FALSE;
     }
 
     if (EcologyGenerateWorld(seed, slots, landMasks, ECOLOGY_GEN_TOTAL_SLOTS, NULL)) {
-        EcologyWorldSave *eco = EcologySaveGetMutable((SaveData *)saveData);
-
+        eco = EcologySaveGetMutable((SaveData *)saveData);
         if (eco != NULL) {
             EcologySaveWriteGeneration(
                 eco,
@@ -60,6 +50,7 @@ void EcologyRunNewGameGeneration(void *saveData)
                 ECOLOGY_GEN_TOTAL_SLOTS,
                 slots,
                 landMasks);
+            ok = EcologySaveIsValid(eco);
         }
     }
 
@@ -67,6 +58,38 @@ void EcologyRunNewGameGeneration(void *saveData)
     sys_FreeMemoryEz(landMasks);
     EcologyCompatUnbind();
     sys_FreeMemoryEz(compatBlob);
+    return ok;
+}
+
+BOOL EcologyEnsureWorldGenerated(void *saveData)
+{
+    struct PlayerProfile *profile;
+    EcologyWorldSave *eco;
+    u32 seed;
+
+    if (saveData == NULL) {
+        saveData = SaveBlock2_get();
+    }
+    if (saveData == NULL) {
+        return FALSE;
+    }
+
+    eco = EcologySaveGetMutable((SaveData *)saveData);
+    if (eco != NULL && EcologySaveIsValid(eco)) {
+        return TRUE;
+    }
+
+    profile = Sav2_PlayerData_GetProfileAddr(saveData);
+    if (profile == NULL) {
+        return FALSE;
+    }
+
+    seed = profile->id;
+    if (seed == 0) {
+        seed = 1u;
+    }
+
+    return EcologyGenerateIntoSession(saveData, seed);
 }
 
 #endif

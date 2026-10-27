@@ -11,6 +11,10 @@
 #include "encounter_species_stage.h"
 #include "types.h"
 
+#ifdef IMPLEMENT_ECOLOGY_GENERATION
+#include "ecology/ecology_script.h"
+#endif
+
 #ifdef IMPLEMENT_WILD_BERRY_HOLD
 #include "wild_berry_hold.h"
 
@@ -381,6 +385,10 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
     if (pp == NULL) {
         return;
     }
+
+#ifdef IMPLEMENT_ECOLOGY_GENERATION
+    EcologyEnsureWorldGenerated(SaveBlock2_get());
+#endif
 
     TouchWildLevelCapDebug();
     cap = GetWildLevelCapForCurrentMap(&usedCachedCap, &failReason, &encBank);

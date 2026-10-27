@@ -1581,7 +1581,7 @@ All tracked — nothing belongs in `scripts/local/`:
 
 **Design:** [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle). Player-facing rules live in design docs; this section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
 
-**Status (Oct 2026):** **Compat + assignment + Mom PoC verified** — new-game generation runs on first Mom intro (trainer ID seed); assignment held in **session heap** only (**no save slot**, encounters still vanilla NARC). Surf pipeline issues ([KB-10](#kb-10--surf-wild-encounters-wrong-species)) are separate.
+**Status (Oct 2026):** **Compat + assignment + lazy session gen** — world generated on **first normal wild encounter** (`ApplyWildDistanceLevelCapToMon` → `EcologyEnsureWorldGenerated`); seed = trainer ID; assignment in **session heap** only (**no flash**, encounters still vanilla NARC). Surf pipeline issues ([KB-10](#kb-10--surf-wild-encounters-wrong-species)) are separate.
 
 **Goal:** At new game, assign shuffleable **families** to placement **groups** (shared ENCDATA ids) and methods; persist per save; hooks read assignment instead of static NARC species. **Today:** inspect **`build/ecology/ecology_assignment.tsv`** (host tool) and confirm Mom flow in-game; **next:** save format + encounter fan-out.
 
@@ -1595,8 +1595,8 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 | Runtime load | **`EcologyCompatLoadFromFilesystem`** → heap bind in `src/ecology_load.c` |
 | Generation | **`EcologyGenerateWorld`** in `src/ecology_generate.c` (overlay **129**) |
 | Session store | **`EcologySaveWriteGeneration`** → heap buffer in `src/ecology_save.c` (not flash) |
-| Mom trigger | scr_seq **845** script **0** — **`MSG_ECOLOGY_GENERATING`** (`data/text/545.txt` index **69**); `RunNewCommand` **case 4** → `EcologyRunNewGameGeneration` in `src/script_new_cmds.c` |
-| Armips gate | `tools/patch_scr_seq_t20_mom.py` passes **`-equ IMPLEMENT_ECOLOGY_GENERATION`** from `config.h` |
+| Session trigger | First wild via **`EcologyEnsureWorldGenerated`** in `src/ecology_script.c` (called from `ApplyWildDistanceLevelCapToMon` in `src/wild_level_caps.c`, overlay **129**) |
+| Session storage | **`EcologySaveGetMutable`** → one **`EcologyWorldSave`** allocation on **`HEAPID_DEFAULT`** (not overlay BSS); lives until power-off |
 
 **Do not** link full compat CSR into field overlay **131** or root `src/` rodata (~38 KiB+) — use the NARC blob only. Host **ecologygen** sources live under **`tools/source/ecologygen/`** (not `src/field/`).
 
