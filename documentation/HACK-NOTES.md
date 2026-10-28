@@ -1600,7 +1600,7 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 
 **Do not** link full compat CSR into field overlay **131** or root `src/` rodata (~38 KiB+) — use the NARC blob only. Host **ecologygen** sources live under **`tools/source/ecologygen/`** (not `src/field/`).
 
-**Overlay pitfalls (Oct 2026 detours — avoid repeating):** keep **`trainermoney.c`** on overlay **129**; do not duplicate **`EncounterSlot_*`** in **129** without a **`GetSymbols()`** plan; **129** ROM is tight (~tens of bytes margin) — grow **131** only with **`HandleLoadOverlay(131, 0)`** before cross-overlay calls, not raw pointers while **131** is unloaded.
+**Overlay pitfalls (Oct 2026 detours — avoid repeating):** **`PrizeMoney`** / **`src/battle/trainermoney.c`** belongs in **battle overlay 130** (overlay **12** repoints via **`GetSymbols()`**); do **not** put the table in **field 131** (unloaded in battle). Do not duplicate **`EncounterSlot_*`** in **129** without a **`GetSymbols()`** plan; **129** ROM is tight (~tens of bytes margin) — grow **131** only with **`HandleLoadOverlay(131, 0)`** before cross-overlay calls, not raw pointers while **131** is unloaded.
 
 ### Ecology file shorthand
 

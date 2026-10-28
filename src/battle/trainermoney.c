@@ -1,6 +1,6 @@
-#include "../include/config.h"
-#include "../include/constants/trainerclass.h"
-#include "../include/types.h"
+#include "config.h"
+#include "constants/trainerclass.h"
+#include "types.h"
 
 #ifdef EXPAND_TRAINER_PRIZE_MONEY
 struct TrainerMoney {
@@ -8,7 +8,8 @@ struct TrainerMoney {
     u16 multiplier;
 };
 
-struct TrainerMoney PrizeMoney[] = // 0x34C04 in Overlay 12; 2 bytes for trainer class ID, 2 bytes for modifier; 516 bytes in total in vanilla
+/* Linked in battle overlay 130; overlay 12 prize-money helpers repoint here via GetSymbols(). */
+struct TrainerMoney PrizeMoney[] =
     {
         { .class = TRAINERCLASS_PKMN_TRAINER_ETHAN, .multiplier = 0 },
         { .class = TRAINERCLASS_PKMN_TRAINER_LYRA, .multiplier = 0 },

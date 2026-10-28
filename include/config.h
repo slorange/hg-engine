@@ -316,7 +316,7 @@
 
 // EXPAND_TRAINER_PRIZE_MONEY allows for additional trainers to have prize money associated.
 // Enable if you add new trainer classes or want to edit existing prize money ratios.
-// Refer to src/trainermoney.c
+// Refer to src/battle/trainermoney.c (battle overlay 130)
 #define EXPAND_TRAINER_PRIZE_MONEY
 
 // EXPAND_TRAINER_GENDER_TABLE allows for adding/editing trainer genders.
