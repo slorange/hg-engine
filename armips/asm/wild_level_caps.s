@@ -18,4 +18,7 @@
 .org 0x021FF940
     .word 0
 
+.org 0x021FF944
+    .byte 0
+
 .close

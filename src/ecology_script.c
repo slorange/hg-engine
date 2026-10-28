@@ -11,6 +11,18 @@
 #include "../include/types.h"
 #include "../include/ecology/ecology_save.h"
 
+static u8 sEcologyGenDebugStage;
+
+void EcologySetGenDebugStage(u8 stage)
+{
+    sEcologyGenDebugStage = stage;
+}
+
+u8 EcologyGetGenDebugStage(void)
+{
+    return sEcologyGenDebugStage;
+}
+
 static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
 {
     u16 *slots;
@@ -20,10 +32,13 @@ static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
     BOOL ok = FALSE;
 
     compatBlob = EcologyCompatLoadFromFilesystem();
-    if (compatBlob == NULL || !EcologyCompatBindBlob(compatBlob)) {
-        if (compatBlob != NULL) {
-            sys_FreeMemoryEz(compatBlob);
-        }
+    if (compatBlob == NULL) {
+        sEcologyGenDebugStage = 15;
+        return FALSE;
+    }
+    if (!EcologyCompatBindBlob(compatBlob)) {
+        sys_FreeMemoryEz(compatBlob);
+        sEcologyGenDebugStage = 16;
         return FALSE;
     }
 
@@ -38,6 +53,7 @@ static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
         }
         EcologyCompatUnbind();
         sys_FreeMemoryEz(compatBlob);
+        sEcologyGenDebugStage = 17;
         return FALSE;
     }
 
@@ -51,13 +67,26 @@ static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
                 slots,
                 landMasks);
             ok = EcologySaveIsValid(eco);
+            if (!ok) {
+                sEcologyGenDebugStage = 20;
+            }
+        } else {
+            sEcologyGenDebugStage = 19;
         }
+    } else if (sEcologyGenDebugStage < 22 || sEcologyGenDebugStage > 27) {
+        /* EcologyGenerateWorld should set 22–27; 18 = unexpected failure */
+        sEcologyGenDebugStage = 18;
     }
 
     sys_FreeMemoryEz(slots);
     sys_FreeMemoryEz(landMasks);
-    EcologyCompatUnbind();
-    sys_FreeMemoryEz(compatBlob);
+
+    if (!ok) {
+        EcologyCompatUnbind();
+        sys_FreeMemoryEz(compatBlob);
+    } else {
+        sEcologyGenDebugStage = 21;
+    }
     return ok;
 }
 
@@ -71,16 +100,19 @@ BOOL EcologyEnsureWorldGenerated(void *saveData)
         saveData = SaveBlock2_get();
     }
     if (saveData == NULL) {
+        sEcologyGenDebugStage = 12;
         return FALSE;
     }
 
     eco = EcologySaveGetMutable((SaveData *)saveData);
     if (eco != NULL && EcologySaveIsValid(eco)) {
+        sEcologyGenDebugStage = 13;
         return TRUE;
     }
 
     profile = Sav2_PlayerData_GetProfileAddr(saveData);
     if (profile == NULL) {
+        sEcologyGenDebugStage = 14;
         return FALSE;
     }
 

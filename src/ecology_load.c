@@ -94,4 +94,22 @@ void *EcologyCompatLoadFromFilesystem(void)
         ARC_CODE_ADDONS, CODE_ADDON_ECOLOGY_COMPAT, HEAPID_DEFAULT);
 }
 
+bool8 EcologyCompatSessionEnsure(void)
+{
+    if (gEcologyCompatView != NULL) {
+        return TRUE;
+    }
+
+    sEcologyCompatBlob = EcologyCompatLoadFromFilesystem();
+    if (sEcologyCompatBlob == NULL) {
+        return FALSE;
+    }
+    if (!EcologyCompatBindBlob(sEcologyCompatBlob)) {
+        sys_FreeMemoryEz(sEcologyCompatBlob);
+        sEcologyCompatBlob = NULL;
+        return FALSE;
+    }
+    return TRUE;
+}
+
 #endif

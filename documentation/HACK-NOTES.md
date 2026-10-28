@@ -1535,8 +1535,9 @@ Scratch survives overlay 129 reload; do not reuse these addresses for other feat
 | `DEBUG_WILD_LEVEL_CAP_LEVELS` | `include/debug.h` | Level = diagnostic code (4–9 fail) or exact table cap on success. **KB-10 pass:** level **5** (`encBank == NA`) on grass/fish/surf — [KB-10](#kb-10--surf-wild-encounters-wrong-species) |
 | `DEBUG_WILD_LEVEL_CAP_EXACT` | `include/config.h` | Level = cap exactly (no random roll) |
 | `DEBUG_WILD_LEVEL_CAPS` | `include/debug.h` | melonDS `debug_printf` on cache/apply |
+| `DEBUG_ECOLOGY_GEN_LEVELS` | `include/debug.h` | Wild level = ecology gen stage **11–21**, **22–27** if `EcologyGenerateWorld` bails ([Wilds-6](#per-save-wild-ecology-shuffle-wilds-6)); normal rolled level ⇒ cap hook not running |
 
-Production: all three **off**; `RollWildLevel(cap)` — adult band **`[⌊0.9×cap⌋−2, cap]`** always; if `cap ≥ 10`, **15%** uniform **2–7** else adult band (never level 1). See [Wilds-2 level distribution](DESIGN-WILDS.md#level-distribution).
+Production: wild/ecology debug toggles **off**; `RollWildLevel(cap)` — adult band **`[⌊0.9×cap⌋−2, cap]`** always; if `cap ≥ 10`, **15%** uniform **2–7** else adult band (never level 1). See [Wilds-2 level distribution](DESIGN-WILDS.md#level-distribution).
 
 ### Editing caps
 

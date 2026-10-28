@@ -124,6 +124,29 @@
 //   else = success: level is the table cap (e.g. Route 34 / New Bark -> 46)
 // #define DEBUG_WILD_LEVEL_CAP_LEVELS
 
+// DEBUG_ECOLOGY_GEN_LEVELS encodes ecology lazy-gen progress in wild level (requires IMPLEMENT_ECOLOGY_GENERATION).
+// Do not enable together with DEBUG_WILD_LEVEL_CAP_LEVELS — ecology codes win only when this define is on.
+//   Normal rolled levels (2–cap) = modify_species_encounter_data / ApplyWildDistanceLevelCapToMon not reached, or toggle off.
+//   11 = wild cap hook entered (before EcologyEnsureWorldGenerated returns)
+//   12 = saveData NULL
+//   13 = session already valid (no gen this encounter)
+//   14 = player profile NULL
+//   15 = ecology compat blob load failed
+//   16 = ecology compat bind failed
+//   17 = gen scratch alloc failed (slots/landMasks in ecology_script)
+//   18 = EcologyGenerateWorld FALSE without a subcode (unexpected)
+//   19 = EcologyWorldSave session alloc failed
+//   20 = write done but EcologySaveIsValid FALSE (e.g. compat version mismatch)
+//   21 = generation succeeded this encounter
+// EcologyGenerateWorld early exit (replaces generic 18):
+//   22 = outSlots NULL
+//   23 = gEcologyCompatView NULL at gen time
+//   24 = gen work-buffer heap alloc failed (~3.5 KiB in overlay 129)
+//   25 = slot layout built 0 slots (compat table / overflow)
+//   26 = edgeScratch heap alloc failed (should be rare after ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH sizing)
+//   27 = slot layout needs more than ECOLOGY_GEN_TOTAL_SLOTS (capacity mismatch)
+// #define DEBUG_ECOLOGY_GEN_LEVELS
+
 // DEBUG_WILD_LEVEL_CAP_EXACT lives in config.h (route cap testing toggle).
 
 // NOCASH_GBA_PRINT swaps from desmume prints with the syscall to NO$GBA-style prints for use with i.e. melonDS

@@ -47,6 +47,7 @@ enum EcologyRarity {
 
 #define ECOLOGY_GEN_MAX_SLOTS_PER_BUCKET 6u
 #define ECOLOGY_GEN_TOTAL_SLOTS 1012u
+#define ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH 250u
 
 typedef struct EcologyFamilyInfo {
     u16 baseSpecies;

@@ -236,7 +236,13 @@ bx r4
 // need to set form
 .global modify_species_encounter_data
 modify_species_encounter_data:
-bl call_setmondata // set the id number
+ldrh r0, [sp, #0xC]
+bl EcologyApplyGrassSpeciesOverride
+strh r0, [sp, #0xC]
+mov r0, r4 // pp
+mov r1, #5 // MON_DATA_SPECIES
+add r2, sp, #0xC
+bl call_setmondata
 mov r0, r4 // pp
 mov r1, #112 // MON_DATA_FORM
 ldr r2, =space_for_setmondata // &form

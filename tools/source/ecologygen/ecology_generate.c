@@ -542,10 +542,11 @@ bool8 EcologyGenerateWorld(
     }
 
 #ifdef ECOLOGY_STANDALONE
-    edgeScratch = (EcologyEdgeRef *)malloc(sizeof(EcologyEdgeRef) * ECOLOGY_NUM_EDGES);
+    edgeScratch = (EcologyEdgeRef *)malloc(
+        sizeof(EcologyEdgeRef) * ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
 #else
     edgeScratch = (EcologyEdgeRef *)sys_AllocMemory(
-        HEAPID_DEFAULT, sizeof(EcologyEdgeRef) * ECOLOGY_NUM_EDGES);
+        HEAPID_DEFAULT, sizeof(EcologyEdgeRef) * ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
 #endif
     if (edgeScratch == NULL) {
         return FALSE;
@@ -556,7 +557,8 @@ bool8 EcologyGenerateWorld(
     for (familyId = 0; familyId < ECOLOGY_NUM_FAMILIES; familyId++) {
         u16 orderedFamily = familyOrder[familyId];
         const EcologyFamilyInfo *info = &sEcologyFamilyInfo[orderedFamily];
-        u16 edgeCount = EcologyCollectFamilyEdges(orderedFamily, edgeScratch, ECOLOGY_NUM_EDGES);
+        u16 edgeCount = EcologyCollectFamilyEdges(
+            orderedFamily, edgeScratch, ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
         u16 demand = info->demand;
         u16 assignedPairs = 0;
         u16 edgeIndex;

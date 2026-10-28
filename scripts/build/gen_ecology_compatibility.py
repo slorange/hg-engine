@@ -611,6 +611,7 @@ def write_header(
     num_edges: int,
     max_slots_per_bucket: int,
     total_slots: int,
+    max_family_edge_scratch: int,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -663,6 +664,7 @@ enum EcologyRarity {{
 
 #define ECOLOGY_GEN_MAX_SLOTS_PER_BUCKET {max_slots_per_bucket}u
 #define ECOLOGY_GEN_TOTAL_SLOTS {total_slots}u
+#define ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH {max_family_edge_scratch}u
 
 typedef struct EcologyFamilyInfo {{
     u16 baseSpecies;
@@ -788,6 +790,41 @@ class CompatTables:
     location_type_count: list[int]
     max_slots: int
     total_slots: int
+
+
+def max_family_edge_scratch_refs(
+    families: list[Family],
+    groups: list[Group],
+    edges: list[Edge],
+) -> int:
+    """Upper bound for EcologyCollectFamilyEdges output (one family at a time)."""
+    land_lists: list[list[Edge]] = [[] for _ in groups]
+    bucket_lists: list[list[Edge]] = [[] for _ in groups for _ in range(METHOD_COUNT)]
+
+    for edge in edges:
+        if edge.method == METHOD_LAND:
+            land_lists[edge.group_id].append(edge)
+        else:
+            bucket_lists[edge.group_id * METHOD_COUNT + edge.method].append(edge)
+
+    max_count = 0
+    for family in families:
+        count = 0
+        for group_id, group in enumerate(groups):
+            if group.skip:
+                continue
+            for edge in land_lists[group_id]:
+                if edge.family_id == family.family_id:
+                    count += 1
+            for method in range(METHOD_COUNT):
+                if method == METHOD_LAND:
+                    continue
+                idx = group_id * METHOD_COUNT + method
+                for edge in bucket_lists[idx]:
+                    if edge.family_id == family.family_id:
+                        count += 1
+        max_count = max(max_count, count)
+    return max(max_count, 1)
 
 
 def prepare_compat_tables(
@@ -1061,9 +1098,19 @@ def main() -> None:
     version = compat_version([args.families, args.locations])
 
     tables = prepare_compat_tables(families, groups, edges)
+    max_family_edge_scratch = max_family_edge_scratch_refs(families, groups, edges)
     max_slots, total_slots = write_source(args.out_c, version, families, groups, edges)
     write_binary_blob(OUT_BIN, version, families, groups, tables)
-    write_header(args.out_h, version, len(families), len(groups), len(edges), max_slots, total_slots)
+    write_header(
+        args.out_h,
+        version,
+        len(families),
+        len(groups),
+        len(edges),
+        max_slots,
+        total_slots,
+        max_family_edge_scratch,
+    )
     write_strings_header(OUT_STRINGS_H, len(families), len(groups))
     write_strings_source(OUT_STRINGS_C, families, groups)
     write_dumps(args.dump_family, args.dump_group, families, groups, edges)
@@ -1072,6 +1119,7 @@ def main() -> None:
     print(f"Shuffleable families: {len(families)}")
     print(f"Placement groups: {len(groups)}")
     print(f"Compatibility edges: {len(edges)}")
+    print(f"Max family edge scratch: {max_family_edge_scratch}")
     print(f"Wrote {args.out_c}")
     print(f"Wrote {OUT_BIN} ({OUT_BIN.stat().st_size} bytes)")
     print(f"Wrote {args.out_h}")

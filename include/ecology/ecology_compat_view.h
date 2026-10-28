@@ -60,6 +60,7 @@ extern const EcologyCompatView *gEcologyCompatView;
 bool8 EcologyCompatBindBlob(void *blob);
 void EcologyCompatUnbind(void);
 void *EcologyCompatLoadFromFilesystem(void);
+bool8 EcologyCompatSessionEnsure(void);
 
 #endif
 

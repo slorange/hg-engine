@@ -68,13 +68,12 @@ static inline void ApplyEncounterStageAdjustToMon(struct PartyPokemon *pp, u8 le
     gender = (u8)GetMonData(pp, MON_DATA_GENDER, NULL);
     adjusted = AdjustEncounterSpeciesForLevelWithGender(species, level, gender, branchEntropy);
 
-    if (adjusted == species) {
-        return;
+    if (adjusted != species) {
+        SetMonData(pp, MON_DATA_SPECIES, &adjusted);
+        SetMonData(pp, MON_DATA_FORM, &formZero);
     }
 
-    SetMonData(pp, MON_DATA_SPECIES, &adjusted);
     SetMonData(pp, MON_DATA_SPECIES_NAME, NULL);
-    SetMonData(pp, MON_DATA_FORM, &formZero);
 }
 
 static inline void ApplyEncounterGenderAfterStageAdjust(struct PartyPokemon *pp)

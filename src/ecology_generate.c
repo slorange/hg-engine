@@ -6,8 +6,15 @@
 #ifdef ECOLOGY_STANDALONE
 #include <stdlib.h>
 #else
+#include "config.h"
 #include "constants/file.h"
 #include "types.h"
+#if defined(IMPLEMENT_ECOLOGY_GENERATION) && defined(DEBUG_ECOLOGY_GEN_LEVELS)
+#include "ecology/ecology_script.h"
+#define ECO_GEN_DBG(stage) EcologySetGenDebugStage(stage)
+#else
+#define ECO_GEN_DBG(stage) ((void)0)
+#endif
 #endif
 
 typedef struct EcologyEdgeRef {
@@ -548,11 +555,13 @@ bool8 EcologyGenerateWorld(
     u8 groupId;
 
     if (outSlots == NULL) {
+        ECO_GEN_DBG(22);
         return FALSE;
     }
 
 #ifndef ECOLOGY_STANDALONE
     if (gEcologyCompatView == NULL) {
+        ECO_GEN_DBG(23);
         return FALSE;
     }
 
@@ -575,19 +584,31 @@ bool8 EcologyGenerateWorld(
         if (familyOrder != NULL) {
             sys_FreeMemoryEz(familyOrder);
         }
+        ECO_GEN_DBG(24);
         return FALSE;
     }
 #endif
 
     EcologyRngInit(&rng, seed);
     totalSlots = EcologyGenBuildSlotLayout(slotBases);
-    if (totalSlots == 0 || totalSlots > outSlotCapacity) {
+    if (totalSlots == 0) {
 #ifndef ECOLOGY_STANDALONE
         sys_FreeMemoryEz(slotBases);
         sys_FreeMemoryEz(bucketFill);
         sys_FreeMemoryEz(familyPlacementCount);
         sys_FreeMemoryEz(familyOrder);
 #endif
+        ECO_GEN_DBG(25);
+        return FALSE;
+    }
+    if (totalSlots > outSlotCapacity) {
+#ifndef ECOLOGY_STANDALONE
+        sys_FreeMemoryEz(slotBases);
+        sys_FreeMemoryEz(bucketFill);
+        sys_FreeMemoryEz(familyPlacementCount);
+        sys_FreeMemoryEz(familyOrder);
+#endif
+        ECO_GEN_DBG(27);
         return FALSE;
     }
 
@@ -622,10 +643,11 @@ bool8 EcologyGenerateWorld(
     }
 
 #ifdef ECOLOGY_STANDALONE
-    edgeScratch = (EcologyEdgeRef *)malloc(sizeof(EcologyEdgeRef) * ECOLOGY_NUM_EDGES);
+    edgeScratch = (EcologyEdgeRef *)malloc(
+        sizeof(EcologyEdgeRef) * ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
 #else
     edgeScratch = (EcologyEdgeRef *)sys_AllocMemory(
-        HEAPID_DEFAULT, sizeof(EcologyEdgeRef) * ECOLOGY_NUM_EDGES);
+        HEAPID_DEFAULT, sizeof(EcologyEdgeRef) * ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
 #endif
     if (edgeScratch == NULL) {
 #ifndef ECOLOGY_STANDALONE
@@ -634,6 +656,7 @@ bool8 EcologyGenerateWorld(
         sys_FreeMemoryEz(familyPlacementCount);
         sys_FreeMemoryEz(familyOrder);
 #endif
+        ECO_GEN_DBG(26);
         return FALSE;
     }
 
@@ -642,7 +665,8 @@ bool8 EcologyGenerateWorld(
     for (familyId = 0; familyId < ECOLOGY_NUM_FAMILIES; familyId++) {
         u16 orderedFamily = familyOrder[familyId];
         const EcologyFamilyInfo *info = &ECO_FAMILY_INFO(orderedFamily);
-        u16 edgeCount = EcologyCollectFamilyEdges(orderedFamily, edgeScratch, ECOLOGY_NUM_EDGES);
+        u16 edgeCount = EcologyCollectFamilyEdges(
+            orderedFamily, edgeScratch, ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
         u16 demand = info->demand;
         u16 assignedPairs = 0;
         u16 edgeIndex;

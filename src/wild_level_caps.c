@@ -387,12 +387,23 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
     }
 
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
+#ifdef DEBUG_ECOLOGY_GEN_LEVELS
+    EcologySetGenDebugStage(11);
+#endif
     EcologyEnsureWorldGenerated(SaveBlock2_get());
 #endif
 
     TouchWildLevelCapDebug();
     cap = GetWildLevelCapForCurrentMap(&usedCachedCap, &failReason, &encBank);
+#if defined(IMPLEMENT_ECOLOGY_GENERATION) && defined(DEBUG_ECOLOGY_GEN_LEVELS)
+    (void)failReason;
+    (void)cap;
+    (void)encBank;
+    (void)usedCachedCap;
+    level = EcologyGetGenDebugStage();
+#else
     level = ChooseWildLevel(failReason, cap, encBank, usedCachedCap, sWildLevelCapDebug.mapId);
+#endif
     // Stage adjust needs field-overlay rodata; skip safely if build-time patch missing.
     ApplyWildSpeciesStageForLevel(pp, level);
     SetWildMonLevel(pp, level);
