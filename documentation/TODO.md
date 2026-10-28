@@ -37,6 +37,10 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
+| **Wild ecology — grass / land species hook** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | Session **assignment** generates on first wild encounter today; **replace** vanilla land/grass species from assignment ([HACK-NOTES § Wilds-6](HACK-NOTES.md#per-save-wild-ecology-shuffle-wilds-6)). Next PoC: walking encounters only. |
+| **Wild ecology — flash persistence** | [Wilds-6 § Persistence](DESIGN-WILDS.md#persistence-and-seed) | Today: regen each session from trainer ID (~2s lag on first wild). Ship: generate once (e.g. new game) and store **`EcologyWorldSave`** in save data. |
+| **Wild ecology — other encounter methods** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | After land PoC: Surf, rods, Headbutt, Rock Smash, swarms, Safari Zone, in-game trades. [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope) for Gym hint UI. |
+| **Wild ecology — special / static / legendary policy** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | Gifts, fossils, swarms, legendaries, static overworld — explicit per-category rules vs generated tables (**TBD** in design). |
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
 

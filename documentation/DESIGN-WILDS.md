@@ -13,10 +13,10 @@
 | [Wilds-3. Encounter Stage (Evolution & Devolution)](#wilds-3-encounter-stage-evolution--devolution) | IMPLEMENTED (wild + trainer) |
 | [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | IMPLEMENTED |
 | [Wilds-5. Pokémon Generations / Content Scope](#wilds-5-pokémon-generations--content-scope) | DECIDED (release scope) |
-| Per-save ecology shuffle | Moved — [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) |
+| [Wilds-6. Per-save wild ecology shuffle](#wilds-6-per-save-wild-ecology-shuffle) | PARTIALLY IMPLEMENTED (session gen only) |
 | Expanded Pokédex / generations | Moved — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) |
 
-**Encounter pipeline (wild grass/cave/etc.):** [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps) area cap → [Wilds-2](#wilds-2-wild-pokémon-level-range) rolled level → [Wilds-3](#wilds-3-encounter-stage-evolution--devolution) species stage. **Trainer battles** use the same stage rules after their level is set ([Battle-2 § Trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)).
+**Encounter pipeline (wild grass/cave/etc.):** [Wilds-6](#wilds-6-per-save-wild-ecology-shuffle) species (where hooked) → [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps) area cap → [Wilds-2](#wilds-2-wild-pokémon-level-range) rolled level → [Wilds-3](#wilds-3-encounter-stage-evolution--devolution) species stage. **Trainer battles** use the same stage rules after their level is set ([Battle-2 § Trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)).
 
 ---
 
@@ -203,3 +203,36 @@ Count **families**, not species (Poliwag + Poliwrath = 1). Use Pokédex caught f
 
 
 Broader dex / generations: [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes).
+
+---
+
+# Wilds-6. Per-save wild ecology shuffle
+
+**Status: PARTIALLY IMPLEMENTED** — compat tables, host assignment tool, and **per-save session generation** on first wild encounter are in ROM; **encounter tables are not replaced yet** (wild battles still use vanilla NARC species until hooks land).
+
+At new-game creation, generate a **stable per-save wild Pokémon ecology** instead of fixed vanilla species for hooked methods.
+
+This is **not fully random**. Species and families must still appear in appropriate habitats and encounter methods.
+
+## Core rules
+
+- **Families stay together geographically.** If the Zubat family is assigned to Dark Cave, Zubat / Golbat / Crobat all belong to that same habitat rather than being independently scattered.
+- **Every obtainable family** must be available in at least one location.
+- **Duplicate family locations** are allowed and desirable for common / generalist species.
+- **Habitat compatibility** must be respected (aquatic families on water methods, cave species in caves, ice on snowy routes, and so on). Compatibility is often **weighted**, not strictly binary.
+- **Encounter method compatibility** remains meaningful: fishing, Surf, grass / cave encounters, Headbutt, Rock Smash, etc.
+- **Area identity** should stay coherent — typed locations favor families that match the area theme when land slots are themed.
+- No requirement that every type appear separately in both Johto and Kanto.
+- **Special encounters** — gifts, fossils, swarms, legendaries, static overworld Pokémon, etc. — need an explicit policy per category **TBD**.
+
+## Persistence and seed
+
+Generation must be **deterministic from a save-specific world seed** (player trainer ID):
+
+1. generate ecology once per play session.
+2. store the assignment for that session.
+3. **never reshuffle** species locations during the same playthrough.
+
+## Grass land slots (target behavior)
+
+When land/grass hooks ship, encounters are chosen from the generated assignment with equal rates among eligible slots for the current time-of-day mask. Species then flow through [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps)–[Wilds-3](#wilds-3-encounter-stage-evolution--devolution). Battle and caught UI should use the **resolved** stage species and matching species name.

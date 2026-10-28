@@ -35,7 +35,7 @@ REF = {
     23: ("DESIGN-WORLD.md", "World-4", "world-4-tms"),
     24: ("DESIGN-FUTURE.md", "Future-9", "future-9-accelerated-daynight-cycle"),
     25: ("DESIGN-WORLD.md", "World-5", "world-5-evolution-methods-trade--stones"),
-    27: ("DESIGN-FUTURE.md", "Future-5", "future-5-per-save-wild-ecology-shuffle"),
+    27: ("DESIGN-WILDS.md", "Wilds-6", "wilds-6-per-save-wild-ecology-shuffle"),
     28: ("DESIGN-WILDS.md", "Wilds-2", "wilds-2-wild-pokmon-level-range"),
     29: ("DESIGN-WILDS.md", "Wilds-1", "wilds-1-starting-city-distance-based-wild-level-caps"),
     30: ("DESIGN-WILDS.md", "Wilds-5", "wilds-5-pokmon-generations--content-scope"),

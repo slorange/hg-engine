@@ -42,7 +42,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
 | Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
-| Wild ecology shuffle (Future-5) | [Per-save ecology](#per-save-wild-ecology-shuffle-future-5--pre-rom) → [ROM PoC](#ecology-rom-integration-poc-verified-oct-2026), [Files](#ecology-file-shorthand), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) |
+| Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
 | Known bugs | [Known bugs (TODO.md)](#known-bugs-index-3) |
@@ -99,7 +99,7 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 **Symptom ([TODO.md](TODO.md#known-bugs)):** Surf shows wrong Pokémon (e.g. Gen V+ **Cetoddle**); A **Bulbasaur** with `"---"` that crashes the game if caught
 
-**Status (Oct 2026):** **Investigation paused** — not fixed. [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle) will replace fixed species tables later, but a broken surf pipeline or crash still needs a **minimal** fix before release; do not assume ecology shuffle fixes hooks.
+**Status (Oct 2026):** **Investigation paused** — not fixed. [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) grass ecology does **not** fix Surf; a broken surf pipeline or crash still needs a **minimal** fix before release.
 
 **Data check:** `data/Encounters.c` / built `encounters.narc` / `test.nds` — **surf slots match vanilla** (e.g. Route 41 Tentacool / Tentacruel / Mantine). Wrong species is not “bad NARC authoring” for surf tables.
 
@@ -1577,15 +1577,15 @@ All tracked — nothing belongs in `scripts/local/`:
 
 ---
 
-## Per-save wild ecology shuffle (Future-5 — pre-ROM)
+## Per-save wild ecology shuffle (Wilds-6)
 
-**Design:** [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle). Player-facing rules live in design docs; this section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
+**Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Deferred addon scope (Gym hints, flash persistence, other methods): [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
 
-**Status (Oct 2026):** **Compat + assignment + lazy session gen** — world generated on **first normal wild encounter** (`ApplyWildDistanceLevelCapToMon` → `EcologyEnsureWorldGenerated`); seed = trainer ID; assignment in **session heap** only (**no flash**, encounters still vanilla NARC). Surf pipeline issues ([KB-10](#kb-10--surf-wild-encounters-wrong-species)) are separate.
+**Status (Oct 2026):** **Compat + assignment + lazy session gen** — world generated on **first normal wild encounter** (`ApplyWildDistanceLevelCapToMon` → `EcologyEnsureWorldGenerated`); seed = trainer ID (`profile->id`); assignment in **session heap** only (**no flash**). **Encounters still vanilla NARC** — species hooks not shipped. Surf / rods / other methods unchanged ([KB-10](#kb-10--surf-wild-encounters-wrong-species) separate). Release blockers: [TODO.md § Wilds](TODO.md#wilds-design-wildsmd).
 
-**Goal:** At new game, assign shuffleable **families** to placement **groups** (shared ENCDATA ids) and methods; persist per save; hooks read assignment instead of static NARC species. **Today:** inspect **`build/ecology/ecology_assignment.tsv`** (host tool) and confirm Mom flow in-game; **next:** save format + encounter fan-out.
+**Goal:** Assign shuffleable **families** to placement **groups** (shared ENCDATA ids) and methods; persist per save; hooks read assignment instead of static NARC species. **Today:** host **`build/ecology/ecology_assignment.tsv`** + in-game gen lag on first wild; **next:** grass/land species override, then flash + other methods.
 
-### Ecology ROM integration PoC (verified Oct 2026)
+### Ecology ROM integration (in-ROM PoC)
 
 Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 
@@ -1599,6 +1599,8 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 | Session storage | **`EcologySaveGetMutable`** → one **`EcologyWorldSave`** allocation on **`HEAPID_DEFAULT`** (not overlay BSS); lives until power-off |
 
 **Do not** link full compat CSR into field overlay **131** or root `src/` rodata (~38 KiB+) — use the NARC blob only. Host **ecologygen** sources live under **`tools/source/ecologygen/`** (not `src/field/`).
+
+**Overlay pitfalls (Oct 2026 detours — avoid repeating):** keep **`trainermoney.c`** on overlay **129**; do not duplicate **`EncounterSlot_*`** in **129** without a **`GetSymbols()`** plan; **129** ROM is tight (~tens of bytes margin) — grow **131** only with **`HandleLoadOverlay(131, 0)`** before cross-overlay calls, not raw pointers while **131** is unloaded.
 
 ### Ecology file shorthand
 
@@ -1724,18 +1726,22 @@ Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); 
 Re-run audit after eco-fam edits:  
 `python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
 
-### ROM integration (not done)
+### ROM integration (Wilds-6)
 
 | Piece | Status |
 |-------|--------|
-| **eco-csr** in field overlay | Generated; **not** wired in overlay link / hooks |
-| New-game seed + save blob | TBD |
-| Encounter hook / ENCDATA fan-out | TBD — pattern reference: [Wild level caps runtime](#runtime-pipeline) |
-| Rod pool merge at encounter time | TBD |
+| Compat NARC + host **assign** tool | **Done** |
+| Session gen on first wild encounter | **Done** (session heap; ~2s lag first wild per power-on) |
+| Grass / land species override | **Not done** — vanilla NARC species |
+| **eco-csr** in field overlay | Not used — runtime reads **eco-bin** NARC only |
+| Flash persistence (`EcologyWorldSave`) | **Not done** — session heap until power-off |
+| Surf / rods / Headbutt / Rock Smash / swarms | **Not done** — vanilla tables |
+| Gym Leader ecology hints | **Future-5** — not started |
+| Rod pool merge at encounter time | TBD when rods hook |
 
 When linking **eco-csr**, watch [Overlay 129 / field rodata budget](#overlay-129-32-kib-engine-overlay) (dual CSR was dropped earlier for size).
 
-### Scripts (Future-5)
+### Scripts (Wilds-6)
 
 | Path | Bucket | Role |
 |------|--------|------|

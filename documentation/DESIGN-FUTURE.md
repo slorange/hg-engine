@@ -13,7 +13,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-2. Full Moon system](#future-2-full-moon-system) |
 | [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
 | [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
-| [Future-5. Per-save wild ecology shuffle](#future-5-per-save-wild-ecology-shuffle) |
+| [Future-5. Wild ecology — Gym Leader Hints](#future-5-wild-ecology--remaining-scope) |
 | [Future-7. Generated trainer & Gym parties](#future-7-generated-trainer--gym-parties) |
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-9. Accelerated day/night cycle](#future-9-accelerated-daynight-cycle) |
@@ -234,36 +234,11 @@ Multiple legitimate paths through the world: surface roads, water routes, interc
 
 ---
 
-# Future-5. Per-save wild ecology shuffle
+# Future-5. Wild ecology — Gym Leader Hints
 
-At new-game creation, generate a **stable per-save wild Pokémon ecology** instead of using fixed vanilla species locations.
+**Release design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Core rules, seed behavior, documented there.
 
-This is **not fully random**. Species and families must still appear in appropriate habitats and encounter methods.
-
-## Core rules
-
-- **Families stay together geographically.** If the Zubat family is assigned to Dark Cave, Zubat / Golbat / Crobat all belong to that same habitat rather than being independently scattered.
-- **Every obtainable family** must be available in at least one location.
-- **Duplicate family locations** are allowed and desirable for common / generalist species.
-- **Habitat compatibility** must be respected:
- - aquatic / fish families → Surf, fishing, water habitats;
- - cave species → strongly prefer caves;
- - Ice species → icy / snowy areas;
-- Habitat compatibility should often be **weighted** rather than strictly binary. Some families can plausibly live in several environments.
-- **Encounter method compatibility** remains meaningful: fishing, Surf, grass / cave encounters, Headbutt, Rock Smash, etc.
-- **Area identity** should remain coherent. If an area is intended to have a strong type / environment theme, generated families should preserve that theme.
-- No considerations for regional distribution. There is no requirement that every type appear separately in both Johto and Kanto, since regional travel will be easy.
-- **Special encounters** — gifts, fossils, swarms, legendaries, Red Gyarados, static overworld Pokémon, etc. — need an explicit policy for how they interact with this system (**TBD** per category).
-- If there are more Pokémon families than route spots to support them, Safari Zone and in-game trades both work as backup catch-all options.
-
-## Persistence and seed
-
-Generation must be **deterministic from a save-specific world seed**:
-
-1. generate ecology once when starting a new game;
-2. save / store the seed or generated mapping;
-3. **never reshuffle** species locations during the same playthrough.
-
+This section tracks **deferred addon** work not required for the initial grass PoC:
 
 ## Gym Leader family location hint
 
@@ -286,12 +261,6 @@ The player picks from a curated list of families for that Gym. The Leader names 
 - Family lists are curated per Leader — not every species of that type in the dex.
 - Blue has no type and will need special handling. Consider giving him a curated list of rare mons unavailable by other gym leaders
 
-## Technical investigation
-- per-save ecology generation and persistence (encounter table replacement or overlay);
-- family / habitat tagging data format;
-- Pokédex and trainer hint integration;
-- special / static / legendary encounter policy;
-- grass-tile-specific encounter sets (if used alongside distance caps).
 
 ---
 
@@ -460,7 +429,7 @@ Living trainers are not exclusively battle dispensers.
 
 ### Pokémon location requests
 
-A trainer may ask for a species location. If the player has encountered the requested Pokémon, they can provide a location from **generated ecology** ([Future-5](#future-5-per-save-wild-ecology-shuffle)). Rewards: items, money, encounter info, TMs, etc.
+A trainer may ask for a species location. If the player has encountered the requested Pokémon, they can provide a location from **generated ecology** ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)). Rewards: items, money, encounter info, TMs, etc.
 
 ### Encounter information
 
@@ -679,9 +648,9 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 
 | Item | Score | Vision | Excitement | Difficulty | Uniqueness | Presence | Depends on |
 | ---- | :---: | :----: | :--------: | :--------: | :--------: | :------: | ---------- |
-| [Future-5](#future-5-per-save-wild-ecology-shuffle) Wild ecology | 13 | 5 | 5 | 3 | 4 | 5 | — |
+| [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) Wild ecology (grass PoC) | 13 | 5 | 5 | 3 | 4 | 5 | — |
 | [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | Prerequisite: [Future-7](#future-7-generated-trainer--gym-parties) |
-| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Future-5](#future-5-per-save-wild-ecology-shuffle), [Future-7](#future-7-generated-trainer--gym-parties) |
+| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle), [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | Pays off with [Future-8](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-13](#future-13-expanded-stone-mechanics) Stone rules | 9 | 2 | 3 | 1 | 3 | 3 | — |
 | [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | [Future-9](#future-9-accelerated-daynight-cycle) for tree refresh |

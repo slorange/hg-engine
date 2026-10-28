@@ -110,7 +110,7 @@ After a Leader battle:
 1. **Badge**
 2. **HM** — field ability for this badge count when that row grants a new unlock ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves))
 3. **TM** — player picks one from that Leader's pool they qualify for by badge count ([World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms))
-4. **Wild Pokemon Hint** ([Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-5](DESIGN-FUTURE.md#future-5-per-save-wild-ecology-shuffle))
+4. **Wild Pokemon Hint** ([Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle))
 
 ## Rematches
 

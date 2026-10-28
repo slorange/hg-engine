@@ -50,7 +50,7 @@ Placement / text recon: `find_zone_event_member.py`, `find_msg_text.py` (see HAC
 
 **Synthetic evolution stages:** `data/synthetic_evolution_thresholds.tsv` → `scripts/build/gen_synthetic_evo_edges.py` → `src/field/synthetic_evo_edges_data.c` (see `narcs.mk`). Sanity check: `python3 scripts/dev/verify_encounter_stage.py`.
 
-**Ecology compatibility (Future-5):** Edit `data/ecology/ecology_families.tsv` / `ecology_locations.tsv`, then **`make ecology-compat`** or a full **`make test.nds`**. Commit dumps + `tools/source/ecologygen/ecology_compat_data.c`, `ecology_strings_data.c`, `include/constants/generated/ecology_compat.h` when TSV authoring changes.
+**Ecology compatibility (Wilds-6):** Edit `data/ecology/ecology_families.tsv` / `ecology_locations.tsv`, then **`make ecology-compat`** or a full **`make test.nds`**. Commit dumps + `tools/source/ecologygen/ecology_compat_data.c`, `ecology_strings_data.c`, `include/constants/generated/ecology_compat.h` when TSV authoring changes.
 
 **Ecology test generation:** Host core in `tools/source/ecologygen/ecology_generate.c`; ROM copy in `src/ecology_generate.c`. Run `python scripts/dev/run_ecology_generate.py --seed 0xDEADBEEF` → `build/ecology/ecology_assignment.tsv`. Rebuild host tool: `make -C tools/source/ecologygen`.
 

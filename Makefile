@@ -339,7 +339,7 @@ endif
 	$(NDSTOOL) -c $(BUILDROM) -9 $(BASE)/arm9.bin -7 $(BASE)/arm7.bin -y9 $(BASE)/overarm9.bin -y7 $(BASE)/overarm7.bin -d $(FILESYS) -y $(BASE)/overlay -t $(BASE)/banner.bin -h $(BASE)/header.bin
 	@echo "Done.  See output $(BUILDROM)."
 
-# Future-5: run after editing data/ecology/ecology_families.tsv or ecology_locations.tsv (not part of every make).
+# Wilds-6: run after editing data/ecology/ecology_families.tsv or ecology_locations.tsv (not part of every make).
 ecology-compat:
 	$(PYTHON) scripts/build/gen_ecology_compatibility.py
 	$(PYTHON) scripts/dev/verify_ecology_compatibility.py
