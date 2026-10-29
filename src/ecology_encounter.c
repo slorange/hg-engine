@@ -1,21 +1,21 @@
-#include "config.h"
+#include "../include/config.h"
 
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
 
-#include "constants/encounter_tables.h"
-#include "constants/generated/ecology_compat.h"
-#include "constants/save_arrays.h"
-#include "ecology/ecology_compat_access.h"
-#include "ecology/ecology_compat_view.h"
-#include "ecology/ecology_encounter.h"
-#include "ecology/ecology_generate.h"
-#include "ecology/ecology_save.h"
-#include "ecology/ecology_script.h"
-#include "local_field_data.h"
-#include "pokemon.h"
-#include "rtc.h"
-#include "save.h"
-#include "types.h"
+#include "../include/constants/encounter_tables.h"
+#include "../include/constants/generated/ecology_compat.h"
+#include "../include/constants/save_arrays.h"
+#include "../include/ecology/ecology_compat_access.h"
+#include "../include/ecology/ecology_compat_view.h"
+#include "../include/ecology/ecology_encounter.h"
+#include "../include/ecology/ecology_generate.h"
+#include "../include/ecology/ecology_save.h"
+#include "../include/ecology/ecology_script.h"
+#include "../include/local_field_data.h"
+#include "../include/pokemon.h"
+#include "../include/rtc.h"
+#include "../include/save.h"
+#include "../include/types.h"
 
 extern FieldSystem *gFieldSysPtr;
 extern FieldSystem *sPersistFieldSysPtr;

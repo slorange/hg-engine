@@ -1,13 +1,13 @@
-#include "config.h"
+#include "../include/config.h"
 
 #if defined(ALLOW_SAVE_CHANGES) && defined(IMPLEMENT_ECOLOGY_GENERATION)
 
-#include "ecology/ecology_save.h"
+#include "../include/ecology/ecology_save.h"
 
-#include "constants/file.h"
-#include "constants/generated/ecology_compat.h"
-#include "save.h"
-#include "types.h"
+#include "../include/constants/file.h"
+#include "../include/constants/generated/ecology_compat.h"
+#include "../include/save.h"
+#include "../include/types.h"
 
 static struct EcologyWorldSave *sEcologySession;
 

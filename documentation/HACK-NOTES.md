@@ -1596,12 +1596,14 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 | Runtime load | **`EcologyCompatLoadFromFilesystem`** → heap bind in `src/ecology_load.c` |
 | Generation | **`EcologyGenerateWorld`** in `src/ecology_generate.c` (overlay **129**) |
 | Session store | **`EcologySaveWriteGeneration`** → heap buffer in `src/ecology_save.c` (not flash) |
-| Session trigger | First wild via **`EcologyEnsureWorldGenerated`** in `src/ecology_script.c` (called from `ApplyWildDistanceLevelCapToMon` in `src/wild_level_caps.c`, overlay **129**) |
+| Session trigger | First wild via **`EcologyEnsureWorldGenerated`** in `src/ecology_script.c` (`ApplyWildDistanceLevelCapToMon` in `src/wild_level_caps.c`) |
+| Species override | **`src/ecology_encounter.c`** + `asm/other_hook.s` |
+| **131 code call from 129** | **Do not** — patched function pointers into **131** while the wild hook runs on **129** caused undefined instruction / hang ([KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)). Ecology **runtime** stays on **129**; **131** = field rodata only. |
 | Session storage | **`EcologySaveGetMutable`** → one **`EcologyWorldSave`** allocation on **`HEAPID_DEFAULT`** (not overlay BSS); lives until power-off |
 
 **Do not** link full compat CSR into field overlay **131** or root `src/` rodata (~38 KiB+) — use the NARC blob only. Host **ecologygen** sources live under **`tools/source/ecologygen/`** (not `src/field/`).
 
-**Overlay pitfalls (Oct 2026 detours — avoid repeating):** **`PrizeMoney`** / **`src/battle/trainermoney.c`** belongs in **battle overlay 130** (overlay **12** repoints via **`GetSymbols()`**); do **not** put the table in **field 131** (unloaded in battle). Do not duplicate **`EncounterSlot_*`** in **129** without a **`GetSymbols()`** plan; **129** ROM is tight (~tens of bytes margin) — grow **131** only with **`HandleLoadOverlay(131, 0)`** before cross-overlay calls, not raw pointers while **131** is unloaded.
+**Overlay pitfalls (Oct 2026 detours — avoid repeating):** **`PrizeMoney`** / **`src/battle/trainermoney.c`** belongs in **battle overlay 130** (overlay **12** repoints via **`GetSymbols()`**); do **not** put the table in **field 131** (unloaded in battle). **Ecology gen/encounter C must stay on overlay 129** — not **`src/field/`** — because **129** and **131** share RAM; calling **131** VMAs from the **129** wild hook executes wrong memory. Do not duplicate **`EncounterSlot_*`** in **129** without a **`GetSymbols()`** plan; **129** ROM is tight (~tens of bytes margin).
 
 ### Ecology file shorthand
 
