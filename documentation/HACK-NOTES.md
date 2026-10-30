@@ -42,7 +42,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
 | Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
-| Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) |
+| Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [Encounter hooks (KB-12)](#kb-12--wild-ecology-encounter-hooks-setencountdata), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
 | Known bugs | [Known bugs (TODO.md)](#known-bugs-index-3) |
@@ -120,6 +120,43 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 **Verify after link:** `python3 scripts/dev/verify_overlay129_field_addrs.py` (Docker). **`build/output.bin`** is patched after **`build/field_linked.o`** and **`build/linked.o`** exist (`Makefile` `$(OUTPUT)` rule; also `make.py` `writeall()`).
 
 **Rule:** From 129, only dereference patched **data** pointers into 131; hot-path **logic** on the wild hook belongs in **`src/`** (129).
+
+### KB-12 — Wild ecology encounter hooks (`SetEncountData`)
+
+**Symptom:** Grass/surf/fish crashes on first wild; wrong species; **100% crash** after removing a `SetEncountData` hook from `hooks` while `base/overlay/overlay_0002.bin` still contains a trampoline.
+
+**Stable baseline (Oct 2026):** commit **`fae496a1f`** (“Moved ecology to overlay 131”) — **land grass ecology** via `WildEncSingle` → `EcologyScratchSetActiveMethod(LAND)` → vanilla **`SetEncountData`** → hook **`modify_species_encounter_data`** @ **`0x02247B42`** → `EcologyApplyGrassSpeciesOverride`. **Do not hook `SetEncountData` @ `0x02247B64`** on that baseline.
+
+**Overlay 2 sites (US HeartGold, field overlay load ~`0x02245B80`):**
+
+| VMA | Role | Baseline |
+|-----|------|----------|
+| **`0x02247B64`** | **`SetEncountData`** entry | **Unhooked:** must match **`rom.nds`** overlay 2 extract (pret US ref `04 2c f7 db 38 1c 01 21` if input ROM is retail **IPKE**) |
+| **`0x02247B42`** | Tail of **`EncountParamSet`** | **Hook** (register **r3**) → overlay **129** `modify_species_encounter_data` — **not** a wrapper; bytes **`7B42–7B4B`** are replaced, then **`bx`** resume @ **`0x02247B4C`** |
+
+**`hooks` vs `base/overlay`:** `scripts/build/make.py` only **writes** addresses listed in **`hooks`**. It does **not** restore bytes when a line is removed. A leftover **`ldr r3; bx r3`** @ **`7B64`** (same target as **`7B42`**) makes every **`SetEncountData`** jump into **`modify_species`** with the wrong stack/regs → **guaranteed crash**. After any hook experiment: **`make clean`** (re-extract from **`rom.nds`**) or restore **`7B64`** manually, then **`make test.nds`**.
+
+**Strategies tried (do not repeat without fixing root cause):**
+
+| Approach | Result |
+|----------|--------|
+| **`EcologyScratchSetActiveMethod` only in `WildEncSingle`** | **Grass OK** on baseline; **surf/fish/headbutt/smash** never set method — **`WildWaterEncSingle` clears scratch** (`EcologyActiveMethodRef = 0`) |
+| Pending scratch + consume @ **`modify_species`** (`r7`, `[sp,#0x14]`) | Unreliable enc type; intermittent wrong mon |
+| **`SetEncountData` C “wrapper”** calling **`0x02247B6C`** | Skips prologue/slot loop — crashes + wrong **`PartyPokemon`** |
+| Asm tramp into **`0x02247B58` / `7B6C`** | **100% crash** — not a function entry |
+| Stale **`7B64`** stub after removing hook from **`hooks`** | **100% grass crash** until overlay bytes restored |
+
+**Chosen next architecture (Wilds-6):** **Phase 1+** — shared **`WildEncounterFinalize`** in overlay **129**; **Phase 2** — hook **`SetEncountData` @ `7B64`** to **`SetEncountData_Ecology`** stub that builds a **placeholder** mon (random PID/IVs) and runs finalize (ecology species + [Wilds-1–3 pipeline](#runtime-pipeline)). **Do not** tail-call into **`0x02247B6C`**. Lift species/level/moves logic off **`modify_species`** or guard so ecology is not applied twice. See agent plan in chat (Oct 2026).
+
+**Verify after `make test.nds`:**
+
+```bash
+python3 scripts/dev/verify_encount_overlay2.py
+```
+
+Expect **`7B64` unhooked** bytes **= `rom.nds` extract** until **`SetEncountData_Ecology`** is in **`hooks`**; **`7B42`** pointer must match **`modify_species_encounter_data+1`** in **`build/linked.o`**. Mismatch **`base/overlay` ≠ rom.nds** → **`make clean && make test.nds`**.
+
+**Related:** [Runtime pipeline](#runtime-pipeline), [ROM integration (Wilds-6)](#rom-integration-wilds-6), [KB-10](#kb-10--surf-wild-encounters-wrong-species) (surf species / scratch clear).
 
 ---
 
@@ -1735,7 +1772,7 @@ Re-run audit after eco-fam edits:
 |-------|--------|
 | Compat NARC + host **assign** tool | **Done** |
 | Session gen on first wild encounter | **Done** (session heap; ~2s lag first wild per power-on) |
-| Grass / land species override | **Not done** — vanilla NARC species |
+| Grass / land species override | **Partial** — ecology roll @ **`modify_species`** when **`EcologyScratchSetActiveMethod(LAND)`** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)); other methods still vanilla NARC |
 | **eco-csr** in field overlay | Not used — runtime reads **eco-bin** NARC only |
 | Flash persistence (`EcologyWorldSave`) | **Not done** — session heap until power-off |
 | Surf / rods / Headbutt / Rock Smash / swarms | **Not done** — vanilla tables |
@@ -1751,6 +1788,7 @@ When linking **eco-csr**, watch [Overlay 129 / field rodata budget](#overlay-129
 | `scripts/build/gen_ecology_compatibility.py` | build | **gen-compat** |
 | `scripts/dev/verify_ecology_compatibility.py` | dev | Sanity + regen via **make ecology-compat** |
 | `scripts/dev/run_ecology_generate.py` | dev | **run-eco** |
+| `scripts/dev/verify_encount_overlay2.py` | dev | Post-**`make test.nds`** — **`7B64` / `7B42`** vs **`hooks`** + **`linked.o`** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)) |
 | `tools/source/ecologygen/` | tools | Host **ecologygen** (`-DECOLOGY_STANDALONE`) |
 
 See also [`scripts/README.md`](../scripts/README.md) ecology bullets.

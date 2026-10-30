@@ -56,6 +56,8 @@ Placement / text recon: `find_zone_event_member.py`, `find_msg_text.py` (see HAC
 
 **Overlay 129 verify:** `python3 scripts/dev/verify_overlay129_field_addrs.py` after code changes that touch wild caps or berry hold.
 
+**Wild encounter overlay 2 verify (Wilds-6 / KB-12):** `python3 scripts/dev/verify_encount_overlay2.py` after **`make test.nds`** — catches stale **`SetEncountData`** stubs and **`modify_species`** pointer drift.
+
 Test runner: `scripts/dev/run_tests.sh` (also used by CI).
 
 ## `local/`
