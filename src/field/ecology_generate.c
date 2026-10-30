@@ -1,21 +1,30 @@
 #include "ecology/ecology_generate.h"
 
 #include "constants/generated/ecology_compat.h"
-#include "ecology/ecology_compat_access.h"
+#include "ecology/ecology_compat_view.h"
 
 #ifdef ECOLOGY_STANDALONE
 #include <stdlib.h>
+#include "ecology/ecology_compat_access.h"
 #define ECO_GEN_DBG(stage) ((void)0)
 #else
 #include "config.h"
 #include "constants/file.h"
 #include "types.h"
-#if defined(IMPLEMENT_ECOLOGY_GENERATION) && defined(DEBUG_ECOLOGY_GEN_LEVELS)
-#include "ecology/ecology_script.h"
-#define ECO_GEN_DBG(stage) EcologySetGenDebugStage(stage)
-#else
+
+static const EcologyCompatView *sEcoGenCompatView;
+
+#define ECO_FAMILY_INFO(id) (sEcoGenCompatView->familyInfo[(id)])
+#define ECO_GROUPS(gid) (sEcoGenCompatView->groups[(gid)])
+#define ECO_GROUP_FLAGS(gid) (sEcoGenCompatView->groupFlags[(gid)])
+#define ECO_METHOD_SLOTS(idx) (sEcoGenCompatView->methodSlots[(idx)])
+#define ECO_LAND_OFFSETS(gid) (sEcoGenCompatView->landOffsets[(gid)])
+#define ECO_LAND_ENTRIES(idx) (sEcoGenCompatView->landEntries[(idx)])
+#define ECO_BUCKET_OFFSETS(idx) (sEcoGenCompatView->bucketOffsets[(idx)])
+#define ECO_BUCKET_ENTRIES(idx) (sEcoGenCompatView->bucketEntries[(idx)])
+#define ECO_LOCATION_TYPE_COUNT(gid) (sEcoGenCompatView->locationTypeCount[(gid)])
+
 #define ECO_GEN_DBG(stage) ((void)0)
-#endif
 #endif
 
 typedef struct EcologyEdgeRef {
@@ -504,15 +513,12 @@ static u16 EcologyPickWeightedFamily(EcologyRng *rng, u8 groupId, u8 method)
     return 0xFFFF;
 }
 
-u16 EcologyGenSlotLayoutBase(u8 groupId, u8 method, const u16 *slotBases)
-{
-    return slotBases[EcologyGroupMethodIndex(groupId, method)];
-}
-
-u16 EcologyGenBuildSlotLayout(u16 *slotBasesOut)
+#ifndef ECOLOGY_STANDALONE
+static u16 EcologyGenBuildSlotLayoutLocal(u16 *slotBasesOut)
 {
     u32 cursor = 0;
     u8 groupId;
+
     for (groupId = 0; groupId < ECOLOGY_NUM_GROUPS; groupId++) {
         u8 method;
         for (method = 0; method < ECOLOGY_METHOD_COUNT; method++) {
@@ -528,8 +534,10 @@ u16 EcologyGenBuildSlotLayout(u16 *slotBasesOut)
     }
     return (u16)cursor;
 }
+#endif
 
 bool8 EcologyGenerateWorld(
+    const EcologyCompatView *view,
     u32 seed,
     u16 *outSlots,
     u8 *outLandSlotTimeMasks,
@@ -543,7 +551,7 @@ bool8 EcologyGenerateWorld(
     u16 familyPlacementCount[ECOLOGY_NUM_FAMILIES];
     u16 familyOrder[ECOLOGY_NUM_FAMILIES];
 #else
-    /* Called from overlay 129 script context — keep ~3.5 KiB off the script stack. */
+    /* Heap scratch — Mom script runs with field overlay 131 loaded. */
     u16 *slotBases;
     u16 *bucketFill;
     u16 *familyPlacementCount;
@@ -561,10 +569,11 @@ bool8 EcologyGenerateWorld(
     }
 
 #ifndef ECOLOGY_STANDALONE
-    if (gEcologyCompatView == NULL) {
+    if (view == NULL) {
         ECO_GEN_DBG(23);
         return FALSE;
     }
+    sEcoGenCompatView = view;
 
     slotBases = (u16 *)sys_AllocMemory(HEAPID_DEFAULT, layoutSlots * sizeof(u16));
     bucketFill = (u16 *)sys_AllocMemory(HEAPID_DEFAULT, layoutSlots * sizeof(u16));
@@ -591,7 +600,11 @@ bool8 EcologyGenerateWorld(
 #endif
 
     EcologyRngInit(&rng, seed);
+#ifdef ECOLOGY_STANDALONE
     totalSlots = EcologyGenBuildSlotLayout(slotBases);
+#else
+    totalSlots = EcologyGenBuildSlotLayoutLocal(slotBases);
+#endif
     if (totalSlots == 0) {
 #ifndef ECOLOGY_STANDALONE
         sys_FreeMemoryEz(slotBases);

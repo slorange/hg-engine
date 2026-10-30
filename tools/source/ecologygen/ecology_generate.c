@@ -488,12 +488,14 @@ u16 EcologyGenBuildSlotLayout(u16 *slotBasesOut)
 }
 
 bool8 EcologyGenerateWorld(
+    const EcologyCompatView *view,
     u32 seed,
     u16 *outSlots,
     u8 *outLandSlotTimeMasks,
     u16 outSlotCapacity,
     EcologyGenStats *statsOut)
 {
+    (void)view;
     EcologyRng rng;
     u16 slotBases[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];
     u16 bucketFill[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];

@@ -20,6 +20,8 @@ WILD_HELD_COMMON_SYMBOL = "sWildSpeciesHeldCommon"
 WILD_HELD_COMMON_ADDR_SYMBOL = "WildSpeciesHeldCommonFieldAddr"
 WILD_HELD_RARE_SYMBOL = "sWildSpeciesHeldRare"
 WILD_HELD_RARE_ADDR_SYMBOL = "WildSpeciesHeldRareFieldAddr"
+ECOLOGY_GEN_SYMBOL = "EcologyGenerateWorld"
+ECOLOGY_GEN_ADDR_SYMBOL = "EcologyGenerateWorldFieldAddr"
 def nm_address(elf: Path, symbol: str) -> int:
     out = subprocess.check_output(["arm-none-eabi-nm", str(elf)], text=True)
     for line in out.splitlines():
@@ -98,6 +100,18 @@ def main():
 
         patch_overlay_bin(args.overlay_bin, var_vma, table_addr)
         print(f"Patched {args.overlay_bin}: {addr_sym} @ 0x{var_vma:08X} = 0x{table_addr:08X}")
+
+    try:
+        gen_addr = nm_address(args.field_elf, ECOLOGY_GEN_SYMBOL)
+        gen_slot_vma = nm_address(args.overlay_elf, ECOLOGY_GEN_ADDR_SYMBOL)
+    except SystemExit:
+        print(f"Skip {ECOLOGY_GEN_ADDR_SYMBOL}: symbol missing", file=sys.stderr)
+        return
+
+    patch_overlay_bin(args.overlay_bin, gen_slot_vma, gen_addr)
+    print(
+        f"Patched {args.overlay_bin}: {ECOLOGY_GEN_ADDR_SYMBOL} @ 0x{gen_slot_vma:08X} = 0x{gen_addr:08X}"
+    )
 
 if __name__ == "__main__":
     main()

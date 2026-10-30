@@ -2,6 +2,7 @@
 #define ECOLOGY_ECOLOGY_GENERATE_H
 
 #include "constants/generated/ecology_compat.h"
+#include "ecology/ecology_compat_view.h"
 
 typedef struct EcologyRng {
     u32 state;
@@ -24,6 +25,7 @@ u16 EcologyGenBuildSlotLayout(u16 *slotBasesOut);
 // outLandSlotTimeMasks is optional; when non-NULL, same length as outSlots — land entries get
 // effective spawn period mask (family ∩ group); non-land entries are 0.
 bool8 EcologyGenerateWorld(
+    const EcologyCompatView *view,
     u32 seed,
     u16 *outSlots,
     u8 *outLandSlotTimeMasks,

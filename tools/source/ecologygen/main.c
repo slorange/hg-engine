@@ -218,7 +218,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if (!EcologyGenerateWorld(seed, slots, landSlotTimeMasks, totalSlots, &stats)) {
+    if (!EcologyGenerateWorld(NULL, seed, slots, landSlotTimeMasks, totalSlots, &stats)) {
         fprintf(stderr, "EcologyGenerateWorld failed.\n");
         free(slots);
         free(landSlotTimeMasks);

@@ -20,6 +20,7 @@ PATCHES = (
     ("WildLevelCapsFieldAddr", "sWildLevelCaps"),
     ("WildSpeciesHeldCommonFieldAddr", "sWildSpeciesHeldCommon"),
     ("WildSpeciesHeldRareFieldAddr", "sWildSpeciesHeldRare"),
+    ("EcologyGenerateWorldFieldAddr", "EcologyGenerateWorld"),
 )
 
 
