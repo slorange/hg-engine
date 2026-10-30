@@ -90,30 +90,20 @@ static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
     return ok;
 }
 
-BOOL EcologyEnsureWorldGenerated(void *saveData)
+void EcologyRunNewGameGeneration(void *saveData)
 {
     struct PlayerProfile *profile;
-    EcologyWorldSave *eco;
     u32 seed;
 
     if (saveData == NULL) {
-        saveData = SaveBlock2_get();
-    }
-    if (saveData == NULL) {
         sEcologyGenDebugStage = 12;
-        return FALSE;
-    }
-
-    eco = EcologySaveGetMutable((SaveData *)saveData);
-    if (eco != NULL && EcologySaveIsValid(eco)) {
-        sEcologyGenDebugStage = 13;
-        return TRUE;
+        return;
     }
 
     profile = Sav2_PlayerData_GetProfileAddr(saveData);
     if (profile == NULL) {
         sEcologyGenDebugStage = 14;
-        return FALSE;
+        return;
     }
 
     seed = profile->id;
@@ -121,7 +111,9 @@ BOOL EcologyEnsureWorldGenerated(void *saveData)
         seed = 1u;
     }
 
-    return EcologyGenerateIntoSession(saveData, seed);
+    if (EcologyGenerateIntoSession(saveData, seed)) {
+        sEcologyGenDebugStage = 13;
+    }
 }
 
 #endif

@@ -10,7 +10,6 @@
 #include "../include/ecology/ecology_encounter.h"
 #include "../include/ecology/ecology_generate.h"
 #include "../include/ecology/ecology_save.h"
-#include "../include/ecology/ecology_script.h"
 #include "../include/local_field_data.h"
 #include "../include/pokemon.h"
 #include "../include/rtc.h"
@@ -125,7 +124,8 @@ static u16 EcologyRollAssignedSpecies(u8 method)
         return 0;
     }
 
-    if (!EcologyEnsureWorldGenerated(SaveBlock2_get())) {
+    eco = EcologySaveGetMutable(SaveBlock2_get());
+    if (eco == NULL || !EcologySaveIsValid(eco)) {
         return 0;
     }
     if (!EcologyCompatSessionEnsure()) {
@@ -163,11 +163,6 @@ static u16 EcologyRollAssignedSpecies(u8 method)
     }
 
     base = EcologyGenSlotLayoutBase((u8)groupId, method, slotBases);
-
-    eco = EcologySaveGetMutable(SaveBlock2_get());
-    if (eco == NULL || !EcologySaveIsValid(eco)) {
-        return 0;
-    }
 
     periodBit = EcologyWildParamToTimeBit(GF_RTC_GetTimeOfDayWildParam());
     eligibleCount = 0;

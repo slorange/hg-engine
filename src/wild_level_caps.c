@@ -386,13 +386,6 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
         return;
     }
 
-#ifdef IMPLEMENT_ECOLOGY_GENERATION
-#ifdef DEBUG_ECOLOGY_GEN_LEVELS
-    EcologySetGenDebugStage(11);
-#endif
-    EcologyEnsureWorldGenerated(SaveBlock2_get());
-#endif
-
     TouchWildLevelCapDebug();
     cap = GetWildLevelCapForCurrentMap(&usedCachedCap, &failReason, &encBank);
 #if defined(IMPLEMENT_ECOLOGY_GENERATION) && defined(DEBUG_ECOLOGY_GEN_LEVELS)
