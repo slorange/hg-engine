@@ -236,31 +236,10 @@ bx r4
 // need to set form
 .global modify_species_encounter_data
 modify_species_encounter_data:
-ldrh r0, [sp, #0xC]
-bl EcologyApplyGrassSpeciesOverride
+ldrh r1, [sp, #0xC]
+mov r0, r4
+bl WildEncounterFinalize
 strh r0, [sp, #0xC]
-mov r0, r4 // pp
-mov r1, #5 // MON_DATA_SPECIES
-add r2, sp, #0xC
-bl call_setmondata
-mov r0, r4 // pp
-mov r1, #112 // MON_DATA_FORM
-ldr r2, =space_for_setmondata // &form
-bl call_setmondata
-
-mov r0, r4
-bl UpdatePassiveForms
-
-mov r0, r4
-bl ApplyWildDistanceLevelCapToMon
-
-// Level must be set before InitBoxMonMoveset; vanilla stub (02247B4C) runs last via tail call.
-mov r0, r4
-ldr r3, =0x020722D4 | 1 //ResetPartyPokemonAbility(pp);
-bl call_via_r3
-mov r0, r4 // me when the boxmon is at offset 0 of the PartyPokemon structure so i should be able to just pass it like this and have it work :)
-ldr r3, =0x020712D8 | 1 //InitBoxMonMoveset(ppp);
-bl call_via_r3
 
 // tail-call vanilla stub (02247B4C); must bx, not bl — it pops straight to EncountParamSet's caller
 ldr r0, [sp, #0x14]

@@ -1534,7 +1534,7 @@ Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAd
 |-------|--------|------|
 | Persist FieldSystem | `StoreFieldSysPtr` hook @ `0x0203E028` | Writes `gFieldSysPtr` → ARM9 scratch `sPersistFieldSysPtr` @ `0x021FF900` |
 | Cache cap (field) | `WildEncSingle` / `WildWaterEncSingle` in `src/pokemon.c` | `CacheWildLevelCapFromFieldSystem(fsys)` while FieldSystem is valid |
-| Apply level (battle) | `modify_species_encounter_data` in `asm/other_hook.s` (overlay 129) | `ApplyWildDistanceLevelCapToMon` **before** `InitBoxMonMoveset`; tail-calls vanilla stub `0x02247B4C` last |
+| Apply level (battle) | `modify_species_encounter_data` → **`WildEncounterFinalize`** (`src/wild_encounter_finalize.c`, overlay 129) | Ecology species (scratch method) → form → **`ApplyWildDistanceLevelCapToMon`** → ability → moveset; tail-calls vanilla stub `0x02247B4C` last |
 | Stage adjust | `include/encounter_species_stage.h` | `AdjustEncounterSpeciesForLevel` walks prevos (level-up + synthetic), then forward to the stage matching level (`data/synthetic_evolution_thresholds.tsv` → `sSyntheticEvoEdgesData` in field overlay). Overlay 129: patched `LevelUpEvoTablesFieldAddr` + `SyntheticEvoEdgesFieldAddr` |
 | Species display | `ApplyWildSpeciesStageForLevel` in `src/wild_level_caps.c` | After `SetMonData(MON_DATA_SPECIES, …)`, call `SetMonData(MON_DATA_SPECIES_NAME, NULL)` — same as `PokeParaSet` — or battle/caught UI keeps the encounter-table name while sprite/stats use the new species |
 | Level write | `src/wild_level_caps.c` | Roll level → adjust species → set exp + `MON_DATA_LEVEL` → `RecalcPartyPokemonStats` |
