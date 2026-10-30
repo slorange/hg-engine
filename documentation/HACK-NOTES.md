@@ -6,7 +6,7 @@ Working notes for this fork so we don’t re-discover the text/data layout every
 
 ## Contents
 
-Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG / [TODO.md](TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([agents.mdc § Design docs](../.cursor/rules/agents.mdc#design-docs-and-agent-boundaries)). **Known bugs:** [TODO.md § Known bugs](TODO.md#known-bugs) symptoms + [§ below](#known-bugs-index-3). **Agents:** `.cursor/rules/agents.mdc`.
+Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG / [TODO.md](TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([agents.mdc § Design docs](../.cursor/rules/agents.mdc#design-docs-and-agent-boundaries)). **Known bugs:** [TODO.md § Known bugs](TODO.md#known-bugs) symptoms + [§ below](#known-bugs-todomd). **Agents:** `.cursor/rules/agents.mdc`.
 
 | Topic | Section |
 | ----- | ------- |
@@ -19,8 +19,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Route 36 Sudowoodo | [Remove Sudowoodo block (Route 36)](#remove-sudowoodo-block-route-36--verified) |
 | Route 32 gate | [Remove Route 32 badge gate](#remove-route-32-badge-gate-south-of-violet--verified-pattern) |
 | Gym Cut trees | [Remove Surge / Erika Cut trees](#remove-surge--erika-cut-trees--gym-access) |
-| Ilex Forest Cut | [Remove Ilex Forest Cut tree](#remove-ilex-forest-cut-tree--open-travel) |
-| Route 35 Cut tree | [Remove Route 35 Cut tree](#remove-route-35-cut-tree--unrelated-to-ilex) |
+| Cut trees (gyms + Ilex + R35) | [Remove Surge / Erika Cut trees](#remove-surge--erika-cut-trees--gym-access) |
 | Post-battle heal | [Heal after every battle](#heal-after-every-battle) |
 | Gym HM grants | [Gym Leader HM rewards (Johto pilot)](#gym-leader-hm-rewards-johto-pilot) → [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags), [Fly map (Kanto)](#fly-map--kanto-destinations) |
 | Blackthorn Clair | [Blackthorn Gym — Clair (Rising Badge)](#blackthorn-gym--clair-rising-badge) |
@@ -45,7 +44,8 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [Encounter hooks (KB-12)](#kb-12--wild-ecology-encounter-hooks-setencountdata), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
-| Known bugs | [Known bugs (TODO.md)](#known-bugs-index-3) |
+| Map header vs NARC indices | [Field map IDs](#field-map-ids-dont-mix-them-up) |
+| Known bugs | [Known bugs (TODO.md)](#known-bugs-todomd) |
 
 ## Known bugs (TODO.md)
 
@@ -53,17 +53,9 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 ### KB-2 — Post-battle return to field crash
 
-**Symptom:** freeze or hard crash when fading back to overworld after a battle (e.g. undefined instruction, debugger **`LDMIA with Empty Rlist`** after party RAM is corrupt).
+**Status (Oct 2026):** **removed from [TODO.md](TODO.md#known-bugs)** — no longer repro on step-heal ([Heal after every battle](#heal-after-every-battle)). **Latent** if heal moves back into battle teardown.
 
-**Status (Oct 2026):** **removed from [TODO.md](TODO.md#known-bugs)** — no longer reproduces on current ROM with **heal deferred to overworld step** ([Heal after every battle](#heal-after-every-battle)). Treat as **latent** if we move heal back into battle teardown without a verified post-sync hook.
-
-**Cause (when heal ran in battle):** calling save/party heal during or immediately after `Battle_End` party sync — overlay 12 stubs, `StoreFieldSysPtr`, `WIPE_SYS_EndCheck`, and guessed **`0xEB6`** epilogue hooks all crashed or clobbered instructions. Heal at **`BattleEndRevertFormChange`** alone was overwritten by vanilla sync afterward.
-
-**Mitigation (shipping):** `HealAfterBattle_HealPartyOnFieldStep` from the repel **step** hook only; **`BattleEndRevertFormChange`** at **`Battle_End` @ overlay 12 `0xB90`** (form/items only — no heal in battle overlay).
-
-**Bisect:** disable `HEAL_AFTER_BATTLE` in `include/config.h`.
-
-**Reporting (if it returns):** emulator vs hardware, `test.nds` build date, new vs old save, wild vs trainer, party size, cheats/speedup.
+**Was:** heal during `Battle_End` party sync → crash / party corruption; overlay-12 hook experiments made it worse ([Heal § failed attempts](#heal-after-every-battle)). **Bisect:** `HEAL_AFTER_BATTLE` off in `include/config.h`.
 
 ### KB-3 — Cherrygrove guide cutscene
 
@@ -97,17 +89,11 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 ### KB-10 — Surf wild encounters (wrong species)
 
-**Symptom ([TODO.md](TODO.md#known-bugs)):** Surf shows wrong Pokémon (e.g. Gen V+ **Cetoddle**); A **Bulbasaur** with `"---"` that crashes the game if caught
+**Symptom ([TODO.md](TODO.md#known-bugs)):** Surf showed wrong species (e.g. **Cetoddle**) or crash-on-catch **`"---"`** mon.
 
-**Status (Oct 2026):** **Re-test after Wilds-6 `SetEncountData_Ecology`** — surf/fish/grass/headbutt use the same stub + assignment path (user-tested, no crash). If Cetoddle / **`"---"`** name still appear, treat as separate from the old scratch-only grass hook.
+**Status (Oct 2026):** **Re-test on Wilds-6** — grass/surf/fish/headbutt share **`SetEncountData_Ecology`** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Surf NARC tables were always vanilla; old bug was hook/scratch path, not `Encounters.c`.
 
-**Data check:** `data/Encounters.c` / built `encounters.narc` / `test.nds` — **surf slots match vanilla** (e.g. Route 41 Tentacool / Tentacruel / Mantine). Wrong species is not “bad NARC authoring” for surf tables.
-
-**Method split (in-game):** **Grass** and **Old Rod** species look **correct**; **Surf** species wrong → narrows to **surf encounter setup** (`WildWaterEncSingle` / `SetEncountData` type **1** vs grass **0** / fishing **2**), not global encounter NARC.
-
-**Wild level cap debug (separate issue):** With `DEBUG_WILD_LEVEL_CAP_LEVELS` on ([debug toggles](#debug-toggles-turn-off-for-normal-play)), enemy level **5** appeared on **grass, fishing, and surf** — not surf-only. In `src/wild_level_caps.c`, level **5** = `WLC_FAIL_ENCBANK_NA` (`MapHeader_GetWildEncounterBank(mapId)` returned **`ENCDATA_NA` (255)**). Species can still come from the vanilla table path while cap lookup fails on the `mapId` from `ResolveMapId` (`SaveBlock2` → `LocalFieldData.currentPosition.mapId`, fallback `fsys->location`, often **`MAP_EVERYWHERE` (0)**). Inspect ARM9 scratch `sWildLevelCapDebug` @ **`0x021FF910`** (`mapId`, `encBank`, `failReason`) if cap plumbing is revisited. Toggle left **off** after this pass.
-
-**Hooks / refs:** [Wild level caps pipeline](#runtime-pipeline); `WildWaterEncSingle` @ `0x022474E0` when `IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS`; overlay `SetEncountData` ~`0x02247B64`.
+**If wrong species return:** separate from KB-12; check ecology assignment + `verify_encount_overlay2.py`. **Cap debug level 5 everywhere** = `encBank == NA` on bad `mapId` — see [debug toggles](#debug-toggles-turn-off-for-normal-play) and `sWildLevelCapDebug` @ **`0x021FF910`** ([runtime pipeline](#runtime-pipeline)).
 
 ### KB-11 — Undefined instruction from overlay 129 → field **code** calls
 
@@ -230,21 +216,24 @@ HG-Engine’s main focus is the **battle engine** and related expansions (dex, m
 
 ---
 
+## Field map IDs (don’t mix them up)
+
+Every map uses **separate indices** from pret [`map_headers.h`](https://github.com/pret/pokeheartgold/blob/master/src/data/map_headers.h):
+
+| Index | NARC / path | Fork override |
+|-------|-------------|---------------|
+| **Map header** | `include/constants/maps.h` (`MAP_*`) | — |
+| **`eventsBank`** | `a/0/3/2` member `NNN` | `data/zone_event/NNN_<MAP>.json` |
+| **`scriptsBank`** | `a/0/1/2` member | `armips/scr_seq/scr_seq_<NNNN>_<MAP>.s` |
+| **`msgBank`** | msgdata `a/0/2/7` | `data/text/<bank>.txt` |
+
+**Gotchas:** header id ≠ any member (Route 32 header **36** → zone_event **033**, scr_seq **232**). **`eventsBank` 077** = Ecruteak Gym, not Olivine header **77**. Walkable Route 44 = zone_event **043**, not pret `046_R44`. Wrong scr_seq member sticks in `base/root/` until re-extract from `rom.nds`. Find indices: pret filenames, [World placement (DSPRE)](#world-placement-dspre), `scripts/dev/find_zone_event_member.py`, `scripts/local/_scan_zone_events.py`.
+
 ## Badge gate blocks (field scripting)
 
 Reusable pattern: walk-past coord trigger → script checks badge count → message + step player back, or pass through if requirement met.
 
-### Three IDs per map (don’t mix them up)
-
-| What | Route 46 example | Override file |
-|------|------------------|---------------|
-| **Map header** (game constant) | `MAP_R29R0101` = **134** | — |
-| **Map scripts** (`scr_seq.narc` / `a/0/1/2`) | member **226** | `armips/scr_seq/scr_seq_00226_R29R0101.s` |
-| **Map events** (`zone_event.narc` / `a/0/3/2`) | member **130** | `data/zone_event/130_R29R0101.json` |
-
-**Gotcha:** map header ID ≠ scr_seq index ≠ zone_event index. We once overwrote scr_seq **134** (`D52R0102`, a dungeon) instead of **226**; bad overrides can stick in `base/root/` until you restore `a/0/1/2` and/or `a/0/3/2` from a clean `rom.nds` extract.
-
-To find indices for another map: pret decomp names (`130_R29R0101.json`, `scr_seq_00226_R29R0101.s`) or `scripts/local/_scan_zone_events.py` on `base/root/a/0/3/2`.
+**IDs:** [Field map IDs](#field-map-ids-dont-mix-them-up) — Route 46 gatehouse: header **134**, scr_seq **226**, zone_event **130** (we once patched scr_seq **134**, a dungeon, by mistake).
 
 ### Recipe for a new gate
 
@@ -331,8 +320,6 @@ Mom intro (`scr_seq_t20_mom_script0.s`) **`setflag FLAG_HIDE_ROUTE_36_SUDOWOODO`
 
 Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,305)` script **2** (GSMIDDLEMAN1 — renders as an old man). No Miltank barrier sprites (those live on Route 39 member 040). No outdoor-matrix duplicate found (unlike Mahogany).
 
-**Gotcha:** map header ID ≠ zone_event index ≠ scr_seq index. Cross-check pret `map_headers.h` / `{NNN}_R32` filenames before patching.
-
 | File | Role |
 |------|------|
 | `tools/patch_zone_event_r32_badge.py` | Remove blocker NPC, barriers, coord trigger |
@@ -354,7 +341,8 @@ Vanilla gate: **coord script 3** at `(475,305)`; **obj1** sprite **328** `(477,3
 | Vermilion City | **051** → `2_051` | 1 outside Gym |
 | Celadon City | **052** → `2_052` | 1 outside Gym |
 | Celadon Gym | **352** → `2_352` | 3 inside maze |
-| Ilex Forest (`D36R0101`) | **114** → `2_114` | 1 on main path (not header id **117**) |
+| Ilex Forest (`D36R0101`) | **114** → `2_114` | 1 @ **(16, 62)** — header **117** ≠ eventsBank **114** |
+| Route 35 (`MAP_R35` = **39**) | **036** → `2_036` | 1 @ **(380, 265)** — optional; `tools/patch_zone_event_r35_cut_tree.py` |
 
 Cut trees are `SPRITE_TREE` (86) + `std_field_cut` (script 10000) objects — **not** Blender map geometry.
 
@@ -365,40 +353,7 @@ Cut trees are `SPRITE_TREE` (86) + `std_field_cut` (script 10000) objects — **
 
 Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
-**Verified:** new save, 0 badges, no Cut mon — walk to Vermilion Gym door; Celadon Gym door; inside Celadon Gym reach Erika without Cut.
-
----
-
-## Remove Ilex Forest Cut tree — open travel
-
-**Status:** verified in-game (Sep 2026). 0 badges, no Cut — main path walkable Route 34 ↔ Route 35.
-
-**Goal:** cross **Ilex Forest** (`D36R0101`) without Cut — [Story-3 § Route Cut obstacles](DESIGN-STORY.md#route-cut-obstacles--remove).
-
-| What | ID |
-|------|-----|
-| Map header | `MAP_D36R0101` = **117** (`include/constants/maps.h`) |
-| **zone_event `eventsBank`** | **114** → `2_114` (pret `114_D36R0101`) |
-| Cut tree object | `SPRITE_TREE` (86) + `std_field_cut` (10000), flag 16 @ **(16, 62)** |
-
-**Gotcha:** map header **117** ≠ zone_event member **117** (`2_117` is a different map). Always use pret `map_headers.h` **`eventsBank`**, same lesson as Route 32 ([badge gate](#remove-route-32-badge-gate-south-of-violet--verified-pattern)).
-
-Same patch as Surge/Erika: `tools/patch_zone_event_gym_cut_trees.py` includes **`2_114`**.
-
-**Verified:** enter from Route 34, walk through to the Route 35 side without Cut.
-
----
-
-## Remove Route 35 Cut tree — unrelated to Ilex
-
-**Status:** verified in same playtest as Ilex (Sep 2026); optional open-world cleanup only.
-
-**Goal:** optional open-world cleanup — one standard Cut tree on **Route 35** (`MAP_R35` = **39**, zone_event **036** → `2_036` @ world **(380, 265)**). Not required for Ilex interior; documented separately in [Story-3](DESIGN-STORY.md#route-cut-obstacles--remove).
-
-| File | Role |
-|------|------|
-| `tools/patch_zone_event_r35_cut_tree.py` | Strip the single `2_036` tree (reuses gym cut-tree logic) |
-| `narcs.mk` | Hook after zone_event extract |
+**Verified:** new save, 0 badges, no Cut mon — Vermilion/Celadon gym doors; Ilex Forest Route 34 ↔ 35; optional Route 35 outdoor tree.
 
 ---
 
@@ -548,18 +503,11 @@ Individual cities still require **`FLAG_SYS_FLYPOINT_*`** (Pokémon Center visit
 
 #### Cross-region fly attempts (pinned)
 
-Retail overlay **101** load base **`0x021E7740`** (from `rom.nds` + y9). Recon used vanilla extract + Capstone; pret symbol addresses are unreliable on this ROM.
+**Kept:** Kanto **map scroll** via arm9 **`Pokegear_GetMapUnlockLevel`** hook @ **`0x0202EE70`** only.
 
-| Attempt | Site | Patch | Result |
-|--------|------|-------|--------|
-| pret region helper | **`0x021EA7E4`** | `01 20 70 47` (`movs r0,#1`; `bx lr`) | **Crash** — wrong code (`ARM9: Undefined instruction` near **`0x021E9730`**) |
-| “Retail” helper entry | **`0x021E814A`** | same 4-byte patch | **No crash, no cross-region** — **no Thumb `BL` callers**; dead on this path |
-| MapApp init (misidentified) | **`0x021EF09C`** | `01 21 81 73` (thought: skip `GetCurrentRegion` + force `curRegion`) | **Crash** on Fly — bytes are **`str r4,[r2,#0x78]`** + **`strb r0,[r0,#0xE]`**, not a `BL`; patch removed the `str` and corrupted MapApp → jump into garbage (**`PC=0x022D0418`**, **`0x00FFFFFF`**) |
-| Fly spot filter (candidate) | **`0x021E81A8`** | `01 21` (`ldrb r1,[r0,#0xE]` → `movs r1,#1`) | **No crash, no cross-region** — may be wrong execution path or not the only gate |
+**Tried (overlay 101, retail base ~`0x021E7740`):** pret-named helpers and guessed **`0x021EF09C`** / **`0x021E81A8`** patches — crash, no-op, or no cross-region spot pick. Pret labels do not match live callers; need BL graph from party Fly → overlay 101, not symbol grep.
 
-**Verified in-game (kept):** full **Kanto scroll** on Fly map via **`0x0202EE70`** hook only.
-
-**Next time:** find the **live** spot-selection gate (BL/caller graph from party Fly → overlay 101, not pret names); prefer **2-byte** surgical patches after disasm; optional arm9 hook on **`Pokegear_GetCurrentRegion`** only if call site is identifiable. One-off recon lived under **`scripts/local/`** (`_analyze_fly_region.py`, `_capstone_patch.py`, etc.) — not in git.
+**Next:** identify live spot filter; 2-byte patches after disasm. Session recon was **`scripts/local/`** only (not in git).
 
 
 ### Falkner follow-ups (859 / zone_event 365)
@@ -667,16 +615,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch s
 
 **Do not use for:** story roadblocks (prefer removing them) or map-wide walkability (that is `land_data`, not scripts).
 
-### Three IDs per map (don’t mix them up)
-
-| What | Route 42 example |
-|------|------------------|
-| **Map header** (`include/constants/maps.h`) | `MAP_R42` = **44** |
-| **scr_seq** (`a/0/1/2`) | member **252** |
-| **zone_event** (`a/0/3/2`) | member **041** |
-| **Text bank** | **399** (`data/text/399.txt`) |
-
-Find indices via pret names (`041_R42.json`, `scr_seq_0252_R42.s`) or `scripts/local/_scan_zone_events.py`.
+**IDs:** [Field map IDs](#field-map-ids-dont-mix-them-up) — Route 42: header **44**, scr_seq **252**, zone_event **041**, msg **399**.
 
 **Facing constants (object `facingDirection`):** pret `DIR_NORTH=0`, `DIR_SOUTH=1`, `DIR_WEST=2`, `DIR_EAST=3` (`global_fieldmap.h`).
 
@@ -1000,16 +939,7 @@ Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TA
 6. **State script** (if needed) — OnLoad patch sets scene var + hide flags + `hide_person`. Use **`call` + append** for overlapping scr_seq (T28) or full rebuild when slots are clean (R42 ferry).
 7. **Build & test** — `make build/narc/zone_event.narc` for quick iterate, full `make -j1` for `test.nds`. Test from **both** maps (town + connecting route).
 
-### Debug helpers
-
-| Script | Purpose |
-|--------|---------|
-| `scripts/dev/inspect_zone_event.py build/a032/2_<NNN>` | objects, warps, coords |
-| `scripts/dev/inspect_zone_event.py build/a032_vanilla/2_<NNN>` | vanilla baseline before patch |
-| `scripts/dev/dump_zone_objects.py` | bulk object dump (adapt path) |
-| `scripts/dev/decode_clear_script.py build/a012/2_<NNN> <off> <end>` | OnLoad bytecode |
-
-Vanilla zone_event: `build/a032_vanilla/2_<NNN>` (from `extract_zone_event_vanilla.py`).
+**Debug helpers:** same as [Paid ferry § Debug helpers](#debug-helpers-keep-using-these) plus `decode_clear_script.py` for OnLoad bytecode.
 
 ### Gotchas
 
@@ -1182,13 +1112,7 @@ Goldenrod: NE house by Flower Shop (**not** Friendship Checker / `T25R0301`). Sa
 
 #### Outdoor entrance attempts (rolled back)
 
-**v1 (Sep 2026, rolled back):** patch all **17** non–New-Bark outdoor home doors in `zone_event` to header **63** via `tools/patch_zone_event_start_city.py` (`CITY_DOORS`). Every door entered Mom’s house; wrong for non-start cities but proved the door table and Mom exit wiring.
-
-**v2 (Sep 2026, rolled back):** add ARM9 hook after `Field_InitMapEvents` to rewrite warp headers in **RAM** on map load — start city door → **63**; other cities → vanilla interior header; New Bark door when start ≠ New Bark → start city’s vanilla interior. Files were `armips/asm/start_city_home_warp_hook.s`, `start_city_home_warp_data.s`, `scripts/build/patch_field_init_map_events_hook.py`. **Map-load crashes** (`Undefined instruction` at `0x0203C108`, then `0x020537FC`) — Thumb/ARM interworking and register/stack bugs in the hook; never verified in-game.
-
-**After rollback:** deleting the patch script does **not** unpatch `base/arm9.bin`. The hook wrote a `bl` over `0x02052FD2` on each build; incremental `make` reuses cached `base/` until `rom.nds` is newer. Fix: **`rm -rf base && make -j24`** (full re-extract from `rom.nds`). Check: `python scripts/local/_check_arm9_hook_gone.py`.
-
-**Planned v3 (not implemented):** leave outdoor doors **vanilla** in ROM (current state). On map load, patch **only the start city’s** home-door warp header to **63** — same *timing* as step 1, without mass-patching and reverting 16 doors. Steps 3–4 (New Bark ↔ displaced interior) still open.
+**v1:** mass-patched all outdoor home doors → interior **63** — proved warp table, wrong UX. **v2:** ARM9 `Field_InitMapEvents` RAM hook — map-load crashes; hook bytes stuck in `base/arm9.bin` until **`rm -rf base && make`**. **Current / v3 plan:** outdoor doors **vanilla** in ROM; patch **only start city** door → **63** on load (not implemented). Steps 3–4 still open.
 
 ### Failed approaches (save future dev time)
 
@@ -1278,18 +1202,9 @@ python scripts/dev/verify_start_city_patch.py
 
 **Goal:** one-way paid bypass below the Cerulean-side ledge — blackbelt + Machoke boost you up 2 tiles for **$100** (same flow as Route 42 ferry, single shore).
 
-### Four IDs (easy to mix up)
+**IDs:** [Field map IDs](#field-map-ids-dont-mix-them-up) — Route 4: header **12**, zone_event **009**, scr_seq **178**, msg **328** (not member **178** on zone_event).
 
-| What | Route 4 value | pret name |
-|------|---------------|-----------|
-| **Map header** | `MAP_R04` = **12** | — |
-| **zone_event** | member **009** | `009_R04.json` |
-| **scr_seq** | member **178** | `scr_seq_0178_R04.s` |
-| **Text bank** | **328** | `msg_0328_R04` |
-
-**Not** zone_event 178 (that is a different small map). **Not** scr_seq 009.
-
-No outdoor-matrix duplicate found for Route 4 object coords (unlike Mahogany / Route 44).
+No outdoor-matrix duplicate for Route 4 object coords (unlike Mahogany / Route 44).
 
 ### Coordinates (verified)
 
@@ -1408,7 +1323,12 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 **Design:** [World-4 § Game Corner TMs](DESIGN-WORLD.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
 
-International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlGameCornerPrizeMap` table from pret’s `scrcmd_dppl_prizes.c`). Each prize block embeds an item id and a coin cost. Submenus: **6 TMs + Cancel**, **4 held items + Cancel**, **3 Pokémon + Cancel** (Pokémon menus still vanilla).
+International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlGameCornerPrizeMap` table from pret’s `scrcmd_dppl_prizes.c`). Each prize block embeds an item id and a coin cost. Submenus: **6 TMs + Cancel**, **4 held items + Cancel**, **3 Pokémon + Cancel**.
+
+| Corner | Pokémon prizes (menu order) |
+| ------ | ----------------------------- |
+| Goldenrod | Rotom, Wobbuffet, Smeargle |
+| Celadon | Porygon, Eevee, Castform |
 
 | Corner | Map | scr_seq member | Text bank |
 | ------ | --- | -------------- | --------- |
@@ -1435,13 +1355,13 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 
 | File | Role |
 | ---- | ---- |
-| `tools/patch_scr_seq_game_corner.py` | Ordered `u16` item-id and coin-cost patches in `2_910` / `2_804` after vanilla extract |
-| `scripts/build/verify_game_corner_patch.py` | Patched item ids and coin costs at each fixed offset |
-| `data/text/603.txt`, `data/text/509.txt` | Prize menu labels (`ROAR`, `FURY CUTTER`, …) |
+| `tools/patch_scr_seq_game_corner.py` | Item-id, coin-cost, and give_mon species `u16` patches in `2_910` / `2_804` after vanilla extract |
+| `scripts/build/verify_game_corner_patch.py` | Patched item ids, costs, and species at each fixed offset |
+| `data/text/603.txt`, `data/text/509.txt` | Prize menu labels (TMs, held items, Pokémon) |
 
 **Build:** wired in `narcs.mk` after gym scr_seq patches.
 
-**Verify in-game:** Coin Case → Goldenrod Game Corner → right-hand clerk → TM and held-item submenus; Celadon dept store 5F prize clerk → same. Pokémon submenu still vanilla.
+**Verify in-game:** Coin Case → Goldenrod Game Corner → right-hand clerk → TM, held-item, and Pokémon submenus; Celadon dept store 5F prize clerk → same lists (different corner).
 
 **Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented).
 
@@ -1767,21 +1687,7 @@ Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); 
 Re-run audit after eco-fam edits:  
 `python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
 
-### ROM integration (Wilds-6)
-
-| Piece | Status |
-|-------|--------|
-| Compat NARC + host **assign** tool | **Done** |
-| Session gen on first wild encounter | **Done** (session heap; ~2s lag first wild per power-on) |
-| Grass / land species override | **`SetEncountData_Ecology`** + **`WildEncounterFinalizeForEncount`** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)) |
-| Surf / rods / smash / headbutt ecology | Same stub — method from **`encounterType` + `rodType`** |
-| **eco-csr** in field overlay | Not used — runtime reads **eco-bin** NARC only |
-| Flash persistence (`EcologyWorldSave`) | **Not done** — session heap until power-off |
-| Swarms | **`SetEncountDataSwarm_maybe`** still vanilla body (calls hooked **`SetEncountData`**) |
-| Gym Leader ecology hints | **Future-5** — not started |
-| NARC slot species on stub path | Bypassed — placeholder mon until table merge or slot roll removed |
-
-When linking **eco-csr**, watch [Overlay 129 / field rodata budget](#overlay-129-32-kib-engine-overlay) (dual CSR was dropped earlier for size).
+**Still open (Wilds-6):** flash persistence, swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)), remove placeholder species on stub path. Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
 
 ### Scripts (Wilds-6)
 
@@ -1816,33 +1722,7 @@ Use **DSPRE’s map matrix** to estimate where something lives, then patch the *
 - **World z** = `row × 32 + local_z`
 - Example: door at local **(16, 25)** in cell **(8, 7)** → world **(272, 249)**.
 
-**Map header ID ≠ zone_event / scr_seq / msg index**
-
-`include/constants/maps.h` gives the **map header row** (e.g. `MAP_T26` = **77**, `MAP_R44` = **46**). Each row points at separate NARC members — look up pret [`src/data/map_headers.h`](https://github.com/pret/pokeheartgold/blob/master/src/data/map_headers.h):
-
-| Map | Header id | `eventsBank` | `scriptsBank` | `msgBank` | Coords in zone_event |
-|-----|-----------|--------------|---------------|-----------|----------------------|
-| Route 44 | **46** | **043** | **257** | **404** | **world** |
-| Route 34 | **38** | **035** | **237** | **384** | **world** |
-| Olivine City | **77** | **074** | **911** | **604** | **world** |
-| Viridian City | **50** | **047** | **741** | **452** | **world** |
-| Vermilion City | **54** | **051** | **776** | **483** | **world** |
-| Route 12 | **20** | **017** | **199** | **348** | **world** |
-| Fuchsia City | **56** | **053** | **807** | **512** | **world** |
-| Route 24 | **28** | **025** | **215** | **362** | **world** |
-| Route 25 | **29** | **026** | **216** | **363** | **world** (R24/25 border guru) |
-
-Headbutt index **074** = Azalea Town; zone_event **074** = Olivine outdoors — same number, unrelated namespaces.
-
-**Johto cities on the main matrix** (`map_matrix_0000_EVERYWHERE`) use **world `(x, z)`** in their `eventsBank` file, same as routes. Do **not** assume `eventsBank == map header id` (member **077** is Ecruteak Gym `077_T27GYM0101`, not Olivine).
-
-**Decision tree**
-
-1. Find `MAP_*` in `include/constants/maps.h` (header index).
-2. Read pret `map_headers.h` row → **`eventsBank`**, **`scriptsBank`**, **`msgBank`**.
-3. Patch **`build/a032/2_<eventsBank>`** using that file’s coord scale (world if max object x ≥ ~200).
-4. Append scr_seq script to **`build/a012/2_<scriptsBank>`**; text in **`data/text/<msgBank>.txt`**.
-5. Near a town/route boundary — may need **two** members (Mahogany **084** + matrix **043**).
+**Header vs NARC members:** [Field map IDs](#field-map-ids-dont-mix-them-up). Johto outdoors use **world `(x, z)`** in zone_event (local coords on interiors / small maps). Matrix seams → patch **two** `eventsBank` members (Mahogany **084** + **043**, Route 24/25, …).
 
 **Recon commands**
 
@@ -1897,137 +1777,15 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 **Text buffers:** Progress line uses `{STRVAR_1 52, 0, 0}` + script `TextNumber 0, var`. Do **not** use STRVAR type **50** (shows “GOLD” / points UI) or **51** (item names — “Good Rod” when buffer stale).
 
-**Route 44 reference (verified in-game Sep 2026 — copy this recipe for more gurus):**
+**Recipe (all sites):** shared `scr_seq_*_rod_guru.s` → `tools/patch_scr_seq_<prefix>_rod_guru.py` on the inventory **scr_seq** member; `tools/patch_zone_event_*_rod_guru.py` on **zone_event**; append guru lines to the inventory **msg** bank. **`type=0`** + map `scriptId` for talk NPCs; **`type=1`** + 3000-range script for vanilla bridge fishermen (not your guru). After `make`: `python3 scripts/build/verify_<prefix>_rod_guru_scr_seq.py build/a012/2_<NNN>` and matching `scripts/dev/verify_*_zone_event.py` — see [`scripts/README.md`](../scripts/README.md) rod-guru list.
 
-| Layer | ID | Notes |
-|-------|-----|--------|
-| Map header | `MAP_R44` = **46** | pret `scriptsBank` → scr_seq member **257** (not 260!) |
-| zone_event | member **043** (outdoor matrix) — obj **15**, sprite **347**, script **4**, **(568, 183)**, **`type=0`** | Bridge fisherman obj **1** at **(576, 184)** uses **`type=1`** + script **3124** (common script — not map scr_seq) |
-| scr_seq | member **257** — rod guru in **slot 3** (scriptId **4**) | Vanilla slots **0–2** = empty + two signposts; append guru after slot 2 |
-| msg bank | **404** | Vanilla signs **0–1**; guru lines **2–6** |
+**Reference — Route 44 (outdoor matrix):** header **46**, zone_event **043**, scr_seq **257** (not **260** = Route 47), msg **404**; guru obj **15** @ **(568, 183)**, slot **3** / scriptId **4**, lines **2–6**. **Olivine:** header **77** → events **074**, scr_seq **911**, msg **604** (member **077** is Ecruteak Gym).
 
-**Wrong IDs (learned the hard way):**
+**Wrong-ID traps (once):** pret `046_R44` ≠ walkable R44 (**043**); Ice Path junction **046/090**; scr_seq **260** = R47. **ID recon:** pret `map_headers.h`, `find_msg_text.py`, in-game coords, [Field map IDs](#field-map-ids-dont-mix-them-up).
 
-- scr_seq **260** = **Route 47** (Embedded Tower / Chuck), not Route 44 — sign text indices 0–1 match bank 404 only when misread out of context.
-- zone_event **046/090** — Ice Path junction chunk (z≈367–477), not walkable Route 44 body.
-- zone_event **086** — Blackthorn area (x≈661+).
-- pret filename `046_R44` ≠ outdoor-matrix member for the bridge.
+**Route 24 / 25 seam:** guru @ world **(1320, 65)** — duplicate object + scr_seq append on **both** **025**/**215**/**362** and **026**/**216**/**363** (see inventory table).
 
-**ID discovery:** Headbutt tree envelope in `Headbutt.c`, in-game fisherman coords, pret `map_headers.h` (`scriptsBank` for `MAP_ROUTE_44` → **257**). Recon scripts (local, not tracked): `scripts/local/list_r44_npcs.py`, `scripts/local/find_r44_by_coords.py`, `scripts/local/analyze_scr_seq_260.py` (why 260 is R47).
-
-**Patch:** `armips/scr_seq/scr_seq_r44_rod_guru.s` → `tools/patch_scr_seq_r44_rod_guru.py` (`2_257`). Zone: `tools/patch_zone_event_r44_rod_guru.py` on **`2_043`**. Text: `data/text/404.txt`.
-
-**Verify:** `python3 scripts/build/verify_r44_rod_guru_patch.py build/a012/2_257` + `python3 scripts/dev/verify_r44_zone_event.py build/a032/2_043`. In-game: grass west of bridge fisherman **(576, 184)** → guru at **(568, 183)**.
-
-**Olivine City (verified in-game Sep 2026):**
-
-| Layer | ID | Notes |
-|-------|-----|--------|
-| Map header | `MAP_T26` = **77** | pret `[MAP_OLIVINE]` |
-| zone_event | member **074** (`074_T26`) | **World** coords — pret `eventsBank` |
-| scr_seq | member **911** — guru in **slot 13** (scriptId **14**) | Vanilla slots **0–12** (signs, rival, Cameron, …) |
-| msg bank | **604** | Vanilla strings **0–8**; guru lines **9–13** |
-
-**How we found the IDs (Olivine)**
-
-1. **Msg bank:** `find_msg_text.py "Olivine City"` / `"Pokégear"` → bank **604** (confirmed in-game on sign + boy).
-2. **Map link 604 → 77:** pret `map_headers.h` — `[MAP_OLIVINE].msgBank = NARC_msg_msg_0604_T26_bin`.
-3. **zone_event / scr_seq:** same row → `eventsBank = 074`, `scriptsBank = 911` (not header **77**, not member **077**).
-4. **Landmarks on `2_074`:** city sign bg **(279, 247)** → scr_seq slot **5** → msg **5**; Pokégear boy **(280, 242)** → scriptId **10** → msg **2**; warps (Poké Center **272, 257**, Full Heal hidden item **285, 231**) confirmed in-game.
-5. **Failed attempt:** assumed zone_event member **077** (`MAP_T26` = 77) with **local** coords from a misidentified `2_077` parse — that NARC member is **Ecruteak Gym**, not Olivine. Sprite on **074** at **(277, 247)** was visible only after using the correct member.
-
-**Rod guru:** obj **8**, sprite **347**, world **(273, 248)** by city sign, **`type=0`**, scriptId **14**.
-
-**Patch:** `armips/scr_seq/scr_seq_olivine_rod_guru.s` → `tools/patch_scr_seq_olivine_rod_guru.py` (`2_911`). Zone: `tools/patch_zone_event_olivine_rod_guru.py` (`2_074`). Text: `data/text/604.txt`.
-
-**Verify:** `python3 scripts/build/verify_olivine_rod_guru_scr_seq.py build/a012/2_911` + `python3 scripts/dev/verify_olivine_rod_guru_zone_event.py build/a032/2_074`. In-game: talk to guru west of the “Olivine City” sign → Old Rod flow.
-
-**Route 34 (Day-Care / Goldenrod approach):**
-
-| Layer | ID | Notes |
-|-------|-----|--------|
-| Map header | `MAP_R34` = **38** | pret `[MAP_ROUTE_34]` |
-| zone_event | member **035** — obj **16**, sprite **347**, script **14**, world **(358, 409)**, facing **west**, **`type=0`** | DSPRE cell **(11, 12)** local **(6, 25)** |
-| scr_seq | member **237** — guru in **slot 13** (scriptId **14**) | Vanilla **13** slots (Day-Care story, signs, …) |
-| msg bank | **384** | Vanilla **0–49**; guru lines **50–54** |
-
-**Patch:** `armips/scr_seq/scr_seq_r34_rod_guru.s` → `tools/patch_scr_seq_r34_rod_guru.py` (`2_237`). Zone: `tools/patch_zone_event_r34_rod_guru.py` (`2_035`). Text: `data/text/384.txt`.
-
-**Verify:** `python3 scripts/build/verify_r34_rod_guru_scr_seq.py build/a012/2_237` + `python3 scripts/dev/verify_r34_rod_guru_zone_event.py build/a032/2_035`.
-
-**Viridian City:**
-
-| Layer | ID | Notes |
-|-------|-----|--------|
-| Map header | `MAP_VIRIDIAN` = **50** | pret `[MAP_VIRIDIAN]` |
-| zone_event | member **047** — obj **8**, sprite **347**, script **13**, world **(1023, 264)**, facing **west**, **`type=0`** | Matrix cell **(31, 8)** local **(31, 8)** |
-| scr_seq | member **741** — guru in **slot 12** (scriptId **13**) | Vanilla **12** slots (signs, TM man, …) |
-| msg bank | **452** | Vanilla **0–11**; guru lines **12–16** |
-
-**Patch:** `armips/scr_seq/scr_seq_viridian_rod_guru.s` → `tools/patch_scr_seq_viridian_rod_guru.py` (`2_741`). Zone: `tools/patch_zone_event_viridian_rod_guru.py` (`2_047`). Text: `data/text/452.txt`.
-
-**Verify:** `python3 scripts/build/verify_viridian_rod_guru_scr_seq.py build/a012/2_741` + `python3 scripts/dev/verify_viridian_rod_guru_zone_event.py build/a032/2_047`.
-
-**Vermilion City:**
-
-| Layer | ID | Notes |
-|-------|-----|--------|
-| Map header | `MAP_VERMILION` = **54** | pret `[MAP_VERMILION]` |
-| zone_event | member **051** — obj **19**, script **15**, world **(1298, 304)**, facing **north**, **`type=0`** | Cell **(40, 9)** local **(18, 16)** |
-| scr_seq | member **776** — slot **14** (scriptId **15**) | Vanilla **14** slots |
-| msg bank | **483** | Vanilla **0–23**; guru **24–28** |
-
-**Patch:** `scr_seq_vermilion_rod_guru.s` / `patch_scr_seq_vermilion_rod_guru.py` (`2_776`); zone `patch_zone_event_vermilion_rod_guru.py` (`2_051`); `data/text/483.txt`.
-
-**Route 12 (Silence Bridge):**
-
-| Layer | ID | Notes |
-|-------|-----|--------|
-| Map header | `MAP_R12` = **20** | pret `[MAP_ROUTE_12]` |
-| zone_event | member **017** — obj **19**, script **7**, world **(1429, 319)**, facing **south**, **`type=0`** | Cell **(44, 9)** local **(21, 31)** |
-| scr_seq | member **199** — slot **6** (scriptId **7**) | Vanilla **6** slots (signs + Snorlax) |
-| msg bank | **348** | Vanilla **0–3**; guru **4–8** |
-
-**Patch:** `scr_seq_r12_rod_guru.s` / `patch_scr_seq_r12_rod_guru.py` (`2_199`); zone `patch_zone_event_r12_rod_guru.py` (`2_017`); `data/text/348.txt`.
-
-**Fuchsia City:**
-
-| Layer | ID | Notes |
-|-------|-----|--------|
-| Map header | `MAP_FUCHSIA` = **56** | pret `[MAP_FUCHSIA]` |
-| zone_event | member **053** — obj **7**, script **11**, world **(1230, 430)**, facing **north**, **`type=0`** | Cell **(38, 13)** local **(14, 14)** |
-| scr_seq | member **807** — slot **10** (scriptId **11**) | Vanilla **10** slots |
-| msg bank | **512** | Vanilla **0–15**; guru **16–20** |
-
-**Patch:** `scr_seq_fuchsia_rod_guru.s` / `patch_scr_seq_fuchsia_rod_guru.py` (`2_807`); zone `patch_zone_event_fuchsia_rod_guru.py` (`2_053`); `data/text/512.txt`.
-
-**Route 24 / 25 border (Cerulean ↔ Nugget Bridge):**
-
-The guru tile **(1320, 65)** sits on the **R24/R25 matrix seam**. Only one `eventsBank` loads per map header — approach from **Cerulean** uses **025** / scr_seq **215** / msg **362**; from **Route 25 above** uses **026** / **216** / **363**. **Duplicate the same world object on both members** (shared coords, separate scriptId/msg bank per map).
-
-| Map | Header | zone_event | scr_seq | msg | Guru object |
-|-----|--------|------------|---------|-----|-------------|
-| Route 24 | **28** | **025** obj **3** script **6** | **215** slot **5** | **362** **10–14** | `patch_zone_event_r24_rod_guru.py` |
-| Route 25 | **29** | **026** obj **16** script **11** | **216** slot **10** | **363** **20–24** | `patch_zone_event_r25_rod_guru.py` |
-
-**Patch:** `scr_seq_r24_rod_guru.s` + `scr_seq_r25_rod_guru.s`; `data/text/362.txt` + `data/text/363.txt`.
-
-**Route 32 Pokémon Center 1F (interior — verified in-game Oct 2026):**
-
-Outdoor warp reference: world **(468, 419)** = cell **(14, 13)** local **(20, 3)** on Route 32 matrix — **not** used for interior object placement.
-
-| Layer | ID | Notes |
-|-------|-----|--------|
-| Map header | `MAP_ROUTE_32_POKECENTER_1F` | pret `[MAP_ROUTE_32_POKECENTER_1F]` — **interior**, not Route 32 outdoors (`MAP_R32` / events **033**) |
-| zone_event | member **163** | Guru obj **4**, sprite **347**, script **5**, **local (4, 15)** — replaces vanilla brother script **2**; removes Apricorn obj **5** @ **(12, 12)** |
-| scr_seq | member **233** — guru **slot 4** (scriptId **5**) | Vanilla **4** scripts (brother + signs + Apricorn); append guru |
-| msg bank | **381** | Vanilla **0–11**; guru **12–16** |
-
-**Patch:** `scr_seq_r32pc_rod_guru.s` / `patch_scr_seq_r32pc_rod_guru.py` (`2_233`); zone `patch_zone_event_r32pc_rod_guru.py` (`2_163`); `data/text/381.txt`.
-
-**Verify:** `python3 scripts/build/verify_r32pc_rod_guru_scr_seq.py build/a012/2_233` + `python3 scripts/dev/verify_r32pc_rod_guru_zone_event.py build/a032/2_163`.
-
-**PC / interior coords:** Map header `eventsBank` / `scriptsBank` / `msgBank` come from pret `map_headers.h` — **not** the outdoor Route header (R32 outdoors = events **033**). Object **(x, z)** on interiors are **local** to the room matrix; do not use `find_zone_event_member.py --world` for Poké Center floors.
+**Route 32 PC 1F:** interior **163** / **233** / **381**; guru **local (4, 15)** — not outdoor R32 **033**. No `--world` lookup on PC floors.
 
 **Gym-area story skip (Radio Tower / Elm phone coord):** vanilla **coord script 2** at world **(272, 239)** (west of the gym) when **`VAR_UNK_4078`** is 0 — not the rival hide flag (**470**). Mom intro sets **4078 → 1** (`openworld_story_skip_flags.inc`); **`tools/patch_scr_seq_olivine_gym_story.py`** NOPs scr_seq **911** slot **2** entry; **`tools/patch_zone_event_olivine_gym_story.py`** removes the coord from **074**.
 

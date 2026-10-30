@@ -12,19 +12,23 @@ sys.path.insert(0, str(ROOT / "tools"))
 from patch_scr_seq_game_corner import (  # noqa: E402
     CELADON_COST_PATCHES,
     CELADON_PATCHES,
+    CELADON_SPECIES_PATCHES,
     GOLDENROD_COST_PATCHES,
     GOLDENROD_PATCHES,
+    GOLDENROD_SPECIES_PATCHES,
     validate_cost_patches,
     validate_patches,
+    validate_species_patches,
 )
 
 
-def check(path: Path, patches, cost_patches, label: str) -> bool:
+def check(path: Path, patches, cost_patches, species_patches, label: str) -> bool:
     data = path.read_bytes()
     print(f"{path.name}: {len(data)} bytes ({label})")
     try:
         validate_patches(data, patches, label)
         validate_cost_patches(data, cost_patches, label)
+        validate_species_patches(data, species_patches, label)
     except ValueError as exc:
         print(f"  FAIL: {exc}")
         return False
@@ -39,9 +43,19 @@ def main(argv: list[str]) -> int:
 
     ok = True
     ok &= check(
-        Path(argv[1]), GOLDENROD_PATCHES, GOLDENROD_COST_PATCHES, "Goldenrod"
+        Path(argv[1]),
+        GOLDENROD_PATCHES,
+        GOLDENROD_COST_PATCHES,
+        GOLDENROD_SPECIES_PATCHES,
+        "Goldenrod",
     )
-    ok &= check(Path(argv[2]), CELADON_PATCHES, CELADON_COST_PATCHES, "Celadon")
+    ok &= check(
+        Path(argv[2]),
+        CELADON_PATCHES,
+        CELADON_COST_PATCHES,
+        CELADON_SPECIES_PATCHES,
+        "Celadon",
+    )
     return 0 if ok else 1
 
 

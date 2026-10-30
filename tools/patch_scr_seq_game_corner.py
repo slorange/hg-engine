@@ -12,6 +12,10 @@ Celadon scr_seq member 804 (T07R0501 dept 5F):
 Each changed prize is patched at fixed offsets from vanilla HeartGold scr_seq extract.
 All TM, held-item, and Pokémon prize costs are flattened to PRIZE_COIN_COST (temporary).
 
+Pokémon prizes (give_mon species u16):
+  Goldenrod: Rotom, Wobbuffet, Smeargle
+  Celadon: Porygon, Eevee, Castform
+
 See documentation/HACK-NOTES.md § Game Corner TM prizes.
 """
 
@@ -31,6 +35,9 @@ ItemPatch = tuple[int, int, int]
 
 # offset, expected_vanilla_cost, new_cost
 CostPatch = tuple[int, int, int]
+
+# offset, expected_species_id, new_species_id (give_mon argument)
+SpeciesPatch = tuple[int, int, int]
 
 
 def tm_item(tm: int) -> int:
@@ -100,6 +107,34 @@ GOLDENROD_COST_PATCHES: list[CostPatch] = [
     (2843, 2100, PRIZE_COIN_COST),
 ]
 
+# Prize Pokémon — fixed offsets in vanilla 2_910 / 2_804 (HeartGold extract).
+GOLDENROD_SPECIES_PATCHES: list[SpeciesPatch] = [
+    # Abra / Ekans / Dratini / Sandshrew → Rotom / Wobbuffet / Smeargle (purchase + nav copies)
+    (2473, 63, 479),
+    (2485, 23, 202),
+    (2497, 147, 235),
+    (2509, 27, 235),
+    (2616, 63, 479),
+    (2621, 23, 202),
+    (2652, 23, 202),
+    (2657, 23, 202),
+    (2688, 27, 235),
+    (2693, 23, 202),
+    (2776, 63, 479),
+    (2799, 23, 202),
+    (2814, 27, 235),
+    (2822, 27, 235),
+]
+
+CELADON_SPECIES_PATCHES: list[SpeciesPatch] = [
+    # Mr. Mime / Eevee / Porygon → Porygon / Eevee / Castform (Eevee offsets unchanged)
+    (2165, 122, 137),
+    (2189, 137, 351),
+    (2267, 122, 137),
+    (2359, 137, 351),
+    (2391, 122, 137),
+]
+
 CELADON_COST_PATCHES: list[CostPatch] = [
     (735, 2000, PRIZE_COIN_COST),
     (753, 2000, PRIZE_COIN_COST),
@@ -138,6 +173,11 @@ MEMBERS: dict[int, list[ItemPatch]] = {
 COST_MEMBERS: dict[int, list[CostPatch]] = {
     GOLDENROD_MEMBER: GOLDENROD_COST_PATCHES,
     CELADON_MEMBER: CELADON_COST_PATCHES,
+}
+
+SPECIES_MEMBERS: dict[int, list[SpeciesPatch]] = {
+    GOLDENROD_MEMBER: GOLDENROD_SPECIES_PATCHES,
+    CELADON_MEMBER: CELADON_SPECIES_PATCHES,
 }
 
 
@@ -180,6 +220,26 @@ def validate_patches(data: bytes, patches: list[ItemPatch], label: str) -> None:
             )
 
 
+def apply_species_patches(data: bytearray, patches: list[SpeciesPatch]) -> None:
+    for offset, expected, new in patches:
+        actual = read_u16(data, offset)
+        if actual != expected:
+            raise ValueError(
+                f"offset {offset}: expected species {expected}, got {actual} "
+                "(wrong ROM or scr_seq revision?)"
+            )
+        write_u16(data, offset, new)
+
+
+def validate_species_patches(data: bytes, patches: list[SpeciesPatch], label: str) -> None:
+    for offset, _expected, new in patches:
+        actual = read_u16(data, offset)
+        if actual != new:
+            raise ValueError(
+                f"{label}: offset {offset} expected species {new}, got {actual}"
+            )
+
+
 def validate_cost_patches(data: bytes, patches: list[CostPatch], label: str) -> None:
     for offset, _expected, new in patches:
         actual = read_u16(data, offset)
@@ -195,19 +255,22 @@ def patch_file(path: Path, member: int) -> None:
 
     patches = MEMBERS[member]
     cost_patches = COST_MEMBERS[member]
+    species_patches = SPECIES_MEMBERS[member]
     vanilla_size = path.stat().st_size
     data = bytearray(path.read_bytes())
 
     apply_patches(data, patches)
     apply_cost_patches(data, cost_patches)
+    apply_species_patches(data, species_patches)
     validate_patches(bytes(data), patches, f"2_{member}")
     validate_cost_patches(bytes(data), cost_patches, f"2_{member}")
+    validate_species_patches(bytes(data), species_patches, f"2_{member}")
 
     if len(data) != vanilla_size:
         raise ValueError(f"2_{member} size changed {vanilla_size} -> {len(data)}")
 
     path.write_bytes(data)
-    writes = len(patches) + len(cost_patches)
+    writes = len(patches) + len(cost_patches) + len(species_patches)
     print(
         f"patched Game Corner prizes in {path} ({len(data)} bytes, "
         f"{writes} offset writes)"

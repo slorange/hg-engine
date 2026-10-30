@@ -22,10 +22,9 @@ BRIGHT POWDER\n50 Coins
 QUICK CLAW\n50 Coins
 WIDE LENS\n50 Coins
 METRONOME\n50 Coins
-ABRA{CURSOR_X 103}50 Coins
-EKANS{CURSOR_X 103}50 Coins
-DRATINI{CURSOR_X 90}50 Coins
-SANDSHREW{CURSOR_X 103}50 Coins
+ROTOM{CURSOR_X 103}50 Coins
+WOBBUFFET{CURSOR_X 90}50 Coins
+SMEARGLE{CURSOR_X 90}50 Coins
 My name is Mr. Game!\rMy heart pounds with excitement when\npeople enjoy my Coin game!\rIn fact, that’s what I live for!\nYou look like quite a challenger!\rWhy don’t you play my Coin game?\rYou can get fabulous prizes if\nyou manage to collect a lot\fof Coins. {YESNO 0}
   
    

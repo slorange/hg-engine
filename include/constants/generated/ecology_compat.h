@@ -7,7 +7,7 @@
 #include "types.h"
 #endif
 
-#define ECOLOGY_COMPAT_VERSION 0x385B5715u
+#define ECOLOGY_COMPAT_VERSION 0xEE645521u
 
 #define ECOLOGY_TIME_MORNING  (1u << 0)
 #define ECOLOGY_TIME_DAY      (1u << 1)

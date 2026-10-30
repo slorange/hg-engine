@@ -5,6 +5,7 @@
 
 #ifdef ECOLOGY_STANDALONE
 #include <stdlib.h>
+#define ECO_GEN_DBG(stage) ((void)0)
 #else
 #include "config.h"
 #include "constants/file.h"
