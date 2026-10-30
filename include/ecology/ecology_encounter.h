@@ -12,4 +12,6 @@ static inline void EcologyScratchSetActiveMethod(u8 method)
 
 u16 EcologyApplyGrassSpeciesOverride(u16 vanillaSpecies);
 
+u16 EcologyApplySpeciesOverrideForMethod(u16 vanillaSpecies, u8 ecologyMethod);
+
 #endif

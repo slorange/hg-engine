@@ -19,7 +19,6 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-7** | Violet Gym (Falkner) — Elevator attendant still visible; ride **up** works; after beating Falkner, elevator **down** does not work. | [Gym HM rewards](HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** (esp. slot **0** OnLoad, slot **5** elevator) / zone_event **365**. |
 | **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
 | **KB-9** | Crash when leaving **Mahogany Gym** (returning to the field after exit). | Inconsistent — could not reproduce on retest. |
-| **KB-10** | **Surf encounters** Cetoddle and a Bulbasaur with "---" name that crashes the game if caught  |  |
 
 ---
 
@@ -37,10 +36,8 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Wild ecology — grass / land species hook** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | Session **assignment** generates on first wild encounter today; **replace** vanilla land/grass species from assignment ([HACK-NOTES § Wilds-6](HACK-NOTES.md#per-save-wild-ecology-shuffle-wilds-6)). Next PoC: walking encounters only. |
-| **Wild ecology — flash persistence** | [Wilds-6 § Persistence](DESIGN-WILDS.md#persistence-and-seed) | Today: regen each session from trainer ID (~2s lag on first wild). Ship: generate once (e.g. new game) and store **`EcologyWorldSave`** in save data. |
-| **Wild ecology — other encounter methods** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | After land PoC: Surf, rods, Headbutt, Rock Smash, swarms, Safari Zone, in-game trades. [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope) for Gym hint UI. |
-| **Wild ecology — special / static / legendary policy** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | Gifts, fossils, swarms, legendaries, static overworld — explicit per-category rules vs generated tables (**TBD** in design). |
+| **Wild ecology — flash persistence** | [Wilds-6 § Persistence](DESIGN-WILDS.md#persistence-and-seed) | Session heap today (~2s lag first wild per power-on). Ship: **`EcologyWorldSave`** on new game / first gen — no regen every boot. |
+| **Wild ecology — remaining methods & specials** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | **Still:** Swarms, Safari Zone, Bug Contest, gifts, legendaries, static overworld |
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
 

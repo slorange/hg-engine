@@ -23,10 +23,6 @@
 #include "script.h"
 #include "wild_level_caps.h"
 #include "sound.h"
-#ifdef IMPLEMENT_ECOLOGY_GENERATION
-#include "constants/generated/ecology_compat.h"
-#include "ecology/ecology_encounter.h"
-#endif
 
 extern u32 word_to_store_form_at;
 struct OVERWORLD_TAG *LONG_CALL ObjectEvent_GetGraphicsInfo(u32 spriteId);
@@ -1742,10 +1738,6 @@ u32 WildEncSingle(FieldSystem *fsys, struct PartyPokemon *pp, void *bw, void *en
 #ifdef IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
     CacheWildLevelCapFromFieldSystem(fsys);
 #endif
-#ifdef IMPLEMENT_ECOLOGY_GENERATION
-    EcologyScratchSetActiveMethod(ECOLOGY_METHOD_LAND);
-#endif
-
     ret = SetEncountData(pp, 255, encInfo, encArea, 0, 1, bw);
 
 #ifdef IMPLEMENT_WILD_DOUBLE_BATTLES
@@ -1777,10 +1769,6 @@ u32 WildWaterEncSingle(FieldSystem *fsys, struct PartyPokemon *pp, void *bw, voi
 #ifdef IMPLEMENT_WILD_DISTANCE_LEVEL_CAPS
     CacheWildLevelCapFromFieldSystem(fsys);
 #endif
-#ifdef IMPLEMENT_ECOLOGY_GENERATION
-    EcologyActiveMethodRef = 0;
-#endif
-
     if (smth) {
         ret = SetEncountDataSwarm_maybe(fsys, pp, 255, encInfo, 1, 1, bw);
 

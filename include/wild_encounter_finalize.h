@@ -13,4 +13,10 @@
  */
 u16 WildEncounterFinalize(struct PartyPokemon *pp, u16 vanillaTableSpecies);
 
+u16 WildEncounterFinalizeForEncount(
+    struct PartyPokemon *pp,
+    u16 vanillaTableSpecies,
+    u32 encounterType,
+    u32 rodType);
+
 #endif

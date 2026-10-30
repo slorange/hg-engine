@@ -210,9 +210,24 @@ static u16 EcologyRollAssignedSpecies(u8 method)
     return species;
 }
 
-u16 EcologyApplyGrassSpeciesOverride(u16 vanillaSpecies)
+u16 EcologyApplySpeciesOverrideForMethod(u16 vanillaSpecies, u8 ecologyMethod)
 {
     u16 ecologySpecies;
+
+    if (ecologyMethod >= ECOLOGY_METHOD_COUNT) {
+        return vanillaSpecies;
+    }
+
+    ecologySpecies = EcologyRollAssignedSpecies(ecologyMethod);
+    if (ecologySpecies != 0) {
+        return ecologySpecies;
+    }
+
+    return vanillaSpecies;
+}
+
+u16 EcologyApplyGrassSpeciesOverride(u16 vanillaSpecies)
+{
     u8 methodScratch;
     u8 method;
 
@@ -223,12 +238,7 @@ u16 EcologyApplyGrassSpeciesOverride(u16 vanillaSpecies)
     EcologyActiveMethodRef = 0;
     method = (u8)(methodScratch - 1u);
 
-    ecologySpecies = EcologyRollAssignedSpecies(method);
-    if (ecologySpecies != 0) {
-        return ecologySpecies;
-    }
-
-    return vanillaSpecies;
+    return EcologyApplySpeciesOverrideForMethod(vanillaSpecies, method);
 }
 
 #endif

@@ -28,6 +28,7 @@ SETENCOUNT_DATA_VMA = 0x02247B64
 MODIFY_SPECIES_VMA = 0x02247B42
 OVERLAY_INDEX = 2
 COMPARE_LEN = 8
+BL_HOOK_STUB_LEN = 0x18
 
 # Pret US HeartGold reference (sanity only — compare uses rom.nds extract)
 REF_US_SETENCOUNT_PROLOGUE = bytes.fromhex("042cf7db381c0121")
@@ -79,6 +80,26 @@ def parse_overlay2_hooks() -> dict[int, tuple[str, int]]:
     return wanted
 
 
+def decode_bl_hook_target(stub: bytes, hook_vma: int) -> int:
+    """Match scripts/build/make.py Hook(register=255) bl immediate → thumb entry."""
+    if len(stub) < 14:
+        raise SystemExit("bl hook stub too short")
+    if stub[0:2] != bytes([0x60, 0xB4]):
+        raise SystemExit(f"expected push {{r4-r6}} at bl hook, got {stub[0:2].hex()}")
+    bl_off = 10
+    hi = stub[bl_off] | ((stub[bl_off + 1] & 0x07) << 8)
+    lo = stub[bl_off + 2] | ((stub[bl_off + 3] & 0x07) << 8)
+    immediate = (hi << 11) | lo
+    if immediate & 0x400000:
+        immediate -= 0x800000
+    return (hook_vma + 0xE) + (immediate * 2)
+
+
+def read_bl_hook(stub: bytes, hook_vma: int) -> tuple[int, bytes]:
+    target = decode_bl_hook_target(stub, hook_vma)
+    return target | 1, stub
+
+
 def file_offset(vma: int, load: int) -> int:
     return vma - load
 
@@ -91,7 +112,11 @@ def read_hook_pointer(o2: bytes, vma: int, reg: int, load: int) -> tuple[int, by
         raise SystemExit(f"hook VMA {vma:#x} out of range in overlay_0002.bin")
 
     if reg == 255:
-        raise SystemExit(f"bl-style hook at {vma:#x} not supported by verify_encount_overlay2")
+        off = hook_at - load
+        if off < 0 or off + BL_HOOK_STUB_LEN > len(o2):
+            raise SystemExit(f"bl hook VMA {vma:#x} out of range in overlay_0002.bin")
+        raw = o2[off : off + BL_HOOK_STUB_LEN]
+        return read_bl_hook(raw, hook_at)
 
     if hook_at % 4:
         stub = o2[off : off + 6]
@@ -118,6 +143,10 @@ def is_ldr_bx_stub(chunk: bytes) -> bool:
     if len(chunk) < 4:
         return False
     return chunk[2] == 0x47 and (chunk[1] & 0xF8) == 0x48
+
+
+def is_bl_hook_stub(chunk: bytes) -> bool:
+    return len(chunk) >= 2 and chunk[0:2] == bytes([0x60, 0xB4])
 
 
 def rom_nds_overlay2_bytes() -> bytes | None:
@@ -167,7 +196,7 @@ def main() -> None:
     se_hook = hooks.get(SETENCOUNT_DATA_VMA)
 
     if se_hook is None:
-        if is_ldr_bx_stub(se_chunk):
+        if is_bl_hook_stub(se_chunk[:BL_HOOK_STUB_LEN]) or is_ldr_bx_stub(se_chunk):
             fail(
                 f"stale hook at SetEncountData {SETENCOUNT_DATA_VMA:#x}: {se_chunk.hex()} — "
                 "not listed in hooks; re-extract overlay 2 from rom.nds or restore bytes (KB-12)"

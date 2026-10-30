@@ -236,9 +236,7 @@ Multiple legitimate paths through the world: surface roads, water routes, interc
 
 # Future-5. Wild ecology — Gym Leader Hints
 
-**Release design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Core rules, seed behavior, documented there.
-
-This section tracks **deferred addon** work not required for the initial grass PoC:
+**Prerequisite** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Core rules, seed behavior, documented there.
 
 ## Gym Leader family location hint
 

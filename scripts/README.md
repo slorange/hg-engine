@@ -56,7 +56,7 @@ Placement / text recon: `find_zone_event_member.py`, `find_msg_text.py` (see HAC
 
 **Overlay 129 verify:** `python3 scripts/dev/verify_overlay129_field_addrs.py` after code changes that touch wild caps or berry hold.
 
-**Wild encounter overlay 2 verify (Wilds-6 / KB-12):** `python3 scripts/dev/verify_encount_overlay2.py` after **`make test.nds`** — catches stale **`SetEncountData`** stubs and **`modify_species`** pointer drift.
+**Wild encounter overlay 2 verify (Wilds-6 / KB-12):** `python3 scripts/dev/verify_encount_overlay2.py` after **`make test.nds`** — **`SetEncountData_Ecology`** (bl stub @ **`7B64`**) and **`modify_species`** @ **`7B42`**. Optional disasm helpers: `_dump_setencount_data.py`, `_dump_add_pokemon_param.py` (overlay 2 recon).
 
 Test runner: `scripts/dev/run_tests.sh` (also used by CI).
 

@@ -3,6 +3,15 @@
 
 #include "types.h"
 
+/* HGSS field overlay SetEncountData encounterType (WildEncSingle / WildWaterEncSingle / etc.). */
+enum {
+    WILD_ENCOUNTERTYPE_LAND = 0,
+    WILD_ENCOUNTERTYPE_SURF = 1,
+    WILD_ENCOUNTERTYPE_FISH = 2,
+    WILD_ENCOUNTERTYPE_ROCK_SMASH = 3,
+    WILD_ENCOUNTERTYPE_HEADBUTT = 4,
+};
+
 #define NUM_ENCOUNTERS_LAND      12
 #define NUM_ENCOUNTERS_SOUNDS    2
 #define NUM_ENCOUNTERS_SURF      5

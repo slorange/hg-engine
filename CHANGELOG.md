@@ -32,6 +32,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **Special evolution lines in the wild** — trade, stone, and similar lines can appear as their evolved forms at set level thresholds.
 - **Cinnabar Island** — walking wild encounters on the island (Slugma, Numel, Koffing, Torkoal, Magmar, rare Ditto and **Larvesta**).
 - **Wild held items** — species table rolls (**65%** common / **15%** rare / **20%** nothing); if still empty, **50%** chance of a random berry. With **Compound Eyes** lead: **70%** common / **30%** rare, then **always** a berry.
+- **Per-save wild ecology** — each play session builds a shuffled assignment of Pokémon families to habitats and encounter methods (seeded from your trainer ID). **Grass, cave walking, Surf, fishing, Headbutt, and Rock Smash** draw species from that assignment instead of fixed HeartGold tables. Assignment is regenerated when you power off (save-flash persistence planned). First wild encounter after boot may take a moment while the world is generated.
 
 ### Fishing
 

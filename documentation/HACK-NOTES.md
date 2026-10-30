@@ -99,7 +99,7 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 **Symptom ([TODO.md](TODO.md#known-bugs)):** Surf shows wrong Pokémon (e.g. Gen V+ **Cetoddle**); A **Bulbasaur** with `"---"` that crashes the game if caught
 
-**Status (Oct 2026):** **Investigation paused** — not fixed. [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) grass ecology does **not** fix Surf; a broken surf pipeline or crash still needs a **minimal** fix before release.
+**Status (Oct 2026):** **Re-test after Wilds-6 `SetEncountData_Ecology`** — surf/fish/grass/headbutt use the same stub + assignment path (user-tested, no crash). If Cetoddle / **`"---"`** name still appear, treat as separate from the old scratch-only grass hook.
 
 **Data check:** `data/Encounters.c` / built `encounters.narc` / `test.nds` — **surf slots match vanilla** (e.g. Route 41 Tentacool / Tentacruel / Mantine). Wrong species is not “bad NARC authoring” for surf tables.
 
@@ -125,7 +125,7 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 **Symptom:** Grass/surf/fish crashes on first wild; wrong species; **100% crash** after removing a `SetEncountData` hook from `hooks` while `base/overlay/overlay_0002.bin` still contains a trampoline.
 
-**Stable baseline (Oct 2026):** commit **`fae496a1f`** (“Moved ecology to overlay 131”) — **land grass ecology** via `WildEncSingle` → `EcologyScratchSetActiveMethod(LAND)` → vanilla **`SetEncountData`** → hook **`modify_species_encounter_data`** @ **`0x02247B42`** → `EcologyApplyGrassSpeciesOverride`. **Do not hook `SetEncountData` @ `0x02247B64`** on that baseline.
+**Historical baseline (Oct 2026):** commit **`fae496a1f`** — grass-only via **`EcologyScratchSetActiveMethod`** + **`modify_species` @ `7B42`** (no **`7B64`** hook). **Current Wilds-6:** **`SetEncountData_Ecology` @ `7B64`** for all hooked methods; **`modify_species` @ `7B42`** remains for any **`EncountParamSet`** path that still runs vanilla slot setup.
 
 **Overlay 2 sites (US HeartGold, field overlay load ~`0x02245B80`):**
 
@@ -145,8 +145,9 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 | **`SetEncountData` C “wrapper”** calling **`0x02247B6C`** | Skips prologue/slot loop — crashes + wrong **`PartyPokemon`** |
 | Asm tramp into **`0x02247B58` / `7B6C`** | **100% crash** — not a function entry |
 | Stale **`7B64`** stub after removing hook from **`hooks`** | **100% grass crash** until overlay bytes restored |
+| **`ldr r0; bx r0` @ `7B64`** (hook register **0**) | **`r0` = `pp` at entry** — clobbered with jump target → undefined instruction @ **`SetEncountData_Ecology`** / garbage **`PartyPokemon`** |
 
-**Chosen next architecture (Wilds-6):** **Phase 1+** — shared **`WildEncounterFinalize`** in overlay **129**; **Phase 2** — hook **`SetEncountData` @ `7B64`** to **`SetEncountData_Ecology`** stub that builds a **placeholder** mon (random PID/IVs) and runs finalize (ecology species + [Wilds-1–3 pipeline](#runtime-pipeline)). **Do not** tail-call into **`0x02247B6C`**. Lift species/level/moves logic off **`modify_species`** or guard so ecology is not applied twice. See agent plan in chat (Oct 2026).
+**Chosen architecture (Wilds-6):** **`WildEncounterFinalize`** / **`WildEncounterFinalizeForEncount`** (`src/wild_encounter_finalize.c`); **`SetEncountData_Ecology`** @ **`0x02247B64`** (`src/setencount_ecology.c`, **`hooks`**) — placeholder **`PokeParaSet`**, ecology from **`encounterType` + `rodType`**, **`PokeParty_Add`**. **`modify_species` @ `7B42`** remains for any **`EncountParamSet`** path not via this stub. **Do not** tail-call **`0x02247B6C`**. **`7B64` hook:** use **`hooks`** bl stub (no register field — **255**), **not** `ldr r0; bx` — **`r0`–`r3` are live `SetEncountData` args at entry** (`pp`, rod, encInfo, encArea).
 
 **Verify after `make test.nds`:**
 
@@ -154,7 +155,7 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 python3 scripts/dev/verify_encount_overlay2.py
 ```
 
-Expect **`7B64` unhooked** bytes **= `rom.nds` extract** until **`SetEncountData_Ecology`** is in **`hooks`**; **`7B42`** pointer must match **`modify_species_encounter_data+1`** in **`build/linked.o`**. Mismatch **`base/overlay` ≠ rom.nds** → **`make clean && make test.nds`**.
+With **`IMPLEMENT_ECOLOGY_GENERATION`**, expect **`7B64` → `SetEncountData_Ecology+1`**; otherwise **`7B64` = `rom.nds` extract**. **`7B42`** → **`modify_species_encounter_data+1`**. Mismatch **`base/overlay` ≠ rom.nds** (unhooked) → **`make clean && make test.nds`**.
 
 **Related:** [Runtime pipeline](#runtime-pipeline), [ROM integration (Wilds-6)](#rom-integration-wilds-6), [KB-10](#kb-10--surf-wild-encounters-wrong-species) (surf species / scratch clear).
 
@@ -1619,9 +1620,9 @@ All tracked — nothing belongs in `scripts/local/`:
 
 **Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Deferred addon scope (Gym hints, flash persistence, other methods): [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
 
-**Status (Oct 2026):** **Compat + assignment + lazy session gen** — world generated on **first normal wild encounter** (`ApplyWildDistanceLevelCapToMon` → `EcologyEnsureWorldGenerated`); seed = trainer ID (`profile->id`); assignment in **session heap** only (**no flash**). **Encounters still vanilla NARC** — species hooks not shipped. Surf / rods / other methods unchanged ([KB-10](#kb-10--surf-wild-encounters-wrong-species) separate). Release blockers: [TODO.md § Wilds](TODO.md#wilds-design-wildsmd).
+**Status (Oct 2026):** **Compat + session gen + encounter hooks shipped** — world generated on **first normal wild encounter** (`EcologyEnsureWorldGenerated`); seed = trainer ID; assignment in **session heap** only (**no flash**). **`SetEncountData_Ecology`** @ **`7B64`** rolls species from assignment for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Stub still **`PokeParaSet`** a placeholder species then **`WildEncounterFinalizeForEncount`** (NARC slot table bypassed on that path). **Still open:** flash persistence, swarms/Safari/special-encounter policy, remove placeholder ([TODO.md § Wilds](TODO.md#wilds-design-wildsmd)).
 
-**Goal:** Assign shuffleable **families** to placement **groups** (shared ENCDATA ids) and methods; persist per save; hooks read assignment instead of static NARC species. **Today:** host **`build/ecology/ecology_assignment.tsv`** + in-game gen lag on first wild; **next:** grass/land species override, then flash + other methods.
+**Goal:** Assign shuffleable **families** to placement **groups** and methods; persist per save; hooks read assignment instead of static NARC species. **Next:** **`EcologyWorldSave`** in save data, swarms, and category rules for gifts/statics/legendaries.
 
 ### Ecology ROM integration (in-ROM PoC)
 
@@ -1772,12 +1773,13 @@ Re-run audit after eco-fam edits:
 |-------|--------|
 | Compat NARC + host **assign** tool | **Done** |
 | Session gen on first wild encounter | **Done** (session heap; ~2s lag first wild per power-on) |
-| Grass / land species override | **Partial** — ecology roll @ **`modify_species`** when **`EcologyScratchSetActiveMethod(LAND)`** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)); other methods still vanilla NARC |
+| Grass / land species override | **`SetEncountData_Ecology`** + **`WildEncounterFinalizeForEncount`** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)) |
+| Surf / rods / smash / headbutt ecology | Same stub — method from **`encounterType` + `rodType`** |
 | **eco-csr** in field overlay | Not used — runtime reads **eco-bin** NARC only |
 | Flash persistence (`EcologyWorldSave`) | **Not done** — session heap until power-off |
-| Surf / rods / Headbutt / Rock Smash / swarms | **Not done** — vanilla tables |
+| Swarms | **`SetEncountDataSwarm_maybe`** still vanilla body (calls hooked **`SetEncountData`**) |
 | Gym Leader ecology hints | **Future-5** — not started |
-| Rod pool merge at encounter time | TBD when rods hook |
+| NARC slot species on stub path | Bypassed — placeholder mon until table merge or slot roll removed |
 
 When linking **eco-csr**, watch [Overlay 129 / field rodata budget](#overlay-129-32-kib-engine-overlay) (dual CSR was dropped earlier for size).
 
