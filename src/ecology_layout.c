@@ -1,4 +1,8 @@
+#ifdef ECOLOGY_STANDALONE
+#define IMPLEMENT_ECOLOGY_GENERATION
+#else
 #include "config.h"
+#endif
 
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
 

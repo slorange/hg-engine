@@ -546,6 +546,7 @@ bool8 EcologyGenerateWorld(
 {
     EcologyRng rng;
 #ifdef ECOLOGY_STANDALONE
+    (void)view;
     u16 slotBases[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];
     u16 bucketFill[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];
     u16 familyPlacementCount[ECOLOGY_NUM_FAMILIES];

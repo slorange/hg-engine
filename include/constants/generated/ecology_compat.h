@@ -7,7 +7,7 @@
 #include "types.h"
 #endif
 
-#define ECOLOGY_COMPAT_VERSION 0xEE645521u
+#define ECOLOGY_COMPAT_VERSION 0x55D79078u
 
 #define ECOLOGY_TIME_MORNING  (1u << 0)
 #define ECOLOGY_TIME_DAY      (1u << 1)
@@ -45,9 +45,9 @@ enum EcologyRarity {
 
 #define ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE 2u
 
-#define ECOLOGY_GEN_MAX_SLOTS_PER_BUCKET 6u
-#define ECOLOGY_GEN_TOTAL_SLOTS 1012u
-#define ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH 250u
+#define ECOLOGY_GEN_MAX_SLOTS_PER_BUCKET 8u
+#define ECOLOGY_GEN_TOTAL_SLOTS 1150u
+#define ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH 261u
 
 typedef struct EcologyFamilyInfo {
     u16 baseSpecies;
@@ -87,7 +87,7 @@ typedef struct EcologyGroupBucketEntry {
 
 #define ECOLOGY_NUM_FAMILIES 176
 #define ECOLOGY_NUM_GROUPS 94
-#define ECOLOGY_NUM_EDGES 8428
+#define ECOLOGY_NUM_EDGES 9123
 
 extern const EcologyFamilyInfo sEcologyFamilyInfo[ECOLOGY_NUM_FAMILIES];
 extern const EcologyGroupInfo sEcologyGroups[ECOLOGY_NUM_GROUPS];

@@ -248,7 +248,7 @@ def water_mask_from_tokens(tokens: frozenset[str]) -> int:
 
 
 # Shuffle slot budgets (Morning/Day/Night columns = which periods exist, not slot counts).
-ECOLOGY_LAND_SLOTS = 6
+ECOLOGY_LAND_SLOTS = 8
 ECOLOGY_SURF_SLOTS = 3
 ECOLOGY_OLD_ROD_SLOTS = 2
 ECOLOGY_GOOD_ROD_SLOTS = 1

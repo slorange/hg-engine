@@ -2,7 +2,11 @@
 #define ECOLOGY_ECOLOGY_COMPAT_VIEW_H
 
 #include "constants/generated/ecology_compat.h"
+#ifdef ECOLOGY_STANDALONE
+#include "ecology/ecology_standalone_types.h"
+#else
 #include "types.h"
+#endif
 
 #define ECOLOGY_COMPAT_BLOB_MAGIC 0x314F4345u /* 'ECO1' little-endian */
 

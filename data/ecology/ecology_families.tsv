@@ -96,7 +96,7 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0194	Wooper	Water	Ground						Wet	Morning/Night		4				Fresh/Cave	Both		Field			Cave		
 #0198	Murkrow	Dark	Flying							Night		3		Headbutt							Forest			Tower
 #0200	Misdreavus	Ghost								Night		3									Forest		Ruins	Tower
-#0201	Unown	Psychic					Future-12. Unown collection quest	Special				1	Ruins of Alph Inside											
+#0201	Unown	Psychic					Future-12. Unown collection quest	Special				2	Ruins of Alph Inside										Ruins	
 #0202	Wobbuffet	Psychic					Casino	Special				0												
 #0203	Girafarig	Normal	Psychic					Rare				1							Field					
 #0204	Pineco	Bug										2		Headbutt							Forest			

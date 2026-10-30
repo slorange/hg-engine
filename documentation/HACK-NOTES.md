@@ -1617,7 +1617,7 @@ Derived in **gen-compat** from eco-loc columns (presence = `> 0`, not the numeri
 
 | Method | Slots when present |
 |--------|-------------------|
-| Land | **6** total (shared across time — not 12×3) |
+| Land | **8** total (shared across time — not 24×3) |
 | Surf | **3** |
 | Old Rod | **2** |
 | Good Rod | **1** |
@@ -1666,7 +1666,7 @@ When eco-loc **`Types`** is non-empty, **gen-compat** stores `sEcologyGroupLocat
 
 **Land fill:**
 
-1. Target themed slots = **`ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` (2) × type count** (e.g. Fire → 2; Fire + Ghost → 4), capped by land capacity (6).
+1. Target themed slots = **`ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` (2) × type count** (e.g. Fire → 2; Fire + Ghost → 4), capped by land capacity (8).
 2. Until target met: pick only **`type_match`** land compat entries; **rarity weights only** (no ×5).
 3. Remaining land slots: pick from **non–type_match** pool only (no themed weight boost).
 4. If themed pool cannot satisfy target, fall back to general pool for unfilled themed slots (see audit).
