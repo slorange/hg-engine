@@ -19,6 +19,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-7** | Violet Gym (Falkner) — Elevator attendant still visible; ride **up** works; after beating Falkner, elevator **down** does not work. | [Gym HM rewards](HACK-NOTES.md#gym-leader-hm-rewards-johto-pilot); slots **859** (esp. slot **0** OnLoad, slot **5** elevator) / zone_event **365**. |
 | **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
 | **KB-9** | Crash when leaving **Mahogany Gym** (returning to the field after exit). | Inconsistent — could not reproduce on retest. |
+| **KB-13** | Wild fishing battle showed an encounter mon instead of the player’s own Pokémon; after the battle the **lead party slot** was overwritten (e.g. wild **Buizel**, lead **Bulbasaur** → **Tentacool**). | One-time repro |
 
 ---
 
@@ -36,8 +37,12 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Wild ecology — flash persistence** | [Wilds-6 § Persistence](DESIGN-WILDS.md#persistence-and-seed) | Session heap today (~2s lag first wild per power-on). Ship: **`EcologyWorldSave`** on new game / first gen — no regen every boot. |
 | **Wild ecology — remaining methods & specials** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | **Still:** Swarms, Safari Zone, Bug Contest, gifts, legendaries, static overworld |
+| **Wild ecology — `Pairing` column** | [eco-fam](data/ecology/ecology_families.tsv) | Gen / compat: enforce paired families (e.g. Nidoran) on assignment — column exists, not wired |
+| **Wild ecology — `Required on Route` column** | [eco-fam](data/ecology/ecology_families.tsv) | Gen: guarantee listed families appear on named routes — column exists, not wired |
+| **Wild ecology — land slot budget** | [Wilds-6 slot budgets](HACK-NOTES.md#slot-budgets-shuffle-targets) | **Expand** land encounter slots per group (currently **6** land slots when present) |
+| **Wild ecology — Mountain habitat tagging** | [eco-loc](data/ecology/ecology_locations.tsv) | **Reduce** how many routes/groups use **Mountain** habitat (authoring + regen compat) |
+| **Wild ecology — caves ignore land time mask** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | At encounter: cave / interior groups skip family time filter (Zubat daytime, etc.) |
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
 

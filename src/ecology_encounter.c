@@ -177,12 +177,12 @@ static u16 EcologyRollAssignedSpecies(u8 method)
         }
 
         slotFamily = eco->familyIds[slotIndex];
-        if (slotFamily == 0xFFFF || slotFamily >= ECOLOGY_NUM_FAMILIES) {
+        if (slotFamily == ECOLOGY_SAVE_FAMILY_EMPTY || slotFamily >= ECOLOGY_NUM_FAMILIES) {
             continue;
         }
 
         if (method == ECOLOGY_METHOD_LAND) {
-            slotMask = eco->landTimeMasks[slotIndex];
+            slotMask = EcologySaveLandTimeMaskForFamily(eco, slotFamily);
             if (slotMask != 0 && (slotMask & periodBit) == 0) {
                 continue;
             }

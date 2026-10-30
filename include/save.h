@@ -9,6 +9,10 @@
 #include "pokemon.h"
 #include "rtc.h"
 
+#if defined(ALLOW_SAVE_CHANGES) && defined(IMPLEMENT_ECOLOGY_GENERATION)
+#include "ecology/ecology_save.h"
+#endif
+
 #define OT_ID_PRESET 1
 
 typedef enum GymmickType {
@@ -117,6 +121,9 @@ struct SAVE_MISC_DATA {
     // expanded fields - offset 0x2E0 and up
     struct PartyPokemon storedMons[NUM_OF_STORED_MONS];
     u8 isMonStored[NUM_OF_STORED_MONS];
+#if defined(IMPLEMENT_ECOLOGY_GENERATION)
+    struct EcologyWorldSave ecologyWorldSave;
+#endif
 
 #endif
 };

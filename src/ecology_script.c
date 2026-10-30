@@ -141,6 +141,14 @@ void EcologyRunNewGameGeneration(void *saveData)
     }
 
     if (EcologyGenerateIntoSession(saveData, seed)) {
+#if defined(ALLOW_SAVE_CHANGES)
+        EcologyWorldSave *ecoFlash;
+
+        ecoFlash = EcologySaveGetMutable((SaveData *)saveData);
+        if (ecoFlash != NULL) {
+            EcologySaveWriteFlash(Sav2_Misc_get(saveData), ecoFlash);
+        }
+#endif
         sEcologyGenDebugStage = 13;
     }
 }

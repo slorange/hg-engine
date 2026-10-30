@@ -5,6 +5,15 @@
 #include "bag.h"
 #include "save.h"
 
+#if defined(ALLOW_SAVE_CHANGES) && defined(IMPLEMENT_ECOLOGY_GENERATION)
+#include "ecology/ecology_save.h"
+typedef u8 save_misc_ecology_world_save_ok
+    [(sizeof(((struct SAVE_MISC_DATA *)0)->ecologyWorldSave)
+         == sizeof(struct EcologyWorldSave))
+        ? 1
+        : -1];
+#endif
+
 #include "constants/buttons.h"
 
 #include "message.h"

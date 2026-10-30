@@ -12,6 +12,7 @@
 #include "types.h"
 
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
+#include "ecology/ecology_save.h"
 #include "ecology/ecology_script.h"
 #endif
 
@@ -393,7 +394,19 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
     (void)cap;
     (void)encBank;
     (void)usedCachedCap;
-    level = EcologyGetGenDebugStage();
+    {
+        u8 flashStatus = EcologySaveVerifyMiscEcology(SaveBlock2_get());
+
+        if (flashStatus == 0) {
+            level = 28;
+        } else if (flashStatus == 2) {
+            level = 29;
+        } else if (flashStatus == 5) {
+            level = 30;
+        } else {
+            level = 31;
+        }
+    }
 #else
     level = ChooseWildLevel(failReason, cap, encBank, usedCachedCap, sWildLevelCapDebug.mapId);
 #endif

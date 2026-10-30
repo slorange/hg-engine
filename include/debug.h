@@ -145,6 +145,12 @@
 //   25 = slot layout built 0 slots (compat table / overflow)
 //   26 = edgeScratch heap alloc failed (should be rare after ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH sizing)
 //   27 = slot layout needs more than ECOLOGY_GEN_TOTAL_SLOTS (capacity mismatch)
+// SAVE_MISC ecologyWorld flash blob (requires ALLOW_SAVE_CHANGES + Mom ecology gen); first wild after load:
+//   28 = EcologyWorldSave valid (magic, slotCount, seed matches profile)
+//   29 = bad or missing ECO1 / invalid blob
+//   30 = worldSeed != profile id
+//   31 = null save/misc/profile or other verify failure
+// Enable with DEBUG_ECOLOGY_GEN_LEVELS (same wild-level channel).
 // #define DEBUG_ECOLOGY_GEN_LEVELS
 
 // DEBUG_WILD_LEVEL_CAP_EXACT lives in config.h (route cap testing toggle).

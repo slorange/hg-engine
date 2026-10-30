@@ -1540,9 +1540,9 @@ All tracked — nothing belongs in `scripts/local/`:
 
 **Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Deferred addon scope (Gym hints, flash persistence, other methods): [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
 
-**Status (Oct 2026):** **Compat + session gen + encounter hooks shipped** — world generated on **first normal wild encounter** (`EcologyEnsureWorldGenerated`); seed = trainer ID; assignment in **session heap** only (**no flash**). **`SetEncountData_Ecology`** @ **`7B64`** rolls species from assignment for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Stub still **`PokeParaSet`** a placeholder species then **`WildEncounterFinalizeForEncount`** (NARC slot table bypassed on that path). **Still open:** flash persistence, swarms/Safari/special-encounter policy, remove placeholder ([TODO.md § Wilds](TODO.md#wilds-design-wildsmd)).
+**Status (Oct 2026):** **Compat + Mom gen + encounter hooks + flash persistence shipped** — world generated on Mom **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`**; seed = trainer ID; **`EcologyWorldSave`** in **`SAVE_MISC`** (**ECO1**, compact **`u8`** family IDs + sparse land-time table); session heap hydrated from flash on load. **`SetEncountData_Ecology`** @ **`7B64`** rolls species for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Stub still **`PokeParaSet`** a placeholder then **`WildEncounterFinalizeForEncount`**. **Still open:** swarms/Safari/special policy, placeholder removal, party corruption ([TODO **KB-13**](TODO.md#known-bugs)), authoring columns (**Pairing**, **Required on Route**), cave time-mask override ([TODO.md § Wilds](TODO.md#wilds-design-wildsmd)).
 
-**Goal:** Assign shuffleable **families** to placement **groups** and methods; persist per save; hooks read assignment instead of static NARC species. **Next:** **`EcologyWorldSave`** in save data, swarms, and category rules for gifts/statics/legendaries.
+**Goal:** Assign shuffleable **families** to placement **groups** and methods; persist per save; hooks read assignment instead of static NARC species. **Next:** swarms, category rules for gifts/statics/legendaries, gen rules for new eco-fam columns.
 
 ### Ecology ROM integration (in-ROM PoC)
 
@@ -1553,11 +1553,11 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 | Compat blob | **`build/ecology/ecology_compat.bin`** → code addon **`CODE_ADDON_ECOLOGY_COMPAT` (19)** in NARC `a/0/2/8` member **`9_19`** (`data/codetables.mk`, `make move_narc`) |
 | Runtime load | **`EcologyCompatLoadFromFilesystem`** → heap bind in `src/ecology_load.c` |
 | Generation | **`EcologyGenerateWorld`** in `src/ecology_generate.c` (overlay **129**) |
-| Session store | **`EcologySaveWriteGeneration`** → heap buffer in `src/ecology_save.c` (not flash) |
-| Session trigger | First wild via **`EcologyEnsureWorldGenerated`** in `src/ecology_script.c` (`ApplyWildDistanceLevelCapToMon` in `src/wild_level_caps.c`) |
+| Session + flash | **`EcologySaveWriteGeneration`** → session; **`EcologySaveWriteFlash`** → **`SAVE_MISC_DATA.ecologyWorldSave`** (`src/ecology_save.c`) |
+| Session trigger | Mom **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`** → **`EcologyRunNewGameGeneration`** (`src/ecology_script.c`) |
+| Reload | **`EcologySaveGetMutable`** copies valid flash blob into session when heap copy invalid |
 | Species override | **`src/ecology_encounter.c`** + `asm/other_hook.s` |
 | **131 code call from 129** | **Do not** — patched function pointers into **131** while the wild hook runs on **129** caused undefined instruction / hang ([KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)). Ecology **runtime** stays on **129**; **131** = field rodata only. |
-| Session storage | **`EcologySaveGetMutable`** → one **`EcologyWorldSave`** allocation on **`HEAPID_DEFAULT`** (not overlay BSS); lives until power-off |
 
 **Do not** link full compat CSR into field overlay **131** or root `src/` rodata (~38 KiB+) — use the NARC blob only. Host **ecologygen** sources live under **`tools/source/ecologygen/`** (not `src/field/`).
 
@@ -1687,7 +1687,23 @@ Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); 
 Re-run audit after eco-fam edits:  
 `python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
 
-**Still open (Wilds-6):** flash persistence, swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)), remove placeholder species on stub path. Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
+**Still open (Wilds-6):** swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)), placeholder / party bug ([KB-13](TODO.md#known-bugs)). Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
+
+### SAVE_MISC flash (`EcologyWorldSave`)
+
+Embedded **`struct EcologyWorldSave`** in **`SAVE_MISC_DATA`** (`include/save.h`). Hook **`Sav2_Misc_sizeof`** only — do **not** hook **`SaveData_InitSubstructs`**.
+
+| Piece | Detail |
+|-------|--------|
+| Magic | **`ECO1`** (`ECOLOGY_SAVE_MAGIC`) |
+| Payload | **`u8 familyIds[1012]`**, sparse **`(familyId, landTimeMask)`** for families with ROM land-time (max **96**) |
+| Write | **`EcologySaveWriteFlash`** after Mom gen |
+| Load | **`EcologySaveGetMutable`** hydrates session from flash when needed |
+| Compat TSV version | **`compatVersion` field** written at gen; **not** used to invalidate saves after TSV regen — keep frozen assignment until new game |
+| Verify in-game | **`DEBUG_ECOLOGY_GEN_LEVELS`**: wild level **28** when flash valid after Mom + save + reload |
+| Verify in `.dsv` | **`python scripts/dev/probe_ecology_in_dsv.py`** `<path/to/test.dsv>` |
+
+**Size note:** Misc chunk grew from header-only era; total **`Sav2_Misc_sizeof`** ~**0xB70** with compact blob (well under Phase-A probe cliff ~**0x12A0**).
 
 ### Scripts (Wilds-6)
 
@@ -1697,6 +1713,8 @@ Re-run audit after eco-fam edits:
 | `scripts/dev/verify_ecology_compatibility.py` | dev | Sanity + regen via **make ecology-compat** |
 | `scripts/dev/run_ecology_generate.py` | dev | **run-eco** |
 | `scripts/dev/verify_encount_overlay2.py` | dev | Post-**`make test.nds`** — **`7B64` / `7B42`** vs **`hooks`** + **`linked.o`** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)) |
+| `scripts/dev/probe_ecology_in_dsv.py` | dev | Scan DeSmuME **`.dsv`** for **ECO1** / assignment summary |
+| `scripts/dev/verify_save_misc_size.py` | dev | Print **`Sav2_Misc_sizeof`** from **`build/save.o`** |
 | `tools/source/ecologygen/` | tools | Host **ecologygen** (`-DECOLOGY_STANDALONE`) |
 
 See also [`scripts/README.md`](../scripts/README.md) ecology bullets.
