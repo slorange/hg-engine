@@ -1,30 +1,21 @@
-#include "ecology/ecology_generate.h"
+﻿#include "ecology/ecology_generate.h"
 
 #include "constants/generated/ecology_compat.h"
-#include "ecology/ecology_compat_view.h"
+#include "ecology/ecology_compat_access.h"
 
 #ifdef ECOLOGY_STANDALONE
 #include <stdlib.h>
-#include "ecology/ecology_compat_access.h"
 #define ECO_GEN_DBG(stage) ((void)0)
 #else
 #include "config.h"
 #include "constants/file.h"
 #include "types.h"
-
-static const EcologyCompatView *sEcoGenCompatView;
-
-#define ECO_FAMILY_INFO(id) (sEcoGenCompatView->familyInfo[(id)])
-#define ECO_GROUPS(gid) (sEcoGenCompatView->groups[(gid)])
-#define ECO_GROUP_FLAGS(gid) (sEcoGenCompatView->groupFlags[(gid)])
-#define ECO_METHOD_SLOTS(idx) (sEcoGenCompatView->methodSlots[(idx)])
-#define ECO_LAND_OFFSETS(gid) (sEcoGenCompatView->landOffsets[(gid)])
-#define ECO_LAND_ENTRIES(idx) (sEcoGenCompatView->landEntries[(idx)])
-#define ECO_BUCKET_OFFSETS(idx) (sEcoGenCompatView->bucketOffsets[(idx)])
-#define ECO_BUCKET_ENTRIES(idx) (sEcoGenCompatView->bucketEntries[(idx)])
-#define ECO_LOCATION_TYPE_COUNT(gid) (sEcoGenCompatView->locationTypeCount[(gid)])
-
+#if defined(IMPLEMENT_ECOLOGY_GENERATION) && defined(DEBUG_ECOLOGY_GEN_LEVELS)
+#include "ecology/ecology_script.h"
+#define ECO_GEN_DBG(stage) EcologySetGenDebugStage(stage)
+#else
 #define ECO_GEN_DBG(stage) ((void)0)
+#endif
 #endif
 
 typedef struct EcologyEdgeRef {
@@ -51,29 +42,21 @@ u32 EcologyRngNext(EcologyRng *rng)
 
 static u16 EcologyRarityWeight(u8 rarity)
 {
-    /* Pick weight: Common highest, Very Rare lowest (÷3 per step toward rare). */
-    static const u16 sTable[] = { 9, 27, 3, 1 };
+    /* Phase 4 fill only (Very Rare excluded at pick sites): Normal / Common / Rare. */
+    static const u16 sTable[] = { 3, 9, 1, 0 };
     if (rarity >= (u8)(sizeof(sTable) / sizeof(sTable[0]))) {
         return 1;
     }
     return sTable[rarity];
 }
 
-static u16 EcologyPickWeightEx(u8 rarity, u8 flags, bool8 applyTypeBoost)
+static u16 EcologyPickWeight(u8 rarity)
 {
     u16 weight = EcologyRarityWeight(rarity);
-    if (applyTypeBoost && (flags & ECOLOGY_EDGE_TYPE_MATCH)) {
-        weight = (u16)(weight * 5u);
-    }
     if (weight == 0) {
         weight = 1;
     }
     return weight;
-}
-
-static u16 EcologyPickWeight(u8 rarity, u8 flags)
-{
-    return EcologyPickWeightEx(rarity, flags, TRUE);
 }
 
 static bool8 EcologyFamilyAllowedOnMethod(u8 method, u8 rarity)
@@ -256,7 +239,43 @@ u8 EcologyEffectiveLandTimeMask(u8 groupId, u16 familyId)
     return familyMask & groupMask;
 }
 
-static bool8 EcologyTryAssignSlot(
+static bool8 EcologyFamilyListedOnLand(u8 groupId, u16 familyId)
+{
+    u16 i;
+    u16 count = EcologyLandEntryCount(groupId);
+    for (i = 0; i < count; i++) {
+        if (EcologyLandEntryAt(groupId, i).familyId == familyId) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static bool8 EcologyFamilyListedInBucket(u8 groupId, u8 method, u16 familyId)
+{
+    u16 i;
+    u16 count = EcologyBucketEntryCount(groupId, method);
+    for (i = 0; i < count; i++) {
+        if (EcologyBucketEntryAt(groupId, method, i).familyId == familyId) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static bool8 EcologyFamilyHasCompatAtGroupMethod(u8 groupId, u16 familyId, u8 method, bool8 forRequired)
+{
+    if (method == ECOLOGY_METHOD_LAND) {
+        return EcologyFamilyListedOnLand(groupId, familyId);
+    }
+    if (!forRequired
+        && !EcologyFamilyAllowedOnMethod(method, ECO_FAMILY_INFO(familyId).rarity)) {
+        return FALSE;
+    }
+    return EcologyFamilyListedInBucket(groupId, method, familyId);
+}
+
+static bool8 EcologyTryAssignSlotEx(
     u16 familyId,
     u8 groupId,
     u8 method,
@@ -265,7 +284,8 @@ static bool8 EcologyTryAssignSlot(
     u16 outSlotCapacity,
     const u16 *slotBases,
     u16 *bucketFill,
-    u16 *familyPlacementCount)
+    u16 *familyPlacementCount,
+    bool8 ignoreRodRarity)
 {
     u16 layoutIndex = EcologyGroupMethodIndex(groupId, method);
     u16 capacity = EcologyGroupMethodCapacity(groupId, method);
@@ -276,7 +296,11 @@ static bool8 EcologyTryAssignSlot(
     if (capacity == 0 || fill >= capacity) {
         return FALSE;
     }
-    if (!EcologyFamilyAllowedOnMethod(method, ECO_FAMILY_INFO(familyId).rarity)) {
+    if (!EcologyFamilyHasCompatAtGroupMethod(groupId, familyId, method, ignoreRodRarity)) {
+        return FALSE;
+    }
+    if (!ignoreRodRarity
+        && !EcologyFamilyAllowedOnMethod(method, ECO_FAMILY_INFO(familyId).rarity)) {
         return FALSE;
     }
 
@@ -291,6 +315,626 @@ static bool8 EcologyTryAssignSlot(
     bucketFill[layoutIndex]++;
     familyPlacementCount[familyId]++;
     return TRUE;
+}
+
+static bool8 EcologyTryAssignSlot(
+    u16 familyId,
+    u8 groupId,
+    u8 method,
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount)
+{
+    return EcologyTryAssignSlotEx(
+        familyId,
+        groupId,
+        method,
+        outSlots,
+        outLandSlotTimeMasks,
+        outSlotCapacity,
+        slotBases,
+        bucketFill,
+        familyPlacementCount,
+        FALSE);
+}
+
+static u8 EcologyPartnerFamilyId(u16 familyId)
+{
+    return ECO_FAMILY_INFO(familyId).partnerFamilyId;
+}
+
+static bool8 EcologyFamilyHasPairing(u16 familyId)
+{
+    return EcologyPartnerFamilyId(familyId) != ECOLOGY_FAMILY_NO_PARTNER;
+}
+
+static bool8 EcologyFamilyOnGroup(
+    u8 groupId,
+    u16 familyId,
+    const u16 *outSlots,
+    const u16 *slotBases,
+    const u16 *bucketFill)
+{
+    u8 method;
+    for (method = 0; method < ECOLOGY_METHOD_COUNT; method++) {
+        u16 layoutIndex = EcologyGroupMethodIndex(groupId, method);
+        u16 fill = bucketFill[layoutIndex];
+        u16 base = slotBases[layoutIndex];
+        u16 i;
+        for (i = 0; i < fill; i++) {
+            if (outSlots[base + i] == familyId) {
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
+}
+
+static u8 EcologyCountDistinctGroups(
+    u16 familyId,
+    const u16 *outSlots,
+    const u16 *slotBases,
+    const u16 *bucketFill)
+{
+    u8 groupId;
+    u8 count = 0;
+
+    for (groupId = 0; groupId < ECOLOGY_NUM_GROUPS; groupId++) {
+        if (EcologyFamilyOnGroup(groupId, familyId, outSlots, slotBases, bucketFill)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+static u8 EcologyFamilyRouteBaseline(u8 rarity)
+{
+    /* Index = ECOLOGY_RARITY_* (Normal, Common, Rare, Very Rare). */
+    static const u8 sBaseline[] = { 3, 5, 2, 1 };
+    if (rarity >= (u8)(sizeof(sBaseline) / sizeof(sBaseline[0]))) {
+        return 5;
+    }
+    return sBaseline[rarity];
+}
+
+static bool8 EcologyFamilyMayUseNewGroup(
+    u16 familyId,
+    u8 groupId,
+    const u16 *outSlots,
+    const u16 *slotBases,
+    const u16 *bucketFill)
+{
+    u8 rarity;
+
+    if (EcologyFamilyOnGroup(groupId, familyId, outSlots, slotBases, bucketFill)) {
+        return TRUE;
+    }
+    rarity = ECO_FAMILY_INFO(familyId).rarity;
+    if (rarity == ECOLOGY_RARITY_VERY_RARE
+        && EcologyCountDistinctGroups(familyId, outSlots, slotBases, bucketFill) >= 1) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static bool8 EcologyBucketHasSpace(u8 groupId, u8 method, const u16 *bucketFill)
+{
+    u16 layoutIndex = EcologyGroupMethodIndex(groupId, method);
+    return bucketFill[layoutIndex] < EcologyGroupMethodCapacity(groupId, method);
+}
+
+static bool8 EcologyCanPlacePartnerOnGroup(
+    u8 groupId,
+    u16 partnerId,
+    const u16 *bucketFill)
+{
+    u8 method;
+    if (partnerId == 0xFFFF) {
+        return FALSE;
+    }
+    for (method = 0; method < ECOLOGY_METHOD_COUNT; method++) {
+        if (!EcologyBucketHasSpace(groupId, method, bucketFill)) {
+            continue;
+        }
+        if (EcologyFamilyHasCompatAtGroupMethod(groupId, partnerId, method, FALSE)) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static bool8 EcologyTryPlacePartnerOnGroup(
+    u16 partnerId,
+    u8 groupId,
+    u8 preferredMethod,
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount)
+{
+    u8 method;
+    if (partnerId == 0xFFFF || EcologyFamilyOnGroup(groupId, partnerId, outSlots, slotBases, bucketFill)) {
+        return TRUE;
+    }
+    if (!EcologyFamilyMayUseNewGroup(
+            partnerId, groupId, outSlots, slotBases, bucketFill)) {
+        return FALSE;
+    }
+    if (preferredMethod < ECOLOGY_METHOD_COUNT
+        && EcologyTryAssignSlot(
+            partnerId,
+            groupId,
+            preferredMethod,
+            outSlots,
+            outLandSlotTimeMasks,
+            outSlotCapacity,
+            slotBases,
+            bucketFill,
+            familyPlacementCount)) {
+        return TRUE;
+    }
+    for (method = 0; method < ECOLOGY_METHOD_COUNT; method++) {
+        if (method == preferredMethod) {
+            continue;
+        }
+        if (EcologyTryAssignSlot(
+                partnerId,
+                groupId,
+                method,
+                outSlots,
+                outLandSlotTimeMasks,
+                outSlotCapacity,
+                slotBases,
+                bucketFill,
+                familyPlacementCount)) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static bool8 EcologyTryAssignWithPairingEx(
+    u16 familyId,
+    u8 groupId,
+    u8 method,
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount,
+    bool8 ignoreRodRarity)
+{
+    u16 layoutIndex = EcologyGroupMethodIndex(groupId, method);
+    u16 fillBefore = bucketFill[layoutIndex];
+    u16 slotIndex;
+    u8 partner;
+
+    if (!EcologyFamilyMayUseNewGroup(
+            familyId, groupId, outSlots, slotBases, bucketFill)) {
+        return FALSE;
+    }
+
+    if (!EcologyTryAssignSlotEx(
+            familyId,
+            groupId,
+            method,
+            outSlots,
+            outLandSlotTimeMasks,
+            outSlotCapacity,
+            slotBases,
+            bucketFill,
+            familyPlacementCount,
+            ignoreRodRarity)) {
+        return FALSE;
+    }
+
+    partner = EcologyPartnerFamilyId(familyId);
+    if (partner != ECOLOGY_FAMILY_NO_PARTNER
+        && !EcologyFamilyMayUseNewGroup(
+            partner, groupId, outSlots, slotBases, bucketFill)
+        && !EcologyFamilyOnGroup(groupId, partner, outSlots, slotBases, bucketFill)) {
+        slotIndex = (u16)(slotBases[layoutIndex] + fillBefore);
+        outSlots[slotIndex] = 0xFFFF;
+        if (outLandSlotTimeMasks != NULL && method == ECOLOGY_METHOD_LAND) {
+            outLandSlotTimeMasks[slotIndex] = 0;
+        }
+        bucketFill[layoutIndex] = fillBefore;
+        if (familyPlacementCount[familyId] > 0) {
+            familyPlacementCount[familyId]--;
+        }
+        return FALSE;
+    }
+    if (partner != ECOLOGY_FAMILY_NO_PARTNER
+        && !EcologyTryPlacePartnerOnGroup(
+            partner,
+            groupId,
+            method,
+            outSlots,
+            outLandSlotTimeMasks,
+            outSlotCapacity,
+            slotBases,
+            bucketFill,
+            familyPlacementCount)) {
+        slotIndex = (u16)(slotBases[layoutIndex] + fillBefore);
+        outSlots[slotIndex] = 0xFFFF;
+        if (outLandSlotTimeMasks != NULL && method == ECOLOGY_METHOD_LAND) {
+            outLandSlotTimeMasks[slotIndex] = 0;
+        }
+        bucketFill[layoutIndex] = fillBefore;
+        if (familyPlacementCount[familyId] > 0) {
+            familyPlacementCount[familyId]--;
+        }
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static bool8 EcologyTryAssignWithPairing(
+    u16 familyId,
+    u8 groupId,
+    u8 method,
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount)
+{
+    return EcologyTryAssignWithPairingEx(
+        familyId,
+        groupId,
+        method,
+        outSlots,
+        outLandSlotTimeMasks,
+        outSlotCapacity,
+        slotBases,
+        bucketFill,
+        familyPlacementCount,
+        FALSE);
+}
+
+static bool8 EcologyFamilyEligibleForFill(
+    u8 groupId,
+    u16 familyId,
+    u16 remainSlots,
+    const u16 *outSlots,
+    const u16 *slotBases,
+    const u16 *bucketFill)
+{
+    u8 partner;
+
+    if (!EcologyFamilyHasPairing(familyId)) {
+        return TRUE;
+    }
+    if (remainSlots <= 1) {
+        return FALSE;
+    }
+    partner = EcologyPartnerFamilyId(familyId);
+    if (EcologyFamilyOnGroup(groupId, partner, outSlots, slotBases, bucketFill)) {
+        return TRUE;
+    }
+    return EcologyCanPlacePartnerOnGroup(groupId, partner, bucketFill);
+}
+
+static void EcologyAssignRequiredRoutes(
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount,
+    EcologyGenStats *statsOut)
+{
+    u16 routeIndex;
+    static const u8 sRequiredMethodOrder[] = {
+        ECOLOGY_METHOD_LAND,
+        ECOLOGY_METHOD_SURF,
+        ECOLOGY_METHOD_OLD_ROD,
+        ECOLOGY_METHOD_ROCK_SMASH,
+        ECOLOGY_METHOD_HEADBUTT,
+    };
+    u8 orderIndex;
+
+    for (routeIndex = 0; routeIndex < ECO_REQUIRED_ROUTE_COUNT; routeIndex++) {
+        EcologyRequiredRoute route = ECO_REQUIRED_ROUTE(routeIndex);
+        u16 familyId = route.familyId;
+        u8 groupId = route.groupId;
+
+        for (orderIndex = 0; orderIndex < (u8)(sizeof(sRequiredMethodOrder) / sizeof(sRequiredMethodOrder[0]));
+             orderIndex++) {
+            u8 method = sRequiredMethodOrder[orderIndex];
+            if (!EcologyFamilyHasCompatAtGroupMethod(groupId, familyId, method, TRUE)) {
+                continue;
+            }
+            if (!EcologyTryAssignWithPairingEx(
+                    familyId,
+                    groupId,
+                    method,
+                    outSlots,
+                    outLandSlotTimeMasks,
+                    outSlotCapacity,
+                    slotBases,
+                    bucketFill,
+                    familyPlacementCount,
+                    TRUE)) {
+                if (statsOut != NULL) {
+                    statsOut->requiredRouteMiss++;
+                }
+            }
+        }
+    }
+}
+
+static bool8 EcologyFamilyMatchesRouteFilter(u8 rarity, u8 filter)
+{
+    if (filter == 0) {
+        return TRUE;
+    }
+    if (filter == 1) {
+        return rarity != ECOLOGY_RARITY_VERY_RARE;
+    }
+    if (filter == 2) {
+        return rarity <= ECOLOGY_RARITY_COMMON;
+    }
+    return rarity == ECOLOGY_RARITY_COMMON;
+}
+
+static void EcologyShuffleEdgeRefs(EcologyRng *rng, EcologyEdgeRef *edges, u16 count)
+{
+    u16 i;
+    for (i = count; i > 1; i--) {
+        u16 j = EcologyRandRange(rng, i);
+        EcologyEdgeRef tmp = edges[i - 1];
+        edges[i - 1] = edges[j];
+        edges[j] = tmp;
+    }
+}
+
+static u16 EcologyPartitionTypeMatchEdges(EcologyEdgeRef *edges, u16 count)
+{
+    u16 typed = 0;
+    u16 i;
+    for (i = 0; i < count; i++) {
+        if (edges[i].flags & ECOLOGY_EDGE_TYPE_MATCH) {
+            if (typed != i) {
+                EcologyEdgeRef tmp = edges[typed];
+                edges[typed] = edges[i];
+                edges[i] = tmp;
+            }
+            typed++;
+        }
+    }
+    return typed;
+}
+
+static bool8 EcologyTryShuffledEdges(
+    EcologyRng *rng,
+    u16 familyId,
+    EcologyEdgeRef *edges,
+    u16 count,
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount)
+{
+    u16 edgeIndex;
+    if (count == 0) {
+        return FALSE;
+    }
+    EcologyShuffleEdgeRefs(rng, edges, count);
+    for (edgeIndex = 0; edgeIndex < count; edgeIndex++) {
+        EcologyEdgeRef edge = edges[edgeIndex];
+        if (EcologyTryAssignWithPairing(
+                familyId,
+                edge.groupId,
+                edge.method,
+                outSlots,
+                outLandSlotTimeMasks,
+                outSlotCapacity,
+                slotBases,
+                bucketFill,
+                familyPlacementCount)) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static bool8 EcologyAssignFamilyViaEdges(
+    EcologyRng *rng,
+    u16 familyId,
+    bool8 onlyNewGroups,
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount,
+    EcologyEdgeRef *edgeScratch,
+    u16 edgeScratchMax)
+{
+    u16 edgeCount;
+    u16 edgeIndex;
+    u16 kept;
+
+    edgeCount = EcologyCollectFamilyEdges(familyId, edgeScratch, edgeScratchMax);
+    edgeCount = EcologyDedupeEdgeRefs(edgeScratch, edgeCount);
+    if (onlyNewGroups) {
+        kept = 0;
+        for (edgeIndex = 0; edgeIndex < edgeCount; edgeIndex++) {
+            EcologyEdgeRef edge = edgeScratch[edgeIndex];
+            if (!EcologyFamilyOnGroup(
+                    edge.groupId, familyId, outSlots, slotBases, bucketFill)) {
+                edgeScratch[kept++] = edge;
+            }
+        }
+        edgeCount = kept;
+    }
+    if (edgeCount == 0) {
+        return FALSE;
+    }
+
+    {
+        u16 typedCount = EcologyPartitionTypeMatchEdges(edgeScratch, edgeCount);
+        u16 otherCount = (u16)(edgeCount - typedCount);
+        bool8 typeFirst = (EcologyRandRange(rng, 2) == 0);
+
+        if (typeFirst) {
+            if (EcologyTryShuffledEdges(
+                    rng,
+                    familyId,
+                    edgeScratch,
+                    typedCount,
+                    outSlots,
+                    outLandSlotTimeMasks,
+                    outSlotCapacity,
+                    slotBases,
+                    bucketFill,
+                    familyPlacementCount)) {
+                return TRUE;
+            }
+            return EcologyTryShuffledEdges(
+                rng,
+                familyId,
+                edgeScratch + typedCount,
+                otherCount,
+                outSlots,
+                outLandSlotTimeMasks,
+                outSlotCapacity,
+                slotBases,
+                bucketFill,
+                familyPlacementCount);
+        }
+        if (EcologyTryShuffledEdges(
+                rng,
+                familyId,
+                edgeScratch + typedCount,
+                otherCount,
+                outSlots,
+                outLandSlotTimeMasks,
+                outSlotCapacity,
+                slotBases,
+                bucketFill,
+                familyPlacementCount)) {
+            return TRUE;
+        }
+        return EcologyTryShuffledEdges(
+            rng,
+            familyId,
+            edgeScratch,
+            typedCount,
+            outSlots,
+            outLandSlotTimeMasks,
+            outSlotCapacity,
+            slotBases,
+            bucketFill,
+            familyPlacementCount);
+    }
+    return FALSE;
+}
+
+static void EcologyPlaceUnplacedFamilies(
+    EcologyRng *rng,
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount,
+    u16 *familyOrder,
+    EcologyEdgeRef *edgeScratch,
+    u16 edgeScratchMax)
+{
+    u16 pass;
+    for (pass = 0; pass < ECOLOGY_NUM_FAMILIES; pass++) {
+        u16 familyId = familyOrder[pass];
+
+        if (EcologyCountDistinctGroups(
+                familyId, outSlots, slotBases, bucketFill)
+            > 0) {
+            continue;
+        }
+
+        (void)EcologyAssignFamilyViaEdges(
+            rng,
+            familyId,
+            FALSE,
+            outSlots,
+            outLandSlotTimeMasks,
+            outSlotCapacity,
+            slotBases,
+            bucketFill,
+            familyPlacementCount,
+            edgeScratch,
+            edgeScratchMax);
+    }
+}
+
+static void EcologyRunRouteTargetPasses(
+    EcologyRng *rng,
+    u16 *outSlots,
+    u8 *outLandSlotTimeMasks,
+    u16 outSlotCapacity,
+    const u16 *slotBases,
+    u16 *bucketFill,
+    u16 *familyPlacementCount,
+    u16 *familyOrder,
+    EcologyEdgeRef *edgeScratch,
+    u16 edgeScratchMax)
+{
+    static const u8 sPassTarget[] = { 1, 2, 3, 5 };
+    static const u8 sPassFilter[] = { 0, 1, 1, 2 };
+    u16 passIndex;
+
+    for (passIndex = 0; passIndex < (u16)(sizeof(sPassTarget) / sizeof(sPassTarget[0])); passIndex++) {
+        u8 target = sPassTarget[passIndex];
+        u8 filter = sPassFilter[passIndex];
+        bool8 progress;
+        u16 guard = 0;
+
+        do {
+            u16 orderIndex;
+            progress = FALSE;
+            EcologyShuffleU16(rng, familyOrder, ECOLOGY_NUM_FAMILIES);
+
+            for (orderIndex = 0; orderIndex < ECOLOGY_NUM_FAMILIES; orderIndex++) {
+                u16 familyId = familyOrder[orderIndex];
+                u8 rarity = ECO_FAMILY_INFO(familyId).rarity;
+                u8 routeBaseline = EcologyFamilyRouteBaseline(rarity);
+                u8 routeCount = EcologyCountDistinctGroups(
+                    familyId, outSlots, slotBases, bucketFill);
+
+                if (target > routeBaseline || routeCount >= target) {
+                    continue;
+                }
+                if (!EcologyFamilyMatchesRouteFilter(rarity, filter)) {
+                    continue;
+                }
+                if (EcologyAssignFamilyViaEdges(
+                        rng,
+                        familyId,
+                        TRUE,
+                        outSlots,
+                        outLandSlotTimeMasks,
+                        outSlotCapacity,
+                        slotBases,
+                        bucketFill,
+                        familyPlacementCount,
+                        edgeScratch,
+                        edgeScratchMax)) {
+                    progress = TRUE;
+                }
+            }
+        } while (progress && ++guard < (u16)(ECOLOGY_NUM_FAMILIES * 4u));
+    }
 }
 
 static bool8 EcologyLandFamilyHasTypeMatch(u8 groupId, u16 familyId)
@@ -311,7 +955,11 @@ static u16 EcologyPickWeightedLandFamily(
     u8 groupId,
     bool8 requireTypeMatch,
     bool8 excludeTypeMatch,
-    bool8 applyTypeBoost)
+    bool8 excludeVeryRare,
+    u16 remainSlots,
+    const u16 *outSlots,
+    const u16 *slotBases,
+    const u16 *bucketFill)
 {
     u16 i;
     u16 count = EcologyLandEntryCount(groupId);
@@ -327,10 +975,15 @@ static u16 EcologyPickWeightedLandFamily(
         if (excludeTypeMatch && (entry.flags & ECOLOGY_EDGE_TYPE_MATCH)) {
             continue;
         }
-        totalWeight += EcologyPickWeightEx(
-            ECO_FAMILY_INFO(entry.familyId).rarity,
-            entry.flags,
-            applyTypeBoost);
+        if (excludeVeryRare
+            && ECO_FAMILY_INFO(entry.familyId).rarity == ECOLOGY_RARITY_VERY_RARE) {
+            continue;
+        }
+        if (!EcologyFamilyEligibleForFill(
+                groupId, entry.familyId, remainSlots, outSlots, slotBases, bucketFill)) {
+            continue;
+        }
+        totalWeight += EcologyPickWeight(ECO_FAMILY_INFO(entry.familyId).rarity);
     }
     if (totalWeight == 0) {
         return 0xFFFF;
@@ -346,10 +999,15 @@ static u16 EcologyPickWeightedLandFamily(
         if (excludeTypeMatch && (entry.flags & ECOLOGY_EDGE_TYPE_MATCH)) {
             continue;
         }
-        weight = EcologyPickWeightEx(
-            ECO_FAMILY_INFO(entry.familyId).rarity,
-            entry.flags,
-            applyTypeBoost);
+        if (excludeVeryRare
+            && ECO_FAMILY_INFO(entry.familyId).rarity == ECOLOGY_RARITY_VERY_RARE) {
+            continue;
+        }
+        if (!EcologyFamilyEligibleForFill(
+                groupId, entry.familyId, remainSlots, outSlots, slotBases, bucketFill)) {
+            continue;
+        }
+        weight = EcologyPickWeight(ECO_FAMILY_INFO(entry.familyId).rarity);
         cursor += weight;
         if (pick < cursor) {
             return entry.familyId;
@@ -395,30 +1053,6 @@ static u16 EcologyCountLandTypeMatchSlots(
     return matched;
 }
 
-static void EcologyAssignLandSlot(
-    u8 groupId,
-    u16 familyId,
-    u16 *outSlots,
-    u8 *outLandSlotTimeMasks,
-    u16 outSlotCapacity,
-    u16 layoutIndex,
-    const u16 *slotBases,
-    u16 *bucketFill,
-    u16 *familyPlacementCount)
-{
-    u16 slotIndex = (u16)(slotBases[layoutIndex] + bucketFill[layoutIndex]);
-
-    if (!EcologySlotIndexValid(slotIndex, outSlotCapacity)) {
-        return;
-    }
-    outSlots[slotIndex] = familyId;
-    if (outLandSlotTimeMasks != NULL) {
-        outLandSlotTimeMasks[slotIndex] = EcologyEffectiveLandTimeMask(groupId, familyId);
-    }
-    bucketFill[layoutIndex]++;
-    familyPlacementCount[familyId]++;
-}
-
 static void EcologyFillLandBucket(
     EcologyRng *rng,
     u8 groupId,
@@ -437,6 +1071,7 @@ static void EcologyFillLandBucket(
     u16 guard = 0;
 
     while (bucketFill[layoutIndex] < capacity) {
+        u16 remainSlots = (u16)(capacity - bucketFill[layoutIndex]);
         u16 typeMatched = EcologyCountLandTypeMatchSlots(
             groupId, outSlots, layoutIndex, slotBases, bucketFill[layoutIndex]);
 
@@ -445,7 +1080,16 @@ static void EcologyFillLandBucket(
         }
 
         if (typed && typeMatched < typeTarget) {
-            picked = EcologyPickWeightedLandFamily(rng, groupId, TRUE, FALSE, FALSE);
+            picked = EcologyPickWeightedLandFamily(
+                rng,
+                groupId,
+                TRUE,
+                FALSE,
+                TRUE,
+                remainSlots,
+                outSlots,
+                slotBases,
+                bucketFill);
             if (picked == 0xFFFF) {
                 typed = FALSE;
                 continue;
@@ -453,25 +1097,43 @@ static void EcologyFillLandBucket(
         } else {
             bool8 excludeThemed = typed && typeMatched >= typeTarget;
             picked = EcologyPickWeightedLandFamily(
-                rng, groupId, FALSE, excludeThemed, typed ? FALSE : TRUE);
+                rng,
+                groupId,
+                FALSE,
+                excludeThemed,
+                TRUE,
+                remainSlots,
+                outSlots,
+                slotBases,
+                bucketFill);
             if (picked == 0xFFFF) {
                 break;
             }
         }
-        EcologyAssignLandSlot(
-            groupId,
-            picked,
-            outSlots,
-            outLandSlotTimeMasks,
-            outSlotCapacity,
-            layoutIndex,
-            slotBases,
-            bucketFill,
-            familyPlacementCount);
+        if (!EcologyTryAssignWithPairing(
+                picked,
+                groupId,
+                ECOLOGY_METHOD_LAND,
+                outSlots,
+                outLandSlotTimeMasks,
+                outSlotCapacity,
+                slotBases,
+                bucketFill,
+                familyPlacementCount)) {
+            continue;
+        }
     }
 }
 
-static u16 EcologyPickWeightedFamily(EcologyRng *rng, u8 groupId, u8 method)
+static u16 EcologyPickWeightedFamily(
+    EcologyRng *rng,
+    u8 groupId,
+    u8 method,
+    bool8 excludeVeryRare,
+    u16 remainSlots,
+    const u16 *outSlots,
+    const u16 *slotBases,
+    const u16 *bucketFill)
 {
     u16 i;
     u16 count;
@@ -480,17 +1142,33 @@ static u16 EcologyPickWeightedFamily(EcologyRng *rng, u8 groupId, u8 method)
     u16 cursor;
 
     if (method == ECOLOGY_METHOD_LAND) {
-        return EcologyPickWeightedLandFamily(rng, groupId, FALSE, FALSE, TRUE);
+        return EcologyPickWeightedLandFamily(
+            rng,
+            groupId,
+            FALSE,
+            FALSE,
+            excludeVeryRare,
+            remainSlots,
+            outSlots,
+            slotBases,
+            bucketFill);
     }
 
     count = EcologyBucketEntryCount(groupId, method);
     for (i = 0; i < count; i++) {
         EcologyGroupBucketEntry entry = EcologyBucketEntryAt(groupId, method, i);
         u8 rarity = ECO_FAMILY_INFO(entry.familyId).rarity;
+        if (excludeVeryRare && rarity == ECOLOGY_RARITY_VERY_RARE) {
+            continue;
+        }
         if (!EcologyFamilyAllowedOnMethod(method, rarity)) {
             continue;
         }
-        totalWeight += EcologyPickWeight(rarity, entry.flags);
+        if (!EcologyFamilyEligibleForFill(
+                groupId, entry.familyId, remainSlots, outSlots, slotBases, bucketFill)) {
+            continue;
+        }
+        totalWeight += EcologyPickWeight(rarity);
     }
     if (totalWeight == 0) {
         return 0xFFFF;
@@ -501,10 +1179,17 @@ static u16 EcologyPickWeightedFamily(EcologyRng *rng, u8 groupId, u8 method)
         EcologyGroupBucketEntry entry = EcologyBucketEntryAt(groupId, method, i);
         u8 rarity = ECO_FAMILY_INFO(entry.familyId).rarity;
         u16 weight;
+        if (excludeVeryRare && rarity == ECOLOGY_RARITY_VERY_RARE) {
+            continue;
+        }
         if (!EcologyFamilyAllowedOnMethod(method, rarity)) {
             continue;
         }
-        weight = EcologyPickWeight(rarity, entry.flags);
+        if (!EcologyFamilyEligibleForFill(
+                groupId, entry.familyId, remainSlots, outSlots, slotBases, bucketFill)) {
+            continue;
+        }
+        weight = EcologyPickWeight(rarity);
         cursor += weight;
         if (pick < cursor) {
             return entry.familyId;
@@ -513,12 +1198,15 @@ static u16 EcologyPickWeightedFamily(EcologyRng *rng, u8 groupId, u8 method)
     return 0xFFFF;
 }
 
-#ifndef ECOLOGY_STANDALONE
-static u16 EcologyGenBuildSlotLayoutLocal(u16 *slotBasesOut)
+u16 EcologyGenSlotLayoutBase(u8 groupId, u8 method, const u16 *slotBases)
+{
+    return slotBases[EcologyGroupMethodIndex(groupId, method)];
+}
+
+u16 EcologyGenBuildSlotLayout(u16 *slotBasesOut)
 {
     u32 cursor = 0;
     u8 groupId;
-
     for (groupId = 0; groupId < ECOLOGY_NUM_GROUPS; groupId++) {
         u8 method;
         for (method = 0; method < ECOLOGY_METHOD_COUNT; method++) {
@@ -534,7 +1222,6 @@ static u16 EcologyGenBuildSlotLayoutLocal(u16 *slotBasesOut)
     }
     return (u16)cursor;
 }
-#endif
 
 bool8 EcologyGenerateWorld(
     const EcologyCompatView *view,
@@ -552,7 +1239,8 @@ bool8 EcologyGenerateWorld(
     u16 familyPlacementCount[ECOLOGY_NUM_FAMILIES];
     u16 familyOrder[ECOLOGY_NUM_FAMILIES];
 #else
-    /* Heap scratch — Mom script runs with field overlay 131 loaded. */
+    /* Mom gen: field overlay 131 — keep scratch off the script stack. */
+    (void)view;
     u16 *slotBases;
     u16 *bucketFill;
     u16 *familyPlacementCount;
@@ -570,11 +1258,10 @@ bool8 EcologyGenerateWorld(
     }
 
 #ifndef ECOLOGY_STANDALONE
-    if (view == NULL) {
+    if (view == NULL || gEcologyCompatView == NULL) {
         ECO_GEN_DBG(23);
         return FALSE;
     }
-    sEcoGenCompatView = view;
 
     slotBases = (u16 *)sys_AllocMemory(HEAPID_DEFAULT, layoutSlots * sizeof(u16));
     bucketFill = (u16 *)sys_AllocMemory(HEAPID_DEFAULT, layoutSlots * sizeof(u16));
@@ -601,11 +1288,7 @@ bool8 EcologyGenerateWorld(
 #endif
 
     EcologyRngInit(&rng, seed);
-#ifdef ECOLOGY_STANDALONE
     totalSlots = EcologyGenBuildSlotLayout(slotBases);
-#else
-    totalSlots = EcologyGenBuildSlotLayoutLocal(slotBases);
-#endif
     if (totalSlots == 0) {
 #ifndef ECOLOGY_STANDALONE
         sys_FreeMemoryEz(slotBases);
@@ -653,7 +1336,8 @@ bool8 EcologyGenerateWorld(
 
     if (statsOut != NULL) {
         statsOut->familiesUnplaced = 0;
-        statsOut->demandShortfall = 0;
+        statsOut->requiredRouteMiss = 0;
+        statsOut->pairingShortfall = 0;
         statsOut->bucketsPartiallyFilled = 0;
     }
 
@@ -677,45 +1361,38 @@ bool8 EcologyGenerateWorld(
 
     EcologyShuffleU16(&rng, familyOrder, ECOLOGY_NUM_FAMILIES);
 
-    for (familyId = 0; familyId < ECOLOGY_NUM_FAMILIES; familyId++) {
-        u16 orderedFamily = familyOrder[familyId];
-        const EcologyFamilyInfo *info = &ECO_FAMILY_INFO(orderedFamily);
-        u16 edgeCount = EcologyCollectFamilyEdges(
-            orderedFamily, edgeScratch, ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
-        u16 demand = info->demand;
-        u16 assignedPairs = 0;
-        u16 edgeIndex;
+    EcologyAssignRequiredRoutes(
+        outSlots,
+        outLandSlotTimeMasks,
+        outSlotCapacity,
+        slotBases,
+        bucketFill,
+        familyPlacementCount,
+        statsOut);
 
-        edgeCount = EcologyDedupeEdgeRefs(edgeScratch, edgeCount);
+    EcologyPlaceUnplacedFamilies(
+        &rng,
+        outSlots,
+        outLandSlotTimeMasks,
+        outSlotCapacity,
+        slotBases,
+        bucketFill,
+        familyPlacementCount,
+        familyOrder,
+        edgeScratch,
+        ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
 
-        for (edgeIndex = 0; edgeIndex < edgeCount && assignedPairs < demand; edgeIndex++) {
-            u16 swapWith = (u16)(edgeIndex + EcologyRandRange(&rng, (u16)(edgeCount - edgeIndex)));
-            EcologyEdgeRef tmp = edgeScratch[edgeIndex];
-            edgeScratch[edgeIndex] = edgeScratch[swapWith];
-            edgeScratch[swapWith] = tmp;
-        }
-
-        for (edgeIndex = 0; edgeIndex < edgeCount && assignedPairs < demand; edgeIndex++) {
-            EcologyEdgeRef edge = edgeScratch[edgeIndex];
-
-            if (EcologyTryAssignSlot(
-                    orderedFamily,
-                    edge.groupId,
-                    edge.method,
-                    outSlots,
-                    outLandSlotTimeMasks,
-                    outSlotCapacity,
-                    slotBases,
-                    bucketFill,
-                    familyPlacementCount)) {
-                assignedPairs++;
-            }
-        }
-
-        if (assignedPairs < demand && statsOut != NULL) {
-            statsOut->demandShortfall = (u16)(statsOut->demandShortfall + (demand - assignedPairs));
-        }
-    }
+    EcologyRunRouteTargetPasses(
+        &rng,
+        outSlots,
+        outLandSlotTimeMasks,
+        outSlotCapacity,
+        slotBases,
+        bucketFill,
+        familyPlacementCount,
+        familyOrder,
+        edgeScratch,
+        ECOLOGY_GEN_MAX_FAMILY_EDGE_SCRATCH);
 
     for (groupId = 0; groupId < ECOLOGY_NUM_GROUPS; groupId++) {
         u8 method;
@@ -740,25 +1417,34 @@ bool8 EcologyGenerateWorld(
             } else {
                 u16 guard = 0;
                 while (bucketFill[layoutIndex] < capacity) {
-                    u16 picked = EcologyPickWeightedFamily(&rng, groupId, method);
-                    u16 slotIndex;
+                    u16 remainSlots = (u16)(capacity - bucketFill[layoutIndex]);
+                    u16 picked = EcologyPickWeightedFamily(
+                        &rng,
+                        groupId,
+                        method,
+                        TRUE,
+                        remainSlots,
+                        outSlots,
+                        slotBases,
+                        bucketFill);
                     if (++guard > (u16)(capacity + 8u)) {
                         break;
                     }
                     if (picked == 0xFFFF) {
                         break;
                     }
-                    slotIndex = (u16)(slotBases[layoutIndex] + bucketFill[layoutIndex]);
-                    if (!EcologySlotIndexValid(slotIndex, outSlotCapacity)) {
-                        break;
+                    if (!EcologyTryAssignWithPairing(
+                            picked,
+                            groupId,
+                            method,
+                            outSlots,
+                            outLandSlotTimeMasks,
+                            outSlotCapacity,
+                            slotBases,
+                            bucketFill,
+                            familyPlacementCount)) {
+                        continue;
                     }
-                    outSlots[slotIndex] = picked;
-                    if (outLandSlotTimeMasks != NULL && method == ECOLOGY_METHOD_LAND) {
-                        outLandSlotTimeMasks[slotIndex] =
-                            EcologyEffectiveLandTimeMask(groupId, picked);
-                    }
-                    bucketFill[layoutIndex]++;
-                    familyPlacementCount[picked]++;
                 }
             }
             if (statsOut != NULL && bucketFill[layoutIndex] < capacity) {
@@ -768,7 +1454,10 @@ bool8 EcologyGenerateWorld(
     }
 
     for (familyId = 0; familyId < ECOLOGY_NUM_FAMILIES; familyId++) {
-        if (familyPlacementCount[familyId] == 0 && statsOut != NULL) {
+        if (EcologyCountDistinctGroups(
+                familyId, outSlots, slotBases, bucketFill)
+            == 0
+            && statsOut != NULL) {
             statsOut->familiesUnplaced++;
         }
     }

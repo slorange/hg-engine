@@ -4,7 +4,6 @@ TARGET := ../../../tools/ecologygen
 
 SRCS := main.c \
 	../../../src/field/ecology_generate.c \
-	../../../src/ecology_layout.c \
 	ecology_compat_data.c \
 	ecology_strings_data.c
 

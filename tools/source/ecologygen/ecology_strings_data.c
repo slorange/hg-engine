@@ -178,6 +178,7 @@ const char *const sEcologyFamilyNames[ECOLOGY_NUM_FAMILIES] = {
     "Wooper",
     "Murkrow",
     "Misdreavus",
+    "Unown",
     "Girafarig",
     "Pineco",
     "Gligar",

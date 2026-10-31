@@ -1540,7 +1540,7 @@ All tracked — nothing belongs in `scripts/local/`:
 
 **Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Deferred addon scope (Gym hints, flash persistence, other methods): [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
 
-**Status (Oct 2026):** **Compat + Mom gen + encounter hooks + flash persistence shipped** — world generated on Mom **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`**; seed = trainer ID; **`EcologyWorldSave`** in **`SAVE_MISC`** (**ECO1**, compact **`u8`** family IDs + sparse land-time table); session heap hydrated from flash on load. **`SetEncountData_Ecology`** @ **`7B64`** rolls species for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Stub still **`PokeParaSet`** a placeholder then **`WildEncounterFinalizeForEncount`**. **Still open:** swarms/Safari/special policy, placeholder removal, party corruption ([TODO **KB-13**](TODO.md#known-bugs)), authoring columns (**Pairing**, **Required on Route**), cave time-mask override ([TODO.md § Wilds](TODO.md#wilds-design-wildsmd)).
+**Status (Oct 2026):** **Compat + Mom gen + encounter hooks + flash persistence shipped** — world generated on Mom **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`**; seed = trainer ID; **`EcologyWorldSave`** in **`SAVE_MISC`** (**ECO1**, compact **`u8`** family IDs + sparse land-time table); session heap hydrated from flash on load. **`SetEncountData_Ecology`** @ **`7B64`** rolls species for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Stub still **`PokeParaSet`** a placeholder then **`WildEncounterFinalizeForEncount`**. **Still open:** swarms/Safari/special policy, placeholder removal, party corruption ([TODO **KB-13**](TODO.md#known-bugs)), cave time-mask override ([TODO.md § Wilds](TODO.md#wilds-design-wildsmd)). **Pairing** + **Required on Route** + baseline ladder: see [ecology.md](ecology.md) (gen on field overlay **131**).
 
 **Goal:** Assign shuffleable **families** to placement **groups** and methods; persist per save; hooks read assignment instead of static NARC species. **Next:** swarms, category rules for gifts/statics/legendaries, gen rules for new eco-fam columns.
 
@@ -1552,7 +1552,7 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 |------|--------|
 | Compat blob | **`build/ecology/ecology_compat.bin`** → code addon **`CODE_ADDON_ECOLOGY_COMPAT` (19)** in NARC `a/0/2/8` member **`9_19`** (`data/codetables.mk`, `make move_narc`) |
 | Runtime load | **`EcologyCompatLoadFromFilesystem`** → heap bind in `src/ecology_load.c` |
-| Generation | **`EcologyGenerateWorld`** in `src/ecology_generate.c` (overlay **129**) |
+| Generation | **`EcologyGenerateWorld`** in `src/field/ecology_generate.c` (overlay **131**, Mom via **`EcologyGenerateWorldFieldAddr`**) |
 | Session + flash | **`EcologySaveWriteGeneration`** → session; **`EcologySaveWriteFlash`** → **`SAVE_MISC_DATA.ecologyWorldSave`** (`src/ecology_save.c`) |
 | Session trigger | Mom **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`** → **`EcologyRunNewGameGeneration`** (`src/ecology_script.c`) |
 | Reload | **`EcologySaveGetMutable`** copies valid flash blob into session when heap copy invalid |
@@ -1576,7 +1576,7 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 | **eco-bin** | `build/ecology/ecology_compat.bin` | Runtime compat blob (packed header + CSR; shipped as **9_19**) |
 | **eco-host-csr** | `tools/source/ecologygen/ecology_compat_data.c` | Host **ecologygen** tables (not linked into field overlay) |
 | **eco-strings** | `tools/source/ecologygen/ecology_strings_data.c` | Group/family names (host **ecologygen** + debug) |
-| **gen-core** | `src/ecology_generate.c` (ROM), `tools/source/ecologygen/ecology_generate.c` (host), `include/ecology/ecology_generate.h` | Per-seed assignment |
+| **gen-core** | `src/field/ecology_generate.c` (ROM + host **ecologygen**), `include/ecology/ecology_generate.h` | Per-seed assignment ([ecology.md](ecology.md)) |
 | **ecologygen** | `tools/ecologygen` (build: `tools/source/ecologygen/`) | Host CLI over **eco-host-csr** |
 | **run-eco** | `scripts/dev/run_ecology_generate.py` | Regen compat (optional), build **ecologygen**, write **assign** |
 | **assign** | `build/ecology/ecology_assignment.tsv` | One deterministic test world (not committed) |
@@ -1631,24 +1631,9 @@ Derived in **gen-compat** from eco-loc columns (presence = `> 0`, not the numeri
 
 ### Ecology assignment (gen-core)
 
-**Entry:** `EcologyGenerateWorld(seed, outSlots, outLandSlotTimeMasks, …)` in **gen-core**. Deterministic LCG (`1664525` / `1013904223`).
+**Entry:** `EcologyGenerateWorld(…)` in **`src/field/ecology_generate.c`** (overlay **131**). Deterministic LGC (`1664525` / `1013904223`). Phases: required routes → unplaced → route baseline ladder → fill — see [ecology.md](ecology.md).
 
-**Phase A — demand:** Each family needs `Encounter Methods` distinct `(group, method)` placements (deduped). Order: shuffled family list. Rod placements respect rarity tier gates (below).
-
-**Phase B — fill:** Remaining empty slots per bucket, weighted random from compat CSR.
-
-**Rarity pick weights** (phase B; enum order Normal, Common, Rare, Very Rare):
-
-| Tier | Weight |
-|------|--------|
-| Normal (blank Rarity) | 9 |
-| Common | 27 |
-| Rare | 3 |
-| Very Rare | 1 |
-
-(×3 steps toward Common; **not** the inverted table that briefly favored Very Rare.)
-
-**Type boost:** **×5** on pick weight when `ECOLOGY_EDGE_TYPE_MATCH` — **only on untyped locations** (no `Types` on eco-loc). Typed locations use theme slots instead (below).
+**Fill rarity weights** (Normal / Common / Rare only; Very Rare excluded from fill): **3 / 9 / 1** (no extra weight on `type_match`).
 
 **Rod rarity gates** (assignment only; compat lists may still list other rarities):
 
@@ -1666,14 +1651,16 @@ When eco-loc **`Types`** is non-empty, **gen-compat** stores `sEcologyGroupLocat
 
 **Land fill:**
 
-1. Target themed slots = **`ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` (2) × type count** (e.g. Fire → 2; Fire + Ghost → 4), capped by land capacity (8).
-2. Until target met: pick only **`type_match`** land compat entries; **rarity weights only** (no ×5).
-3. Remaining land slots: pick from **non–type_match** pool only (no themed weight boost).
+1. Target themed slots = **`ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` (3) × type count**, capped by land capacity (8).
+2. Until target met: pick only **`type_match`** land compat entries (rarity weights only).
+3. Remaining land slots: pick from **non–type_match** pool only.
 4. If themed pool cannot satisfy target, fall back to general pool for unfilled themed slots (see audit).
 
 **Demand phase** can still place **type_match** families on themed routes **before** fill, so **assign** may show **more** than 2 themed families on single-type routes (e.g. three Fire lines on Cinnabar). Hard cap including demand is not implemented yet.
 
-**Untyped locations:** all land compat eligible; **×5** type flag boost applies if any edge had flag (unusual without `Types`).
+**Untyped locations:** all land compat eligible; rarity-weighted fill only.
+
+**Phases 2–3 edge pick:** per placement attempt, **50%** try **`type_match`** edges first (then others), **50%** the reverse — see [ecology.md](ecology.md).
 
 ### Typed land pool shortfalls (audit)
 
