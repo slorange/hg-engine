@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Generate ecology compatibility tables from data/ecology/*.tsv (Future-5 prebuild)."""
 
 from __future__ import annotations
@@ -110,7 +110,7 @@ WATER_TOKEN_TO_FLAG = {
 }
 
 ECOLOGY_GROUP_FLAG_SHUFFLE = 1 << 0
-ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE = 2
+ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE = 3
 
 FAMILY_WATER_ALLOWED = {
     "Salt": frozenset({"Salt"}),
@@ -123,8 +123,16 @@ FAMILY_WATER_ALLOWED = {
 }
 
 EDGE_TYPE_MATCH = 1 << 0
+EDGE_REQUIRED_PIN = 1 << 1
+
+ECOLOGY_FAMILY_NO_PARTNER = 0xFF
 
 SKIP_GROUP_NAME_SUBSTRINGS = ("Bug Catching Contest",)
+
+# Only the named family may appear on this ecology group (shuffle + fill).
+EXCLUSIVE_GROUP_FAMILY: dict[str, str] = {
+    "Ruins of Alph Inside": "Unown",
+}
 
 
 def load_species_enum(path: Path) -> dict[str, int]:
@@ -201,6 +209,12 @@ def compat_version(tsv_paths: list[Path]) -> int:
     digest = hashlib.sha256()
     for path in tsv_paths:
         digest.update(path.read_bytes())
+    digest.update(
+        f"slots:{ECOLOGY_LAND_SLOTS},{ECOLOGY_SURF_SLOTS},{ECOLOGY_OLD_ROD_SLOTS},"
+        f"{ECOLOGY_GOOD_ROD_SLOTS},{ECOLOGY_SUPER_ROD_SLOTS},"
+        f"{ECOLOGY_HEADBUTT_SLOTS},{ECOLOGY_ROCK_SMASH_SLOTS},"
+        f"{ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE}\n".encode()
+    )
     return int.from_bytes(digest.digest()[:4], "big")
 
 
@@ -278,13 +292,21 @@ def method_slot_counts(row: dict[str, str]) -> list[int]:
 
 
 @dataclass
+class RequiredRoute:
+    family_id: int
+    group_id: int
+
+
+@dataclass
 class Family:
     family_id: int
     index: int
     name: str
     base_species: int
     rarity: int
-    demand: int
+    partner_family_id: int
+    pairing_name: str
+    required_group_names: list[str]
     land_time_mask: int
     required_tag: str
     avoid_tags: set[str]
@@ -295,6 +317,7 @@ class Family:
     headbutt: bool
     rock_smash: bool
     types: set[str]
+    pin_only: bool
 
 
 @dataclass
@@ -324,9 +347,11 @@ def load_families(path: Path, species_enums: dict[str, int]) -> list[Family]:
     families: list[Family] = []
     for row in csv.DictReader(path.open(encoding="utf-8-sig"), delimiter="\t"):
         special = (row.get("Special") or "").strip()
-        demand = int((row.get("Encounter Methods") or "0").strip() or "0")
-        if special or demand == 0:
+        required_raw = (row.get("Required on Route") or "").strip()
+        required_group_names = [part.strip() for part in required_raw.split(",") if part.strip()]
+        if special and not required_group_names:
             continue
+        pin_only = bool(special and required_group_names)
 
         enum_name = display_name_to_enum(row["Name"])
         if enum_name not in species_enums:
@@ -352,7 +377,9 @@ def load_families(path: Path, species_enums: dict[str, int]) -> list[Family]:
                 name=row["Name"],
                 base_species=species_enums[enum_name],
                 rarity=rarity,
-                demand=demand,
+                partner_family_id=ECOLOGY_FAMILY_NO_PARTNER,
+                pairing_name=(row.get("Pairing") or "").strip(),
+                required_group_names=required_group_names,
                 land_time_mask=parse_nocturnal_mask(row.get("Nocturnal", "")),
                 required_tag=(row.get("Required Tag") or "").strip(),
                 avoid_tags=parse_types(row.get("Avoid Tag", "")),
@@ -363,9 +390,43 @@ def load_families(path: Path, species_enums: dict[str, int]) -> list[Family]:
                 headbutt=bool((row.get("Headbutt") or "").strip()),
                 rock_smash=bool((row.get("Rock Smash") or "").strip()),
                 types=family_types,
+                pin_only=pin_only,
             )
         )
     return families
+
+
+def resolve_pairings(families: list[Family]) -> None:
+    """Pairing column: this family requires its partner on the same group when placed.
+
+    Mutual rows (each names the other) → both get partnerFamilyId (symmetric co-placement).
+    One-way (e.g. Mantine → Remoraid only) → only the naming family gets partnerFamilyId.
+    """
+    name_to_id = {fam.name: fam.family_id for fam in families}
+    for fam in families:
+        if not fam.pairing_name:
+            continue
+        partner_id = name_to_id.get(fam.pairing_name)
+        if partner_id is None:
+            raise ValueError(f"Pairing target {fam.pairing_name!r} missing for {fam.name!r}")
+        if partner_id == fam.family_id:
+            raise ValueError(f"Self pairing for {fam.name!r}")
+        fam.partner_family_id = partner_id
+
+    for fam in families:
+        if fam.partner_family_id == ECOLOGY_FAMILY_NO_PARTNER:
+            continue
+        partner = families[fam.partner_family_id]
+        if partner.pairing_name == fam.name:
+            partner.partner_family_id = fam.family_id
+        elif partner.partner_family_id not in (
+            ECOLOGY_FAMILY_NO_PARTNER,
+            fam.family_id,
+        ):
+            raise ValueError(
+                f"Pairing conflict: {fam.name!r} requires {partner.name!r}, "
+                f"but {partner.name!r} already requires another partner"
+            )
 
 
 def load_groups(path: Path, enc_enum: dict[str, int]) -> list[Group]:
@@ -450,6 +511,14 @@ def habitat_ok(family: Family, group: Group) -> bool:
     return col in family.habitats
 
 
+def habitat_ok_required_land(family: Family, group: Group) -> bool:
+    if habitat_ok(family, group):
+        return True
+    if group.habitat in ("Cave", "Tower") and "Field" in family.habitats:
+        return True
+    return False
+
+
 def land_time_ok(family: Family, group: Group) -> bool:
     effective = family.land_time_mask & group.land_period_mask
     return effective != 0
@@ -481,16 +550,124 @@ def type_match(family: Family, group: Group) -> bool:
     return bool(family.types & group.location_types)
 
 
+def group_has_method(group: Group, method: int) -> bool:
+    return method in group.methods
+
+
+def family_allowed_on_method_for_required(family: Family, method: int) -> bool:
+    if method == METHOD_LAND:
+        return True
+    if method == METHOD_SURF:
+        return family.fish_surf in ("Surf", "Both")
+    if method in ROD_METHODS:
+        return family.fish_surf in ("Fish", "Both")
+    if method == METHOD_HEADBUTT:
+        return family.headbutt
+    if method == METHOD_ROCK_SMASH:
+        return family.rock_smash
+    return False
+
+
+def required_methods_at_group(family: Family, group: Group) -> list[int]:
+    """Methods that must be filled for Required on Route (rods → Old Rod only)."""
+    methods: list[int] = []
+    if group_has_method(group, METHOD_LAND) and habitat_ok_required_land(family, group):
+        if wet_dry_ok(family, group, METHOD_LAND) and required_tag_ok(family, group):
+            if land_time_ok(family, group):
+                methods.append(METHOD_LAND)
+    if group_has_method(group, METHOD_SURF):
+        if (
+            family_allowed_on_method_for_required(family, METHOD_SURF)
+            and water_type_ok(family, group, METHOD_SURF)
+        ):
+            methods.append(METHOD_SURF)
+    if any(group_has_method(group, m) for m in ROD_METHODS):
+        if (
+            group_has_method(group, METHOD_OLD_ROD)
+            and family_allowed_on_method_for_required(family, METHOD_OLD_ROD)
+            and water_type_ok(family, group, METHOD_OLD_ROD)
+        ):
+            methods.append(METHOD_OLD_ROD)
+    if group_has_method(group, METHOD_ROCK_SMASH):
+        if family.rock_smash and wet_dry_ok(family, group, METHOD_ROCK_SMASH):
+            methods.append(METHOD_ROCK_SMASH)
+    if group_has_method(group, METHOD_HEADBUTT):
+        if family.headbutt and wet_dry_ok(family, group, METHOD_HEADBUTT):
+            methods.append(METHOD_HEADBUTT)
+    return methods
+
+
+def edge_key(edge: Edge) -> tuple[int, int, int]:
+    return (edge.family_id, edge.group_id, edge.method)
+
+
+def add_edge(edges: list[Edge], edge_map: dict[tuple[int, int, int], Edge], edge: Edge) -> None:
+    key = edge_key(edge)
+    existing = edge_map.get(key)
+    if existing is None:
+        edge_map[key] = edge
+        edges.append(edge)
+        return
+    existing.flags |= edge.flags
+
+
+def add_required_pin_edges(
+    families: list[Family], groups: list[Group], edges: list[Edge]
+) -> None:
+    group_by_name = {group.name: group for group in groups}
+    edge_map = {edge_key(edge): edge for edge in edges}
+    for fam in families:
+        for group_name in fam.required_group_names:
+            group = group_by_name.get(group_name)
+            if group is None:
+                raise ValueError(f"Unknown Required on Route group {group_name!r} for {fam.name}")
+            if group.skip:
+                raise ValueError(f"Required on Route targets non-shuffle group {group_name!r}")
+            if not avoid_tag_ok(fam, group):
+                raise ValueError(f"Avoid tag blocks required route {group_name!r} for {fam.name}")
+            methods = required_methods_at_group(fam, group)
+            if not methods:
+                raise ValueError(
+                    f"No compat methods for required route {group_name!r} ({fam.name})"
+                )
+            for method in methods:
+                flags = EDGE_REQUIRED_PIN
+                if method == METHOD_LAND and type_match(fam, group):
+                    flags |= EDGE_TYPE_MATCH
+                add_edge(
+                    edges,
+                    edge_map,
+                    Edge(family_id=fam.family_id, group_id=group.group_id, method=method, flags=flags),
+                )
+
+
+def build_required_routes(families: list[Family], groups: list[Group]) -> list[RequiredRoute]:
+    group_by_name = {group.name: group for group in groups}
+    routes: list[RequiredRoute] = []
+    for fam in families:
+        for group_name in fam.required_group_names:
+            group = group_by_name[group_name]
+            routes.append(RequiredRoute(family_id=fam.family_id, group_id=group.group_id))
+    return routes
+
+
 def build_edges(families: list[Family], groups: list[Group]) -> list[Edge]:
     edges: list[Edge] = []
     for family in families:
+        if family.pin_only:
+            continue
         for group in groups:
             if group.skip:
+                continue
+            exclusive = EXCLUSIVE_GROUP_FAMILY.get(group.name)
+            if exclusive is not None and family.name != exclusive:
                 continue
             if not avoid_tag_ok(family, group):
                 continue
             for method in group.methods:
                 if method == METHOD_LAND:
+                    if family.fish_surf == "Fish":
+                        continue
                     if not habitat_ok(family, group):
                         continue
                     if not wet_dry_ok(family, group, method):
@@ -526,6 +703,7 @@ def build_edges(families: list[Family], groups: list[Group]) -> list[Edge]:
                         flags=flags,
                     )
                 )
+    add_required_pin_edges(families, groups, edges)
     return edges
 
 
@@ -609,6 +787,7 @@ def write_header(
     num_families: int,
     num_groups: int,
     num_edges: int,
+    num_required_routes: int,
     max_slots_per_bucket: int,
     total_slots: int,
     max_family_edge_scratch: int,
@@ -652,6 +831,9 @@ enum EcologyRarity {{
 }};
 
 #define ECOLOGY_EDGE_TYPE_MATCH (1u << 0)
+#define ECOLOGY_EDGE_REQUIRED_PIN (1u << 1)
+
+#define ECOLOGY_FAMILY_NO_PARTNER 0xFFu
 
 #define ECOLOGY_WATER_DRY   (1u << 0)
 #define ECOLOGY_WATER_FRESH (1u << 1)
@@ -670,10 +852,15 @@ typedef struct EcologyFamilyInfo {{
     u16 baseSpecies;
     u16 dexIndex;
     u8 rarity;
-    u8 demand;
+    u8 partnerFamilyId;
     u8 landTimeMask;
     u8 padding;
 }} EcologyFamilyInfo;
+
+typedef struct EcologyRequiredRoute {{
+    u8 familyId;
+    u8 groupId;
+}} EcologyRequiredRoute;
 
 typedef struct EcologyGroupInfo {{
     u16 encdataOffset;
@@ -705,8 +892,10 @@ typedef struct EcologyGroupBucketEntry {{
 #define ECOLOGY_NUM_FAMILIES {num_families}
 #define ECOLOGY_NUM_GROUPS {num_groups}
 #define ECOLOGY_NUM_EDGES {num_edges}
+#define ECOLOGY_NUM_REQUIRED_ROUTES {num_required_routes}
 
 extern const EcologyFamilyInfo sEcologyFamilyInfo[ECOLOGY_NUM_FAMILIES];
+extern const EcologyRequiredRoute sEcologyRequiredRoutes[ECOLOGY_NUM_REQUIRED_ROUTES];
 extern const EcologyGroupInfo sEcologyGroups[ECOLOGY_NUM_GROUPS];
 extern const u8 sEcologyGroupEncdataIds[];
 extern const EcologyGroupLandEntry sEcologyGroupLandEntries[];
@@ -889,7 +1078,7 @@ def prepare_compat_tables(
             fam.base_species,
             fam.index,
             fam.rarity,
-            fam.demand,
+            fam.partner_family_id,
             stored_land_time_mask(fam.land_time_mask),
             0,
         )
@@ -918,8 +1107,9 @@ def write_binary_blob(
     families: list[Family],
     groups: list[Group],
     tables: CompatTables,
+    required_routes: list[RequiredRoute],
 ) -> None:
-    header_size = struct.calcsize("<IIHHHHHHIIIIIIIIII")
+    header_size = struct.calcsize("<IIHHHHHHIIIIIIIIIIHHI")
 
     family_bytes = b"".join(struct.pack("<HHBBBB", *row) for row in tables.family_info)
     group_bytes = b"".join(struct.pack("<HBBBB", *row) for row in tables.group_info)
@@ -931,6 +1121,9 @@ def write_binary_blob(
     flags_bytes = bytes(tables.group_flags)
     slots_bytes = bytes(tables.method_slots)
     type_count_bytes = bytes(tables.location_type_count)
+    required_bytes = b"".join(
+        struct.pack("<BB", route.family_id, route.group_id) for route in required_routes
+    )
 
     section_data = [
         family_bytes,
@@ -943,6 +1136,7 @@ def write_binary_blob(
         flags_bytes,
         slots_bytes,
         type_count_bytes,
+        required_bytes,
     ]
 
     cursor = header_size
@@ -968,10 +1162,11 @@ def write_binary_blob(
         off_flags,
         off_slots,
         off_type_count,
+        off_required,
     ) = offsets
 
     header = struct.pack(
-        "<IIHHHHHHIIIIIIIIII",
+        "<IIHHHHHHIIIIIIIIIIHHI",
         ECOLOGY_COMPAT_BLOB_MAGIC,
         version,
         len(families),
@@ -990,6 +1185,9 @@ def write_binary_blob(
         off_flags,
         off_slots,
         off_type_count,
+        len(required_routes),
+        0,
+        off_required,
     )
     if len(header) != header_size:
         raise RuntimeError(f"Ecology compat header size {len(header)} != {header_size}")
@@ -1004,6 +1202,7 @@ def write_source(
     families: list[Family],
     groups: list[Group],
     edges: list[Edge],
+    required_routes: list[RequiredRoute],
 ) -> tuple[int, int]:
     tables = prepare_compat_tables(families, groups, edges)
 
@@ -1020,8 +1219,12 @@ def write_source(
     slot_rows = [f"    {count}," for count in tables.method_slots]
     family_info_rows = [
         "    { "
-        f"{base}, {dex}, {rarity}, {demand}, {land_time}, {pad} }},"
-        for base, dex, rarity, demand, land_time, pad in tables.family_info
+        f"{base}, {dex}, {rarity}, {partner}, {land_time}, {pad} }},"
+        for base, dex, rarity, partner, land_time, pad in tables.family_info
+    ]
+    required_route_rows = [
+        f"    {{ {route.family_id}, {route.group_id} }},"
+        for route in required_routes
     ]
 
     def fmt_offset_array(values: list[int]) -> str:
@@ -1035,6 +1238,10 @@ def write_source(
 
 const EcologyFamilyInfo sEcologyFamilyInfo[ECOLOGY_NUM_FAMILIES] = {{
 {chr(10).join(family_info_rows)}
+}};
+
+const EcologyRequiredRoute sEcologyRequiredRoutes[ECOLOGY_NUM_REQUIRED_ROUTES] = {{
+{chr(10).join(required_route_rows) if required_route_rows else "    { 0, 0 },"}
 }};
 
 const EcologyGroupInfo sEcologyGroups[ECOLOGY_NUM_GROUPS] = {{
@@ -1093,20 +1300,25 @@ def main() -> None:
     species_enums = load_species_enum(args.species_header)
     enc_enum = load_encounter_enum(args.encounter_header)
     families = load_families(args.families, species_enums)
+    resolve_pairings(families)
     groups = load_groups(args.locations, enc_enum)
+    required_routes = build_required_routes(families, groups)
     edges = build_edges(families, groups)
     version = compat_version([args.families, args.locations])
 
     tables = prepare_compat_tables(families, groups, edges)
     max_family_edge_scratch = max_family_edge_scratch_refs(families, groups, edges)
-    max_slots, total_slots = write_source(args.out_c, version, families, groups, edges)
-    write_binary_blob(OUT_BIN, version, families, groups, tables)
+    max_slots, total_slots = write_source(
+        args.out_c, version, families, groups, edges, required_routes
+    )
+    write_binary_blob(OUT_BIN, version, families, groups, tables, required_routes)
     write_header(
         args.out_h,
         version,
         len(families),
         len(groups),
         len(edges),
+        len(required_routes),
         max_slots,
         total_slots,
         max_family_edge_scratch,

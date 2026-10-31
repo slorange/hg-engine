@@ -46,7 +46,7 @@ u32 SetEncountData_Ecology(
         return FALSE;
     }
 
-    placeholder = SPECIES_RATTATA;
+    placeholder = SPECIES_WOOLOO;
     rnd = WildPlaceholderPersonality();
     space_for_setmondata = 0;
 

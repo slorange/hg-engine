@@ -1,4 +1,4 @@
-#ifndef ECOLOGY_ECOLOGY_COMPAT_VIEW_H
+﻿#ifndef ECOLOGY_ECOLOGY_COMPAT_VIEW_H
 #define ECOLOGY_ECOLOGY_COMPAT_VIEW_H
 
 #include "constants/generated/ecology_compat.h"
@@ -29,6 +29,9 @@ typedef struct EcologyCompatBlobHeader {
     u32 offGroupFlags;
     u32 offMethodSlots;
     u32 offLocationTypeCount;
+    u16 numRequiredRoutes;
+    u16 headerPadding;
+    u32 offRequiredRoutes;
 } EcologyCompatBlobHeader;
 
 typedef struct EcologyCompatView {
@@ -42,6 +45,8 @@ typedef struct EcologyCompatView {
     const u8 *groupFlags;
     const u8 *methodSlots;
     const u8 *locationTypeCount;
+    const EcologyRequiredRoute *requiredRoutes;
+    u16 numRequiredRoutes;
 } EcologyCompatView;
 
 #ifdef ECOLOGY_STANDALONE
@@ -56,6 +61,7 @@ extern const u16 sEcologyGroupBucketOffsets[];
 extern const u8 sEcologyGroupFlags[];
 extern const u8 sEcologyGroupMethodSlots[];
 extern const u8 sEcologyGroupLocationTypeCount[];
+extern const EcologyRequiredRoute sEcologyRequiredRoutes[];
 
 #else
 

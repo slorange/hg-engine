@@ -1,4 +1,4 @@
-#ifndef ECOLOGY_ECOLOGY_GENERATE_H
+﻿#ifndef ECOLOGY_ECOLOGY_GENERATE_H
 #define ECOLOGY_ECOLOGY_GENERATE_H
 
 #include "constants/generated/ecology_compat.h"
@@ -10,7 +10,8 @@ typedef struct EcologyRng {
 
 typedef struct EcologyGenStats {
     u16 familiesUnplaced;
-    u16 demandShortfall;
+    u16 requiredRouteMiss;
+    u16 pairingShortfall;
     u16 bucketsPartiallyFilled;
 } EcologyGenStats;
 

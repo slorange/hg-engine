@@ -1,4 +1,4 @@
-#include "../include/config.h"
+﻿#include "../include/config.h"
 
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
 
@@ -76,6 +76,14 @@ bool8 EcologyCompatBindBlob(void *blob)
     sEcologyCompatViewStorage.groupFlags = base + hdr->offGroupFlags;
     sEcologyCompatViewStorage.methodSlots = base + hdr->offMethodSlots;
     sEcologyCompatViewStorage.locationTypeCount = base + hdr->offLocationTypeCount;
+    if (hdr->numRequiredRoutes > 0 && hdr->offRequiredRoutes != 0) {
+        sEcologyCompatViewStorage.requiredRoutes =
+            (const EcologyRequiredRoute *)(base + hdr->offRequiredRoutes);
+        sEcologyCompatViewStorage.numRequiredRoutes = hdr->numRequiredRoutes;
+    } else {
+        sEcologyCompatViewStorage.requiredRoutes = NULL;
+        sEcologyCompatViewStorage.numRequiredRoutes = 0;
+    }
 
     gEcologyCompatView = &sEcologyCompatViewStorage;
     sEcologyCompatBlob = blob;

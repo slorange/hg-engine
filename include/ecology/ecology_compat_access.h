@@ -1,4 +1,4 @@
-#ifndef ECOLOGY_ECOLOGY_COMPAT_ACCESS_H
+﻿#ifndef ECOLOGY_ECOLOGY_COMPAT_ACCESS_H
 #define ECOLOGY_ECOLOGY_COMPAT_ACCESS_H
 
 #include "ecology/ecology_compat_view.h"
@@ -14,6 +14,8 @@
 #define ECO_BUCKET_OFFSETS(idx) (sEcologyGroupBucketOffsets[(idx)])
 #define ECO_BUCKET_ENTRIES(idx) (sEcologyGroupBucketEntries[(idx)])
 #define ECO_LOCATION_TYPE_COUNT(gid) (sEcologyGroupLocationTypeCount[(gid)])
+#define ECO_REQUIRED_ROUTE_COUNT (ECOLOGY_NUM_REQUIRED_ROUTES)
+#define ECO_REQUIRED_ROUTE(i) (sEcologyRequiredRoutes[(i)])
 
 #else
 
@@ -26,6 +28,8 @@
 #define ECO_BUCKET_OFFSETS(idx) (gEcologyCompatView->bucketOffsets[(idx)])
 #define ECO_BUCKET_ENTRIES(idx) (gEcologyCompatView->bucketEntries[(idx)])
 #define ECO_LOCATION_TYPE_COUNT(gid) (gEcologyCompatView->locationTypeCount[(gid)])
+#define ECO_REQUIRED_ROUTE_COUNT (gEcologyCompatView->numRequiredRoutes)
+#define ECO_REQUIRED_ROUTE(i) (gEcologyCompatView->requiredRoutes[(i)])
 
 #endif
 

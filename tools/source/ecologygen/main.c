@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -152,23 +152,23 @@ static void WriteSummary(FILE *out, const u16 *slots, const u16 *slotBases, cons
         }
     }
 
-    fprintf(out, "family_name\tplacements\tdemand\n");
+    fprintf(out, "family_name\tplacements\n");
     for (familyId = 0; familyId < ECOLOGY_NUM_FAMILIES; familyId++) {
         fprintf(
             out,
-            "%s\t%u\t%u\n",
+            "%s\t%u\n",
             sEcologyFamilyNames[familyId],
-            (unsigned)seen[familyId],
-            (unsigned)sEcologyFamilyInfo[familyId].demand);
+            (unsigned)seen[familyId]);
     }
 
     if (stats != NULL) {
         fprintf(
             stderr,
-            "ecologygen: compat=0x%08X seed ok | unplaced=%u demand_shortfall=%u partial_buckets=%u\n",
+            "ecologygen: compat=0x%08X seed ok | unplaced=%u required_miss=%u pairing_shortfall=%u partial_buckets=%u\n",
             (unsigned)ECOLOGY_COMPAT_VERSION,
             (unsigned)stats->familiesUnplaced,
-            (unsigned)stats->demandShortfall,
+            (unsigned)stats->requiredRouteMiss,
+            (unsigned)stats->pairingShortfall,
             (unsigned)stats->bucketsPartiallyFilled);
     }
 }

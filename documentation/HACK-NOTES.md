@@ -41,7 +41,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
 | Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
-| Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [Encounter hooks (KB-12)](#kb-12--wild-ecology-encounter-hooks-setencountdata), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) |
+| Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [Mom gen / overlay 131](#mom-gen-overlay-131-vs-host-ecologygen), [Encounter hooks (KB-12)](#kb-12--wild-ecology-encounter-hooks-setencountdata), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls), [Mom freeze (KB-14)](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer) |
 | DSPRE / map IDs | [World placement (DSPRE)](#world-placement-dspre) |
 | Fishing gurus | [Fishing Rod guru NPCs](#fishing-rod-guru-npcs) |
 | Map header vs NARC indices | [Field map IDs](#field-map-ids-dont-mix-them-up) |
@@ -133,7 +133,7 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 | Stale **`7B64`** stub after removing hook from **`hooks`** | **100% grass crash** until overlay bytes restored |
 | **`ldr r0; bx r0` @ `7B64`** (hook register **0**) | **`r0` = `pp` at entry** — clobbered with jump target → undefined instruction @ **`SetEncountData_Ecology`** / garbage **`PartyPokemon`** |
 
-**Chosen architecture (Wilds-6):** **`WildEncounterFinalize`** / **`WildEncounterFinalizeForEncount`** (`src/wild_encounter_finalize.c`); **`SetEncountData_Ecology`** @ **`0x02247B64`** (`src/setencount_ecology.c`, **`hooks`**) — placeholder **`PokeParaSet`**, ecology from **`encounterType` + `rodType`**, **`PokeParty_Add`**. **`modify_species` @ `7B42`** remains for any **`EncountParamSet`** path not via this stub. **Do not** tail-call **`0x02247B6C`**. **`7B64` hook:** use **`hooks`** bl stub (no register field — **255**), **not** `ldr r0; bx` — **`r0`–`r3` are live `SetEncountData` args at entry** (`pp`, rod, encInfo, encArea).
+**Chosen architecture (Wilds-6):** **`WildEncounterFinalize`** / **`WildEncounterFinalizeForEncount`** (`src/wild_encounter_finalize.c`); **`SetEncountData_Ecology`** @ **`0x02247B64`** (`src/setencount_ecology.c`, **`hooks`**) — placeholder **`PokeParaSet`** (**Wooloo**, level **5** — obvious dev stub; **`WildEncounterFinalizeForEncount`** replaces species from ecology), then **`PokeParty_Add`**. A vanilla-looking first mon before finalize meant ecology was broken; Wooloo makes “still placeholder” obvious. **`modify_species` @ `7B42`** remains for any **`EncountParamSet`** path not via this stub. **Do not** tail-call **`0x02247B6C`**. **`7B64` hook:** use **`hooks`** bl stub (no register field — **255**), **not** `ldr r0; bx` — **`r0`–`r3` are live `SetEncountData` args at entry** (`pp`, rod, encInfo, encArea).
 
 **Verify after `make test.nds`:**
 
@@ -144,6 +144,30 @@ python3 scripts/dev/verify_encount_overlay2.py
 With **`IMPLEMENT_ECOLOGY_GENERATION`**, expect **`7B64` → `SetEncountData_Ecology+1`**; otherwise **`7B64` = `rom.nds` extract**. **`7B42`** → **`modify_species_encounter_data+1`**. Mismatch **`base/overlay` ≠ rom.nds** (unhooked) → **`make clean && make test.nds`**.
 
 **Related:** [Runtime pipeline](#runtime-pipeline), [ROM integration (Wilds-6)](#rom-integration-wilds-6), [KB-10](#kb-10--surf-wild-encounters-wrong-species) (surf species / scratch clear).
+
+### KB-14 — Mom ecology gen freeze (overlay 131 compat pointer)
+
+**Status (Nov 2026):** **Fixed** — **`src/field/ecology_generate.c`** sets **`sEcoGenCompatView = view`** in overlay **131** and routes gen **`ECO_*`** macros through that pointer (not **`gEcologyCompatView`**). Required-route loop capped at **`ECOLOGY_NUM_REQUIRED_ROUTES`**.
+
+**Symptom:** New game → Mom intro → message about generating Pokémon ecology → **hard freeze** (no wilds yet — **`DEBUG_ECOLOGY_GEN_LEVELS`** on wild level is useless until gen finishes).
+
+**Not the cause (verified Oct 2026):** Overlay **131** size — **`wc -c build/output_field.bin`** was **~39 KiB** vs linker **`0x18000` (96 KiB)** after the Required-on-Route / Pairing gen rewrite. **No new `src/` ROM files** in that merge (only **`documentation/ecology.md`** added).
+
+**Host vs ROM:** **`tools/ecologygen`** links the same **`src/field/ecology_generate.c`** with **`-DECOLOGY_STANDALONE`** and static **eco-host-csr** — assignment completes in **~30 ms** on PC. A ROM-only bug will **not** show up as slow host **ecologygen**.
+
+**Regression (commit `12900633` vs parent `80aa029b3`):** Gen in overlay **131** was switched from **`sEcoGenCompatView = view`** (local pointer set from the **`view`** argument) to **`ecology_compat_access.h`** macros that read **`gEcologyCompatView`** globally, while **`(void)view`** discards the parameter.
+
+| Path | Compat tables |
+|------|----------------|
+| **129** `ecology_script.c` | Binds NARC blob → **`gEcologyCompatView`**, calls **`fn(gEcologyCompatView, seed, …)`** via **`EcologyGenerateWorldFieldAddr`** |
+| **131** `EcologyGenerateWorld` (broken) | Ignores **`view`**; all **`ECO_*`** macros dereference **`gEcologyCompatView`** (extern living in **129** image) |
+| **131** (working pattern) | **`if (view == NULL) return FALSE;`** then **`sEcoGenCompatView = view;`** — macros use **`sEcoGenCompatView`**, not the global |
+
+If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, behavior ranges from instant **`FALSE`** to **de facto infinite work** (garbage **`landOffsets`** / **`numRequiredRoutes`**). Latest adds **`EcologyAssignRequiredRoutes`**, which loops **`ECO_REQUIRED_ROUTE_COUNT`** (= **`gEcologyCompatView->numRequiredRoutes`**) with **no iteration cap** — parent had no required-route phase.
+
+**Fix (shipped):** **`static const EcologyCompatView *sEcoGenCompatView`**, **`sEcoGenCompatView = view`** at gen entry, local **`ECO_*`** macro overrides in **`ecology_generate.c`**. Do **not** revert to **`gEcologyCompatView`** inside overlay **131**.
+
+**Related:** [Mom gen — overlay 131 vs host](#mom-gen-overlay-131-vs-host-ecologygen), [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) (wild hook must not call **131** code; Mom **function pointer** to **`EcologyGenerateWorld`** is a separate, patched path).
 
 ---
 
@@ -1540,7 +1564,7 @@ All tracked — nothing belongs in `scripts/local/`:
 
 **Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Deferred addon scope (Gym hints, flash persistence, other methods): [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
 
-**Status (Oct 2026):** **Compat + Mom gen + encounter hooks + flash persistence shipped** — world generated on Mom **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`**; seed = trainer ID; **`EcologyWorldSave`** in **`SAVE_MISC`** (**ECO1**, compact **`u8`** family IDs + sparse land-time table); session heap hydrated from flash on load. **`SetEncountData_Ecology`** @ **`7B64`** rolls species for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Stub still **`PokeParaSet`** a placeholder then **`WildEncounterFinalizeForEncount`**. **Still open:** swarms/Safari/special policy, placeholder removal, party corruption ([TODO **KB-13**](TODO.md#known-bugs)), authoring columns (**Pairing**, **Required on Route**), cave time-mask override ([TODO.md § Wilds](TODO.md#wilds-design-wildsmd)).
+**Status (Nov 2026):** **Compat + Mom gen + encounter hooks + flash persistence shipped** — Mom gen freeze fixed ([KB-14](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer)). World generated on **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`**; seed = trainer ID; **`EcologyWorldSave`** in **`SAVE_MISC`**. **`SetEncountData_Ecology`** @ **`7B64`** rolls species for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Placeholder species **Wooloo** (level 5) until **`WildEncounterFinalizeForEncount`** runs. **Still open:** swarms/Safari/special policy, real mon creation (drop placeholder **`PokeParaSet`**), party corruption ([TODO **KB-13**](TODO.md#known-bugs)), cave time-mask override. **Pairing** + **Required on Route** + baseline ladder: [ecology.md](ecology.md).
 
 **Goal:** Assign shuffleable **families** to placement **groups** and methods; persist per save; hooks read assignment instead of static NARC species. **Next:** swarms, category rules for gifts/statics/legendaries, gen rules for new eco-fam columns.
 
@@ -1552,16 +1576,16 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 |------|--------|
 | Compat blob | **`build/ecology/ecology_compat.bin`** → code addon **`CODE_ADDON_ECOLOGY_COMPAT` (19)** in NARC `a/0/2/8` member **`9_19`** (`data/codetables.mk`, `make move_narc`) |
 | Runtime load | **`EcologyCompatLoadFromFilesystem`** → heap bind in `src/ecology_load.c` |
-| Generation | **`EcologyGenerateWorld`** in `src/ecology_generate.c` (overlay **129**) |
+| Generation | **`EcologyGenerateWorld`** in `src/field/ecology_generate.c` (overlay **131**, Mom via **`EcologyGenerateWorldFieldAddr`**) |
 | Session + flash | **`EcologySaveWriteGeneration`** → session; **`EcologySaveWriteFlash`** → **`SAVE_MISC_DATA.ecologyWorldSave`** (`src/ecology_save.c`) |
 | Session trigger | Mom **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`** → **`EcologyRunNewGameGeneration`** (`src/ecology_script.c`) |
 | Reload | **`EcologySaveGetMutable`** copies valid flash blob into session when heap copy invalid |
 | Species override | **`src/ecology_encounter.c`** + `asm/other_hook.s` |
-| **131 code call from 129** | **Do not** — patched function pointers into **131** while the wild hook runs on **129** caused undefined instruction / hang ([KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)). Ecology **runtime** stays on **129**; **131** = field rodata only. |
+| **131 code call from 129** | **Wild encounter hot path:** do **not** call **131** functions from **129** ([KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)). **Mom gen:** **129** calls **`EcologyGenerateWorld`** in **131** via patched **`EcologyGenerateWorldFieldAddr`** — compat must flow through the **`view`** argument ([KB-14](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer)). **Encounter override** stays **`src/ecology_encounter.c`** on **129**. |
 
-**Do not** link full compat CSR into field overlay **131** or root `src/` rodata (~38 KiB+) — use the NARC blob only. Host **ecologygen** sources live under **`tools/source/ecologygen/`** (not `src/field/`).
+**Do not** link full compat CSR into field overlay **131** or root `src/` rodata (~38 KiB+) — use the NARC blob only. **`EcologyGenerateWorld`** + large field tables live in **`src/field/`** (overlay **131**); **`ecology_load.c` / `ecology_script.c`** stay on **129**. Host **ecologygen** links **`src/field/ecology_generate.c`** + **eco-host-csr** under **`tools/source/ecologygen/`**.
 
-**Overlay pitfalls (Oct 2026 detours — avoid repeating):** **`PrizeMoney`** / **`src/battle/trainermoney.c`** belongs in **battle overlay 130** (overlay **12** repoints via **`GetSymbols()`**); do **not** put the table in **field 131** (unloaded in battle). **Ecology gen/encounter C must stay on overlay 129** — not **`src/field/`** — because **129** and **131** share RAM; calling **131** VMAs from the **129** wild hook executes wrong memory. Do not duplicate **`EncounterSlot_*`** in **129** without a **`GetSymbols()`** plan; **129** ROM is tight (~tens of bytes margin).
+**Overlay pitfalls (Oct 2026 detours — avoid repeating):** **`PrizeMoney`** / **`src/battle/trainermoney.c`** belongs in **battle overlay 130** (overlay **12** repoints via **`GetSymbols()`**); do **not** put the table in **field 131** (unloaded in battle). Do not duplicate **`EncounterSlot_*`** in **129** without a **`GetSymbols()`** plan; **129** ROM is tight (~tens of bytes margin).
 
 ### Ecology file shorthand
 
@@ -1576,7 +1600,7 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 | **eco-bin** | `build/ecology/ecology_compat.bin` | Runtime compat blob (packed header + CSR; shipped as **9_19**) |
 | **eco-host-csr** | `tools/source/ecologygen/ecology_compat_data.c` | Host **ecologygen** tables (not linked into field overlay) |
 | **eco-strings** | `tools/source/ecologygen/ecology_strings_data.c` | Group/family names (host **ecologygen** + debug) |
-| **gen-core** | `src/ecology_generate.c` (ROM), `tools/source/ecologygen/ecology_generate.c` (host), `include/ecology/ecology_generate.h` | Per-seed assignment |
+| **gen-core** | `src/field/ecology_generate.c` (ROM + host **ecologygen**), `include/ecology/ecology_generate.h` | Per-seed assignment ([ecology.md](ecology.md)) |
 | **ecologygen** | `tools/ecologygen` (build: `tools/source/ecologygen/`) | Host CLI over **eco-host-csr** |
 | **run-eco** | `scripts/dev/run_ecology_generate.py` | Regen compat (optional), build **ecologygen**, write **assign** |
 | **assign** | `build/ecology/ecology_assignment.tsv` | One deterministic test world (not committed) |
@@ -1631,24 +1655,35 @@ Derived in **gen-compat** from eco-loc columns (presence = `> 0`, not the numeri
 
 ### Ecology assignment (gen-core)
 
-**Entry:** `EcologyGenerateWorld(seed, outSlots, outLandSlotTimeMasks, …)` in **gen-core**. Deterministic LCG (`1664525` / `1013904223`).
+**Entry:** `EcologyGenerateWorld(…)` in **`src/field/ecology_generate.c`** (overlay **131**). Deterministic LGC (`1664525` / `1013904223`). Phases: required routes → unplaced → route baseline ladder → fill — see [ecology.md](ecology.md).
 
-**Phase A — demand:** Each family needs `Encounter Methods` distinct `(group, method)` placements (deduped). Order: shuffled family list. Rod placements respect rarity tier gates (below).
+### Mom gen — overlay 131 vs host ecologygen
 
-**Phase B — fill:** Remaining empty slots per bucket, weighted random from compat CSR.
+**Call chain:** Mom **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`** → **`EcologyRunNewGameGeneration`** (**129**, `src/ecology_script.c`) → load/bind **eco-bin** → heap scratch → **`EcologyGenerateWorldFieldAddr`** → **`EcologyGenerateWorld`** (**131**).
 
-**Rarity pick weights** (phase B; enum order Normal, Common, Rare, Very Rare):
+**Debug stages** (`DEBUG_ECOLOGY_GEN_LEVELS` in `include/debug.h`): **11–21** on Mom path; **22–27** = early exit inside **`EcologyGenerateWorld`** (e.g. **23** = null **`view`** / **`gEcologyCompatView`** at gen entry). Wild-level channel is useless if Mom never returns.
 
-| Tier | Weight |
-|------|--------|
-| Normal (blank Rarity) | 9 |
-| Common | 27 |
-| Rare | 3 |
-| Very Rare | 1 |
+**Size checks (after `make`):**
 
-(×3 steps toward Common; **not** the inverted table that briefly favored Very Rare.)
+```bash
+wc -c build/output.bin build/output_field.bin   # 129 ~30 KiB / 32 KiB cap; 131 ~40 KiB / 96 KiB cap
+```
 
-**Type boost:** **×5** on pick weight when `ECOLOGY_EDGE_TYPE_MATCH` — **only on untyped locations** (no `Types` on eco-loc). Typed locations use theme slots instead (below).
+**Host timing (Docker, seed `0xC0FFEE`, ~1150 slots):** full **`tools/ecologygen`** run **~30–45 ms** (includes TSV write). That is **not** a profile of ARM **131** execution.
+
+**Clean rebuild when ecology feels stale** (compat version, **`9_19`**, or after **`git`** revert):
+
+1. Remove stale host objects: **`tools/ecologygen`**, **`tools/source/ecologygen/*.o`**, **`src/field/ecology_generate.o`**, **`src/ecology_layout.o`** if present.
+2. **`make clean`** (drops **`build/`**, **`base/`**, **`include/constants/generated/`**).
+3. **`python3 scripts/build/gen_ecology_compatibility.py`** + **`verify_ecology_compatibility.py`** (or **`make ecology-compat`**).
+4. **`make -C tools/source/ecologygen clean && make`** — keep host **`.o`** files **inside** **`tools/source/ecologygen/`** only (see pitfall below).
+5. **`make test.nds -j24`** (default **`make`** does **not** pack **`test.nds`** — need explicit target).
+
+**Pitfall — `make test.nds` / `make.py`:** Default **`%.o: %.c`** for **`tools/source/ecologygen`** can compile **`../../../src/field/ecology_generate.c`** → **`src/field/ecology_generate.o`**. **`make.py`** treats any **`src/*`** entry without **`.c`** in the name as an overlay (e.g. **`ecology_layout.o`**) and fails looking for **`build/ecology_layout.o_linked.o`**. **Fix:** host Makefile should emit **`host_ecology_generate.o`** under **`tools/source/ecologygen/`** only; delete stray **`src/*.o`** before **`make test.nds`**.
+
+**New save after compat bump:** **`ECOLOGY_COMPAT_VERSION`** in flash must match **eco-bin** shipped in **`9_19`**; regen compat → rebuild ROM → **new save** for Mom gen.
+
+**Fill rarity weights** (Normal / Common / Rare only; Very Rare excluded from fill): **3 / 9 / 1** (no extra weight on `type_match`).
 
 **Rod rarity gates** (assignment only; compat lists may still list other rarities):
 
@@ -1666,14 +1701,16 @@ When eco-loc **`Types`** is non-empty, **gen-compat** stores `sEcologyGroupLocat
 
 **Land fill:**
 
-1. Target themed slots = **`ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` (2) × type count** (e.g. Fire → 2; Fire + Ghost → 4), capped by land capacity (8).
-2. Until target met: pick only **`type_match`** land compat entries; **rarity weights only** (no ×5).
-3. Remaining land slots: pick from **non–type_match** pool only (no themed weight boost).
+1. Target themed slots = **`ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE` (3) × type count**, capped by land capacity (8).
+2. Until target met: pick only **`type_match`** land compat entries (rarity weights only).
+3. Remaining land slots: pick from **non–type_match** pool only.
 4. If themed pool cannot satisfy target, fall back to general pool for unfilled themed slots (see audit).
 
 **Demand phase** can still place **type_match** families on themed routes **before** fill, so **assign** may show **more** than 2 themed families on single-type routes (e.g. three Fire lines on Cinnabar). Hard cap including demand is not implemented yet.
 
-**Untyped locations:** all land compat eligible; **×5** type flag boost applies if any edge had flag (unusual without `Types`).
+**Untyped locations:** all land compat eligible; rarity-weighted fill only.
+
+**Phases 2–3 edge pick:** per placement attempt, **50%** try **`type_match`** edges first (then others), **50%** the reverse — see [ecology.md](ecology.md).
 
 ### Typed land pool shortfalls (audit)
 

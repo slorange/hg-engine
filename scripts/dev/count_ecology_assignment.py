@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Count family placements in build/ecology/ecology_assignment.tsv (Wilds-6 audit)."""
 
 from __future__ import annotations
@@ -7,6 +7,7 @@ import argparse
 import csv
 import sys
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -14,6 +15,9 @@ DEFAULT_ASSIGN = ROOT / "build/ecology/ecology_assignment.tsv"
 DEFAULT_OUT = ROOT / "build/ecology/ecology_assignment_counts.tsv"
 DEFAULT_FAMILIES = ROOT / "data/ecology/ecology_families.tsv"
 DEFAULT_LOCATIONS = ROOT / "data/ecology/ecology_locations.tsv"
+
+# Must match ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE in gen_ecology_compatibility.py
+TYPED_LAND_SLOTS_PER_TYPE = 3
 
 LAND_HABITAT_ORDER = (
     "Field",
@@ -46,6 +50,10 @@ METHOD_HEADER: dict[str, str] = {
 }
 
 
+def parse_location_types(raw: str) -> tuple[str, ...]:
+    return tuple(part.strip() for part in (raw or "").split(",") if part.strip())
+
+
 def load_group_habitat(path: Path) -> dict[str, str]:
     """Map ecology group display name → Habitat (Field, Cave, …) from locations TSV."""
     habitats: dict[str, str] = {}
@@ -58,6 +66,128 @@ def load_group_habitat(path: Path) -> dict[str, str]:
                 continue
             habitats[name] = (row.get("Habitat") or "").strip() or "?"
     return habitats
+
+
+def load_group_location_types(path: Path) -> dict[str, tuple[str, ...]]:
+    """Map group name → location Type tokens (empty = untyped land fill)."""
+    types_by_group: dict[str, tuple[str, ...]] = {}
+    if not path.is_file():
+        return types_by_group
+    with path.open(encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f, delimiter="\t"):
+            name = (row.get("Name") or "").strip()
+            if not name:
+                continue
+            types_by_group[name] = parse_location_types(row.get("Types") or "")
+    return types_by_group
+
+
+def load_land_type_match_by_group(path: Path) -> dict[str, tuple[int, int]]:
+    """Per group: (land_slot_count, land_slots_with_type_match=1)."""
+    by_group: dict[str, list[int]] = defaultdict(list)
+    with path.open(encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        for row in reader:
+            if (row.get("method") or "").strip() != "Land":
+                continue
+            group = (row.get("group_name") or "").strip()
+            if not group:
+                continue
+            matched = (row.get("type_match") or "").strip() in ("1", "true", "True")
+            by_group[group].append(1 if matched else 0)
+    return {
+        group: (len(flags), sum(flags)) for group, flags in by_group.items()
+    }
+
+
+@dataclass
+class RouteTypeMatchRow:
+    group: str
+    types_label: str
+    themed_target: int
+    themed_matched: int
+
+    @property
+    def theme_status(self) -> str:
+        if self.themed_matched < self.themed_target:
+            return "under"
+        if self.themed_matched > self.themed_target:
+            return "over"
+        return "exact"
+
+
+def build_route_type_match_rows(
+    assignment_path: Path,
+    locations_path: Path,
+) -> list[RouteTypeMatchRow]:
+    location_types = load_group_location_types(locations_path)
+    land_stats = load_land_type_match_by_group(assignment_path)
+    rows: list[RouteTypeMatchRow] = []
+    for group in sorted(location_types):
+        type_tokens = location_types[group]
+        if not type_tokens:
+            continue
+        land_total, matched = land_stats.get(group, (0, 0))
+        if land_total == 0:
+            continue
+        target = min(land_total, len(type_tokens) * TYPED_LAND_SLOTS_PER_TYPE)
+        rows.append(
+            RouteTypeMatchRow(
+                group=group,
+                types_label=", ".join(type_tokens),
+                themed_target=target,
+                themed_matched=matched,
+            )
+        )
+    return rows
+
+
+def format_type_match_report(rows: list[RouteTypeMatchRow], *, tsv: bool) -> str:
+    if not rows:
+        return ""
+
+    total_target = sum(r.themed_target for r in rows)
+    total_matched = sum(min(r.themed_matched, r.themed_target) for r in rows)
+    n_exact = sum(1 for r in rows if r.theme_status == "exact")
+    n_under = sum(1 for r in rows if r.theme_status == "under")
+    n_over = sum(1 for r in rows if r.theme_status == "over")
+    pct = (100.0 * total_matched / total_target) if total_target else 0.0
+
+    lines: list[str] = []
+    prefix = "# " if tsv else ""
+    lines.append("")
+    lines.append(f"{prefix}Typed land theme slots (target = min(land cap, {TYPED_LAND_SLOTS_PER_TYPE} × type count)):")
+    if tsv:
+        lines.append(
+            "# route\ttypes\tthemed_target\tthemed_matched\tvs_target"
+        )
+        for row in rows:
+            lines.append(
+                f"# {row.group}\t{row.types_label}\t{row.themed_target}\t"
+                f"{row.themed_matched}\t{row.theme_status}"
+            )
+        lines.append(
+            f"# overall: themed_quota_filled={total_matched}/{total_target} "
+            f"({pct:.1f}%), routes exact={n_exact} under={n_under} over={n_over}"
+        )
+    else:
+        name_w = max(len("route"), max(len(r.group) for r in rows))
+        lines.append(
+            f"{'route':<{name_w}}  {'types':<24}  tgt  mtch  vs tgt"
+        )
+        lines.append("-" * (name_w + 44))
+        for row in rows:
+            types_short = row.types_label if len(row.types_label) <= 24 else row.types_label[:21] + "..."
+            lines.append(
+                f"{row.group:<{name_w}}  {types_short:<24}  {row.themed_target:3d}  "
+                f"{row.themed_matched:4d}  {row.theme_status}"
+            )
+        lines.append("")
+        lines.append(
+            f"Themed quota filled: {total_matched}/{total_target} ({pct:.1f}%)  "
+            f"|  Routes: exact={n_exact}  under={n_under}  over={n_over}"
+        )
+    return "\n".join(lines) + "\n"
 
 
 def load_counts(
@@ -361,6 +491,8 @@ def main() -> int:
         tsv=use_tsv,
         split_land_by_habitat=split_land,
     )
+    type_match_rows = build_route_type_match_rows(path, locations_path)
+    text += format_type_match_report(type_match_rows, tsv=use_tsv)
 
     out_path = args.out
     if out_path is None and args.tsv:
