@@ -181,7 +181,8 @@ static u16 EcologyRollAssignedSpecies(u8 method)
             continue;
         }
 
-        if (method == ECOLOGY_METHOD_LAND) {
+        if (method == ECOLOGY_METHOD_LAND
+            && (ECO_GROUP_FLAGS((u8)groupId) & ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME) == 0) {
             slotMask = EcologySaveLandTimeMaskForFamily(eco, slotFamily);
             if (slotMask != 0 && (slotMask & periodBit) == 0) {
                 continue;

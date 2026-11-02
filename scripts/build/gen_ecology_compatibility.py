@@ -110,6 +110,7 @@ WATER_TOKEN_TO_FLAG = {
 }
 
 ECOLOGY_GROUP_FLAG_SHUFFLE = 1 << 0
+ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME = 1 << 1
 ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE = 3
 
 FAMILY_WATER_ALLOWED = {
@@ -841,6 +842,7 @@ enum EcologyRarity {{
 #define ECOLOGY_WATER_CAVE  (1u << 3)
 
 #define ECOLOGY_GROUP_FLAG_SHUFFLE (1u << 0)
+#define ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME (1u << 1)
 
 #define ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE {ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE}u
 
@@ -1062,7 +1064,12 @@ def prepare_compat_tables(
         )
         enc_offset += len(group.encdata_ids)
 
-    group_flags = [ECOLOGY_GROUP_FLAG_SHUFFLE if not group.skip else 0 for group in groups]
+    group_flags: list[int] = []
+    for group in groups:
+        flags = ECOLOGY_GROUP_FLAG_SHUFFLE if not group.skip else 0
+        if group.habitat == "Cave":
+            flags |= ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME
+        group_flags.append(flags)
     location_type_count = [len(group.location_types) for group in groups]
     method_slots: list[int] = []
     max_slots = 0

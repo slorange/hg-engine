@@ -45,6 +45,7 @@ enum EcologyRarity {
 #define ECOLOGY_WATER_CAVE  (1u << 3)
 
 #define ECOLOGY_GROUP_FLAG_SHUFFLE (1u << 0)
+#define ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME (1u << 1)
 
 #define ECOLOGY_TYPED_LAND_SLOTS_PER_TYPE 3u
 

@@ -93,6 +93,8 @@ One row per **placement group**: a named region that shares one ecology assignme
 
 **Skipped groups:** name contains **`Bug Catching Contest`** → not shuffled (`ECOLOGY_GROUP_FLAG_SHUFFLE` off).
 
+**Cave habitat:** `Habitat = Cave` sets **`ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME`** on the group. At encounter (overlay 129), land rolls skip the per-family land time mask so nocturnal cave species (e.g. Zubat) can appear by day. **Tower** and **Ruins** keep land time filtering.
+
 **Exclusive groups:** `EXCLUSIVE_GROUP_FAMILY` in `gen_ecology_compatibility.py` (e.g. **Ruins of Alph Inside** → **Unown** only).
 
 ### Slot budgets (when a method is present)
