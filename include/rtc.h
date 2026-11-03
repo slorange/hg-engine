@@ -54,6 +54,7 @@ void LONG_CALL Party_ResetAllShayminToLandForme(struct Party *party);
 void LONG_CALL GF_RTC_CopyDateTime(struct RTCDate *date, struct RTCTime *time);
 void LONG_CALL GF_RTC_CopyTime(struct RTCTime *time);
 void LONG_CALL GF_RTC_CopyDate(struct RTCDate *date);
+s32 LONG_CALL GF_RTC_TimeToSec(void);
 BOOL LONG_CALL IsNighttime(void);
 TIMEOFDAY LONG_CALL GF_RTC_GetTimeOfDay(void);
 TIMEOFDAY LONG_CALL GF_RTC_GetTimeOfDayByHour(s32 hour);

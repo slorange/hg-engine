@@ -307,6 +307,12 @@
 // OPENWORLD_FLY_MAP: full Kanto scroll on Fly/town map + cross-region fly spots (flypoint flags unchanged).
 #define OPENWORLD_FLY_MAP
 
+// IMPLEMENT_ACCELERATED_GAME_CLOCK: 30 real minutes = one in-game day (48 game seconds per real second).
+// Real DS RTC remains the input; GF_RTC hooks scale time-of-day for field play. See HACK-NOTES.
+#define IMPLEMENT_ACCELERATED_GAME_CLOCK
+#define GAME_CLOCK_GAME_SECONDS_PER_REAL_SECOND 48
+#define GAME_CLOCK_REAL_SECONDS_PER_GAME_DAY   1800
+
 // Champions-specific move configurations. Set to 0 to use Scarlet/Violet values.
 #define CHAMPIONS_POWER_CHANGES         1
 #define CHAMPIONS_TYPE_CHANGES          1

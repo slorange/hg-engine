@@ -326,9 +326,11 @@ Save_PlayerData_GetOptionsAddr = 0x02028EA8 | 1;
 
 /* rtc functions */
 Party_ResetAllShayminToLandForme = 0x02071E2C | 1;
+sRTCWork = 0x021D1048;
 GF_RTC_CopyDateTime = 0x02014708 | 1;
 GF_RTC_CopyTime = 0x0201474C | 1;
 GF_RTC_CopyDate = 0x02014780 | 1;
+GF_RTC_TimeToSec = 0x020147A4 | 1;
 IsNighttime = 0x02014804 | 1;
 GF_RTC_GetTimeOfDay = 0x0201481C | 1;
 GF_RTC_GetTimeOfDayWildParam = 0x02014830 | 1;

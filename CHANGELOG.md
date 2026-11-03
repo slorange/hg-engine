@@ -16,6 +16,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **HM02 Fly map** — the fly map scrolls to show **both Johto and Kanto** without beating the Elite Four.
 - **Magnet Train** — open from the start.
 - **S.S. Aqua** — open from the start, no weekday lockout. First-voyage missing-girl sequence is optional.
+- **Accelerated day/night** — 30 real minutes equals one in-game day. Applies to Pokégear clock, overworld lighting, and time-based wilds & evolutions.
 - **Ferry NPCs** — NPCs give the player the option to cross sections they normally wouldn't be able to at the start of the game: Olivine to Cianwood, Across Dark Cave, Up Routes 46/45, Across Ice Cave, Pallet/Cinnabar/Seafoam/Fuchsia, up Route 4.
 - West Kanto and Fuchsia’s south beach are reachable from the start.
 - **Route 36** — Sudowoodo roadblock removed.
@@ -32,7 +33,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **Special evolution lines in the wild** — trade, stone, and similar lines can appear as their evolved forms at set level thresholds.
 - **Cinnabar Island** — walking wild encounters on the island (Slugma, Numel, Koffing, Torkoal, Magmar, rare Ditto and **Larvesta**).
 - **Wild held items** — species table rolls (**65%** common / **15%** rare / **20%** nothing); if still empty, **50%** chance of a random berry. With **Compound Eyes** lead: **70%** common / **30%** rare, then **always** a berry.
-- **Per-save wild ecology** — each play session builds a shuffled assignment of Pokémon families to habitats and encounter methods (seeded from your trainer ID). **Grass, cave walking, Surf, fishing, Headbutt, and Rock Smash** draw species from that assignment instead of fixed HeartGold tables. Assignment is regenerated when you power off (save-flash persistence planned). First wild encounter after boot may take a moment while the world is generated.
+- **Per-save wild ecology** — Each new game builds a shuffled assignment of Pokémon families to habitats and encounter methods. Pokémon encounters draw from this list instead of static tables. Applies to grass, caves, Surf, fishing, Headbutt, and Rock Smash. This is not pure random, assignments are filtered based on Type, Encounter method, Rarity, etc.
 
 ### Fishing
 

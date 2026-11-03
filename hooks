@@ -678,6 +678,12 @@ arm9 EncounterSlot_WildMonSlotRoll_Headbutt 022477C0 0
 arm9 WildMonSetRandomHeldItem_hook 020721A4 1
 #endif
 
+#ifdef IMPLEMENT_ACCELERATED_GAME_CLOCK
+arm9 GF_RTC_CopyDateTime_hook 02014708 2
+arm9 GF_RTC_CopyTime_hook 0201474C 1
+arm9 GF_RTC_TimeToSec_hook 020147A4 0
+#endif
+
 0012 GetPokemon_CheckIfTrainer_hook 2246704 0
 0012 GetPokemon_BallBlocked_hook 02247094 0
 0012 BattleSystem_AdjustMessageForSide 0223C558 2

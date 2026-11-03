@@ -38,7 +38,6 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | Item | Design | Notes |
 | ---- | ------ | ----- |
 | **Wild ecology — remaining methods & specials** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | **Still:** Swarms, Safari Zone, Bug Contest, gifts, legendaries, static overworld |
-| **Wild ecology — caves ignore land time mask** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | At encounter: cave / interior groups skip family time filter (Zubat daytime, etc.) |
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
 

@@ -17,7 +17,7 @@
 | [World-6. Shops](#world-6-shops) | DECIDED — **core release target** (TMs, evolution items) |
 | [World-7. Berry economy](#world-7-berry-economy) | PARTIALLY IMPLEMENTED |
 | [World-8. Item acquisition channels](#world-8-item-acquisition-channels) | PARTIALLY IMPLEMENTED |
-| Accelerated day/night cycle | Moved — [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) |
+| [World-9. Accelerated day/night cycle](#world-9-accelerated-daynight-cycle) | PARTIALLY IMPLEMENTED |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
 | Expanded stone mechanics | Moved — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics) |
 | Pokémon Center hub services | Moved — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) |
@@ -403,5 +403,22 @@ Curated prize lists aligned with the matrix (not the ground/hidden random pool, 
 ## Mints, Bottle Caps, Ability Capsules and Patches
 
 Add these items to the game with sources per the matrix. Expect **one-time** overworld acquisition (including **Ground / Hidden** where marked) plus **effort-gated, renewable postgame** acquisition through Pokéathlon, Battle Frontier, Bug Contest, and Pokédex milestones as applicable. Likely also include a way to change **Hidden Power** type (exact item TBD).
+
+---
+
+# World-9. Accelerated day/night cycle
+
+**Status: PARTIALLY IMPLEMENTED** 
+
+HGSS's real-world clock is replaced by an accelerated in-game clock. 30 real minutes = one in-game day.
+
+Applies to:
+- Overworld tint, Pokégear clock, ecology land period, evolutions. 
+Does not apply to: 
+- Bug Catching Contest timer, Calendar date, Daily rollovers
+
+**Still open:** deliberate time advance (Pokémon Center rest, camping — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes)); virtual calendar for [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
+
+**Implementation recipe:** [HACK-NOTES — Accelerated game clock](HACK-NOTES.md#accelerated-game-clock).
 
 ---

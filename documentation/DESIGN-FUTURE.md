@@ -13,10 +13,10 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-2. Full Moon system](#future-2-full-moon-system) |
 | [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
 | [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
-| [Future-5. Wild ecology — Gym Leader Hints](#future-5-wild-ecology--remaining-scope) |
+| [Future-5. Gym Leader Ecology Hints](#future-5-gym-leader-ecology-hints) |
 | [Future-7. Generated trainer & Gym parties](#future-7-generated-trainer--gym-parties) |
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
-| [Future-9. Accelerated day/night cycle](#future-9-accelerated-daynight-cycle) |
+| [Future-9. Time advancement](#future-9-time-advancement) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Encounter stage selection (wild + trainer)](#future-11-encounter-stage-selection-wild--trainer) |
 | [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
@@ -28,7 +28,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 
 # Future-1. Apricorn economy & Poké Ball rebalance
 
-Apricorn harvesting, crafting, and a two-tier ball roster (shop vs Apricorn). Tree refresh assumes [Future-9](#future-9-accelerated-daynight-cycle) (accelerated in-game clock).
+Apricorn harvesting, crafting, and a two-tier ball roster (shop vs Apricorn). Tree refresh assumes [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) (accelerated in-game clock / virtual calendar when implemented).
 
 ## Apricorn economy
 
@@ -144,7 +144,7 @@ Before implementation:
 
 **New Apricorn colours:** item IDs, pick/harvest flow, Kurt or replacement crafting, ball data, UI strings, and **overworld art we do not have** (trees, Apricorn icons, ball graphics).
 
-**Refresh economy** ties to [Future-9](#future-9-accelerated-daynight-cycle) and per-tree save state (yield, regrowth timers).
+**Refresh economy** ties to [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) and per-tree save state (yield, regrowth timers).
 
 ## Open design questions
 
@@ -234,7 +234,7 @@ Multiple legitimate paths through the world: surface roads, water routes, interc
 
 ---
 
-# Future-5. Wild ecology — Gym Leader Hints
+# Future-5. Gym Leader Ecology Hints
 
 **Prerequisite** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Core rules, seed behavior, documented there.
 
@@ -348,46 +348,19 @@ An eligible species **anywhere in the collection** (party or box) can perform an
 
 ---
 
-# Future-9. Accelerated day/night cycle
 
-**Not required for initial release.**
 
-HGSS's real-world clock should be replaced by an accelerated in-game clock.
 
-Current target:
-
-> **Approximately 30 real-world minutes = one complete in-game day.**
-
-This number may be tuned.
-
-The accelerated clock affects systems including:
-
-- day/night encounters;
-- evolutions;
-- NPC behaviour;
-- events;
-- potentially other systems (including Apricorn refresh if [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) is implemented).
-
-## Time advancement
+# Future-9. Time advancement
 
 The player should be able to deliberately advance time rather than waiting.
 
 ### Resting at Pokémon Centers / hotels
-
-Allows controlled advancement of time ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes)).
+Allows controlled advancement of time
 
 ### Portable resting
-
-A tent, sleeping bag, camping system, or similar mechanic can potentially allow resting outside towns. Exact implementation TBD.
-
-## Technical investigation
-
-- replacing RTC dependencies;
-- event compatibility;
-- day/night rendering;
-- encounter tables;
-- evolutions;
-- manual time advancement.
+A tent, sleeping bag, camping system, or similar mechanic can potentially allow resting outside 
+towns. Exact implementation TBD.
 
 ---
 
@@ -617,7 +590,7 @@ Ideas that do not have their own `Future-*` section yet.
 - **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
 - **Expanded Pokédex / generations** — release scope stays [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) (Gen I–IV plus the Volcarona line); HG-Engine could extend through Gen IX minus Paradox and DLC. Include selected cross-gen evolutions when scope expands — e.g. **Sylveon**, **Kleavor**, **Wyrdeer**, **Annihilape**, **Farigiraf**, **Dudunsparce** (methods TBD per line).
 - **Starter selection** could be revisited.
-- **Pokémon Center extras** — trainer hub ideas (Abra travel desk, resting to advance time, distributed Apricorn crafting, other QoL) if [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) / [Future-9](DESIGN-FUTURE.md#future-9-accelerated-daynight-cycle) land; vanilla Nurse Joy heal + PC remain fine for initial release.
+- **Pokémon Center extras** — trainer hub ideas (Abra travel desk, resting to advance time, distributed Apricorn crafting, other QoL) if [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) / [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) land; vanilla Nurse Joy heal + PC remain fine for initial release.
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
 - **Ability tiers** — rank abilities into tiers to set odds for trainer and Gym Leader Pokémon.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
@@ -646,15 +619,15 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 
 | Item | Score | Vision | Excitement | Difficulty | Uniqueness | Presence | Depends on |
 | ---- | :---: | :----: | :--------: | :--------: | :--------: | :------: | ---------- |
-| [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) Wild ecology (grass PoC) | 13 | 5 | 5 | 3 | 4 | 5 | — |
 | [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | Prerequisite: [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle), [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | Pays off with [Future-8](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-13](#future-13-expanded-stone-mechanics) Stone rules | 9 | 2 | 3 | 1 | 3 | 3 | — |
-| [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | [Future-9](#future-9-accelerated-daynight-cycle) for tree refresh |
+| [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) for tree refresh |
 | [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
+| [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
 | [Future-11](#future-11-encounter-stage-selection-wild--trainer) Stage rates | 5 | 1 | 1 | 1 | 2 | 3 | — |
-| [Future-9](#future-9-accelerated-daynight-cycle) Accelerated clock | 4 | 3 | 2 | 3 | 1 | 4 | — |
+| [Future-9](#future-9-time-advancement) Time advancement | 4 | 1 | 1 | 1 | 3 | 1 | — |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
-| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | [Future-9](#future-9-accelerated-daynight-cycle); Moon Ball also wants [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) |
+| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle); Moon Ball also wants [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) |

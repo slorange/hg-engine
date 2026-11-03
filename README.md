@@ -25,7 +25,7 @@ Linked from [documentation/DESIGN.md](documentation/DESIGN.md):
 
 ## Playtesting
 
-The user loads **`test.nds`** (repo root) in DeSmuME. Agents regenerate it after ROM-affecting changes — see `.cursor/rules/agents.mdc`.
+The user loads **`test.nds`** (repo root) in DeSmuME. Agents regenerate it after ROM-affecting changes with Docker **`make test.nds -j24`** (not plain **`make -j24`** alone — see `.cursor/rules/agents.mdc` and [HACK-NOTES § Building test.nds](documentation/HACK-NOTES.md#building-testnds-agents)).
 
 Place a clean **HeartGold** ROM named **`rom.nds`** in the repo root (never commit it).
 

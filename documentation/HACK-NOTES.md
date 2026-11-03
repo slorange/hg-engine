@@ -4,12 +4,28 @@ Working notes for this fork so we don’t re-discover the text/data layout every
 
 **New agent session?** Cursor loads `.cursor/rules/agents.mdc` automatically (build, git, workflow).
 
+## Building `test.nds` (agents)
+
+The user playtests **`test.nds`** at the repo root in DeSmuME — not `build/output.bin`.
+
+| Step | Detail |
+|------|--------|
+| **Playable ROM** | **`make test.nds -j24`** inside Docker (see [agents.mdc § Agents: always build](../.cursor/rules/agents.mdc#agents-always-build-user-does-not)) |
+| **Not enough** | Plain **`make -j24`** runs target **`all`** only (compile + NARCs into `base/`) — **no** `ndstool` repack; **`test.nds` timestamp will not move** |
+| **Verify** | Check **`test.nds`** modified time after the build; reload the file in the emulator (close ROM first) |
+| **Fast vs slow** | **`make -j24`** ≈ **`all`** (compile/link; often seconds after a small C change). **`make test.nds`** adds **`make.py`**, armips, NARC install, **`ndstool`** — the pack step usually dominates wall-clock time |
+
+```bat
+docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make test.nds -j24
+```
+
 ## Contents
 
 Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG / [TODO.md](TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([agents.mdc § Design docs](../.cursor/rules/agents.mdc#design-docs-and-agent-boundaries)). **Known bugs:** [TODO.md § Known bugs](TODO.md#known-bugs) symptoms + [§ below](#known-bugs-todomd). **Agents:** `.cursor/rules/agents.mdc`.
 
 | Topic | Section |
 | ----- | ------- |
+| **Agents: pack `test.nds`** | [Building `test.nds` (agents)](#building-testnds-agents) |
 | Mom dialogue discovery | [Why the Mom line was hard to find](#why-the-mom-line-was-hard-to-find) |
 | Text / msgenc | [How text editing works](#how-text-editing-works) |
 | Important msg banks | [Known `data/text` banks](#known-datatext-banks-tracked--important) |
@@ -29,6 +45,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42](#route-42-reference-verified), [Route 40 / Cianwood](#route-40--cianwood-reference-verified), [Route 31 / Route 45](#route-31--route-45-dark-cave-reference) |
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
 | Story NPC removal | [Removing / skipping story NPCs](#removing--skipping-story-npcs-reusable-recipe) |
+| Accelerated game clock ([World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle)) | [30-minute days (48× RTC)](#accelerated-game-clock) |
 | Apricorn trees / new OW gfx | [Apricorn & custom overworld graphics (Future-1)](#apricorn--custom-overworld-graphics-future-1) |
 | Mom intro / start city | [Open-world starting inventory](#open-world-starting-inventory-new-saves) → [Starter menu](#starter-selection--not-choose_starter), [Home warps](#home--bidirectional-door--interior-swap) |
 | Story flag sweep (dev) | [Story flag range sweep (dev)](#story-flag-range-sweep-dev) |
@@ -271,7 +288,7 @@ Reusable pattern: walk-past coord trigger → script checks badge count → mess
    - else: `faceplayer`, `npc_msg <index>`, `apply_movement obj_player, …`, `wait_movement`, `wait_button_or_walk_away`, `closemsg`, `releaseall`
    - Step-back movement: **`step 13` (south) + `step 1` (face down)** — relative `step 104` only turned the player without moving
 3. **Text** — gate line in the map’s msg bank (`data/text/<bank>.txt`); add a line, set `npc_msg` to that index
-4. **Build** — Docker `make -j24` → test in `test.nds`
+4. **Build** — Docker `make test.nds -j24` → test in `test.nds`
 
 ### Zone event rebuild (Makefile)
 
@@ -975,6 +992,66 @@ Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TA
 
 ---
 
+## Accelerated game clock
+
+**Design:** [World-9 — Accelerated day/night cycle](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle). **Toggle:** `IMPLEMENT_ACCELERATED_GAME_CLOCK` in `include/config.h` (constants **`GAME_CLOCK_GAME_SECONDS_PER_REAL_SECOND`** = **48**, **`GAME_CLOCK_REAL_SECONDS_PER_GAME_DAY`** = **1800**). Comment out the master define to disable hooks and revert to vanilla RTC.
+
+**After any `hooks` change:** `make clean && make test.nds -j24` — stale **`00 48 00 47`** stubs in `base/arm9.bin` if you skip clean.
+
+| Layer | Files |
+|-------|--------|
+| Toggles | `include/config.h` |
+| Hooks | `hooks` → `scripts/build/make.py` |
+| Logic | `src/game_clock.c` |
+
+**DeSmuME:** close ROM before loading a new `test.nds`.
+
+### Rule (30 real minutes = 1 in-game day, wristwatch aligned)
+
+- Real DS RTC is the input; read from **`sRTCWork.time_async`** / **`date_async`** (pret `struct GFRtcWork` @ **`0x021D1048`**).
+- Phase = `(h×3600+m×60+s) % 1800` → scaled time-of-day (**48** game seconds per real second within the slot).
+- **In-game midnight** on every real **:00** and **:30**.
+
+**Wristwatch check:** **10:05** real (5 min into the 10:00 slot) → **4:00 AM** in-game. **10:00** / **10:30** real → in-game **00:00**.
+
+**Scope:** scaled **time-of-day** only; **calendar date** still real async. Do **not** hook **`GF_RTC_UpdateOnFrame`** or rewrite **`sRTCWork.date/time`** each frame (boot crash / assert history).
+
+### Hooks (all on when master define is set)
+
+| Hook | Address | Reg | Role |
+|------|---------|-----|------|
+| `GF_RTC_CopyDateTime_hook` | **`0x02014708`** | **2** | Pokegear, many field callers |
+| `GF_RTC_CopyTime_hook` | **`0x0201474C`** | **1** | BGM / `IsNighttime`, etc. |
+| `GF_RTC_TimeToSec_hook` | **`0x020147A4`** | **0** | Overworld **`AreaLightManager`** tint (reads cache, not Copy) |
+
+**Playtest (Nov 2026):** Pokegear matches wristwatch; ecology land period scaled (**Zubat** in caves during real daytime with cave-ignore flag); overworld tint matches after **`TimeToSec`** hook.
+
+### Policy (not RTC hooks)
+
+- **Bug Catching Contest** — keep **real** clock (`GF_RTC_DateTimeToSec` / show timer path); open every day via scripts if desired.
+- **Weekday events** — prefer removing day gates (e.g. S.S. Aqua) over faking weekdays on the real calendar.
+
+### Still open
+
+[Remaining RTC surfaces](#remaining-rtc-surfaces) — calendar, daily rollover, berry pots, manual rest ([World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle)).
+
+### Remaining RTC surfaces
+
+After **Copy\*** + **`GF_RTC_TimeToSec`**, these still use **other** paths. Accelerated PoC leaves **real calendar** where noted.
+
+| Source | What it reads | Player-visible examples |
+|--------|----------------|-------------------------|
+| **`Save_SysInfo_RTC`** via **`Field_Get*`** | Save RTC + map-load sync | Scr **`get_hour`**; trades; day care dates; some dungeon light tasks (**`Field_GetTimeOfDay`**, not **`TimeToSec`**) |
+| **`GF_RTC_DateTimeToSec`** | Absolute seconds from cache | **Bug Catching Contest** timer; Pal Park; Safari link gift; overlay 112 |
+| **`GF_RTC_CopyDate` only** | Real date | Pokéathlon weekday stock; Lake of Rage Wed layout |
+| **Calendar on save RTC** | Real **`date_async`** | Daily rollover (apricorns, Pokérus, loto, …) — **real 24h**, not 30 min |
+| **`berry_datetime`**, etc. | Save snapshots | Berry pot growth |
+| **`UpdateOnFrame`**, penalty | Raw hardware refresh | Clock-set-back punishment |
+
+**Scaled TOD today:** **`CopyTime`**, **`CopyDateTime`**, **`GetTimeOfDay`**, **`GetTimeOfDayWildParam`**, **`IsNighttime`**, **`TimeToSec`**.
+
+---
+
 ## Apricorn & custom overworld graphics (Future-1)
 
 **Design:** [Future-1 — Apricorn economy](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) (renewable harvest, new colours such as purple/grey, distributed crafting TBD). Trees are **field objects** placed at map load, not map terrain — placement is zone_event + scr_seq, not Future-4 geometry edits.
@@ -1214,7 +1291,7 @@ python scripts/dev/verify_start_city_patch.py
 
 **Files:** `tools/patch_scr_seq_train.py` (`2_893`, `2_834` in narcs.mk), `scripts/dev/verify_train_patch.py`, `scripts/dev/scan_train_power.py`.
 
-**Verify:** `make scr_seq_clean && make -j24`, then `python scripts/dev/verify_train_patch.py`. In-game: new save → Mom intro → Goldenrod or Saffron station → policeman allows platform → pass coord gate → board train.
+**Verify:** `make scr_seq_clean && make test.nds -j24`, then `python scripts/dev/verify_train_patch.py`. In-game: new save → Mom intro → Goldenrod or Saffron station → policeman allows platform → pass coord gate → board train.
 
 **Gotcha:** map header IDs ≠ scr_seq members (`MAP_T25R0501` / `MAP_T11R0601` vs **893** / **834**).
 
@@ -1251,7 +1328,7 @@ No outdoor-matrix duplicate for Route 4 object coords (unlike Mahogany / Route 4
 | `scripts/dev/verify_r04_boost.py` | Post-build check |
 | `scripts/dev/find_r04_coords.py` | Recon helper for world `(x,z)` |
 
-**Verify:** `make scr_seq_clean && make -j24`, then `python scripts/dev/verify_r04_boost.py`.
+**Verify:** `make scr_seq_clean && make test.nds -j24`, then `python scripts/dev/verify_r04_boost.py`.
 
 ---
 
