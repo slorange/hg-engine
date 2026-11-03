@@ -110,6 +110,10 @@
     setflag FLAG_HIDE_VIRIDIAN_CITY_OLD_MAN_OUTSIDE_GYM_LOCKED
     clearflag FLAG_HIDE_VIRIDIAN_CITY_OLD_MAN_OUTSIDE_GYM_UNLOCKED
 
+// Violet Gym — Sprout Tower skipped: no gym guide NPC (zone_event + OnLoad omit obj 1)
+    setflag FLAG_HIDE_VIOLET_GYM_GYM_GUY_BEFORE_SPROUT
+    setflag FLAG_HIDE_VIOLET_GYM_GYM_GUY_AFTER_SPROUT
+
 // Professor Elm lab errand (Falkner patch uses VAR_SCENE_ELMS_LAB = 6)
     clearflag FLAG_ELMS_LAB_PREVENT_PLAYER_ESCAPE
     setvar VAR_SCENE_ELMS_LAB, 6

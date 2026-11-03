@@ -31,6 +31,11 @@ SLOT4_BIN = ROOT / "build/falkner_gym_slot4.bin"
 SLOT5_ASM = ROOT / "armips/scr_seq/scr_seq_falkner_gym_slot5.s"
 SLOT5_BIN = ROOT / "build/falkner_gym_slot5.bin"
 SCRIPT_SLOT = 1
+SCRIPT_TERMINATORS = (b"\x00\x00", b"\x02\x00")
+# Guide hide flags + hide_person 1 (opcode 101) after violet_gym_init — init needs obj1 in zone_event.
+OPENWORLD_ONLOAD_PREFIX = struct.pack("<HHHH", 30, 740, 30, 739)
+HIDE_PERSON_1 = struct.pack("<HH", 101, 1)
+VIOLET_GYM_INIT_OPCODE = 324
 MAX_TABLE_SCAN = 512
 
 
@@ -125,6 +130,24 @@ def load_vanilla_member() -> bytearray:
     return bytearray(VANILLA_MEMBER.read_bytes())
 
 
+def patch_slot0_openworld(data: bytearray) -> None:
+    """Keep vanilla OnLoad (violet_gym_init + phone rematch); hide Sprout guide NPC."""
+    scripts = extract_scripts(data)
+    body = scripts[0]
+    if len(body) < 2 or struct.unpack_from("<H", body, 0)[0] != VIOLET_GYM_INIT_OPCODE:
+        raise ValueError("Falkner slot 0 must start with violet_gym_init (324)")
+    patched = bytearray(OPENWORLD_ONLOAD_PREFIX)
+    patched.extend(body[:2])
+    patched.extend(HIDE_PERSON_1)
+    patched.extend(body[2:])
+    if len(patched) >= 2 and bytes(patched[-2:]) in SCRIPT_TERMINATORS:
+        patched = patched[:-2] + HIDE_PERSON_1 + patched[-2:]
+    else:
+        patched.extend(HIDE_PERSON_1)
+        patched.extend(b"\x02\x00")
+    patch_script_slot(data, 0, bytes(patched))
+
+
 def patch_script_slot(data: bytearray, slot_index: int, slot_blob: bytes) -> None:
     scripts = extract_scripts(data)
     if slot_index >= len(scripts):
@@ -174,12 +197,13 @@ def main(argv: list[str]) -> int:
             raise ValueError(f"empty slot {slot_index} blob")
 
     data = bytearray(vanilla)
+    patch_slot0_openworld(data)
     for slot_index, blob in slot_blobs.items():
         patch_script_slot(data, slot_index, blob)
     target.write_bytes(data)
     print(
-        f"patched Falkner gym slots 1-5 in {target} ({len(data)} bytes, "
-        f"slot1={len(slot_blobs[1])}b slot5={len(slot_blobs[5])}b elevator)"
+        f"patched Falkner gym slots 0-5 in {target} ({len(data)} bytes, "
+        f"slot0 init+hide obj1 slot1={len(slot_blobs[1])}b slot4/5 elevator)"
     )
     return 0
 

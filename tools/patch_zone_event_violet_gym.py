@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Violet Gym (zone_event 365): remove Sprout Tower gate NPC blocking the elevator."""
+"""Violet Gym (zone_event 365): drop duplicate hint NPC; keep obj1 for init/hide_person."""
 
 from __future__ import annotations
 
@@ -10,9 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MEMBER = "2_365"
 
-# obj1 in vanilla: id=1, sprite=324, script=3 — blocks elevator until Sprout Tower.
-GATE_OBJECT_ID = 1
-GATE_SCRIPT_ID = 3
+HINT_OBJECT_ID = 3
+HINT_SCRIPT_ID = 2
 
 
 def parse_zone_event(data: bytes) -> tuple[list[bytes], list[bytes], bytes, list[bytes]]:
@@ -59,19 +58,19 @@ def pack_zone_event(
 
 def patch_member(data: bytearray) -> int:
     bgs, objects, warps, coords = parse_zone_event(data)
+    hint_removed = 0
     kept: list[bytes] = []
-    removed = 0
     for obj in objects:
         fields = struct.unpack_from("<14H", obj)
-        if fields[0] == GATE_OBJECT_ID and fields[5] == GATE_SCRIPT_ID:
-            removed += 1
+        if fields[0] == HINT_OBJECT_ID and fields[5] == HINT_SCRIPT_ID:
+            hint_removed += 1
             continue
         kept.append(obj)
-    if removed == 0:
-        raise ValueError("Violet Gym elevator gate NPC (obj 1 script 3) not found")
+    if hint_removed != 1:
+        raise ValueError("Violet Gym hint NPC (obj 3 script 2) not found")
     rebuilt = pack_zone_event(bgs, kept, warps, coords)
     data[:] = rebuilt
-    return removed
+    return hint_removed
 
 
 def main(argv: list[str]) -> int:
@@ -81,11 +80,11 @@ def main(argv: list[str]) -> int:
 
     target = Path(argv[1])
     data = bytearray(target.read_bytes())
-    removed = patch_member(data)
+    hint_removed = patch_member(data)
     target.write_bytes(data)
     print(
-        f"removed Violet Gym elevator gate NPC from {target} "
-        f"({removed} object(s), {len(data)} bytes)"
+        f"Violet Gym zone_event {target}: removed duplicate hint obj3 "
+        f"(obj1 kept for gym init), {len(data)} bytes"
     )
     return 0
 

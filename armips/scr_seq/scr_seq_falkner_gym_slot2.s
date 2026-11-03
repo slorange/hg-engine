@@ -5,9 +5,10 @@
 .include "armips/include/flags.s"
 .include "armips/include/soundeffects.s"
 .include "armips/include/vars.s"
-// Violet Gym — trainer hint NPC (scr_seq 859 slot 2).
+// Violet Gym — trainer hint NPC near entrance (scr_seq 859 slot 2).
 
 // data/text/558.txt: blank line between each entry.
+.equ MSG_FLYING_WEAKNESS_HINT, 12
 .equ MSG_ALREADY_BEATEN, 8
 
 .create "build/falkner_gym_slot2.bin", 0
@@ -19,6 +20,9 @@ scr_seq_falkner_gym_trainer_hint:
     CheckBadge BADGE_ZEPHYR, VAR_SPECIAL_RESULT
     compare VAR_SPECIAL_RESULT, 1
     goto_if_eq _has_badge
+    npc_msg MSG_FLYING_WEAKNESS_HINT
+    wait_button
+    closemsg
     releaseall
     end
 

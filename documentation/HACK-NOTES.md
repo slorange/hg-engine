@@ -90,12 +90,6 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 **Partial work:** `openworld_story_skip_flags.inc`, `tools/patch_scr_seq_t23_azalea.py` (scr_seq member **866**), `tools/patch_zone_event_t23_azalea.py` (zone_event **071** — remove well entrance obj **0** @ **434,461**).
 
-### KB-7 — Violet Gym elevator after Falkner
-
-**Symptom:** attendant NPC still on the elevator; **up** works; after beating Falkner, **down** does not. Falkner fight and HM/TM grant are OK.
-
-**Likely cause:** Falkner HM work patched slots **1–5** and removed the Sprout gate object, but left slot **0** `violet_gym_init` vanilla — it toggles elevator NPC visibility from Sprout / badge flags that no longer match open-world flow. Not the same class of bug as Morty/Jasmine (no elevator). Details: [Falkner follow-ups](#falkner-follow-ups-859--zone_event-365).
-
 ### KB-6 — Seated Mom dialogue after intro
 
 **Symptom:** after open-world intro, talking to seated Mom shows garbled dialogue or wrong menus (vanilla Elm-fetch flow).
@@ -445,7 +439,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 ## Gym Leader HM rewards (Johto pilot)
 
-**Status:** **Jasmine** and **Pryce** verified in-game. **Morty** leader HM OK; pre–Burned Tower elder line blank ([KB-8](TODO.md#known-bugs)). **Falkner** elevator follow-ups ([KB-7](TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
+**Status:** **Falkner**, **Jasmine**, and **Pryce** verified in-game (Falkner elevator + HM/TM — [Violet Gym](#violet-gym-falkner--859--zone_event-365)). **Morty** leader HM OK; pre–Burned Tower elder line blank ([KB-8](TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
 
 **Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
 
@@ -455,7 +449,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Field HM use | `OPENWORLD_FIELD_MOVES_NO_BADGE_GATE` — [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags) (verified Sep 2026) |
 | Shared logic | `armips/include/gym_badge_hm_reward.inc` — level cap (`10 + 4×badges`, 80 at 16) + HM table |
 | Shared text | `data/text/854.txt` — level cap, HM names, TM intro |
-| Falkner | scr_seq **859** — slots **1–5** patched; zone_event **365** sprout gate obj removed (`tools/patch_zone_event_violet_gym.py`) |
+| Falkner | scr_seq **859** — slots **0–5** patched (`tools/patch_scr_seq_gym_falkner.py`, armips slots **1–5**); zone_event **365** — drop hint **obj 3** only (`tools/patch_zone_event_violet_gym.py`); [Violet Gym](#violet-gym-falkner--859--zone_event-365) |
 | Morty | member **922**, slot **1** — `scr_seq_morty_gym_slot1.s`, `data/text/614.txt` |
 | Pryce | member **932** — **append-only** HM patch ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); `data/text/622.txt` |
 | Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, `data/text/606.txt` |
@@ -551,22 +545,26 @@ Individual cities still require **`FLAG_SYS_FLYPOINT_*`** (Pokémon Center visit
 **Next:** identify live spot filter; 2-byte patches after disasm. Session recon was **`scripts/local/`** only (not in git).
 
 
-### Falkner follow-ups (859 / zone_event 365)
+### Violet Gym (Falkner) — 859 / zone_event 365
 
-Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Only patch slots you understand — other objects still reference them.
+**Status (Nov 2026):** Verified — leader HM/TM grant, elevator **up** and **down**, Sprout/hint guide **gone** (no NPC on the lift).
 
-| Slot | Role | Patch status |
-|------|------|----------------|
-| 0 | `violet_gym_init` OnLoad | **vanilla** — sets elevator NPC visibility from flags |
-| 1 | Falkner leader + HM table | **patched** |
-| 2 | Trainer hint NPC (script 2 on obj 3) | **patched** — no blank msg before badge |
-| 3 | Sprout gate talk (was obj 1 script 3) | **patched** — gate obj **removed** from zone_event |
-| 4 | Was empty; obj 2 script 4 | **stub** (`releaseall` / `end`) |
-| 5 | Elevator attendant (engine scripts 10201/10202 on objs 4–5) | **patched** — `violet_gym_elevator` only (vanilla opened with TM/Roost msg **6**) |
+Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world patches **0–5** plus zone_event **365**.
 
-**Known rough edges ([KB-7](TODO.md#known-bugs)):** elevator attendant **visible on the lift** but **up** still works; **after** Zephyr Badge, **down** fails (leader battle itself OK). Likely interaction of vanilla slot **0** `violet_gym_init` (hide flags **679** / **680** for objs 4–5) with post-badge flags — slot **0** still **vanilla** while slots **1–5** are patched. Sprout gate obj removed from zone_event; attendant sprites not hidden on every save path. Falkner recon scripts live in **`scripts/local/`** (`decode_falkner_gym.py`, `disasm_scr_seq.py`, `scan_violet_gym.py`).
+| Slot | Role | Patch |
+|------|------|-------|
+| 0 | OnLoad | **`patch_scr_seq_gym_falkner.py`** — keep vanilla **`violet_gym_init` (324)** (3D lift platform + gymmick save); prepend **`setflag` 739/740** (Sprout-skip guide hide); **`hide_person 1`** (opcode **101**) right after init and again before `scr_end`. **Must not** omit init (lift disappears; **`VioletGymElevator`** crashes). **Must not** remove **obj 1** from zone_event (init / `hide_person` need the object index). |
+| 1 | Falkner leader + HM table | `scr_seq_falkner_gym_slot1.s` |
+| 2 | Hint NPC (was obj 3 script 2) | `scr_seq_falkner_gym_slot2.s` — harmless if obj 3 removed |
+| 3 | Sprout gate talk (obj 1 script 3) | `scr_seq_falkner_gym_slot3.s` — obj 1 hidden after OnLoad |
+| 4 | Upper lift pad (obj 2 script 4) | `scr_seq_falkner_gym_slot4.s` — `violet_gym_elevator` (vanilla slot **4** was empty) |
+| 5 | Lower lift (objs 4–5, scripts 10201/10202) | `scr_seq_falkner_gym_slot5.s` — elevator only (no TM51 / Roost gate) |
 
-**Zone_event 365 (after patch):** 5 objects — Falkner obj0 script 1, trainer obj3 script 2, elevator objs script 10201/10202; **no** obj1 sprout blocker.
+**Zone_event 365 (after patch):** **5** objects — Falkner **obj 0**, Sprout-slot **obj 1** (kept, hidden), upper pad **obj 2**, lift attendants **objs 4–5**; duplicate hint **obj 3** removed.
+
+**New saves:** `openworld_story_skip_flags.inc` sets **739** and **740** so the guide stays hidden on first gym entry.
+
+**Pitfalls:** `hide_person` is opcode **101** (not **102**). Dropping obj 1 without the OnLoad patch crashes on `hide_person`; skipping **`violet_gym_init`** removes the lift. Recon helpers (optional): **`scripts/local/`** — `decode_falkner_gym.py`, `disasm_scr_seq.py`, `scan_violet_gym.py`.
 
 ### Next leaders
 
