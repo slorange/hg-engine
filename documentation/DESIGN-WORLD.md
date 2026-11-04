@@ -20,7 +20,7 @@
 | [World-9. Accelerated day/night cycle](#world-9-accelerated-daynight-cycle) | PARTIALLY IMPLEMENTED |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
 | Expanded stone mechanics | Moved — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics) |
-| Pokémon Center hub services | Moved — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) |
+| Pokémon Center hub services | [Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub) |
 
 ---
 
@@ -81,7 +81,7 @@ These include:
 
 **Status: NOT IMPLEMENTED** 
 
-Pokémon Centers may contain an Abra transportation service.
+Pokémon Centers may contain an Abra transportation service ([Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub) — shared hub desk).
 
 Travel likely costs money.
 
@@ -417,7 +417,7 @@ Applies to:
 Does not apply to: 
 - Bug Catching Contest timer, Calendar date, Daily rollovers
 
-**Still open:** deliberate time advance (Pokémon Center rest, camping — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes)); virtual calendar for [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
+**Still open:** deliberate time advance — Pokémon Center rest in [Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub), portable camping in [Future-9](DESIGN-FUTURE.md#future-9-time-advancement); virtual calendar for [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
 
 **Implementation recipe:** [HACK-NOTES — Accelerated game clock](HACK-NOTES.md#accelerated-game-clock).
 

@@ -14,6 +14,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
 | [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
 | [Future-5. Gym Leader Ecology Hints](#future-5-gym-leader-ecology-hints) |
+| [Future-6. Shared Pokémon Center Hub](#future-6-shared-pokémon-center-hub) |
 | [Future-7. Generated trainer & Gym parties](#future-7-generated-trainer--gym-parties) |
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-9. Time advancement](#future-9-time-advancement) |
@@ -39,7 +40,7 @@ Apricorns become a renewable crafting resource tied to the accelerated game cloc
 
 With the ~30-minute day target, this is a faster renewable economy than vanilla HGSS. Exact quantities and refresh timing remain subject to balance testing.
 
-The player should not need to repeatedly return to Azalea Town merely to craft Apricorn Balls. Pokémon Center crafting or another distributed crafting system is under consideration ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes)).
+The player should not need to repeatedly return to Azalea Town merely to craft Apricorn Balls. **Pokémon Center crafting** in the shared hub is the preferred direction ([Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub)); a distributed crafting system remains a fallback if the hub is not used.
 
 ### More Apricorn trees
 
@@ -262,6 +263,43 @@ The player picks from a curated list of families for that Gym. The Leader names 
 
 ---
 
+# Future-6. Shared Pokémon Center Hub
+
+## Design Goal
+
+Turn every outdoor Pokémon Center into a familiar hub for convenient trainer services. Players can use the same services from any Center, avoiding unnecessary trips to specific NPCs across Johto and Kanto.
+
+Pokémon Centers are **optional convenience hubs**, not required stops for healing or storage: battles already restore the party afterward ([Battle-1](DESIGN-BATTLES.md#recovery)), and [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) will provide PC access from the menu.
+
+## Services
+
+| Service | Description | Status |
+| ------- | ----------- | ------ |
+| **Abra fast travel** | Pay a fixed fee to travel to previously visited towns and cities. | Planned |
+| **Move Relearner** | Relearn moves using Heart Scales, without returning to Blackthorn. | Planned |
+| **Rest / pass time** | Advance the clock to morning, day, or night. | Planned |
+| **Apricorn crafting** | Convert Apricorns into specialty Poké Balls using Kurt’s service ([Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance)), without returning to Azalea. | Planned |
+| **Move Tutor** | Make special move tutoring available from any Center. | Maybe |
+| **Specialty Trader** | Exchange items or currencies for selected rewards. Inventory and pricing TBD. | Maybe |
+
+Other services may be added as future systems develop. Keep location-specific shops and rewards in the world when they provide a meaningful reason to explore.
+
+## Open Questions
+
+- Which existing Center interior should be used as the shared hub, and how should services be arranged for quick access?
+- What should the fixed Abra travel fee be?
+- If added, which move tutors and traders belong in the hub rather than remaining location-specific?
+
+## Technical Approach
+
+Redirect outdoor Pokémon Center entrances to one shared interior, tracking the originating Center so the exit returns to the correct outdoor door.
+
+Preserve location-specific Fly unlocks, blackout destinations, and other scripts that depend on the Center visited rather than the shared interior map.
+
+Goldenrod and Indigo Plateau Pokémon Centers may need special handling for their unique layouts or functionality.
+
+---
+
 # Future-7. Generated trainer & Gym parties
 
 ### Randomize species
@@ -356,7 +394,7 @@ An eligible species **anywhere in the collection** (party or box) can perform an
 The player should be able to deliberately advance time rather than waiting.
 
 ### Resting at Pokémon Centers / hotels
-Allows controlled advancement of time
+Allows controlled advancement of time. **Pokémon Center rest menus** live in the shared hub ([Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub)); hotels and other inns may share the same rest rules where they exist in the world.
 
 ### Portable resting
 A tent, sleeping bag, camping system, or similar mechanic can potentially allow resting outside 
@@ -590,7 +628,6 @@ Ideas that do not have their own `Future-*` section yet.
 - **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
 - **Expanded Pokédex / generations** — release scope stays [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) (Gen I–IV plus the Volcarona line); HG-Engine could extend through Gen IX minus Paradox and DLC. Include selected cross-gen evolutions when scope expands — e.g. **Sylveon**, **Kleavor**, **Wyrdeer**, **Annihilape**, **Farigiraf**, **Dudunsparce** (methods TBD per line).
 - **Starter selection** could be revisited.
-- **Pokémon Center extras** — trainer hub ideas (Abra travel desk, resting to advance time, distributed Apricorn crafting, other QoL) if [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) / [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) land; vanilla Nurse Joy heal + PC remain fine for initial release.
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
 - **Ability tiers** — rank abilities into tiers to set odds for trainer and Gym Leader Pokémon.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
@@ -619,15 +656,16 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 
 | Item | Score | Vision | Excitement | Difficulty | Uniqueness | Presence | Depends on |
 | ---- | :---: | :----: | :--------: | :--------: | :--------: | :------: | ---------- |
-| [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | Prerequisite: [Future-7](#future-7-generated-trainer--gym-parties) |
-| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle), [Future-7](#future-7-generated-trainer--gym-parties) |
-| [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | Pays off with [Future-8](#future-8-dynamic-battle-rosters--universal-pc) |
+| [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | [Future-7](#future-7-generated-trainer--gym-parties) |
+| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Future-7](#future-7-generated-trainer--gym-parties) |
+| [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | — |
 | [Future-13](#future-13-expanded-stone-mechanics) Stone rules | 9 | 2 | 3 | 1 | 3 | 3 | — |
-| [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) for tree refresh |
+| [Future-6](#future-6-shared-pokémon-center-hub) Shared Center hub | 8 | 3 | 3 | 2 | 1 | 3 | — |
+| [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | — |
 | [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
 | [Future-11](#future-11-encounter-stage-selection-wild--trainer) Stage rates | 5 | 1 | 1 | 1 | 2 | 3 | — |
 | [Future-9](#future-9-time-advancement) Time advancement | 4 | 1 | 1 | 1 | 3 | 1 | — |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
-| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle); Moon Ball also wants [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) |
+| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | Moon Ball  wants [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) |
