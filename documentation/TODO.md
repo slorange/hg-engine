@@ -28,7 +28,6 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | ---- | ------ | ----- |
 | **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
 | **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Per-Leader pools authored; **minimum badge per TM** + defeat/rematch **choice UI** not implemented |
-| **Clair** (Blackthorn) | [Story-3 Gym policy](DESIGN-STORY.md#gyms--access-and-story-policy) | Grant **Rising Badge** after win — [HACK-NOTES § Clair](HACK-NOTES.md#blackthorn-gym--clair-rising-badge) (battle works with 0 badges; post-win grant still broken). |
 
 ---
 

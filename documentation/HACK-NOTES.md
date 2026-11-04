@@ -439,7 +439,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 ## Gym Leader HM rewards (Johto pilot)
 
-**Status:** **Falkner**, **Jasmine**, and **Pryce** verified in-game (Falkner elevator + HM/TM — [Violet Gym](#violet-gym-falkner--859--zone_event-365)). **Morty** leader HM OK; pre–Burned Tower elder line blank ([KB-8](TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
+**Status:** **Falkner**, **Jasmine**, **Pryce**, and **Clair** verified in-game (Falkner elevator + HM/TM — [Violet Gym](#violet-gym-falkner--859--zone_event-365); Clair — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge)). **Morty** leader HM OK; pre–Burned Tower elder line blank ([KB-8](TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
 
 **Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
 
@@ -453,11 +453,12 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Morty | member **922**, slot **1** — `scr_seq_morty_gym_slot1.s`, `data/text/614.txt` |
 | Pryce | member **932** — **append-only** HM patch ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); `data/text/622.txt` |
 | Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, `data/text/606.txt` |
-| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine}.py` — Falkner/Morty/Jasmine use `patch_script_slot()` / `patch_slot1()`; **Pryce is special** (do not rebuild 932) |
-| Verify | `scripts/build/verify_falkner_gym_hm_patch.py build/a012/2_859 build/a012/2_922 build/a012/2_932 build/a012/2_913` |
+| Clair | member **943**, slot **1** — `scr_seq_clair_gym_slot13.s`, `data/text/631.txt`; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge) |
+| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine,clair}.py` — Falkner/Morty/Jasmine/Clair use `patch_script_slot()`; **Pryce is special** (do not rebuild 932) |
+| Verify | `scripts/build/verify_falkner_gym_hm_patch.py build/a012/2_859 …`; Clair: `scripts/build/verify_clair_gym_patch.py build/a012/2_943` |
 | Recon | `scripts/dev/inspect_gym_slots.py` (after `build/a012_vanilla` exists) — leader trainer id per slot |
 
-**Text bank indexing:** `msgenc` treats every line as a message index, including blank lines. Vanilla dumps of `558.txt` / `614.txt` have a blank line between each string — leader scripts must use indices **0, 2, 4, 6, 8** for pre / post / badge / TM / already-beaten. **`622.txt` compacted (0–4).** `606.txt` keeps two placeholder lines at 3–4 so TM = 5 and already-beaten = 6 (Steelix trade strings stay at 7+). **Before editing any gym text bank, list indices** (`msgenc` line = index) — wrong indices cause blank lines or wrong dialogue (Pryce TM-after-blank, Morty post-battle blank, Falkner elevator TM preamble).
+**Text bank indexing:** `msgenc` treats every line as a message index, including blank lines. Vanilla dumps of `558.txt` / `614.txt` have a blank line between each string — leader scripts must use indices **0, 2, 4, 6, 8** for pre / post / badge / TM / already-beaten. **`622.txt` compacted (0–4).** `606.txt` keeps two placeholder lines at 3–4 so TM = 5 and already-beaten = 6 (Steelix trade strings stay at 7+). **`631.txt` (Blackthorn Gym)** is compact (one string per line, **14** messages) — Clair leader uses **3** pre, **4** post-win, **7** TM flavor; TM intro is **`854` index 9** via `non_npc_msg_extern` (same as Morty). **Before editing any gym text bank, decode indices** (`tools/msgenc -d … build/text/7_NNN`) — off-by-one in `631` shows post-win “Take it.” before battle or bag-full text after TM.
 
 **HM rows (badges earned → reward):** 2 Cut, 3 Rock Smash, 5 Fly, 6 Surf, 7 Strength, 10 Whirlpool, 13 Waterfall, 16 Rock Climb. **1** / **4**: bank **854** lines — Flash / Headbutt TMs **in Poké Marts** (messaging only until mart tables ship). Other counts without an HM row: badge + TM only.
 
@@ -573,29 +574,31 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 | **Whitney** | **886** | **0** (+ slots 1, 4) | **Hard** — sore-loser state machine (first win = cry, no badge; chase in slot 1; badge on second talk). Inject `.include` only on the badge-grant path; do not replace whole script. |
 | Bugsy | TBD | TBD | Run `inspect_gym_slots.py` after vanilla extract |
 | Chuck | TBD | TBD | |
-| Clair | **938** | **13** | Open-world Leader battle — [Blackthorn Gym — Clair](#blackthorn-gym--clair-rising-badge); Rising Badge grant **not** verified in-game |
 | Janine | TBD | TBD | Kanto |
 
 **Template for “easy” leaders (Falkner / Morty / Pryce / Jasmine pattern):** one leader slot, copy script skeleton, set badge + TM constants, fix **text indices** (blank-line banks vs compact), wire `narcs.mk` + patch py + verify member.
 
 ### Blackthorn Gym — Clair (Rising Badge)
 
-**Status (Sep 2026):** **Partial** — Clair NPC uses a dedicated Leader script; you can **battle and win with zero Johto badges**. After “Take it.” the script still **does not finish** (no reliable Rising Badge in case, fanfare, or league obedience line). Track release gap: [TODO § Clair](TODO.md#gym-leaders--story-gates).
+**Status (Nov 2026):** Verified — open-world Leader battle with **0** prior Johto badges; post-win **Rising Badge**, badge fanfare, shared level-cap / shop-hint block, **TM59 (Dragon Pulse)** with item fanfare. Dragon’s Den shrine trial is **not** required for the badge (Den scripts unchanged).
 
 **Design:** [Story-3 Gyms](DESIGN-STORY.md#gyms--access-and-story-policy) — drop 7-badge / Goldenrod Rocket gates; grant Rising Badge in-gym without Dragon’s Den trial (Den / HM follow-ups still open).
 
+**Map IDs (retail):** interior `MAP_T30GYM0101` — zone_event member **137** (`137_T30GYM0101.json`), scr_seq member **943** (not **938**, which is a different map). Clair is zone **obj 0**, sprite **359** (`SPRITE_GSLEADER8`), **script 1**.
+
 | What | Where |
 |------|--------|
-| Leader script | scr_seq member **938**, slot **13** — `armips/scr_seq/scr_seq_clair_gym_slot13.s` → `build/clair_gym_slot13.bin` |
-| scr_seq patch | `tools/patch_scr_seq_gym_clair.py` — slot 13 inject; `trainer_battle` **39→35** (fork Leader id); restores vanilla member **940** (Dragon’s Den) |
-| Clair object | zone_event **024** — `tools/patch_zone_event_blackthorn_gym_clair.py` sets obj **1** script **13** |
-| Text | `data/text/631.txt` — msg **3** pre-battle, **5** post-win admit, **14** league obedience; **12** is gym **plaque** (`Certified Trainer!` + name — not Leader dialogue) |
-| Badge grant (attempt) | `GiveJohtoBadgeOpenWorld` → `RunNewCommand` case **3** in `src/script_new_cmds.c` (avoids vanilla `givebadge` when badge case is empty) |
-| Build / verify | `narcs.mk`; `scripts/build/verify_clair_gym_patch.py build/a012/2_938` |
+| Leader script | scr_seq **943**, slot **1** — `armips/scr_seq/scr_seq_clair_gym_slot13.s` → `build/clair_gym_slot13.bin` (filename legacy: was wrong member/slot) |
+| scr_seq patch | `tools/patch_scr_seq_gym_clair.py` — `patch_script_slot(1, …)`; `trainer_battle` **39→35** (fork Leader id **35**) |
+| Clair object | zone_event **137** — `tools/patch_zone_event_blackthorn_gym_clair.py` sets **obj 0** → script **1** |
+| Text | `data/text/631.txt` — leader **3** pre, **4** post-win, **7** TM flavor, **9** revisit; plaque **11–12**; TM intro **`data/text/854.txt` index 9** |
+| Badge grant | `GiveJohtoBadgeOpenWorld` → `RunNewCommand` case **3** in `src/script_new_cmds.c` |
+| TM flag | `FLAG_GOT_TM59_FROM_CLAIR` (**218**) — `_already_beaten` still grants TM if badge already owned |
+| Build / verify | `narcs.mk` → `2_943`, `2_137`; `scripts/build/verify_clair_gym_patch.py build/a012/2_943` |
 
-**Flow (target):** pre-battle → Morty-style `trainer_battle` + `check_battle_won` → post-win msg → badge bit + midgame badge var → league line → `SEQ_ME_BADGE`.
+**Flow (shipped):** pre-battle (**631** **3**) → Morty-style `trainer_battle` + `check_battle_won` → post-win (**631** **4**) → `GiveJohtoBadgeOpenWorld` + midgame badge var → `SEQ_ME_BADGE` → `gym_badge_hm_reward.inc` (level cap; badge **1** → Flash mart line) → **854** TM intro → bag check → `SEQ_ME_WAZA` → TM59 → flavor (**631** **7**). Loss: **631** **5** then `white_out`.
 
-**Debug notes:** vanilla slot **0** used `trainer_battle(..., VAR_4094, 1, 0)` (msg **631** path that never reached a working `givebadge` tail). If post-win still dies on `wait_button` / fanfare / `RunNewCommand`, disassemble live slot **13** in `build/a012/2_938` and confirm overlay hook for opcode **208** (`Script_RunNewCmd`).
+**Pitfalls:** Do not use **631** file line numbers as script indices (duplicate Yo! lines at **2–3** shift Clair intro to **3**). Vanilla slot **1** ended at msg **5** with no badge (Den trial design). Wrong scr_seq member (**938**) patches a non-playable gym map.
 
 ---
 

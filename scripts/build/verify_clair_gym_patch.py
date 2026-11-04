@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify Blackthorn Gym Clair: zone script 13 + Rising Badge grant in scr_seq 938 slot 13."""
+"""Verify Blackthorn Gym Clair: zone_event 137 + scr_seq 943 slot 1."""
 
 from __future__ import annotations
 
@@ -12,12 +12,19 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from patch_scr_seq_gym_falkner import extract_scripts  # noqa: E402
 
-MEMBER = 938
-LEADER_SLOT = 13
+MEMBER = 943
+ZONE_MEMBER = 137
+LEADER_SLOT = 1
+CLAIR_SPRITE = 359
+CLAIR_OBJ = 0
+CLAIR_SCRIPT = 1
 TRAINER_BATTLE = 0xD5
 TRAINER_CLAIR = 35
 CHECK_BATTLE_WON = 220
-GIVE_JOHTO_BADGE = bytes([0xD0, 0x00, 0x03, 0x07, 0x00])  # RunNewCommand 3, BADGE_RISING
+GIVE_JOHTO_BADGE = bytes([0xD0, 0x00, 0x03, 0x07, 0x00])
+COUNT_BADGES = 296
+MSG_BANK_GYM_REWARDS = 854
+NON_NPC_MSG_EXTERN = 439
 
 
 def main(argv: list[str]) -> int:
@@ -26,6 +33,9 @@ def main(argv: list[str]) -> int:
         return 1
 
     path = Path(argv[1])
+    if path.name != f"2_{MEMBER:03d}":
+        print(f"warning: expected 2_{MEMBER:03d}, got {path.name}", file=sys.stderr)
+
     data = path.read_bytes()
     scripts = extract_scripts(data)
     if LEADER_SLOT >= len(scripts):
@@ -37,6 +47,11 @@ def main(argv: list[str]) -> int:
 
     if GIVE_JOHTO_BADGE not in s:
         print(f"  FAIL: GiveJohtoBadgeOpenWorld not in slot {LEADER_SLOT}")
+        return 1
+
+    extern_cap = struct.pack("<HHH", NON_NPC_MSG_EXTERN, MSG_BANK_GYM_REWARDS, 0)
+    if struct.pack("<H", COUNT_BADGES) not in s or extern_cap not in s:
+        print(f"  FAIL: badge-count HM / level-cap block missing in slot {LEADER_SLOT}")
         return 1
 
     found_battle = False
@@ -64,18 +79,27 @@ def main(argv: list[str]) -> int:
         print(f"  FAIL: no trainer_battle for Clair ({TRAINER_CLAIR}) in slot {LEADER_SLOT}")
         return 1
 
-    print(f"  OK: Rising Badge grant in slot {LEADER_SLOT}")
+    print(f"  OK: Rising Badge + HM reward block in slot {LEADER_SLOT}")
 
-    zone = ROOT / "build/a032/2_024"
+    zone = ROOT / f"build/a032/2_{ZONE_MEMBER:03d}"
     if zone.is_file():
         zdata = zone.read_bytes()
-        pos = 4 + struct.unpack_from("<I", zdata, 0)[0] * 20 + 4
-        obj_off = pos + 32
-        script_id = struct.unpack_from("<H", zdata, obj_off + 10)[0]
-        if script_id != LEADER_SLOT:
-            print(f"  FAIL: Clair obj script {script_id}, expected {LEADER_SLOT}")
+        pos = 0
+        bg = struct.unpack_from("<I", zdata, 0)[0]
+        pos += 4 + bg * 20
+        oc = struct.unpack_from("<I", zdata, pos)[0]
+        pos += 4 + CLAIR_OBJ * 32
+        if oc <= CLAIR_OBJ:
+            print(f"  FAIL: zone {ZONE_MEMBER} missing Clair obj")
             return 1
-        print(f"  OK: zone 024 Clair object script {LEADER_SLOT}")
+        fields = struct.unpack_from("<14H", zdata, pos)
+        if fields[1] != CLAIR_SPRITE:
+            print(f"  FAIL: obj{CLAIR_OBJ} sprite {fields[1]}, expected {CLAIR_SPRITE}")
+            return 1
+        if fields[5] != CLAIR_SCRIPT:
+            print(f"  FAIL: Clair script {fields[5]}, expected {CLAIR_SCRIPT}")
+            return 1
+        print(f"  OK: zone {ZONE_MEMBER:03d} Clair obj{CLAIR_OBJ} script {CLAIR_SCRIPT}")
 
     return 0
 

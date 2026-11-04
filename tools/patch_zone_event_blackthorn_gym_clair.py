@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Blackthorn Gym: Clair uses dedicated Leader script slot 13 (Rising Badge in gym)."""
+"""Blackthorn Gym (MAP_T30GYM0101): verify Clair object on zone_event member 137.
+
+pret: zone_event/137_T30GYM0101.json — Clair is obj0 (SPRITE_GSLEADER8), script slot 1.
+Member 024 is a different map; do not patch it for this gym.
+"""
 
 from __future__ import annotations
 
@@ -7,15 +11,9 @@ import struct
 import sys
 from pathlib import Path
 
-CLAIR_LEADER_SCRIPT = 13
-
-
-def object_fields(obj: bytes) -> list[int]:
-    return list(struct.unpack_from("<14H", obj))
-
-
-def pack_object(fields: list[int], y: int) -> bytes:
-    return struct.pack("<14HI", *fields, y)
+CLAIR_OBJECT_INDEX = 0
+CLAIR_SPRITE_GSLEADER8 = 359
+CLAIR_LEADER_SCRIPT = 1
 
 
 def patch_member(data: bytearray) -> None:
@@ -24,27 +22,31 @@ def patch_member(data: bytearray) -> None:
     pos += 4 + bg_count * 20
     (obj_count,) = struct.unpack_from("<I", data, pos)
     pos += 4
-    if obj_count < 2:
-        raise ValueError(f"expected at least 2 objects, got {obj_count}")
-    obj_off = pos + 32
-    obj = bytes(data[obj_off : obj_off + 32])
-    fields = object_fields(obj)
-    if fields[0] != 1 or fields[1] != 385:
-        raise ValueError(f"obj1 is not Clair (id={fields[0]} sprite={fields[1]})")
+    if obj_count <= CLAIR_OBJECT_INDEX:
+        raise ValueError(f"expected Clair obj{CLAIR_OBJECT_INDEX}, got {obj_count} objects")
+
+    obj_start = pos
+    obj_off = obj_start + CLAIR_OBJECT_INDEX * 32
+    fields = list(struct.unpack_from("<14H", data, obj_off))
+    if fields[1] != CLAIR_SPRITE_GSLEADER8:
+        raise ValueError(f"obj{CLAIR_OBJECT_INDEX} is not Clair (sprite={fields[1]})")
     fields[5] = CLAIR_LEADER_SCRIPT
-    y = struct.unpack_from("<I", obj, 28)[0]
-    data[obj_off : obj_off + 32] = pack_object(fields, y)
+    y = struct.unpack_from("<I", data, obj_off + 28)[0]
+    data[obj_off : obj_off + 28] = struct.pack("<14H", *fields)
+    struct.pack_into("<I", data, obj_off + 28, y)
 
 
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
-        print(f"usage: {argv[0]} <build/a032/2_024>", file=sys.stderr)
+        print(f"usage: {argv[0]} <build/a032/2_137>", file=sys.stderr)
         return 1
     target = Path(argv[1])
+    if target.name != "2_137":
+        print(f"warning: expected 2_137, got {target.name}", file=sys.stderr)
     data = bytearray(target.read_bytes())
     patch_member(data)
     target.write_bytes(data)
-    print(f"Clair obj1 script -> {CLAIR_LEADER_SCRIPT} in {target}")
+    print(f"Clair obj{CLAIR_OBJECT_INDEX} script -> {CLAIR_LEADER_SCRIPT} in {target}")
     return 0
 
 
