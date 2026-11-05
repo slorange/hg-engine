@@ -202,44 +202,27 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 
 ### KB-16 — Encounter moves not rebuilt after species/level change
 
-**Symptom ([TODO.md](TODO.md#known-bugs)):** Pokémon keep **stale move slots** after the engine changes species or effective level — moves **stack or persist** instead of matching the final species at battle level.
+**Status:** **Fixed** — **`ClearMonMoves`** immediately before **`InitBoxMonMoveset`** on wild finalize and scaled trainer parties (user-tested Nov 2026).
+
+**Was:** Pokémon kept **stale move slots** after species or effective level changed — moves **stacked** instead of matching the final species at battle level.
 
 | Source | Example |
 | ------ | ------- |
-| **Wild (ecology)** | Low-level wilds know **Growl** and **Tackle** **plus** the rolled species’ moves — matches **Wooloo** stub (**`WILD_PLACEHOLDER_LEVEL` 5**: **Tackle** / **Growl** at L1). |
-| **Trainers (scaling + devolve)** | Sabrina’s third slot is authored **Alakazam** L55 (`data/Trainers.c` trainer **258**). After badge cap + **`TRAINER_SPECIES_STAGE_ADJUST`**, the slot can appear as **Abra** but still use moves from the pre-adjust line (reported: **Psybeam** — not an Abra level-up move; consistent with leftover **Kadabra**/**Alakazam** learnset from **`PokeParaSet`** before devolution). |
+| **Wild (ecology)** | Low-level wilds knew **Growl** and **Tackle** **plus** the rolled species’ moves — **Wooloo** stub (**`WILD_PLACEHOLDER_LEVEL` 5** in `src/setencount_ecology.c`) left placeholder moves in occupied slots. |
+| **Trainers (scaling + devolve)** | Sabrina slot authored **Alakazam** L55; after **`TRAINER_SPECIES_STAGE_ADJUST`** the slot could be **Abra** but still know **Psybeam** from the pre-adjust **`PokeParaSet`** learnset. |
 
-**Expected:** Only moves legal for the **final** species at the **battle level** ( **`TRAINER_LEVEL_APPROPRIATE_MOVES`** / wild finalize both rely on **`InitBoxMonMoveset`**).
+**Cause:** Vanilla **`InitBoxMonMoveset`** (ARM9 `0x020712D8`; learnset table patches in `armips/asm/levelup.s` only) walks the level-up table and **adds** each legal move into the **first empty** slot (`MOVE_NONE`). It does **not** clear existing slots — so leftover moves from an earlier species or stub **`PokeParaSet`** persist.
 
-**Repro:**
+| Path | Pipeline |
+| ---- | -------- |
+| **Wild** | [KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata) — **`PokeParaSet`(`SPECIES_WOOLOO`, L5)** → **`WildEncounterFinalizeForEncount`** → **`ClearMonMoves`** → **`InitBoxMonMoveset`** (`src/wild_encounter_finalize.c`) |
+| **Trainer** | **`PokeParaSet`(authored species, scaled level)** → … → **`ApplyEncounterStageAdjustToMon`** → **`ClearMonMoves`** → **`InitBoxMonMoveset`** (`src/field/enemy_party.c` when **`TRAINER_LEVEL_APPROPRIATE_MOVES`**) |
 
-- **Wild:** Ecology save → grass (etc.) → low-level fight → check moves.
-- **Trainer:** Few badges → Sabrina (Saffron Gym) → inspect third Pokémon moves in battle (devolved psychics).
+**Fix:** Call **`ClearMonMoves`** (`src/pokemon.c` — zeros four move IDs; same pattern as egg scripts in `src/field/script_commands.c`) before **`InitBoxMonMoveset`**. PP is set when moves are added; no need to extend **`ClearMonMoves`**.
 
-**Cause (architecture):**
+**Verify:** Ecology grass — no **Growl**/**Tackle** unless the species learns them. Low-badge Sabrina — devolved psychics only know **`learnsets.json`** moves at slot level.
 
-| Path | Order today |
-| ---- | ----------- |
-| **Wild** | [KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata) — **`PokeParaSet`(`SPECIES_WOOLOO`, L5)** → **`WildEncounterFinalizeForEncount`** → **`InitBoxMonMoveset`** (`src/wild_encounter_finalize.c`) |
-| **Trainer** | **`PokeParaSet`(authored species, scaled level)** → … → **`ApplyEncounterStageAdjustToMon`** → **`InitBoxMonMoveset`** (`src/field/enemy_party.c`; **`TRAINER_LEVEL_APPROPRIATE_MOVES`** skips authored NARC moves) |
-
-In both cases **`InitBoxMonMoveset`** is supposed to rebuild the set; observed behavior suggests it **does not clear all four slots first** (or something repopulates old moves afterward).
-
-**Fix direction (open):**
-
-| Track | What to check |
-| ----- | ------------- |
-| **Clear before reinit** | Zero move IDs + PP on all slots immediately before **`InitBoxMonMoveset`** whenever species or stage changes |
-| **Wild: drop Wooloo stub** | Build with final ecology species directly — see [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) |
-| **Trainer: order** | Re-run **`InitBoxMonMoveset`** (or full moves wipe) **after** **`ApplyEncounterStageAdjustToMon`** only if current call is ineffective; audit **`ChangeToBattleForm`** / form hooks |
-| **Vanilla `InitBoxMonMoveset`** | ARM9 patch in `armips/asm/levelup.s` — confirm init path replaces vs merges into existing slots |
-
-**Verify after fix:**
-
-- Wild: ecology grass — no **Growl**/**Tackle** unless species learns them.
-- Trainer: Sabrina with low badge cap — devolved psychics only know moves from **`learnsets.json`** at slot level (Abra → **Teleport** only at low levels).
-
-**Related:** [Trainer level scaling](#trainer-level-scaling), [Runtime pipeline](#runtime-pipeline), [KB-13](TODO.md#known-bugs) (party slot corruption — separate symptom).
+**Related:** [Trainer level scaling](#trainer-level-scaling), [Runtime pipeline](#runtime-pipeline), [KB-13](TODO.md#known-bugs) (party slot corruption — separate symptom). Optional follow-up: drop Wooloo stub and **`PokeParaSet`** final species directly ([Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6)).
 
 ### KB-17 — Game Corner held-item prize quantity
 
@@ -775,14 +758,14 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 ## Trainer level scaling
 
-**Status:** level band and **species** stage adjust verified in-game (Sep 2026) — e.g. authored Alakazam → Abra/Kadabra at low caps; Gym Leader cap enabled. **Moves at scaled level:** regressions — stale move slots ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change); e.g. Sabrina **Abra** with **Psybeam**). Gym trainer band + type filter still open ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release), [Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
+**Status:** level band and **species** stage adjust verified in-game (Sep 2026) — e.g. authored Alakazam → Abra/Kadabra at low caps; Gym Leader cap enabled. **Moves at scaled level:** fixed ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)). Gym trainer band + type filter still open ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release), [Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
 
 **Design:** [Battle-2](DESIGN-BATTLES.md#cap-ladder) — badge count → cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Generated parties / dynamic battles: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc).
 
 | Feature | Toggle | Where |
 |---------|--------|--------|
 | Rescale levels | `TRAINER_LEVEL_SCALING` | `MakeTrainerPokemonParty()` in `src/field/enemy_party.c` — `CountPlayerBadges()`, `PickTrainerLevelInBand()` |
-| Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; `InitBoxMonMoveset()` after stage adjust — **broken:** stale moves ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)) |
+| Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; **`ClearMonMoves`** then **`InitBoxMonMoveset()`** after stage adjust ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)) |
 | Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires level scaling): walk **prevos** (level-up + synthetic), then **forward** to the stage for scaled level. Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)). Offline check: `python3 scripts/dev/verify_encounter_stage.py` |
 | Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires level scaling |
 
@@ -1962,7 +1945,7 @@ Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); 
 Re-run audit after eco-fam edits:  
 `python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
 
-**Still open (Wilds-6):** swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)), encounter moves not rebuilt ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)), party bug ([KB-13](TODO.md#known-bugs)). Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
+**Still open (Wilds-6):** swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)), party bug ([KB-13](TODO.md#known-bugs)). Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
 
 ### SAVE_MISC flash (`EcologyWorldSave`)
 

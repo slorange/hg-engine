@@ -96,6 +96,7 @@ static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpeci
     ApplyWildDistanceLevelCapToMon(pp);
     WildEncounterApplyPlayerOtId(pp);
     ResetPartyPokemonAbility(pp);
+    ClearMonMoves(pp);
     InitBoxMonMoveset(&pp->box);
 
     return (u16)(GetMonData(pp, MON_DATA_SPECIES, NULL) & 0x07FF);
