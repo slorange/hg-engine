@@ -454,6 +454,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 #endif
 
 #if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_LEVEL_APPROPRIATE_MOVES)
+        ClearMonMoves(mons[i]);
         InitBoxMonMoveset(&mons[i]->box);
 #endif
 
