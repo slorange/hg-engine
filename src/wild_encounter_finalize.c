@@ -3,6 +3,7 @@
 #include "constants/species.h"
 #include "encounter.h"
 #include "pokemon.h"
+#include "save.h"
 #include "wild_encounter_finalize.h"
 #include "wild_level_caps.h"
 
@@ -59,6 +60,31 @@ static u16 WildEncounterApplySpecies(struct PartyPokemon *pp, u16 vanillaTableSp
     return species;
 }
 
+// Vanilla wild setup uses OTID 0; catch stamps player OT without changing PID — set player OT here so shinies match after catch.
+static void WildEncounterApplyPlayerOtId(struct PartyPokemon *pp)
+{
+    void *saveData;
+    struct PlayerProfile *profile;
+    u32 otId;
+
+    if (pp == NULL) {
+        return;
+    }
+
+    saveData = SaveBlock2_get();
+    if (saveData == NULL) {
+        return;
+    }
+
+    profile = Sav2_PlayerData_GetProfileAddr(saveData);
+    if (profile == NULL) {
+        return;
+    }
+
+    otId = profile->id;
+    SetMonData(pp, MON_DATA_OTID, &otId);
+}
+
 static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpecies, u8 ecologyMethod, BOOL useExplicitMethod)
 {
     if (pp == NULL) {
@@ -68,6 +94,7 @@ static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpeci
     WildEncounterApplySpecies(pp, vanillaTableSpecies, ecologyMethod, useExplicitMethod);
     UpdatePassiveForms(pp);
     ApplyWildDistanceLevelCapToMon(pp);
+    WildEncounterApplyPlayerOtId(pp);
     ResetPartyPokemonAbility(pp);
     InitBoxMonMoveset(&pp->box);
 

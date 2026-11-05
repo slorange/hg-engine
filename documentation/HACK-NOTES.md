@@ -53,9 +53,9 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Magnet Train | [Magnet Train (Goldenrod ↔ Saffron)](#magnet-train-goldenrod--saffron) |
 | Route 4 hiker boost | [Route 4 ledge boost](#route-4-ledge-boost-cerulean--mt-moon) |
 | Jasmine medicine | [Olivine Secret Medicine (Jasmine)](#olivine-secret-medicine-jasmine) |
-| Mart inventories | [Mart expansion (`src/field/mart.c`)](#mart-expansion-srcfieldmartc) |
+| Mart inventories | [Mart expansion (`src/field/mart.c`)](#mart-expansion-srcfieldmartc) → [KB-18](#kb-18--saffron-mart-second-clerk-vanished) |
 | Trade-item evolution | [Trade-item evolution (use on Pokémon)](#trade-item-evolution-use-on-pokémon) |
-| Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
+| Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) → [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full), [KB-17](#kb-17--game-corner-held-item-prize-quantity) |
 | Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [Mom gen / overlay 131](#mom-gen-overlay-131-vs-host-ecologygen), [Encounter hooks (KB-12)](#kb-12--wild-ecology-encounter-hooks-setencountdata), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls), [Mom freeze (KB-14)](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer) |
@@ -154,7 +154,7 @@ python3 scripts/dev/verify_encount_overlay2.py
 
 With **`IMPLEMENT_ECOLOGY_GENERATION`**, expect **`7B64` → `SetEncountData_Ecology+1`**; otherwise **`7B64` = `rom.nds` extract**. **`7B42`** → **`modify_species_encounter_data+1`**. Mismatch **`base/overlay` ≠ rom.nds** (unhooked) → **`make clean && make test.nds`**.
 
-**Related:** [Runtime pipeline](#runtime-pipeline), [ROM integration (Wilds-6)](#rom-integration-wilds-6), [KB-10](#kb-10--surf-wild-encounters-wrong-species) (surf species / scratch clear).
+**Related:** [Runtime pipeline](#runtime-pipeline), [ROM integration (Wilds-6)](#rom-integration-wilds-6), [KB-10](#kb-10--surf-wild-encounters-wrong-species) (surf species / scratch clear), [KB-19](#kb-19--wild-shiny-sparkle-vs-caught-mon) (fixed).
 
 ### KB-14 — Mom ecology gen freeze (overlay 131 compat pointer)
 
@@ -179,6 +179,162 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 **Fix (shipped):** **`static const EcologyCompatView *sEcoGenCompatView`**, **`sEcoGenCompatView = view`** at gen entry, local **`ECO_*`** macro overrides in **`ecology_generate.c`**. Do **not** revert to **`gEcologyCompatView`** inside overlay **131**.
 
 **Related:** [Mom gen — overlay 131 vs host](#mom-gen-overlay-131-vs-host-ecologygen), [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) (wild hook must not call **131** code; Mom **function pointer** to **`EcologyGenerateWorld`** is a separate, patched path).
+
+### KB-15 — Game Corner Pokémon prizes (“party’s full”)
+
+**Symptom ([TODO.md](TODO.md#known-bugs)):** At **Goldenrod** or **Celadon** Game Corner prize clerks, choosing a **Pokémon** coin prize shows *“Your party’s full! Please make some room before you come back.”* while the party still has free slots (fewer than six Pokémon visible in the party menu).
+
+**Design:** [World-4 § Game Corner TMs](DESIGN-WORLD.md#game-corner-tms) — renewable Pokémon prizes (Rotom / Wobbuffet / Smeargle; Porygon / Eevee / Castform).
+
+**Repro:** Coin Case → prize clerk → **Pokémon** submenu (not TM or held items) → enough Coins → confirm. Maps / scr_seq: [Game Corner TM prizes](#game-corner-tm-prizes) (**910** Goldenrod, **804** Celadon).
+
+**Player text:** Goldenrod bank **603** msg **6**; Celadon bank **509** — same “party’s full” line (`data/text/603.txt`, `data/text/509.txt`). Bag-full copy is a **different** message (msg **5** on **603**).
+
+**Fix direction (open):**
+
+| Track | What to check |
+| ----- | ------------- |
+| **Inflated party count** | Vanilla prize flow branches on party size **≥ 6** before **`give_mon`** (scr cmd **137**). Wrong count with fewer living mons → false “full” — compare **`party->count`** vs **`PokeParty_GetPokeCount`** / **`MON_DATA_SPECIES_EXISTS`** per slot ([Heal § party corruption](#heal-after-every-battle), [KB-13](TODO.md#known-bugs)). Open-world intro **3×** `give_mon` may leave bad **`count`** on some saves. |
+| **`give_mon` / `GiveMon` failure** | Script may use the same branch when **`GiveMon`** → **`PokeParty_Add`** returns FALSE even if count &lt; 6. Bisect **`PokeParaSet`** for patched species (**479**, **351**, etc. — `tools/patch_scr_seq_game_corner.py`); confirm scr **`give_mon`** passes u16 species (**`armips/asm/abilities.s`** @ **`0x0204D132`**). Hook: **`GiveMon`** @ **`0x020541DC`** (`hooks`). |
+| **Regression scope** | Confirm TM / held-item prizes still succeed on the same clerk — narrows to Pokémon prize script path in **910** / **804**, not Coin deduction globally. |
+
+**Verify after fix:** new save → 50+ Coins → buy each Pokémon prize once with 1–5 party members; repeat with a full party of six to see the real full message.
+
+### KB-16 — Encounter moves not rebuilt after species/level change
+
+**Symptom ([TODO.md](TODO.md#known-bugs)):** Pokémon keep **stale move slots** after the engine changes species or effective level — moves **stack or persist** instead of matching the final species at battle level.
+
+| Source | Example |
+| ------ | ------- |
+| **Wild (ecology)** | Low-level wilds know **Growl** and **Tackle** **plus** the rolled species’ moves — matches **Wooloo** stub (**`WILD_PLACEHOLDER_LEVEL` 5**: **Tackle** / **Growl** at L1). |
+| **Trainers (scaling + devolve)** | Sabrina’s third slot is authored **Alakazam** L55 (`data/Trainers.c` trainer **258**). After badge cap + **`TRAINER_SPECIES_STAGE_ADJUST`**, the slot can appear as **Abra** but still use moves from the pre-adjust line (reported: **Psybeam** — not an Abra level-up move; consistent with leftover **Kadabra**/**Alakazam** learnset from **`PokeParaSet`** before devolution). |
+
+**Expected:** Only moves legal for the **final** species at the **battle level** ( **`TRAINER_LEVEL_APPROPRIATE_MOVES`** / wild finalize both rely on **`InitBoxMonMoveset`**).
+
+**Repro:**
+
+- **Wild:** Ecology save → grass (etc.) → low-level fight → check moves.
+- **Trainer:** Few badges → Sabrina (Saffron Gym) → inspect third Pokémon moves in battle (devolved psychics).
+
+**Cause (architecture):**
+
+| Path | Order today |
+| ---- | ----------- |
+| **Wild** | [KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata) — **`PokeParaSet`(`SPECIES_WOOLOO`, L5)** → **`WildEncounterFinalizeForEncount`** → **`InitBoxMonMoveset`** (`src/wild_encounter_finalize.c`) |
+| **Trainer** | **`PokeParaSet`(authored species, scaled level)** → … → **`ApplyEncounterStageAdjustToMon`** → **`InitBoxMonMoveset`** (`src/field/enemy_party.c`; **`TRAINER_LEVEL_APPROPRIATE_MOVES`** skips authored NARC moves) |
+
+In both cases **`InitBoxMonMoveset`** is supposed to rebuild the set; observed behavior suggests it **does not clear all four slots first** (or something repopulates old moves afterward).
+
+**Fix direction (open):**
+
+| Track | What to check |
+| ----- | ------------- |
+| **Clear before reinit** | Zero move IDs + PP on all slots immediately before **`InitBoxMonMoveset`** whenever species or stage changes |
+| **Wild: drop Wooloo stub** | Build with final ecology species directly — see [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) |
+| **Trainer: order** | Re-run **`InitBoxMonMoveset`** (or full moves wipe) **after** **`ApplyEncounterStageAdjustToMon`** only if current call is ineffective; audit **`ChangeToBattleForm`** / form hooks |
+| **Vanilla `InitBoxMonMoveset`** | ARM9 patch in `armips/asm/levelup.s` — confirm init path replaces vs merges into existing slots |
+
+**Verify after fix:**
+
+- Wild: ecology grass — no **Growl**/**Tackle** unless species learns them.
+- Trainer: Sabrina with low badge cap — devolved psychics only know moves from **`learnsets.json`** at slot level (Abra → **Teleport** only at low levels).
+
+**Related:** [Trainer level scaling](#trainer-level-scaling), [Runtime pipeline](#runtime-pipeline), [KB-13](TODO.md#known-bugs) (party slot corruption — separate symptom).
+
+### KB-17 — Game Corner held-item prize quantity
+
+**Symptom ([TODO.md](TODO.md#known-bugs)):** One **held-item** coin purchase adds **many copies** to the bag (expected **1**). Reported on Celadon prizes: **12× Luck Incense**, **16× Zoom Lens** after buying from the held-item submenu.
+
+**Repro:** Coin Case → prize clerk → **held items** (not TM or Pokémon) → confirm purchase at **50 Coins** → check bag stack. Maps / scr_seq: [Game Corner TM prizes](#game-corner-tm-prizes) — **804** Celadon, **910** Goldenrod (verify Goldenrod held items too).
+
+**Design:** [World-4 § Game Corner TMs](DESIGN-WORLD.md#game-corner-tms) — one item per transaction at the listed **50**-Coin playtest price.
+
+**Architecture:** Prize flow is vanilla **scr_seq** bytecode (`tools/patch_scr_seq_game_corner.py` patches embedded **item id** `u16`s and **TakeCoins** compare amounts; it does **not** today audit **`giveitem`** quantity operands). Celadon held-item ids include **Zoom Lens** (276) and **Luck Incense** (319) at fixed offsets in **2_804**.
+
+**Fix direction (open):**
+
+| Track | What to check |
+| ----- | ------------- |
+| **Disasm prize blocks** | Per held-item branch in **2_804** / **2_910** — **`giveitem`** (cmd **0x007D**) or **`callstd` std_give_item_verbose** quantity argument; confirm it is **1**, not coin cost or a stale var |
+| **Cost flatten side effect** | **`PRIZE_COIN_COST = 50`** patches only selected **u16** cost sites — quantity may still read **vanilla cost** (e.g. **1000**) or **`VAR_SPECIAL_x8006`** coin balance if script reuses that var |
+| **TM vs held item** | If TM prizes still grant **1**, diff bytecode layout between TM and held-item blocks |
+
+**Verify after fix:** Single purchase → **−50 Coins**, **+1** item; repeat for each Celadon / Goldenrod held-item line.
+
+**Related:** [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full), [Game Corner TM prizes](#game-corner-tm-prizes).
+
+### KB-18 — Saffron Mart second clerk vanished
+
+**Symptom ([TODO.md](TODO.md#known-bugs)):** Inside **Saffron City’s Poké Mart**, the **second teller** (specialty clerk — Up-Grade, Dubious Disc, Twisted Spoon, Payapa Berry) is **gone**. The main clerk still opens the badge-tier **`ScrCmd_MartBuy`** list.
+
+**Design:** [World-6 § Shops](DESIGN-WORLD.md#world-6-shops) — Saffron specialty line matches **`sSaffronMart[]`** in **`src/field/mart.c`**.
+
+**Repro:** Enter Saffron Poké Mart (`T11FS0101`) → compare to another city with two clerks (e.g. Olivine — second clerk still expected) → confirm only one NPC offers shop dialogue / no **`std_special_mart`** clerk on the counter.
+
+**IDs (retail HGSS naming):**
+
+| What | Value |
+| ---- | ----- |
+| Map header | **`MAP_T11FS0101`** (**409**) |
+| scr_seq NARC member | **409** (`build/a012/2_409`) |
+| Specialty inventory | **`sSaffronMart`** — repoint index **15** in [Mart expansion](#mart-expansion-srcfieldmartc) table (`VAR_SPECIAL_x8004` for **`std_special_mart`**, same pattern as Olivine **10** → **`sOlivineMart`**) |
+
+**Fix direction (open):**
+
+| Track | What to check |
+| ----- | ------------- |
+| **zone_event** | Second clerk **obj** — **`hide_flag`**, missing object, or wrong **`scriptId`** on **`409_T11FS0101.json`** (or equivalent extract) |
+| **scr_seq** | Obj script still **`callstd std_special_mart`** with **`VAR_SPECIAL_x8004 = 15`**; not replaced by **`ScrCmd_MartBuy`**-only path from **`MART_EXPANSION`** |
+| **Story flags** | Mom / open-world skip sets **`hide_person`** or hide flags that affect this map (compare vanilla vs new save) |
+| **Regression scope** | Other Kanto/Johto marts with two clerks — all missing or Saffron-only |
+
+**Verify after fix:** Saffron Mart → **two** clerks visible → second opens specialty stock (Up-Grade, etc.).
+
+**Related:** [Mart expansion](#mart-expansion-srcfieldmartc), [Olivine Secret Medicine](#olivine-secret-medicine-jasmine) (working second-clerk reference).
+
+### KB-19 — Wild shiny sparkle vs caught mon
+
+**Status (Nov 2026):** **Fixed** — removed from [TODO.md](TODO.md#known-bugs). **`WildEncounterApplyPlayerOtId`** in **`src/wild_encounter_finalize.c`** sets **`MON_DATA_OTID`** to **`Sav2_PlayerData_GetProfileAddr` → `profile->id`** after level/gender finalize so battle and post-catch **`MonIsShiny`** use the same OTID + PID (vanilla catch no longer re-stamps OT onto OTID **0** rolls).
+
+**Was:** Wild **`PokeParaSet`** used OTID **0**; sparkle in battle could disagree with party after catch.
+
+### KB-20 — Wild encounter crash (single-tester report)
+
+**Symptom ([TODO.md](TODO.md#known-bugs)):** Hard **crash** when entering a **wild** encounter (grass step, surf, rod, headbutt, rock smash — exact method **unconfirmed**). Tester sees immediate freeze or emulator exception; developer **cannot reproduce** on the same shipped **`test.nds`** after retest.
+
+**Status:** **Open / unconfirmed** — one external report only. Treat as **possible** environment, stale ROM, or save-specific corruption until a second repro or exception PC is captured. Do **not** assume ecology is broken globally ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata) regressions were historically **100%** on first wild).
+
+**Repro (when available):** New save vs continued save → note map, time of day, encounter method → trigger wild → note whether crash is **before** battle fade, **during** send-out, or **after**. Compare DeSmuME vs other emulators only if tester used non-default build.
+
+**Collect from reporter (minimum):**
+
+| Item | Why |
+| ---- | --- |
+| **`test.nds` file date** (or commit hash if known) | Stale ROM vs current tree |
+| **Emulator + settings** (especially **Advanced → Exceptions → Break on** in DeSmuME) | Undefined-instruction vs data abort |
+| **New save vs old save** + **party** (species, eggs, full?) | [KB-13](TODO.md#known-bugs) party slot corruption can surface oddly |
+| **Map / route**, **badges**, **lead Pokémon** | Wild level cap + ecology assignment vary by progress |
+| **Ecology gen finished?** (Mom intro line completed without freeze — [KB-14](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer) was fixed Nov 2026) | Incomplete / corrupt ecology flash |
+| **Exception PC** (ARM9 address) if DeSmuME breaks | **`0x023D8xxx`** → overlay **129** ([KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)); **`0x02247xxx`** → overlay **2** encount hooks ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)) |
+
+**Likely buckets (bisect only after repro):**
+
+| Bucket | Clues |
+| ------ | ----- |
+| **Overlay / hook** | Undefined instruction @ **129** or **2**; verify `python3 scripts/dev/verify_encount_overlay2.py` and `verify_overlay129_field_addrs.py` on the **built** tree |
+| **Invalid mon data** | Wrong species id, broken form, or dex sprite path — compare [KB-10](#kb-10--surf-wild-encounters-wrong-species) **`"---"`** / corrupt name cases |
+| **Save-only state** | Same ROM + new save OK, old save crashes → export save for local replay |
+| **One-off emulator** | Single tester, zero dev repro — hardware/renderer edge case; still log emulator version |
+
+**Fix direction (open):**
+
+1. **Reproduce** with reporter save + ROM hash; if impossible, downgrade severity or close when no second report across N builds.
+2. On break: map PC to symbol (`hooks`, overlay 129/2, **`SetEncountData_Ecology`**, **`modify_species_encounter_data`**).
+3. Rule out stale **`base/overlay/overlay_0002.bin`** / wrong **`7B64`** stub ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)) on **tester’s** build artifact.
+
+**Verify after fix:** Same save + map that crashed → wild battle completes; smoke grass + surf + one rod tier on new save.
+
+**Related:** [KB-9](TODO.md#known-bugs) (Mahogany exit — intermittent crash pattern), [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls), [KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata), [KB-13](TODO.md#known-bugs), [Runtime pipeline](#runtime-pipeline).
 
 ---
 
@@ -619,14 +775,14 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 ## Trainer level scaling
 
-**Status:** level band, moves, and stage adjust verified in-game (Sep 2026) — including **devolving** trade/stone finals at low scaled levels (e.g. authored Alakazam → Abra/Kadabra, Vileplume → Oddish/Gloom); Gym Leader cap enabled — Gym trainer band + type filter still open ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release), [Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
+**Status:** level band and **species** stage adjust verified in-game (Sep 2026) — e.g. authored Alakazam → Abra/Kadabra at low caps; Gym Leader cap enabled. **Moves at scaled level:** regressions — stale move slots ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change); e.g. Sabrina **Abra** with **Psybeam**). Gym trainer band + type filter still open ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release), [Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
 
 **Design:** [Battle-2](DESIGN-BATTLES.md#cap-ladder) — badge count → cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Generated parties / dynamic battles: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc).
 
 | Feature | Toggle | Where |
 |---------|--------|--------|
 | Rescale levels | `TRAINER_LEVEL_SCALING` | `MakeTrainerPokemonParty()` in `src/field/enemy_party.c` — `CountPlayerBadges()`, `PickTrainerLevelInBand()` |
-| Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; `InitBoxMonMoveset()` after `ChangeToBattleForm` |
+| Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; `InitBoxMonMoveset()` after stage adjust — **broken:** stale moves ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)) |
 | Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires level scaling): walk **prevos** (level-up + synthetic), then **forward** to the stage for scaled level. Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)). Offline check: `python3 scripts/dev/verify_encounter_stage.py` |
 | Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires level scaling |
 
@@ -1393,6 +1549,8 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 **Verify:** build ROM → sample Goldenrod/Celadon dept floors (both clerks), one town specialty mart, badge-gated 2F shelf at 0 vs 8 badges.
 
+**Known bug:** Saffron second clerk missing — [KB-18](#kb-18--saffron-mart-second-clerk-vanished).
+
 ---
 
 ## Trade-item evolution (use on Pokémon)
@@ -1464,6 +1622,8 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 **Build:** wired in `narcs.mk` after gym scr_seq patches.
 
 **Verify in-game:** Coin Case → Goldenrod Game Corner → right-hand clerk → TM, held-item, and Pokémon submenus; Celadon dept store 5F prize clerk → same lists (different corner).
+
+**Known bugs:** Pokémon submenu party full — [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full). Held items grant multiple copies — [KB-17](#kb-17--game-corner-held-item-prize-quantity).
 
 **Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented).
 
@@ -1802,7 +1962,7 @@ Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); 
 Re-run audit after eco-fam edits:  
 `python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
 
-**Still open (Wilds-6):** swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)), placeholder / party bug ([KB-13](TODO.md#known-bugs)). Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
+**Still open (Wilds-6):** swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)), encounter moves not rebuilt ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)), party bug ([KB-13](TODO.md#known-bugs)). Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
 
 ### SAVE_MISC flash (`EcologyWorldSave`)
 

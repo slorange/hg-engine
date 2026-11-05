@@ -34,6 +34,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **Cinnabar Island** — walking wild encounters on the island (Slugma, Numel, Koffing, Torkoal, Magmar, rare Ditto and **Larvesta**).
 - **Wild held items** — species table rolls (**65%** common / **15%** rare / **20%** nothing); if still empty, **50%** chance of a random berry. With **Compound Eyes** lead: **70%** common / **30%** rare, then **always** a berry.
 - **Per-save wild ecology** — Each new game builds a shuffled assignment of Pokémon families to habitats and encounter methods. Pokémon encounters draw from this list instead of static tables. Applies to grass, caves, Surf, fishing, Headbutt, and Rock Smash. This is not pure random, assignments are filtered based on Type, Encounter method, Rarity, etc.
+- **Wild shinies** — Rate increased to **1/128**
 
 ### Fishing
 

@@ -118,10 +118,10 @@
 // comment out the line below to keep the max at 18
 #define EXPAND_PC_BOXES
 
-// SHINY_ODDS: actual odds are SHINY_ODDS / 65536 (256 => 1/256; vanilla was 8 => ~1/8192)
+// SHINY_ODDS: actual odds are SHINY_ODDS / 65536 (512 => 1/128; vanilla was 8 => ~1/8192)
 // note that changing this still has no chance of spawning shiny mons in for trainers like the tutorial's method does
 // this will change existing mons too!  if you want to change the odds of wild mons only, you will have to add a certain amount of pid rerolls to the AddWildPartyPokemon routine
-#define SHINY_ODDS 256
+#define SHINY_ODDS 512
 
 // FRIENDSHIP_EVOLUTION_THRESHOLD defines the amount of friendship needed to evolve mons with friendship-related evolutions
 // modern generations have this value at 160, older ones at 220.  still max out at 255
