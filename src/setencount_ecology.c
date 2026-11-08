@@ -3,6 +3,7 @@
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
 
 #include "battle.h"
+#include "constants/file.h"
 #include "constants/species.h"
 #include "encounter.h"
 #include "pokemon.h"
@@ -18,8 +19,10 @@ static u32 WildPlaceholderPersonality(void)
     return gf_rand() | (gf_rand() << 16);
 }
 
+// leadMon is the player's party lead (read-only in vanilla, used for ability checks).
+// The wild mon must be built in its own buffer; writing to leadMon clobbers the save party.
 u32 SetEncountData_Ecology(
-    struct PartyPokemon *pp,
+    struct PartyPokemon *leadMon UNUSED,
     u32 rodType,
     void *encInfo UNUSED,
     void *encArea UNUSED,
@@ -31,8 +34,10 @@ u32 SetEncountData_Ecology(
     u16 placeholder;
     struct BATTLE_PARAM *battleParam;
     struct Party *party;
+    struct PartyPokemon *wild;
+    BOOL added;
 
-    if (pp == NULL || bw == NULL) {
+    if (bw == NULL) {
         return FALSE;
     }
 
@@ -46,19 +51,23 @@ u32 SetEncountData_Ecology(
         return FALSE;
     }
 
+    wild = AllocMonZeroed(HEAPID_WORLD);
+    if (wild == NULL) {
+        return FALSE;
+    }
+
     placeholder = SPECIES_WOOLOO;
     rnd = WildPlaceholderPersonality();
     space_for_setmondata = 0;
 
-    PokeParaSet(pp, placeholder, WILD_PLACEHOLDER_LEVEL, 31, TRUE, rnd, 0, 0);
-    WildEncounterFinalizeForEncount(pp, placeholder, encounterType, rodType);
-    ChangeToBattleForm(pp);
+    PokeParaSet(wild, placeholder, WILD_PLACEHOLDER_LEVEL, 31, TRUE, rnd, 0, 0);
+    WildEncounterFinalizeForEncount(wild, placeholder, encounterType, rodType);
+    ChangeToBattleForm(wild);
 
-    if (!PokeParty_Add(party, pp)) {
-        return FALSE;
-    }
+    added = PokeParty_Add(party, wild);
+    sys_FreeMemoryEz(wild);
 
-    return TRUE;
+    return added ? TRUE : FALSE;
 }
 
 #endif

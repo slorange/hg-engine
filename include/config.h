@@ -131,13 +131,13 @@
 // Comment out the line below to revert back to Gen 5- behaviour
 #define FRIENDSHIP_EFFECTS
 
-// RESTORE_ITEMS_AT_BATTLE_END will restore held items that are single-use at the end of battle (Gen 9)
-// comment out the line below to revert back to Gen 8- behavior
+// RESTORE_ITEMS_AT_BATTLE_END will restore held items that are single-use at the end of battle (Gen 9),
+// including berries. Comment out to revert to Gen 8- behavior (held items not renewed after battle).
 #define RESTORE_ITEMS_AT_BATTLE_END
 
-// RESTORE_BERRIES_AT_BATTLE_END also restores held berries (requires RESTORE_ITEMS_AT_BATTLE_END).
-// Gen 9+ leaves berries consumed; comment out to match that behavior.
-#define RESTORE_BERRIES_AT_BATTLE_END
+// When defined, Thief/Covet/swap loot is sent to the bag only after wild battles (not trainer).
+// Comment out to allow bagging those items after trainer battles too.
+#define BATTLE_END_BAG_STOLEN_HELD_ITEMS_WILD_ONLY
 
 // HEAL_AFTER_BATTLE fully restores the player's party (HP, PP, status) when any battle ends
 // comment out the line below to revert to vanilla attrition

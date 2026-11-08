@@ -46,13 +46,7 @@ struct BattleStruct *ServerInit(struct BattleSystem *bw)
     sp->aiWorkTable.item = ItemDataTableLoad(HEAPID_BATTLE_HEAP);
 
 #ifdef RESTORE_ITEMS_AT_BATTLE_END
-
-    // store items for the player's party in sp so we can restore them at the end
-    struct Party *party = SaveData_GetPlayerPartyPtr(SaveBlock2_get());
-    for (int i = 0; i < party->count; i++) {
-        newBS.itemsToRestore[i] = GetMonData(Party_GetMonByIndex(party, i), MON_DATA_HELD_ITEM, NULL);
-    }
-
+    BattleRecordItemsToRestoreAtStart(bw);
 #endif // RESTORE_ITEMS_AT_BATTLE_END
 
     sp->original_terrain = bw->terrain;

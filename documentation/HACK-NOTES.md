@@ -55,7 +55,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Jasmine medicine | [Olivine Secret Medicine (Jasmine)](#olivine-secret-medicine-jasmine) |
 | Mart inventories | [Mart expansion (`src/field/mart.c`)](#mart-expansion-srcfieldmartc) → [KB-18](#kb-18--saffron-mart-second-clerk-vanished) |
 | Trade-item evolution | [Trade-item evolution (use on Pokémon)](#trade-item-evolution-use-on-pokémon) |
-| Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) → [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full), [KB-17](#kb-17--game-corner-held-item-prize-quantity) |
+| Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) → [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full) |
 | Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [Mom gen / overlay 131](#mom-gen-overlay-131-vs-host-ecologygen), [Encounter hooks (KB-12)](#kb-12--wild-ecology-encounter-hooks-setencountdata), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls), [Mom freeze (KB-14)](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer) |
@@ -194,7 +194,7 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 
 | Track | What to check |
 | ----- | ------------- |
-| **Inflated party count** | Vanilla prize flow branches on party size **≥ 6** before **`give_mon`** (scr cmd **137**). Wrong count with fewer living mons → false “full” — compare **`party->count`** vs **`PokeParty_GetPokeCount`** / **`MON_DATA_SPECIES_EXISTS`** per slot ([Heal § party corruption](#heal-after-every-battle), [KB-13](TODO.md#known-bugs)). Open-world intro **3×** `give_mon` may leave bad **`count`** on some saves. |
+| **Inflated party count** | Vanilla prize flow branches on party size **≥ 6** before **`give_mon`** (scr cmd **137**). Wrong count with fewer living mons → false “full” — compare **`party->count`** vs **`PokeParty_GetPokeCount`** / **`MON_DATA_SPECIES_EXISTS`** per slot ([Heal § party corruption](#heal-after-every-battle), [KB-13](#kb-13--kb-17--wild-encounter-overwrote-the-party-lead-fixed)). Open-world intro **3×** `give_mon` may leave bad **`count`** on some saves. |
 | **`give_mon` / `GiveMon` failure** | Script may use the same branch when **`GiveMon`** → **`PokeParty_Add`** returns FALSE even if count &lt; 6. Bisect **`PokeParaSet`** for patched species (**479**, **351**, etc. — `tools/patch_scr_seq_game_corner.py`); confirm scr **`give_mon`** passes u16 species (**`armips/asm/abilities.s`** @ **`0x0204D132`**). Hook: **`GiveMon`** @ **`0x020541DC`** (`hooks`). |
 | **Regression scope** | Confirm TM / held-item prizes still succeed on the same clerk — narrows to Pokémon prize script path in **910** / **804**, not Coin deduction globally. |
 
@@ -222,29 +222,32 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 
 **Verify:** Ecology grass — no **Growl**/**Tackle** unless the species learns them. Low-badge Sabrina — devolved psychics only know **`learnsets.json`** moves at slot level.
 
-**Related:** [Trainer level scaling](#trainer-level-scaling), [Runtime pipeline](#runtime-pipeline), [KB-13](TODO.md#known-bugs) (party slot corruption — separate symptom). Optional follow-up: drop Wooloo stub and **`PokeParaSet`** final species directly ([Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6)).
+**Related:** [Trainer level scaling](#trainer-level-scaling), [Runtime pipeline](#runtime-pipeline), [KB-13](#kb-13--kb-17--wild-encounter-overwrote-the-party-lead-fixed) (lead overwritten by wild — fixed). Optional follow-up: drop Wooloo stub and **`PokeParaSet`** final species directly ([Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6)).
 
-### KB-17 — Game Corner held-item prize quantity
+### KB-13 / KB-17 — Wild encounter overwrote the party lead (fixed)
 
-**Symptom ([TODO.md](TODO.md#known-bugs)):** One **held-item** coin purchase adds **many copies** to the bag (expected **1**). Reported on Celadon prizes: **12× Luck Incense**, **16× Zoom Lens** after buying from the held-item submenu.
+**Status (Nov 2026):** **Fixed**, pending playtest ([TODO § Needs testing](TODO.md#needs-testing)).
 
-**Repro:** Coin Case → prize clerk → **held items** (not TM or Pokémon) → confirm purchase at **50 Coins** → check bag stack. Maps / scr_seq: [Game Corner TM prizes](#game-corner-tm-prizes) — **804** Celadon, **910** Goldenrod (verify Goldenrod held items too).
+**Symptoms:**
 
-**Design:** [World-4 § Game Corner TMs](DESIGN-WORLD.md#game-corner-tms) — one item per transaction at the listed **50**-Coin playtest price.
+- **KB-13:** after a wild (fishing) battle the **lead party slot** became the wild species (e.g. Bulbasaur → Tentacool).
+- **KB-17:** held items "duplicated" after wild battles (first misfiled as Game Corner prize quantity). Later builds: the wild's held item ended up on the lead and the player's own item went to the bag, even when fleeing turn 1.
 
-**Architecture:** Prize flow is vanilla **scr_seq** bytecode (`tools/patch_scr_seq_game_corner.py` patches embedded **item id** `u16`s and **TakeCoins** compare amounts; it does **not** today audit **`giveitem`** quantity operands). Celadon held-item ids include **Zoom Lens** (276) and **Luck Incense** (319) at fixed offsets in **2_804**.
+**Root cause:** vanilla **`SetEncountData`** (overlay 2 **`0x02247B64`**) receives the player's **save-party lead** as its first argument — **read-only**, for ability checks (Static, Magnet Pull, Cute Charm). Vanilla builds the wild in its own buffer (**`EncountParamSet`**: **`AllocMonZeroed(11)`** → **`AddWildPartyPokemon`** → **`sys_FreeMemoryEz`**). **`SetEncountData_Ecology`** treated that pointer as the wild buffer, so **`PokeParaSet`** + finalize (species, level, held item) overwrote the save lead. Usually invisible: the battle setup party is copied from the save **before** this call and copied back **after** battle. Anything reading the save party mid-battle saw the wild instead — including the **`RESTORE_ITEMS_AT_BATTLE_END`** start snapshot in **`ServerInit`**, so the reconcile treated the wild's item as the player's.
 
-**Fix direction (open):**
+**Fix:**
 
-| Track | What to check |
-| ----- | ------------- |
-| **Disasm prize blocks** | Per held-item branch in **2_804** / **2_910** — **`giveitem`** (cmd **0x007D**) or **`callstd` std_give_item_verbose** quantity argument; confirm it is **1**, not coin cost or a stale var |
-| **Cost flatten side effect** | **`PRIZE_COIN_COST = 50`** patches only selected **u16** cost sites — quantity may still read **vanilla cost** (e.g. **1000**) or **`VAR_SPECIAL_x8006`** coin balance if script reuses that var |
-| **TM vs held item** | If TM prizes still grant **1**, diff bytecode layout between TM and held-item blocks |
+| File | Change |
+| ---- | ------ |
+| `src/setencount_ecology.c` | Build the wild in **`AllocMonZeroed(HEAPID_WORLD)`**, **`PokeParty_Add`**, free; never write the lead pointer |
+| `src/battle/battle_pokemon.c` | **`BattleEndReconcilePlayerHeldItems`**: start = save party at **`ServerInit`**; end + writes = battle party (**`BattleWorkPokemonParamGet(bw, 0, i)`**) — the copy vanilla syncs back after the hook. Per slot: same → no change; different → bag loot (wild-only when **`BATTLE_END_BAG_STOLEN_HELD_ITEMS_WILD_ONLY`**), clear, re-equip start item |
 
-**Verify after fix:** Single purchase → **−50 Coins**, **+1** item; repeat for each Celadon / Goldenrod held-item line.
+**Pitfalls:**
 
-**Related:** [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full), [Game Corner TM prizes](#game-corner-tm-prizes).
+- The **`Battle_End`** hook runs **before** vanilla copies battle parties → setup (`0x022384D6` loop). Writes to the **save** party there are overwritten later; write the **battle** party.
+- Don't snapshot via **`BattleWorkPokemonParamGet`** in **`ServerInit`** — battle work isn't ready (battle-start undefined-instruction crash).
+
+**Related:** [KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata), [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6).
 
 ### KB-18 — Saffron Mart second clerk vanished
 
@@ -283,7 +286,9 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 
 ### KB-20 — Wild encounter crash (single-tester report)
 
-**Symptom ([TODO.md](TODO.md#known-bugs)):** Hard **crash** when entering a **wild** encounter (grass step, surf, rod, headbutt, rock smash — exact method **unconfirmed**). Tester sees immediate freeze or emulator exception; developer **cannot reproduce** on the same shipped **`test.nds`** after retest.
+**Resolved (Nov 2026) — emulator setting, not a ROM bug:** the tester fixed it by changing DeSmuME **Config → 3D Settings → 3D Rendering Engine** from **SoftRasterizer** to **OpenGL 3.2**. Removed from [TODO.md](TODO.md#known-bugs). If a wild-encounter crash is reported again, ask for the renderer setting first. Original notes below.
+
+**Symptom:** Hard **crash** when entering a **wild** encounter (grass step, surf, rod, headbutt, rock smash — exact method **unconfirmed**). Tester sees immediate freeze or emulator exception; developer **cannot reproduce** on the same shipped **`test.nds`** after retest.
 
 **Status:** **Open / unconfirmed** — one external report only. Treat as **possible** environment, stale ROM, or save-specific corruption until a second repro or exception PC is captured. Do **not** assume ecology is broken globally ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata) regressions were historically **100%** on first wild).
 
@@ -295,7 +300,7 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 | ---- | --- |
 | **`test.nds` file date** (or commit hash if known) | Stale ROM vs current tree |
 | **Emulator + settings** (especially **Advanced → Exceptions → Break on** in DeSmuME) | Undefined-instruction vs data abort |
-| **New save vs old save** + **party** (species, eggs, full?) | [KB-13](TODO.md#known-bugs) party slot corruption can surface oddly |
+| **New save vs old save** + **party** (species, eggs, full?) | [KB-13](#kb-13--kb-17--wild-encounter-overwrote-the-party-lead-fixed) party slot corruption can surface oddly |
 | **Map / route**, **badges**, **lead Pokémon** | Wild level cap + ecology assignment vary by progress |
 | **Ecology gen finished?** (Mom intro line completed without freeze — [KB-14](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer) was fixed Nov 2026) | Incomplete / corrupt ecology flash |
 | **Exception PC** (ARM9 address) if DeSmuME breaks | **`0x023D8xxx`** → overlay **129** ([KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)); **`0x02247xxx`** → overlay **2** encount hooks ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)) |
@@ -317,7 +322,7 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 
 **Verify after fix:** Same save + map that crashed → wild battle completes; smoke grass + surf + one rod tier on new save.
 
-**Related:** [KB-9](TODO.md#known-bugs) (Mahogany exit — intermittent crash pattern), [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls), [KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata), [KB-13](TODO.md#known-bugs), [Runtime pipeline](#runtime-pipeline).
+**Related:** [KB-9](TODO.md#known-bugs) (Mahogany exit — intermittent crash pattern), [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls), [KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata), [KB-13](#kb-13--kb-17--wild-encounter-overwrote-the-party-lead-fixed), [Runtime pipeline](#runtime-pipeline).
 
 ---
 
@@ -1606,7 +1611,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 
 **Verify in-game:** Coin Case → Goldenrod Game Corner → right-hand clerk → TM, held-item, and Pokémon submenus; Celadon dept store 5F prize clerk → same lists (different corner).
 
-**Known bugs:** Pokémon submenu party full — [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full). Held items grant multiple copies — [KB-17](#kb-17--game-corner-held-item-prize-quantity).
+**Known bugs:** Pokémon submenu party full — [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full).
 
 **Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented).
 
@@ -1785,7 +1790,7 @@ All tracked — nothing belongs in `scripts/local/`:
 
 **Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Deferred addon scope (Gym hints, flash persistence, other methods): [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
 
-**Status (Nov 2026):** **Compat + Mom gen + encounter hooks + flash persistence shipped** — Mom gen freeze fixed ([KB-14](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer)). World generated on **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`**; seed = trainer ID; **`EcologyWorldSave`** in **`SAVE_MISC`**. **`SetEncountData_Ecology`** @ **`7B64`** rolls species for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Placeholder species **Wooloo** (level 5) until **`WildEncounterFinalizeForEncount`** runs. **Still open:** swarms/Safari/special policy, real mon creation (drop placeholder **`PokeParaSet`**), party corruption ([TODO **KB-13**](TODO.md#known-bugs)). **Cave land time:** **`ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME`** (Cave habitat only; encounter roll in **`ecology_encounter.c`**). **Pairing** + **Required on Route** + baseline ladder: [ecology.md](ecology.md).
+**Status (Nov 2026):** **Compat + Mom gen + encounter hooks + flash persistence shipped** — Mom gen freeze fixed ([KB-14](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer)). World generated on **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`**; seed = trainer ID; **`EcologyWorldSave`** in **`SAVE_MISC`**. **`SetEncountData_Ecology`** @ **`7B64`** rolls species for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Placeholder species **Wooloo** (level 5) until **`WildEncounterFinalizeForEncount`** runs. **Still open:** swarms/Safari/special policy, real mon creation (drop placeholder **`PokeParaSet`**). Lead-overwrite bug fixed ([KB-13 / KB-17](#kb-13--kb-17--wild-encounter-overwrote-the-party-lead-fixed)). **Cave land time:** **`ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME`** (Cave habitat only; encounter roll in **`ecology_encounter.c`**). **Pairing** + **Required on Route** + baseline ladder: [ecology.md](ecology.md).
 
 **Goal:** Assign shuffleable **families** to placement **groups** and methods; persist per save; hooks read assignment instead of static NARC species. **Next:** swarms, category rules for gifts/statics/legendaries, gen rules for new eco-fam columns.
 
@@ -1945,7 +1950,7 @@ Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); 
 Re-run audit after eco-fam edits:  
 `python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
 
-**Still open (Wilds-6):** swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)), party bug ([KB-13](TODO.md#known-bugs)). Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
+**Still open (Wilds-6):** swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)). Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
 
 ### SAVE_MISC flash (`EcologyWorldSave`)
 

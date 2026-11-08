@@ -14,6 +14,7 @@
 #include "battle.h"
 #include "overlay.h"
 #include "pokemon.h"
+#include "save.h"
 
 #ifdef DEBUG_BATTLE_SCENARIOS
 #include "test_battle.h"
@@ -1019,6 +1020,124 @@ void TryRevertFormChange(struct BattleStruct *sp, void *bw, int client_no)
     RevertFormChange(pp, species, form_no);
 }
 
+#ifdef RESTORE_ITEMS_AT_BATTLE_END
+
+int LONG_CALL PokeParty_GetPokeCount(struct Party *party);
+
+static BOOL BattleEndMayBagHeldLoot(struct BattleSystem *bw)
+{
+#ifdef BATTLE_END_BAG_STOLEN_HELD_ITEMS_WILD_ONLY
+    u32 battleType = BattleTypeGet(bw);
+
+    if (battleType & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_NO_EXPERIENCE)) {
+        return FALSE;
+    }
+#endif
+    return TRUE;
+}
+
+static void BattleEndTryBagHeldLoot(struct BattleSystem *bw, u16 itemId)
+{
+    if (itemId == ITEM_NONE || !BattleEndMayBagHeldLoot(bw) || bw->bag == NULL) {
+        return;
+    }
+    (void)Bag_AddItem(bw->bag, itemId, 1, 5);
+}
+
+static void BattleEndSetPartyHeldItem(struct PartyPokemon *pp, u16 itemId)
+{
+    u16 current;
+    u16 zero;
+
+    if (pp == NULL) {
+        return;
+    }
+
+    current = (u16)GetMonData(pp, MON_DATA_HELD_ITEM, NULL);
+    if (current == itemId) {
+        return;
+    }
+
+    zero = ITEM_NONE;
+    SetMonData(pp, MON_DATA_HELD_ITEM, &zero);
+    if (itemId != ITEM_NONE) {
+        SetMonData(pp, MON_DATA_HELD_ITEM, &itemId);
+    }
+    HandleBoxPokemonFormeChanges(&pp->box);
+}
+
+static struct Party *BattleEndGetSavePlayerParty(void)
+{
+    return SaveData_GetPlayerPartyPtr(SaveBlock2_get());
+}
+
+void BattleRecordItemsToRestoreAtStart(struct BattleSystem *bw UNUSED)
+{
+    int i;
+    int count;
+    struct Party *party;
+
+    for (i = 0; i < (int)NELEMS(newBS.itemsToRestore); i++) {
+        newBS.itemsToRestore[i] = ITEM_NONE;
+    }
+
+    party = BattleEndGetSavePlayerParty();
+    if (party == NULL) {
+        return;
+    }
+
+    count = PokeParty_GetPokeCount(party);
+    if (count > (int)NELEMS(newBS.itemsToRestore)) {
+        count = (int)NELEMS(newBS.itemsToRestore);
+    }
+
+    for (i = 0; i < count; i++) {
+        struct PartyPokemon *pp = Party_GetMonByIndex(party, i);
+
+        if (GetMonData(pp, MON_DATA_SPECIES_EXISTS, NULL) != FALSE) {
+            newBS.itemsToRestore[i] = (u16)GetMonData(pp, MON_DATA_HELD_ITEM, NULL);
+        }
+    }
+}
+
+static void BattleEndReconcilePlayerHeldItems(struct BattleSystem *bw)
+{
+    int i;
+    int count;
+    struct PartyPokemon *pp;
+
+    count = BattleWorkPokeCountGet(bw, 0);
+    if (count > (int)NELEMS(newBS.itemsToRestore)) {
+        count = (int)NELEMS(newBS.itemsToRestore);
+    }
+
+    for (i = 0; i < count; i++) {
+        u16 startItem = newBS.itemsToRestore[i];
+        u16 endItem;
+
+        pp = BattleWorkPokemonParamGet(bw, 0, i);
+        if (pp == NULL || GetMonData(pp, MON_DATA_SPECIES_EXISTS, NULL) == FALSE) {
+            continue;
+        }
+
+        endItem = (u16)GetMonData(pp, MON_DATA_HELD_ITEM, NULL);
+        if (startItem == endItem) {
+            continue;
+        }
+
+        if (endItem != ITEM_NONE) {
+            BattleEndTryBagHeldLoot(bw, endItem);
+        }
+        BattleEndSetPartyHeldItem(pp, startItem);
+    }
+
+    for (i = 0; i < (int)NELEMS(newBS.itemsToRestore); i++) {
+        newBS.itemsToRestore[i] = ITEM_NONE;
+    }
+}
+
+#endif // RESTORE_ITEMS_AT_BATTLE_END
+
 /**
  *  @brief clean up illusion and revert battle-specific forms (megas) to their base forms
  *
@@ -1026,11 +1145,10 @@ void TryRevertFormChange(struct BattleStruct *sp, void *bw, int client_no)
  */
 void BattleEndRevertFormChange(struct BattleSystem *bw)
 {
-    int i, j;
+    int i;
     struct PartyPokemon *pp;
     u16 monsno;
     u16 form;
-    u16 newItems[6] = { 0, 0, 0, 0, 0, 0 };
 
     newBS.SideMega[0] = 0;
     newBS.SideMega[1] = 0;
@@ -1059,68 +1177,7 @@ void BattleEndRevertFormChange(struct BattleSystem *bw)
     }
 
 #ifdef RESTORE_ITEMS_AT_BATTLE_END
-    // grab newItems array for use later
-    for (i = 0; i < BattleWorkPokeCountGet(bw, 0); i++) {
-        newItems[i] = GetMonData(BattleWorkPokemonParamGet(bw, 0, i), MON_DATA_HELD_ITEM, NULL);
-    }
-
-    // add the items that the mons have stolen to the bag
-    for (i = 0; i < BattleWorkPokeCountGet(bw, 0); i++) {
-        u32 battleItem = newItems[i];
-        u32 originalQuantity = 0;
-        u32 newQuantity = 0;
-
-        // count up both old and new quantities of an item
-        if (battleItem) {
-            for (j = 0; j < BattleWorkPokeCountGet(bw, 0); j++) {
-                if (battleItem == newItems[j]) {
-                    // current item is identical to an item that we've previously handled, move to the next one
-                    if (i > j) {
-                        continue;
-                    } else {
-                        newQuantity++;
-                    }
-                }
-            }
-            for (j = 0; j < BattleWorkPokeCountGet(bw, 0); j++) {
-                if (battleItem == newBS.itemsToRestore[j]) {
-                    originalQuantity++;
-                }
-            }
-        } else {
-            continue;
-        }
-
-        // if mon i has a held item that has a bigger quantity across the party than was started with, add the extra quantity to the bag
-        if (newQuantity > originalQuantity && (BattleTypeGet(bw) & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_NO_EXPERIENCE)) == 0) {
-            Bag_AddItem(bw->bag, battleItem, newQuantity - originalQuantity, 5);
-        }
-    }
-
-    // restore items regardless of if it's a trainer battle
-    // Avoid SetMonData while an item is already held (unused berry/consumable, or Thief/Covet pickup), or there will be a crash.
-    for (i = 0; i < BattleWorkPokeCountGet(bw, 0); i++) {
-        u32 battleItem = newBS.itemsToRestore[i];
-        u32 currentItem;
-
-        pp = BattleWorkPokemonParamGet(bw, 0, i);
-        currentItem = GetMonData(pp, MON_DATA_HELD_ITEM, NULL);
-        if (currentItem != 0 || battleItem == 0) {
-            continue;
-        }
-#ifdef RESTORE_BERRIES_AT_BATTLE_END
-        SetMonData(pp, MON_DATA_HELD_ITEM, &battleItem);
-#else
-        if (!IS_ITEM_BERRY(battleItem)) {
-            SetMonData(pp, MON_DATA_HELD_ITEM, &battleItem);
-        }
-#endif // RESTORE_BERRIES_AT_BATTLE_END
-    }
-
-    // set to zero after the items have already been restored to maybe prevent observed byte loss
-    for (i = 0; i < BattleWorkPokeCountGet(bw, 0); i++) {
-        newBS.itemsToRestore[i] = 0;
-    }
+    BattleEndReconcilePlayerHeldItems(bw);
 #endif // RESTORE_ITEMS_AT_BATTLE_END
 
 #ifdef DEBUG_BATTLE_SCENARIOS

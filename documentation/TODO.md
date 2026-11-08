@@ -18,11 +18,18 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
 | **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
 | **KB-9** | Crash when leaving **Mahogany Gym** (returning to the field after exit). | Inconsistent — could not reproduce on retest. |
-| **KB-13** | Wild fishing battle showed an encounter mon instead of the player’s own Pokémon; after the battle the **lead party slot** was overwritten (e.g. wild **Buizel**, lead **Bulbasaur** → **Tentacool**). | One-time repro |
 | **KB-15** | Game Corner **Pokémon** prizes — clerk says “Your party’s full!” even when the party has fewer than six Pokémon. | Goldenrod scr_seq **910** / Celadon **804**; TM and held-item prizes may still work. [HACK-NOTES § KB-15](HACK-NOTES.md#kb-15--game-corner-pokémon-prizes-partys-full). |
-| **KB-17** | Game Corner **held-item** prizes grant **multiple copies** per purchase (e.g. **12** Luck Incense, **16** Zoom Lens) instead of **1**. | Celadon scr_seq **804** / Goldenrod **910** held-item submenu; **50**-Coin playtest pricing. [HACK-NOTES § KB-17](HACK-NOTES.md#kb-17--game-corner-held-item-prize-quantity). |
 | **KB-18** | **Saffron City Poké Mart** — the **second shop teller** (specialty clerk) is **missing** from the interior; only the badge-tier clerk remains. | `MAP_T11FS0101` / scr_seq **409**; specialty shelf **`sSaffronMart`** (mart index **15**). [HACK-NOTES § KB-18](HACK-NOTES.md#kb-18--saffron-mart-second-clerk-vanished). |
-| **KB-20** | **Wild encounter crash** — game crashes when a wild battle starts (or on the step that triggers it). | **Single tester report; not reproduced** on developer retest (same **`test.nds`** build). [HACK-NOTES § KB-20](HACK-NOTES.md#kb-20--wild-encounter-crash-single-tester-report). |
+---
+
+## Needs testing
+
+Implemented or suspected-fixed items that still need an in-game playtest before they can be removed.
+
+| Item | Design | What to test |
+| ---- | ------ | ------------ |
+| **Day Care respects level cap** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Day Care EXP must not raise Pokémon above the current badge-based player cap. Unconfirmed, needs investigation or testing |
+| **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
 
 ---
 
@@ -63,7 +70,6 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Day Care respects level cap** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Day Care EXP must not raise Pokémon above the current badge-based player cap. Unconfirmed, needs investigation or testing |
 | **Hidden Ability rates** | | Wild **10%** HA; ordinary trainers **20%**; Gym trainers **30%** |
 | **Trainer IVs / EVs** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Scale trainer **EVs** with badges; **higher IVs** for Gym Leaders |
 | **HM removal via move replace** | [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) | HMs removable through normal move replacement, not only the Move Deleter |

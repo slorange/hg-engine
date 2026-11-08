@@ -1323,6 +1323,10 @@ struct PACKED newBattleStruct {
 #endif // RESTORE_ITEMS_AT_BATTLE_END
 };
 
+#ifdef RESTORE_ITEMS_AT_BATTLE_END
+void BattleRecordItemsToRestoreAtStart(struct BattleSystem *bw);
+#endif // RESTORE_ITEMS_AT_BATTLE_END
+
 struct PACKED BATTLE_PARAM {
     /*0x0000*/ u32 fight_type;
     /*0x0004*/ struct Party *poke_party[4];
