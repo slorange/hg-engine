@@ -599,8 +599,9 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Pryce | member **932** — **append-only** HM patch ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); `data/text/622.txt` |
 | Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, `data/text/606.txt` |
 | Clair | member **943**, slot **0** — `scr_seq_clair_gym_slot13.s`, `data/text/631.txt`; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge) |
-| Brock (Kanto) | member **752**, slot **0** (script 1, zone_event **426** obj 1) — `scr_seq_brock_gym_slot0.s`, text bank **462** (0 pre, 1 post-win, 2 badge, 3/4 vanilla TM flavor — unused, 5 revisit, **10–15** TM choice labels `TM26 Earthquake` …); trainer **253**. **TM choice PoC** ([World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms)): prompt **854** index **12**, then `menu_init` (local bank, B disabled) over the full pool → `std_give_item_verbose`. `FLAG_GOT_TM80_FROM_BROCK` now means "took a Brock TM" (bag-full retry on revisit). No per-TM badge minimums or rematch picks yet. Slot **3** (script 4) is on-transition (level scripts **525**) — leave vanilla |
-| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine,clair,brock}.py` — all but Pryce use `patch_script_slot()` (appends the new slot body, repoints only that slot; vanilla bytes never move); **Pryce is special** (do not rebuild 932) |
+| Brock (Kanto) | member **752**, slot **0** — `scr_seq_brock_gym_slot0.s`, text **462**, trainer **253** / rematch **720**; TM choice + badge gating + rematch — [Pewter Gym](#pewter-gym--brock--gym-tm-choice-pool-prototype). `FLAG_GOT_TM80_FROM_BROCK` (**383**) = took a Brock TM. On-transition slot **3** (level scripts **525**) — leave vanilla |
+| Misty (Kanto) | member **760**, slot **0** — `scr_seq_misty_gym_slot0.s`, text **469** (pre **8**, post **9**, badge **10**, revisit **13**, labels **17–19**, rematch **20–23**); trainer **254** / rematch **721**; TM03 / TM18 / TM55 (Brine **4** badges) — [Cerulean Gym](#cerulean-gym--misty--gym-tm-choice-pool). `FLAG_GOT_TM03_FROM_MISTY` (**384**). On-transition slot **3** (level scripts **533**) — leave vanilla; slots **4–7** = Machine Part / Rocket (story skip flags) — do not patch |
+| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine,clair,brock,misty}.py` — all but Pryce use `patch_script_slot()` (appends the new slot body, repoints only that slot; vanilla bytes never move); **Pryce is special** (do not rebuild 932) |
 | Badge test hook (fixed Nov 2026) | `hooks` line `PlayerProfile_TestBadgeFlag_hook 02028F98` used branch register **r1**, which is the `badgeNumber` argument — the stub overwrote it with the hook address, so every non-bypass `TestBadgeFlag` returned FALSE (trainer card showed no badges, `CheckBadge` always 0, mart badge rows hidden) while `count_badges` / save menu still counted correctly. Now **r2**. **Rule:** the last column in `hooks` is the scratch register for the jump stub — pick one that is **not an argument** of the hooked function (r0–r3 are args) |
 | Slot order pitfall | Vanilla slot bodies are often stored **out of table order** (e.g. 943: slot 0 at byte 274, slot 1 at 26). The old `extract_scripts` + `build_scr_seq` rebuild silently dropped / misaligned slots — fixed in `patch_scr_seq_gym_falkner.py` only. Ferry / rod-guru / Mom / other patchers still carry their **own copy** of the old rebuild; unaudited — suspect them first if a patched map crashes on entry or an NPC runs the wrong script |
 | Map header lookup | Script IDs in zone_event / level scripts are **1-based** (script N = slot N−1). Find a map's scr_seq / level-script / msg / zone_event members from the arm9 map header table (24-byte entries) before patching |
@@ -751,7 +752,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 ### Pewter Gym — Brock + Gym TM choice pool (prototype)
 
-**Status (Nov 2026):** **Verified in-game** — first win (badge, level cap, HM row, badge-gated TM menu, farewell) **and** rematch (offer / decline / battle / TM pick). Brock = first Kanto leader on the shared HM/level-cap flow **and** the only leader with the [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) choice menu + rematch. Template for rolling the TM choice out to the other leaders.
+**Status (Nov 2026):** **Verified in-game** — first win (badge, level cap, HM row, badge-gated TM menu, farewell) **and** rematch (offer / decline / battle / TM pick). Brock = first Kanto leader on the shared HM/level-cap flow **and** the [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) choice-menu template (Misty = second). Template for rolling the TM choice out to the other leaders.
 
 **Map IDs:** `MAP_T03GYM0101` (473) → scr_seq **752**, level scripts **525**, msg bank **462**, zone_event **426**. Brock = zone **obj 1** (sprite 373), **script 1 = slot 0**. Level scripts **525** = `02 04 00 …` → on-transition **script 4 = slot 3** (leave vanilla).
 
@@ -781,7 +782,22 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Per-leader text to author when rolling out:** TM labels, rematch offer, rematch accept, rematch win, farewell (4 custom lines + labels). Check `data/Trainers.c` for a vanilla rematch trainer id (same `TRAINERCLASS_LEADER_*`, higher index — e.g. Brock 253 / 720).
 
-**Not done yet:** rest of the leaders, and generating labels from `src/item.c` instead of hand-typing. Menu height with >6 entries untested (Brock is the largest pool at 6).
+**Not done yet:** remaining leaders after Misty, and generating labels from `src/item.c` instead of hand-typing. Menu height with >6 entries untested (Brock is the largest pool at 6).
+
+### Cerulean Gym — Misty + Gym TM choice pool
+
+**Status (Nov 2026):** shipped in tree — same flow as [Pewter Gym](#pewter-gym--brock--gym-tm-choice-pool-prototype) (HM / level cap, TM menu, rematch). Playtest before calling verified.
+
+**Map IDs:** `MAP_T04GYM0101` (427) → scr_seq **760**, level scripts **533**, msg bank **469**, zone_event **382**. Leader **script 1 = slot 0**. Level scripts **533** → on-transition **script 4 = slot 3** (leave vanilla).
+
+| What | Where |
+|------|--------|
+| Leader script | `armips/scr_seq/scr_seq_misty_gym_slot0.s` → `build/misty_gym_slot0.bin` |
+| Patch / verify | `tools/patch_scr_seq_gym_misty.py build/a012/2_760`; `scripts/build/verify_falkner_gym_hm_patch.py build/a012/2_760`; `narcs.mk` + `SCR_SEQ_PATCH_ONLY` |
+| Text | `data/text/469.txt` — indices **0–16** vanilla (Rocket / sign / leader / Machine Part); **17–23** appended (TM labels + rematch + farewell). Prompt **854** index **12** |
+| Vanilla facts | trainer **254**, rematch **721**, `GiveBadge BADGE_CASCADE` + `addvar VAR_UNK_4135`, `FLAG_GOT_TM03_FROM_MISTY` (**384**). Vanilla slot **0** had no `settrainerflag` — not added |
+
+**Pool:** Water Pulse / Rain Dance (**0** badges), Brine (**4**). Three-menu entry count (no >6 scroll test).
 
 ---
 

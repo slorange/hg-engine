@@ -36,9 +36,9 @@ Brock	TM69	Rock Polish	Rock	Status	-	-	20	0	In game		The user polishes its body 
 Brock	TM80	Rock Slide	Rock	Physical	75	90	10	4	In game		Large boulders are hurled at the foe to inflict damage. It may also make the target flinch.
 Brock	TM71	Stone Edge	Rock	Physical	100	80	5	8	In game		The user stabs the foe with a sharpened stone. It has a high critical-hit ratio.
 Brock	TM26	Earthquake	Ground	Physical	100	100	10	12	In game	Badge cap anchor (best move in pool)	The user sets off an earthquake that hits all the Pokémon in the battle.
-Misty	TM03	Water Pulse	Water	Special	60	100	20	0	Proposed		The user attacks the foe with a pulsing blast of water. It may also confuse the foe.
-Misty	TM18	Rain Dance	Water	Status	-	-	5	0	Proposed		The user summons a heavy rain that falls for five turns, powering up Water-type moves.
-Misty	TM55	Brine	Water	Special	65	100	10	4	Proposed		If the foe’s HP is down to about half, this attack will hit with double the power.
+Misty	TM03	Water Pulse	Water	Special	60	100	20	0	In game		The user attacks the foe with a pulsing blast of water. It may also confuse the foe.
+Misty	TM18	Rain Dance	Water	Status	-	-	5	0	In game		The user summons a heavy rain that falls for five turns, powering up Water-type moves.
+Misty	TM55	Brine	Water	Special	65	100	10	4	In game		If the foe’s HP is down to about half, this attack will hit with double the power.
 Lt. Surge	TM34	Shock Wave	Electric	Special	60	-	20	0	Proposed		The user strikes the foe with a quick jolt of electricity. This attack cannot be evaded.
 Lt. Surge	TM57	Charge Beam	Electric	Special	50	90	10	0	Proposed		The user fires a concentrated bundle of electricity. It may also raise the user’s Sp. Atk stat.
 Lt. Surge	TM73	Thunder Wave	Electric	Status	-	90	20	2	Proposed		A weak electric charge is launched at the foe. It causes paralysis if it hits.
