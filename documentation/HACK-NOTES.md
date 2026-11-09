@@ -598,7 +598,9 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Pryce | member **932** — **append-only** HM patch ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); `data/text/622.txt` |
 | Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, `data/text/606.txt` |
 | Clair | member **943**, slot **0** — `scr_seq_clair_gym_slot13.s`, `data/text/631.txt`; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge) |
-| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine,clair}.py` — Falkner/Morty/Jasmine/Clair use `patch_script_slot()`; **Pryce is special** (do not rebuild 932) |
+| Brock (Kanto) | member **752**, slot **0** (script 1, zone_event **426** obj 1) — `scr_seq_brock_gym_slot0.s`, text bank **462** (0 pre, 1 post-win, 2 badge, 3/4 TM flavor by gender, 5 revisit); trainer **253**, TM80, `FLAG_GOT_TM80_FROM_BROCK`. Slot **3** (script 4) is on-transition (level scripts **525**) — leave vanilla |
+| Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine,clair,brock}.py` — all but Pryce use `patch_script_slot()` (appends the new slot body, repoints only that slot; vanilla bytes never move); **Pryce is special** (do not rebuild 932) |
+| Map header lookup | Script IDs in zone_event / level scripts are **1-based** (script N = slot N−1). Find a map's scr_seq / level-script / msg / zone_event members from the arm9 map header table (24-byte entries) before patching |
 | Verify | `scripts/build/verify_falkner_gym_hm_patch.py build/a012/2_859 …`; Clair: `scripts/build/verify_clair_gym_patch.py build/a012/2_943` |
 | Recon | `scripts/dev/inspect_gym_slots.py` (after `build/a012_vanilla` exists) — leader trainer id per slot |
 

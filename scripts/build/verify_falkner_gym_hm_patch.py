@@ -46,8 +46,9 @@ def script_offset(data: bytes, index: int) -> int:
 
 def script_body(data: bytes, index: int) -> bytes:
     count = find_scrdef_end(data)
-    start = script_offset(data, index)
-    end = script_offset(data, index + 1) if index + 1 < count else len(data)
+    starts = [script_offset(data, i) for i in range(count)]
+    start = starts[index]
+    end = min((s for s in starts if s > start), default=len(data))
     return data[start:end]
 
 
