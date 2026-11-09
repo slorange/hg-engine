@@ -8,6 +8,11 @@
 // Pewter Gym Brock — Leader talk script (scr_seq 752 slot 0 = script 1, MAP_T03GYM0101).
 
 .equ TRAINER_LEADER_BROCK, 253
+.equ ITEM_TM026, 353
+.equ ITEM_TM037, 364
+.equ ITEM_TM039, 366
+.equ ITEM_TM069, 396
+.equ ITEM_TM071, 398
 .equ ITEM_TM080, 407
 
 .equ SCORE_EVENT_BADGE_GET, 22
@@ -18,9 +23,13 @@
 .equ MSG_PRE_BATTLE, 0
 .equ MSG_POST_BATTLE, 1
 .equ MSG_RECEIVED_BADGE, 2
-.equ MSG_TM_FLAVOR_M, 3
-.equ MSG_TM_FLAVOR_F, 4
 .equ MSG_ALREADY_BEATEN, 5
+.equ MSG_TM_CHOICE_TM26, 10
+.equ MSG_TM_CHOICE_TM37, 11
+.equ MSG_TM_CHOICE_TM39, 12
+.equ MSG_TM_CHOICE_TM69, 13
+.equ MSG_TM_CHOICE_TM71, 14
+.equ MSG_TM_CHOICE_TM80, 15
 
 .if GYM_BADGE_COUNT_FIELD_REWARDS == 0
 .error "Build via tools/patch_scr_seq_gym_brock.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
@@ -59,18 +68,51 @@ scr_seq_brock_gym_leader:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
-    non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_TM_INTRO
-    wait_button
+    non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_TM_CHOOSE
+    touchscreen_menu_hide
+    menu_init 1, 1, 0, 0, VAR_SPECIAL_RESULT
+    menu_item_add MSG_TM_CHOICE_TM26, 255, 0
+    menu_item_add MSG_TM_CHOICE_TM37, 255, 1
+    menu_item_add MSG_TM_CHOICE_TM39, 255, 2
+    menu_item_add MSG_TM_CHOICE_TM69, 255, 3
+    menu_item_add MSG_TM_CHOICE_TM71, 255, 4
+    menu_item_add MSG_TM_CHOICE_TM80, 255, 5
+    menu_exec
+    touchscreen_menu_show
     closemsg
-    goto_if_no_item_space ITEM_TM080, 1, _bag_full
-    play_fanfare SEQ_ME_WAZA
-    wait_fanfare
-    item_vars ITEM_TM080, 1
-    giveitem VAR_SPECIAL_x8004, VAR_SPECIAL_x8005, VAR_SPECIAL_RESULT
+    switch VAR_SPECIAL_RESULT
+    case 0, _pick_tm26
+    case 1, _pick_tm37
+    case 2, _pick_tm39
+    case 3, _pick_tm69
+    case 4, _pick_tm71
+    goto _pick_tm80
+
+_pick_tm26:
+    setvar VAR_SPECIAL_x8004, ITEM_TM026
+    goto _give_tm
+_pick_tm37:
+    setvar VAR_SPECIAL_x8004, ITEM_TM037
+    goto _give_tm
+_pick_tm39:
+    setvar VAR_SPECIAL_x8004, ITEM_TM039
+    goto _give_tm
+_pick_tm69:
+    setvar VAR_SPECIAL_x8004, ITEM_TM069
+    goto _give_tm
+_pick_tm71:
+    setvar VAR_SPECIAL_x8004, ITEM_TM071
+    goto _give_tm
+_pick_tm80:
+    setvar VAR_SPECIAL_x8004, ITEM_TM080
+
+_give_tm:
+    setvar VAR_SPECIAL_x8005, 1
+    hasspaceforitem VAR_SPECIAL_x8004, VAR_SPECIAL_x8005, VAR_SPECIAL_RESULT
+    compare VAR_SPECIAL_RESULT, 0
+    goto_if_eq _bag_full
+    callstd std_give_item_verbose
     setflag FLAG_GOT_TM80_FROM_BROCK
-    buffer_players_name 0
-    gender_msgbox MSG_TM_FLAVOR_M, MSG_TM_FLAVOR_F
-    wait_button
     closemsg
     releaseall
     end
