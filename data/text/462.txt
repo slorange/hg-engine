@@ -8,12 +8,12 @@ Yo! Legend in the making! You look...\freally rocking.\rAre you battling the Gym
 Yo! Legend in the making! That Gym\ndidn’t give you much trouble.\rThe way you took charge was\nreally inspiring.\fI mean that seriously.
 Pewter City Pokémon Gym
 Pewter City Pokémon Gym\rLeader: Brock\nCertified Trainer!\f{STRVAR_1 3, 0, 0}
-TM26 Earthquake
 TM37 Sandstorm
 TM39 Rock Tomb
 TM69 Rock Polish
-TM71 Stone Edge
 TM80 Rock Slide
+TM71 Stone Edge
+TM26 Earthquake
 Brock: Back for another round?\nHow about a rematch?
 Brock: All right! Show me how much\nstronger your Pokémon have grown!\r
 Brock: Your Pokémon are as tough\nas ever. You’ve earned another\freward from me!\r

@@ -25,12 +25,12 @@
 .equ MSG_POST_BATTLE, 1
 .equ MSG_RECEIVED_BADGE, 2
 .equ MSG_ALREADY_BEATEN, 5
-.equ MSG_TM_CHOICE_TM26, 10
-.equ MSG_TM_CHOICE_TM37, 11
-.equ MSG_TM_CHOICE_TM39, 12
-.equ MSG_TM_CHOICE_TM69, 13
+.equ MSG_TM_CHOICE_TM37, 10
+.equ MSG_TM_CHOICE_TM39, 11
+.equ MSG_TM_CHOICE_TM69, 12
+.equ MSG_TM_CHOICE_TM80, 13
 .equ MSG_TM_CHOICE_TM71, 14
-.equ MSG_TM_CHOICE_TM80, 15
+.equ MSG_TM_CHOICE_TM26, 15
 .equ MSG_REMATCH_OFFER, 16
 .equ MSG_REMATCH_ACCEPT, 17
 .equ MSG_REMATCH_WON, 18
@@ -84,29 +84,29 @@ _tm_grant:
     touchscreen_menu_hide
     count_badges VAR_SPECIAL_x8000
     menu_init 1, 1, 0, 0, VAR_SPECIAL_RESULT
-    menu_item_add MSG_TM_CHOICE_TM37, 255, 1
-    menu_item_add MSG_TM_CHOICE_TM39, 255, 2
-    menu_item_add MSG_TM_CHOICE_TM69, 255, 3
+    menu_item_add MSG_TM_CHOICE_TM37, 255, 0
+    menu_item_add MSG_TM_CHOICE_TM39, 255, 1
+    menu_item_add MSG_TM_CHOICE_TM69, 255, 2
     compare VAR_SPECIAL_x8000, BADGES_TM80
     goto_if_lt _menu_show
-    menu_item_add MSG_TM_CHOICE_TM80, 255, 5
+    menu_item_add MSG_TM_CHOICE_TM80, 255, 3
     compare VAR_SPECIAL_x8000, BADGES_TM71
     goto_if_lt _menu_show
     menu_item_add MSG_TM_CHOICE_TM71, 255, 4
     compare VAR_SPECIAL_x8000, BADGES_TM26
     goto_if_lt _menu_show
-    menu_item_add MSG_TM_CHOICE_TM26, 255, 0
+    menu_item_add MSG_TM_CHOICE_TM26, 255, 5
 _menu_show:
     menu_exec
     touchscreen_menu_show
     closemsg
     switch VAR_SPECIAL_RESULT
-    case 0, _pick_tm26
-    case 1, _pick_tm37
-    case 2, _pick_tm39
-    case 3, _pick_tm69
+    case 0, _pick_tm37
+    case 1, _pick_tm39
+    case 2, _pick_tm69
+    case 3, _pick_tm80
     case 4, _pick_tm71
-    goto _pick_tm80
+    goto _pick_tm26
 
 _pick_tm26:
     setvar VAR_SPECIAL_x8004, ITEM_TM026

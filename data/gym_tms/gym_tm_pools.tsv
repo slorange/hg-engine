@@ -39,11 +39,11 @@ Brock	TM26	Earthquake	Ground	Physical	100	100	10	12	In game	Badge cap anchor (be
 Misty	TM03	Water Pulse	Water	Special	60	100	20	0	In game		The user attacks the foe with a pulsing blast of water. It may also confuse the foe.
 Misty	TM18	Rain Dance	Water	Status	-	-	5	0	In game		The user summons a heavy rain that falls for five turns, powering up Water-type moves.
 Misty	TM55	Brine	Water	Special	65	100	10	4	In game		If the foe’s HP is down to about half, this attack will hit with double the power.
-Lt. Surge	TM34	Shock Wave	Electric	Special	60	-	20	0	Proposed		The user strikes the foe with a quick jolt of electricity. This attack cannot be evaded.
-Lt. Surge	TM57	Charge Beam	Electric	Special	50	90	10	0	Proposed		The user fires a concentrated bundle of electricity. It may also raise the user’s Sp. Atk stat.
-Lt. Surge	TM73	Thunder Wave	Electric	Status	-	90	20	2	Proposed		A weak electric charge is launched at the foe. It causes paralysis if it hits.
-Lt. Surge	TM25	Thunder	Electric	Special	110	70	10	8	Proposed		A wicked thunderbolt is dropped on the foe to inflict damage. It may also leave the target paralyzed.
-Lt. Surge	TM24	Thunderbolt	Electric	Special	90	100	15	10	Proposed		A strong electric blast is loosed at the foe. It may also leave the foe paralyzed.
+Lt. Surge	TM34	Shock Wave	Electric	Special	60	-	20	0	In game		The user strikes the foe with a quick jolt of electricity. This attack cannot be evaded.
+Lt. Surge	TM57	Charge Beam	Electric	Special	50	90	10	0	In game		The user fires a concentrated bundle of electricity. It may also raise the user’s Sp. Atk stat.
+Lt. Surge	TM73	Thunder Wave	Electric	Status	-	90	20	2	In game		A weak electric charge is launched at the foe. It causes paralysis if it hits.
+Lt. Surge	TM25	Thunder	Electric	Special	110	70	10	8	In game		A wicked thunderbolt is dropped on the foe to inflict damage. It may also leave the target paralyzed.
+Lt. Surge	TM24	Thunderbolt	Electric	Special	90	100	15	10	In game		A strong electric blast is loosed at the foe. It may also leave the foe paralyzed.
 Erika	TM09	Bullet Seed	Grass	Physical	25	100	30	0	Proposed		The user forcefully shoots seeds at the foe. Two to five seeds are shot in rapid succession.
 Erika	TM86	Grass Knot	Grass	Special	var	100	20	2	Proposed		The user snares the foe with grass and trips it. The heavier the foe, the greater the damage.
 Erika	TM19	Giga Drain	Grass	Special	75	100	10	4	Proposed		A nutrient-draining attack. The user’s HP is restored by half the damage taken by the target.

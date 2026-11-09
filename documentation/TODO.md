@@ -20,6 +20,8 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-9** | Crash when leaving **Mahogany Gym** (returning to the field after exit). | Inconsistent — could not reproduce on retest. |
 | **KB-15** | Game Corner **Pokémon** prizes — clerk says “Your party’s full!” even when the party has fewer than six Pokémon. | Goldenrod scr_seq **910** / Celadon **804**; TM and held-item prizes may still work. [HACK-NOTES § KB-15](HACK-NOTES.md#kb-15--game-corner-pokémon-prizes-partys-full). |
 | **KB-18** | **Saffron City Poké Mart** — the **second shop teller** (specialty clerk) is **missing** from the interior; only the badge-tier clerk remains. | `MAP_T11FS0101` / scr_seq **409**; specialty shelf **`sSaffronMart`** (mart index **15**). [HACK-NOTES § KB-18](HACK-NOTES.md#kb-18--saffron-mart-second-clerk-vanished). |
+| **KB-21** | **Mist** — when the **opponent** uses Mist, it starts **Sandstorm** (weather / message / field effect) instead of team Mist. **Player’s own Mist OK**. | Same data/scripts for both sides in source; suspect **enemy / trainer battle path** (party build, client IDs, or AI execution) — not `Moves.c` effect wiring. Repro vs trainers; compare `enemy_party` / battle controller for defender vs attacker. |
+| **KB-22** | **Thunder Wave** — when the **opponent** uses it, appears to **miss every time** (or never paralyzes). **Player’s own Thunder Wave OK**. | Player path works; enemy path may differ (`BattleSystem_CheckMoveHit`, before-move checks, or trainer move data). Repro vs wild vs trainer; note target types (Ground = no effect, not miss). |
 ---
 
 ## Needs testing
@@ -28,6 +30,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 | Item | Design | What to test |
 | ---- | ------ | ------------ |
+| **Brock — Gym TM choice menu** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Pewter Gym post-defeat TM picker: labels match unlock order then TM number; badge minimums per [`gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv); menu selections map correctly (values **0–5**); rematch TM flow. [HACK-NOTES § Pewter Gym](HACK-NOTES.md#pewter-gym--brock--gym-tm-choice-pool-prototype). |
 | **Day Care respects level cap** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Day Care EXP must not raise Pokémon above the current badge-based player cap. Unconfirmed, needs investigation or testing |
 | **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
 
