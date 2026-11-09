@@ -8,6 +8,7 @@
 // Pewter Gym Brock — Leader talk script (scr_seq 752 slot 0 = script 1, MAP_T03GYM0101).
 
 .equ TRAINER_LEADER_BROCK, 253
+.equ TRAINER_LEADER_BROCK_REMATCH, 720
 .equ ITEM_TM026, 353
 .equ ITEM_TM037, 364
 .equ ITEM_TM039, 366
@@ -30,6 +31,10 @@
 .equ MSG_TM_CHOICE_TM69, 13
 .equ MSG_TM_CHOICE_TM71, 14
 .equ MSG_TM_CHOICE_TM80, 15
+.equ MSG_REMATCH_OFFER, 16
+.equ MSG_REMATCH_ACCEPT, 17
+.equ MSG_REMATCH_WON, 18
+.equ MSG_FAREWELL, 19
 
 // Minimum badges (incl. Boulder) to offer each TM; Sandstorm / Rock Tomb / Rock Polish always.
 // Gated entries are added in ascending order so one early exit skips the rest.
@@ -47,6 +52,7 @@ scr_seq_brock_gym_leader:
     play_se SEQ_SE_DP_SELECT
     lockall
     faceplayer
+    goto_if_set FLAG_GOT_TM80_FROM_BROCK, _rematch_offer
     CheckBadge BADGE_BOULDER, VAR_SPECIAL_RESULT
     compare VAR_SPECIAL_RESULT, 1
     goto_if_eq _already_beaten
@@ -127,6 +133,8 @@ _give_tm:
     goto_if_eq _bag_full
     callstd std_give_item_verbose
     setflag FLAG_GOT_TM80_FROM_BROCK
+    npc_msg MSG_FAREWELL
+    wait_button
     closemsg
     releaseall
     end
@@ -139,6 +147,26 @@ _bag_full:
 
 _already_beaten:
     goto_if_unset FLAG_GOT_TM80_FROM_BROCK, _tm_grant
+_rematch_offer:
+    npc_msg MSG_REMATCH_OFFER
+    yesno VAR_SPECIAL_RESULT
+    compare VAR_SPECIAL_RESULT, 1
+    goto_if_eq _rematch_declined
+    npc_msg MSG_REMATCH_ACCEPT
+    closemsg
+    trainer_battle TRAINER_LEADER_BROCK_REMATCH, 0, 0, 0
+    check_battle_won VAR_SPECIAL_RESULT
+    compare VAR_SPECIAL_RESULT, 0
+    goto_if_eq _white_out
+    lockall
+    faceplayer
+    npc_msg MSG_REMATCH_WON
+    closemsg
+    // Cleared so a bag-full rematch reward is retried on the next talk instead of offering another battle.
+    clearflag FLAG_GOT_TM80_FROM_BROCK
+    goto _tm_grant
+
+_rematch_declined:
     npc_msg MSG_ALREADY_BEATEN
     wait_button
     closemsg

@@ -14,3 +14,7 @@ TM39 Rock Tomb
 TM69 Rock Polish
 TM71 Stone Edge
 TM80 Rock Slide
+Brock: Back for another round?\nHow about a rematch?
+Brock: All right! Show me how much\nstronger your Pokémon have grown!\r
+Brock: Your Pokémon are as tough\nas ever. You’ve earned another\freward from me!\r
+Brock: I’ll keep polishing my rock\nPokémon’s defenses.\fCome back for a rematch anytime.\nI’ll be ready for you!
