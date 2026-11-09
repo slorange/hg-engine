@@ -772,7 +772,11 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 5. Copy Brock's `_tm_grant` block; keep **`touchscreen_menu_hide` / `touchscreen_menu_show` around the menu** — without hide the menu never draws and the game soft-locks on the prompt (A does nothing).
 6. Leaders already on the HM flow (Falkner, Morty, Pryce, Jasmine, Clair) currently use a fixed TM + `854` index **9** intro — replace that tail with the menu. Pryce is append-only (932) — patch his HM-ext blob, not a slot rebuild.
 
-**Not done yet:** per-TM **minimum badge** gating (design: authored per `(Leader, TM)`; would need `count_badges` + conditional `menu_item_add`), **rematch** picks (no rematch infra), and generating labels from `src/item.c` instead of hand-typing. Menu height with >6 entries untested (Brock is the largest pool at 6).
+**Pool data:** [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv) — one row per `(Leader, TM)` with move stats (from `data/Moves.c` / `sMachineMoves`), **Min Badges**, and **Status** (`In game` vs `Proposed`). Hand-edited planning sheet; **not read by the build yet** — when rolling a leader out, copy its Min Badges into that leader's `.s` (`BADGES_TMxx`) and flip Status. If a future generator emits menu labels / gating from it, wire it in `narcs.mk` and keep the TSV as the source of truth.
+
+**Badge gating (shipped for Brock):** `count_badges VAR_SPECIAL_x8000` before `menu_init`; ungated TMs added first, then gated TMs in **ascending** requirement order, each preceded by `compare VAR_SPECIAL_x8000, BADGES_TMxx` / `goto_if_lt _menu_show` (one early exit skips all higher tiers). Menu **values stay fixed per TM** (not display position), so the `switch` table is unchanged. Brock: Sandstorm / Rock Tomb / Rock Polish **0**, Rock Slide **4**, Stone Edge **8**, Earthquake **12** (count includes the badge just won). Every pool needs at least one **0**-badge entry or the menu could be empty.
+
+**Not done yet:** **rematch** picks (no rematch infra), and generating labels from `src/item.c` instead of hand-typing. Menu height with >6 entries untested (Brock is the largest pool at 6).
 
 ---
 

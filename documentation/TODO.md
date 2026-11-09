@@ -38,7 +38,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
 | **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
-| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Per-Leader pools authored. **Working prototype: Brock** (full pool, choice menu after defeat, verified in-game) — [HACK-NOTES § Pewter Gym](HACK-NOTES.md#pewter-gym--brock--gym-tm-choice-pool-prototype). Remaining: roll out to other Leaders, **minimum badge per TM**, rematch picks |
+| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Per-Leader pools authored. **Working prototype: Brock** (full pool, choice menu after defeat, verified in-game, badge-gated) — [HACK-NOTES § Pewter Gym](HACK-NOTES.md#pewter-gym--brock--gym-tm-choice-pool-prototype). Proposed per-TM badge minimums for all Leaders: [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). Remaining: roll out to other Leaders (with their badge minimums), rematch picks |
 
 ---
 

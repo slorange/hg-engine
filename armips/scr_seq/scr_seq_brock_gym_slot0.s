@@ -31,6 +31,12 @@
 .equ MSG_TM_CHOICE_TM71, 14
 .equ MSG_TM_CHOICE_TM80, 15
 
+// Minimum badges (incl. Boulder) to offer each TM; Sandstorm / Rock Tomb / Rock Polish always.
+// Gated entries are added in ascending order so one early exit skips the rest.
+.equ BADGES_TM80, 4
+.equ BADGES_TM71, 8
+.equ BADGES_TM26, 12
+
 .if GYM_BADGE_COUNT_FIELD_REWARDS == 0
 .error "Build via tools/patch_scr_seq_gym_brock.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
@@ -70,13 +76,21 @@ scr_seq_brock_gym_leader:
 _tm_grant:
     non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_TM_CHOOSE
     touchscreen_menu_hide
+    count_badges VAR_SPECIAL_x8000
     menu_init 1, 1, 0, 0, VAR_SPECIAL_RESULT
-    menu_item_add MSG_TM_CHOICE_TM26, 255, 0
     menu_item_add MSG_TM_CHOICE_TM37, 255, 1
     menu_item_add MSG_TM_CHOICE_TM39, 255, 2
     menu_item_add MSG_TM_CHOICE_TM69, 255, 3
-    menu_item_add MSG_TM_CHOICE_TM71, 255, 4
+    compare VAR_SPECIAL_x8000, BADGES_TM80
+    goto_if_lt _menu_show
     menu_item_add MSG_TM_CHOICE_TM80, 255, 5
+    compare VAR_SPECIAL_x8000, BADGES_TM71
+    goto_if_lt _menu_show
+    menu_item_add MSG_TM_CHOICE_TM71, 255, 4
+    compare VAR_SPECIAL_x8000, BADGES_TM26
+    goto_if_lt _menu_show
+    menu_item_add MSG_TM_CHOICE_TM26, 255, 0
+_menu_show:
     menu_exec
     touchscreen_menu_show
     closemsg
