@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify Blackthorn Gym Clair: zone_event 137 + scr_seq 943 slot 1."""
+"""Verify Blackthorn Gym Clair: zone_event 137 + scr_seq 943 slot 0 (script 1)."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from patch_scr_seq_gym_falkner import extract_scripts  # noqa: E402
 
 MEMBER = 943
 ZONE_MEMBER = 137
-LEADER_SLOT = 1
+LEADER_SLOT = 0
 CLAIR_SPRITE = 359
 CLAIR_OBJ = 0
 CLAIR_SCRIPT = 1

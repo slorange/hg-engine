@@ -65,40 +65,14 @@ def script_offset(data: bytes, index: int) -> int:
 
 
 def extract_scripts(data: bytes) -> list[bytes]:
+    # Vanilla slot bodies are often stored out of table order (e.g. 943: slot 0 after slot 1).
     _, count = find_scrdef_end(data)
+    starts = [script_offset(data, i) for i in range(count)]
     scripts: list[bytes] = []
-    for i in range(count):
-        start = script_offset(data, i)
-        end = script_offset(data, i + 1) if i + 1 < count else len(data)
+    for start in starts:
+        end = min((s for s in starts if s > start), default=len(data))
         scripts.append(data[start:end])
     return scripts
-
-
-def scrdef_word(data: bytes) -> int:
-    fd_pos, _ = find_scrdef_end(data)
-    return struct.unpack_from("<I", data, fd_pos)[0]
-
-
-def build_scr_seq(script_bodies: list[bytes], scrdef: int) -> bytes:
-    n = len(script_bodies)
-    table_bytes = (n + 1) * 4
-    script_start = table_bytes - 2
-
-    abs_starts: list[int] = []
-    pos = script_start
-    for body in script_bodies:
-        abs_starts.append(pos)
-        pos += len(body)
-
-    out = bytearray(table_bytes)
-    for i in range(n):
-        rel = abs_starts[i] - (i * 4 + 4)
-        struct.pack_into("<i", out, i * 4, rel)
-    struct.pack_into("<I", out, n * 4, scrdef)
-
-    body = b"".join(script_bodies)
-    out[script_start : script_start + len(body)] = body
-    return bytes(out)
 
 
 def load_vanilla_member() -> bytearray:
@@ -159,9 +133,11 @@ def patch_script_slot(data: bytearray, slot_index: int, slot_blob: bytes) -> Non
             f"slot {slot_index} grew suspiciously large "
             f"({len(slot_blob)} vs vanilla {len(vanilla_slot)}, max {max_slot})"
         )
-    scripts[slot_index] = slot_blob
-    rebuilt = build_scr_seq(scripts, scrdef_word(data))
-    data[:] = rebuilt
+    # Append and repoint only this slot: vanilla code is never moved, so cross-slot
+    # relative jumps / movement pointers in other slots stay valid.
+    new_start = len(data)
+    data.extend(slot_blob)
+    struct.pack_into("<i", data, slot_index * 4, new_start - (slot_index * 4 + 4))
 
 
 def patch_slot1(data: bytearray, slot1: bytes) -> None:

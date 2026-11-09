@@ -597,7 +597,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Morty | member **922**, slot **1** — `scr_seq_morty_gym_slot1.s`, `data/text/614.txt` |
 | Pryce | member **932** — **append-only** HM patch ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); `data/text/622.txt` |
 | Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, `data/text/606.txt` |
-| Clair | member **943**, slot **1** — `scr_seq_clair_gym_slot13.s`, `data/text/631.txt`; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge) |
+| Clair | member **943**, slot **0** — `scr_seq_clair_gym_slot13.s`, `data/text/631.txt`; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge) |
 | Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine,clair}.py` — Falkner/Morty/Jasmine/Clair use `patch_script_slot()`; **Pryce is special** (do not rebuild 932) |
 | Verify | `scripts/build/verify_falkner_gym_hm_patch.py build/a012/2_859 …`; Clair: `scripts/build/verify_clair_gym_patch.py build/a012/2_943` |
 | Recon | `scripts/dev/inspect_gym_slots.py` (after `build/a012_vanilla` exists) — leader trainer id per slot |
@@ -728,12 +728,12 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Design:** [Story-3 Gyms](DESIGN-STORY.md#gyms--access-and-story-policy) — drop 7-badge / Goldenrod Rocket gates; grant Rising Badge in-gym without Dragon’s Den trial (Den / HM follow-ups still open).
 
-**Map IDs (retail):** interior `MAP_T30GYM0101` — zone_event member **137** (`137_T30GYM0101.json`), scr_seq member **943** (not **938**, which is a different map). Clair is zone **obj 0**, sprite **359** (`SPRITE_GSLEADER8`), **script 1**.
+**Map IDs (retail):** interior `MAP_T30GYM0101` — zone_event member **137** (`137_T30GYM0101.json`), scr_seq member **943** (not **938**, which is a different map). Clair is zone **obj 0**, sprite **359** (`SPRITE_GSLEADER8`), **script 1**. Script IDs are **1-based**: script 1 = slot **0**. Slot **1** (script 2) is the on-transition script (level scripts member **716**) — patching it crashes / hangs on gym entry.
 
 | What | Where |
 |------|--------|
-| Leader script | scr_seq **943**, slot **1** — `armips/scr_seq/scr_seq_clair_gym_slot13.s` → `build/clair_gym_slot13.bin` (filename legacy: was wrong member/slot) |
-| scr_seq patch | `tools/patch_scr_seq_gym_clair.py` — `patch_script_slot(1, …)`; `trainer_battle` **39→35** (fork Leader id **35**) |
+| Leader script | scr_seq **943**, slot **0** — `armips/scr_seq/scr_seq_clair_gym_slot13.s` → `build/clair_gym_slot13.bin` (filename legacy: was wrong member/slot) |
+| scr_seq patch | `tools/patch_scr_seq_gym_clair.py` — `patch_script_slot(0, …)`; `trainer_battle` **39→35** (fork Leader id **35**) |
 | Clair object | zone_event **137** — `tools/patch_zone_event_blackthorn_gym_clair.py` sets **obj 0** → script **1** |
 | Text | `data/text/631.txt` — leader **3** pre, **4** post-win, **7** TM flavor, **9** revisit; plaque **11–12**; TM intro **`data/text/854.txt` index 9** |
 | Badge grant | `GiveJohtoBadgeOpenWorld` → `RunNewCommand` case **3** in `src/script_new_cmds.c` |
@@ -742,7 +742,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Flow (shipped):** pre-battle (**631** **3**) → Morty-style `trainer_battle` + `check_battle_won` → post-win (**631** **4**) → `GiveJohtoBadgeOpenWorld` + midgame badge var → `SEQ_ME_BADGE` → `gym_badge_hm_reward.inc` (level cap; badge **1** → Flash mart line) → **854** TM intro → bag check → `SEQ_ME_WAZA` → TM59 → flavor (**631** **7**). Loss: **631** **5** then `white_out`.
 
-**Pitfalls:** Do not use **631** file line numbers as script indices (duplicate Yo! lines at **2–3** shift Clair intro to **3**). Vanilla slot **1** ended at msg **5** with no badge (Den trial design). Wrong scr_seq member (**938**) patches a non-playable gym map.
+**Pitfalls:** Do not use **631** file line numbers as script indices (duplicate Yo! lines at **2–3** shift Clair intro to **3**). Vanilla slot **0** ended at msg **5** with no badge (Den trial design). Wrong scr_seq member (**938**) patches a non-playable gym map.
 
 ---
 

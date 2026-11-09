@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Blackthorn Gym Clair: Leader script on scr_seq 943 slot 1 (MAP_T30GYM0101).
+"""Blackthorn Gym Clair: Leader script on scr_seq 943 slot 0 (MAP_T30GYM0101).
 
-Vanilla slot 1 shows post-win msg 5 (Take it) then releaseall/scr_end — no badge
-(Dragon's Den trial). Member 938 is a different map; the playable gym uses 943.
+Script IDs are 1-based: Clair obj0 uses script 1 = slot 0. Slot 1 (script 2) is the
+map's on-transition script (level scripts member 716) and must stay vanilla.
+Vanilla slot 0 shows post-win msg 5 (Take it) with no badge (Dragon's Den trial).
+Member 938 is a different map; the playable gym uses 943.
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ PYTHON = ROOT / ".venv/bin/python"
 TRAINER_BATTLE = 0x00D5
 TRAINER_VANILLA_CLAIR = 39
 TRAINER_FORK_CLAIR = 35
-LEADER_SCRIPT_SLOT = 1
+LEADER_SCRIPT_SLOT = 0
 
 
 def load_vanilla_member(path: Path) -> bytearray:

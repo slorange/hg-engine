@@ -13,7 +13,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from patch_scr_seq_gym_falkner import ROM, extract_scripts, patch_script_slot
+from patch_scr_seq_gym_falkner import ROM, extract_scripts, patch_script_slot, script_offset
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "include/config.h"
@@ -89,10 +89,10 @@ def main(argv: list[str]) -> int:
         raise ValueError(f"empty slot blob {SLOT3_BIN}")
 
     data = bytearray(vanilla)
-    scripts = extract_scripts(data)
-    onload = bytearray(scripts[SLOT_ONLOAD])
+    onload_start = script_offset(data, SLOT_ONLOAD)
+    onload = bytearray(extract_scripts(data)[SLOT_ONLOAD])
     n = patch_onload_show_blue(onload)
-    patch_script_slot(data, SLOT_ONLOAD, bytes(onload))
+    data[onload_start : onload_start + len(onload)] = onload
     patch_script_slot(data, SLOT_COORD, slot3_blob)
 
     target.write_bytes(data)

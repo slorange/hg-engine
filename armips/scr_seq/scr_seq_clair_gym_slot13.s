@@ -5,7 +5,7 @@
 .include "armips/include/flags.s"
 .include "armips/include/soundeffects.s"
 .include "armips/include/vars.s"
-// Blackthorn Gym Clair — Leader talk script (scr_seq 943 slot 1, MAP_T30GYM0101).
+// Blackthorn Gym Clair — Leader talk script (scr_seq 943 slot 0 = script 1, MAP_T30GYM0101).
 
 .equ TRAINER_LEADER_CLAIR, 35
 .equ VAR_MIDGAME_BADGES, 0x4134
