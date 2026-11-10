@@ -604,6 +604,9 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Lt. Surge (Kanto) | member **778**, slot **23** (script **24**) — `scr_seq_surge_gym_slot23.s`, text **485**; trainer **255** / rematch **722** — [Vermilion Gym](#vermilion-gym--lt-surge--gym-tm-choice-pool). **`MAP_T06GYM0101` (365)** is the playable interior (warp from Vermilion **051**). `MAP_T08GYM0101` (480) / scr **809** is **Fuchsia Gym (Janine)**, not Vermilion. `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**). On-transition **script 23** = slot **22** (level scripts **551**); slots **0–22** = trash-can puzzle — patch slot **23** only |
 | Janine (Kanto) | member **809**, slot **1** (script **2**) — `scr_seq_janine_gym_slot1.s`, text **514** (pre **0**, post **1**, badge **2**, revisit **4**, labels **19–21**, rematch **22–25**); trainer **257** / rematch **724**; TM06 always, TM84 @**6**, TM36 @**8**. Below **6** badges the menu is skipped and TM06 is given directly — [Fuchsia Gym](#fuchsia-gym--janine--gym-tm-choice-pool). `FLAG_GOT_TM84_FROM_JANINE` (**301**). On-transition slot **0** (level scripts **582** = `02 01 00`) — leave vanilla |
 | Blue (Kanto) | member **743**, slot **0** — `scr_seq_blue_gym_slot0.s`, text **454**; trainer **261** / rematch **727**; Swagger always, Safeguard @**2**, Double Team @**4**, Swords Dance @**6**, Trick Room @**8**. Below **2** badges the menu is skipped — [Viridian Gym](#viridian-gym--blue--gym-tm-choice-pool). `FLAG_GOT_TM92_FROM_BLUE` (**382**). On-transition slot **2** — flag flip only |
+| Erika (Kanto) | member **786**, slot **0** — `scr_seq_erika_gym_slot0.s`, text **492**; trainer **256** / rematch **723**; Bullet Seed always, Grass Knot @**2**, Giga Drain @**4**, Solar Beam + Energy Ball @**8**. Below **2** badges the menu is skipped — [Celadon Gym](#celadon-gym--erika--gym-tm-choice-pool). `FLAG_GOT_TM19_FROM_ERIKA` (**292**). On-transition slot **2** (level scripts **559**) — leave vanilla. Do not rewrite zone **352** (cut trees) |
+| Sabrina (Kanto) | member **829**, slot **0** — `scr_seq_sabrina_gym_slot0.s`, text **531**; trainer **258** / rematch **725**; Skill Swap + Psych Up always (menu is never skipped), Calm Mind @**4**, Dream Eater @**6**, Psychic @**10** — [Saffron Gym](#saffron-gym--sabrina--gym-tm-choice-pool). `FLAG_GOT_TM48_FROM_SABRINA` (**386**). On-transition slot **4** (level scripts **602**) — leave vanilla |
+| Blaine (Kanto) | member **15** (`2_015`), slot **0** — `scr_seq_blaine_gym_slot0.s`, text **053**; trainer **259** / rematch **726**; Sunny Day always, Will-O-Wisp @**2**, Fire Blast + Overheat @**8**, Flamethrower @**10**. Below **2** badges the menu is skipped — [Cinnabar Gym](#cinnabar-gym--blaine--gym-tm-choice-pool). `MAP_D11R0106` (**457**), not a `*GYM0101` header. `FLAG_GOT_TM50_FROM_BLAINE` (**381**). Level scripts **276** use slots **8** and **9** — leave vanilla |
 | Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine,clair,brock,misty,surge}.py` — all but Pryce use `patch_script_slot()` (appends the new slot body, repoints only that slot; vanilla bytes never move); **Pryce is special** (do not rebuild 932) |
 | Badge test hook (fixed Nov 2026) | `hooks` line `PlayerProfile_TestBadgeFlag_hook 02028F98` used branch register **r1**, which is the `badgeNumber` argument — the stub overwrote it with the hook address, so every non-bypass `TestBadgeFlag` returned FALSE (trainer card showed no badges, `CheckBadge` always 0, mart badge rows hidden) while `count_badges` / save menu still counted correctly. Now **r2**. **Rule:** the last column in `hooks` is the scratch register for the jump stub — pick one that is **not an argument** of the hooked function (r0–r3 are args) |
 | Slot order pitfall | Vanilla slot bodies are often stored **out of table order** (e.g. 943: slot 0 at byte 274, slot 1 at 26). The old `extract_scripts` + `build_scr_seq` rebuild silently dropped / misaligned slots — fixed in `patch_scr_seq_gym_falkner.py` only. Ferry / rod-guru / Mom / other patchers still carry their **own copy** of the old rebuild; unaudited — suspect them first if a patched map crashes on entry or an NPC runs the wrong script |
@@ -786,7 +789,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Per-leader text to author when rolling out:** TM labels, rematch offer, rematch accept, rematch win, farewell (4 custom lines + labels). Check `data/Trainers.c` for a vanilla rematch trainer id (same `TRAINERCLASS_LEADER_*`, higher index — e.g. Brock 253 / 720).
 
-**Not done yet:** leaders after Janine, and generating labels from `src/item.c` instead of hand-typing. Menu height with >6 entries untested (Brock is the largest pool at 6). If only one pool TM is unlocked, skip the menu and give that TM (Janine / Toxic below 6 badges).
+**Not done yet:** Johto leaders still on a fixed TM (Whitney, Bugsy, Chuck, and the rest of the Johto set), and generating labels from `src/item.c` instead of hand-typing. Kanto gym TM choice is in tree. Menu height with >6 entries untested (Brock is the largest pool at 6). If only one pool TM is unlocked, skip the menu and give that TM.
 
 ### Cerulean Gym — Misty + Gym TM choice pool
 
@@ -847,6 +850,51 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 | Vanilla facts | trainer **261**, rematch **727**, `GiveBadge BADGE_EARTH`, `FLAG_GOT_TM92_FROM_BLUE` (**382**). First win still sets trainer flags **681–684** and the vanilla post-win flags |
 
 **Pool:** Swagger (**0**), Safeguard (**2**), Double Team (**4**), Swords Dance (**6**), Trick Room (**8**). Below **2** badges only Swagger is legal, so the menu is skipped. Those five left the department floors and Game Corners; both corners stay at **6** TMs and both TM floors at **5**.
+
+### Celadon Gym — Erika + Gym TM choice pool
+
+**Status (Nov 2026):** shipped in tree. Playtest before calling verified.
+
+**Map IDs:** `MAP_T07GYM0101` (395) → scr_seq **786**, level scripts **559**, msg bank **492**, zone_event **352**. Erika is zone **obj 5** (sprite **371**, hide flag **754**), **script 1 = slot 0**. Level scripts **559** = `02 03 00` → on-transition **script 3 = slot 2** (leave vanilla). Zone **352** is also the Celadon cut-tree member — do not rewrite it.
+
+| What | Where |
+|------|--------|
+| Leader script | `armips/scr_seq/scr_seq_erika_gym_slot0.s` → `build/erika_gym_slot0.bin` |
+| Patch / verify | `tools/patch_scr_seq_gym_erika.py build/a012/2_786`; `verify_falkner_gym_hm_patch.py` |
+| Text | `data/text/492.txt` — vanilla **0–6**; appended **7–15** |
+| Vanilla facts | trainer **256**, rematch **723**, `GiveBadge BADGE_RAINBOW`, `settrainerflag` **326 / 356 / 336 / 346**, `FLAG_GOT_TM19_FROM_ERIKA` (**292**) |
+
+**Pool:** Bullet Seed (**0**), Grass Knot (**2**), Giga Drain (**4**), Solar Beam (**8**), Energy Ball (**8**). Below **2** badges only Bullet Seed is legal, so the menu is skipped. At **8** both Solar Beam and Energy Ball are added together.
+
+### Saffron Gym — Sabrina + Gym TM choice pool
+
+**Status (Nov 2026):** shipped in tree. Playtest before calling verified.
+
+**Map IDs:** `MAP_T11GYM0101` (410) → scr_seq **829**, level scripts **602**, msg bank **531**, zone_event **366**. Sabrina is zone **obj 5** (sprite **369**, hide flag **753**), **script 1 = slot 0**. Level scripts **602** = `02 05 00` → on-transition **script 5 = slot 4** (leave vanilla).
+
+| What | Where |
+|------|--------|
+| Leader script | `armips/scr_seq/scr_seq_sabrina_gym_slot0.s` → `build/sabrina_gym_slot0.bin` |
+| Patch / verify | `tools/patch_scr_seq_gym_sabrina.py build/a012/2_829`; `verify_falkner_gym_hm_patch.py` |
+| Text | `data/text/531.txt` — vanilla **0–9**; appended **10–18** |
+| Vanilla facts | trainer **258**, rematch **725**, `GiveBadge BADGE_MARSH`, `setflag` **2456**, `settrainerflag` **230 / 415 / 368 / 369**, `FLAG_GOT_TM48_FROM_SABRINA` (**386**) |
+
+**Pool:** Skill Swap (**0**), Psych Up (**0**), Calm Mind (**4**), Dream Eater (**6**), Psychic (**10**). Two TMs are legal from the first badge, so the menu always opens.
+
+### Cinnabar Gym — Blaine + Gym TM choice pool
+
+**Status (Nov 2026):** shipped in tree. Playtest before calling verified.
+
+**Map IDs:** `MAP_D11R0106` (457) — the burned gym inside the Cinnabar cave, not a `*GYM0101` header. scr_seq **15** (`build/a012/2_015`), level scripts **276**, msg bank **53** (`data/text/053.txt`), zone_event **412**. Blaine is zone **obj 0** (sprite **374**, hide flag **757**), **script 1 = slot 0**. Level scripts **276** reference scripts **9** and **10** (slots **8** and **9**) — leave those vanilla.
+
+| What | Where |
+|------|--------|
+| Leader script | `armips/scr_seq/scr_seq_blaine_gym_slot0.s` → `build/blaine_gym_slot0.bin` |
+| Patch / verify | `tools/patch_scr_seq_gym_blaine.py build/a012/2_015`; `verify_falkner_gym_hm_patch.py` |
+| Text | `data/text/053.txt` — vanilla **0–25**; appended **26–34**. Filename is zero-padded so it overwrites narc member `7_053` |
+| Vanilla facts | trainer **259**, rematch **726**, `GiveBadge BADGE_VOLCANO`, `setflag` **613 / 665 / 319 / 320 / 316**, `clearflag` **666**, `FLAG_GOT_TM50_FROM_BLAINE` (**381**) |
+
+**Pool:** Sunny Day (**0**), Will-O-Wisp (**2**), Fire Blast (**8**), Overheat (**8**), Flamethrower (**10**). Below **2** badges only Sunny Day is legal, so the menu is skipped. At **8** both Fire Blast and Overheat are added together.
 
 ---
 

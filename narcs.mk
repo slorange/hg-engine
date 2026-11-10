@@ -702,7 +702,7 @@ SCR_SEQ_DIR := $(BUILD)/a012
 SCR_SEQ_NARC := $(BUILD_NARC)/scr_seq.narc
 SCR_SEQ_TARGET := $(FILESYS)/a/0/1/2
 SCR_SEQ_DEPENDENCIES_DIR := armips/scr_seq
-SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot2.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot3.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot4.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot5.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_morty_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_hm_ext.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_jasmine_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_clair_gym_slot13.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_brock_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_misty_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_surge_gym_slot23.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_janine_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_blue_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/kanto_waters_landings.s
+SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot2.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot3.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot4.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot5.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_morty_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_hm_ext.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_jasmine_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_clair_gym_slot13.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_brock_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_misty_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_surge_gym_slot23.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_janine_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_blue_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_erika_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_sabrina_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_blaine_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/kanto_waters_landings.s
 SCR_SEQ_DEPENDENCIES := $(filter-out $(SCR_SEQ_PATCH_ONLY),$(wildcard $(SCR_SEQ_DEPENDENCIES_DIR)/*.s))
 
 $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
@@ -768,6 +768,12 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) include/config.h
 	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_809
 	$(PYTHON) tools/patch_scr_seq_gym_blue.py $(SCR_SEQ_DIR)/2_743
 	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_743
+	$(PYTHON) tools/patch_scr_seq_gym_erika.py $(SCR_SEQ_DIR)/2_786
+	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_786
+	$(PYTHON) tools/patch_scr_seq_gym_sabrina.py $(SCR_SEQ_DIR)/2_829
+	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_829
+	$(PYTHON) tools/patch_scr_seq_gym_blaine.py $(SCR_SEQ_DIR)/2_015
+	$(PYTHON) scripts/build/verify_falkner_gym_hm_patch.py $(SCR_SEQ_DIR)/2_015
 	$(PYTHON) tools/patch_scr_seq_game_corner.py $(SCR_SEQ_DIR)/2_910 $(SCR_SEQ_DIR)/2_804
 	$(PYTHON) scripts/build/verify_game_corner_patch.py $(SCR_SEQ_DIR)/2_910 $(SCR_SEQ_DIR)/2_804
 	$(NARCHIVE) create $@ $(SCR_SEQ_DIR) -nf

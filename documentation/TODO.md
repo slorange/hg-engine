@@ -33,6 +33,9 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | **Brock — Gym TM choice menu** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Pewter Gym post-defeat TM picker: labels match unlock order then TM number; badge minimums per [`gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv); menu selections map correctly (values **0–5**); rematch TM flow. [HACK-NOTES § Pewter Gym](HACK-NOTES.md#pewter-gym--brock--gym-tm-choice-pool-prototype). |
 | **Janine — Gym TM (single option skips menu)** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Fuchsia: under **6** badges, Toxic is given with no menu. At **6** badges, Toxic + Poison Jab menu. At **8**, Sludge Bomb is added. Rematch uses the same rule. [HACK-NOTES § Fuchsia Gym](HACK-NOTES.md#fuchsia-gym--janine--gym-tm-choice-pool). |
 | **Blue — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Viridian: under **2** badges, Swagger is given with no menu. Then Safeguard (**2**), Double Team (**4**), Swords Dance (**6**), Trick Room (**8**). Rematch uses the same rule. [HACK-NOTES § Viridian Gym](HACK-NOTES.md#viridian-gym--blue--gym-tm-choice-pool). |
+| **Erika — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Celadon: under **2** badges, Bullet Seed is given with no menu. Then Grass Knot (**2**), Giga Drain (**4**), Solar Beam and Energy Ball (**8**). Rematch uses the same rule. [HACK-NOTES § Celadon Gym](HACK-NOTES.md#celadon-gym--erika--gym-tm-choice-pool). |
+| **Sabrina — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Saffron: Skill Swap and Psych Up are both available from the first badge, so the menu always opens. Then Calm Mind (**4**), Dream Eater (**6**), Psychic (**10**). Rematch uses the same rule. [HACK-NOTES § Saffron Gym](HACK-NOTES.md#saffron-gym--sabrina--gym-tm-choice-pool). |
+| **Blaine — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Cinnabar cave gym: under **2** badges, Sunny Day is given with no menu. Then Will-O-Wisp (**2**), Fire Blast and Overheat (**8**), Flamethrower (**10**). Rematch uses the same rule. [HACK-NOTES § Cinnabar Gym](HACK-NOTES.md#cinnabar-gym--blaine--gym-tm-choice-pool). |
 | **Day Care respects level cap** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Day Care EXP must not raise Pokémon above the current badge-based player cap. Unconfirmed, needs investigation or testing |
 | **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
 
@@ -43,7 +46,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
 | **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
-| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | In tree: Brock, Misty, Lt. Surge, Janine, Blue (one unlocked TM skips the menu). Badge minimums: [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). Remaining: other Leaders |
+| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | In tree: Brock, Misty, Lt. Surge, Erika, Janine, Sabrina, Blaine, Blue (one unlocked TM skips the menu). Badge minimums: [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). Remaining: Johto Leaders |
 
 ---
 

@@ -44,24 +44,24 @@ Lt. Surge	TM57	Charge Beam	Electric	Special	50	90	10	0	In game		The user fires a
 Lt. Surge	TM73	Thunder Wave	Electric	Status	-	90	20	2	In game		A weak electric charge is launched at the foe. It causes paralysis if it hits.
 Lt. Surge	TM25	Thunder	Electric	Special	110	70	10	8	In game		A wicked thunderbolt is dropped on the foe to inflict damage. It may also leave the target paralyzed.
 Lt. Surge	TM24	Thunderbolt	Electric	Special	90	100	15	10	In game		A strong electric blast is loosed at the foe. It may also leave the foe paralyzed.
-Erika	TM09	Bullet Seed	Grass	Physical	25	100	30	0	Proposed		The user forcefully shoots seeds at the foe. Two to five seeds are shot in rapid succession.
-Erika	TM86	Grass Knot	Grass	Special	var	100	20	2	Proposed		The user snares the foe with grass and trips it. The heavier the foe, the greater the damage.
-Erika	TM19	Giga Drain	Grass	Special	75	100	10	4	Proposed		A nutrient-draining attack. The user’s HP is restored by half the damage taken by the target.
-Erika	TM22	Solar Beam	Grass	Special	120	100	10	8	Proposed		A two-turn attack. The user gathers light, then blasts a bundled beam on the second turn.
-Erika	TM53	Energy Ball	Grass	Special	90	100	10	8	Proposed		The user draws power from nature and fires it at the foe. It may also lower the target’s Sp. Def.
+Erika	TM09	Bullet Seed	Grass	Physical	25	100	30	0	In game		The user forcefully shoots seeds at the foe. Two to five seeds are shot in rapid succession.
+Erika	TM86	Grass Knot	Grass	Special	var	100	20	2	In game		The user snares the foe with grass and trips it. The heavier the foe, the greater the damage.
+Erika	TM19	Giga Drain	Grass	Special	75	100	10	4	In game		A nutrient-draining attack. The user’s HP is restored by half the damage taken by the target.
+Erika	TM22	Solar Beam	Grass	Special	120	100	10	8	In game		A two-turn attack. The user gathers light, then blasts a bundled beam on the second turn.
+Erika	TM53	Energy Ball	Grass	Special	90	100	10	8	In game		The user draws power from nature and fires it at the foe. It may also lower the target’s Sp. Def.
 Janine	TM06	Toxic	Poison	Status	-	90	10	0	In game		A move that leaves the target badly poisoned. Its poison damage worsens every turn.
 Janine	TM84	Poison Jab	Poison	Physical	80	100	20	6	In game		The foe is stabbed with a tentacle or arm steeped in poison. It may also poison the foe.
 Janine	TM36	Sludge Bomb	Poison	Special	90	100	10	8	In game		The user attacks by hurling filthy sludge at the foe. It may also poison the target.
-Sabrina	TM48	Skill Swap	Psychic	Status	-	-	10	0	Proposed		The user employs its psychic power to exchange abilities with the foe.
-Sabrina	TM77	Psych Up	Normal	Status	-	-	10	0	Proposed		The user hypnotizes itself into copying any stat change made by the foe.
-Sabrina	TM04	Calm Mind	Psychic	Status	-	-	20	4	Proposed		The user quietly focuses its mind and calms its spirit to raise its Sp. Atk and Sp. Def stats.
-Sabrina	TM85	Dream Eater	Psychic	Special	100	100	15	6	Proposed		An attack that works only on a sleeping foe. It absorbs half the damage caused to heal the user’s HP.
-Sabrina	TM29	Psychic	Psychic	Special	90	100	10	10	Proposed		The foe is hit by a strong telekinetic force. It may also reduce the foe’s Sp. Def stat.
-Blaine	TM11	Sunny Day	Fire	Status	-	-	5	0	Proposed		The user intensifies the sun for five turns, powering up Fire-type moves.
-Blaine	TM61	Will-O-Wisp	Fire	Status	-	85	15	2	Proposed		The user shoots a sinister, bluish white flame at the foe to inflict a burn.
-Blaine	TM38	Fire Blast	Fire	Special	110	85	5	8	Proposed		The foe is attacked with an intense blast of all-consuming fire. It may also leave the target with a burn.
-Blaine	TM50	Overheat	Fire	Special	130	90	5	8	Proposed		The user attacks the foe at full power. The attack’s recoil sharply reduces the user’s Sp. Atk stat.
-Blaine	TM35	Flamethrower	Fire	Special	90	100	15	10	Proposed		The foe is scorched with an intense blast of fire. The target may also be left with a burn.
+Sabrina	TM48	Skill Swap	Psychic	Status	-	-	10	0	In game		The user employs its psychic power to exchange abilities with the foe.
+Sabrina	TM77	Psych Up	Normal	Status	-	-	10	0	In game		The user hypnotizes itself into copying any stat change made by the foe.
+Sabrina	TM04	Calm Mind	Psychic	Status	-	-	20	4	In game		The user quietly focuses its mind and calms its spirit to raise its Sp. Atk and Sp. Def stats.
+Sabrina	TM85	Dream Eater	Psychic	Special	100	100	15	6	In game		An attack that works only on a sleeping foe. It absorbs half the damage caused to heal the user’s HP.
+Sabrina	TM29	Psychic	Psychic	Special	90	100	10	10	In game		The foe is hit by a strong telekinetic force. It may also reduce the foe’s Sp. Def stat.
+Blaine	TM11	Sunny Day	Fire	Status	-	-	5	0	In game		The user intensifies the sun for five turns, powering up Fire-type moves.
+Blaine	TM61	Will-O-Wisp	Fire	Status	-	85	15	2	In game		The user shoots a sinister, bluish white flame at the foe to inflict a burn.
+Blaine	TM38	Fire Blast	Fire	Special	110	85	5	8	In game		The foe is attacked with an intense blast of all-consuming fire. It may also leave the target with a burn.
+Blaine	TM50	Overheat	Fire	Special	130	90	5	8	In game		The user attacks the foe at full power. The attack’s recoil sharply reduces the user’s Sp. Atk stat.
+Blaine	TM35	Flamethrower	Fire	Special	90	100	15	10	In game		The foe is scorched with an intense blast of fire. The target may also be left with a burn.
 Blue	TM87	Swagger	Normal	Status	-	85	15	0	In game		The user enrages the foe into confusion, but also sharply raises the foe’s Attack.
 Blue	TM20	Safeguard	Normal	Status	-	-	25	2	In game		The user creates a protective field that prevents status problems for five turns.
 Blue	TM32	Double Team	Normal	Status	-	-	15	4	In game		The user creates illusory copies of itself to raise its evasiveness.
