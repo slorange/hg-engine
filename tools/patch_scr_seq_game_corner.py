@@ -2,11 +2,11 @@
 """Retarget Game Corner TM and held-item prize menus (Goldenrod + Celadon).
 
 Goldenrod scr_seq member 910 (T25SP0101):
-  TMs: TM87, TM44, TM46, TM75, TM90, TM92
+  TMs: TM43, TM64, TM44, TM46, TM90, TM83
   Items: Bright Powder, Quick Claw, Wide Lens, Metronome
 
 Celadon scr_seq member 804 (T07R0501 dept 5F):
-  TMs: TM10, TM32, TM49, TM58, TM67, TM82
+  TMs: TM58, TM41, TM10, TM49, TM67, TM82
   Items: Focus Band, Zoom Lens, Scope Lens, Luck Incense
 
 Each changed prize is patched at fixed offsets from vanilla HeartGold scr_seq extract.
@@ -47,14 +47,16 @@ def tm_item(tm: int) -> int:
 GOLDENROD_MEMBER = 910
 GOLDENROD_PATCHES: list[ItemPatch] = [
     # TMs (two offsets each: purchase + not-enough-coins nav)
-    (838, tm_item(90), tm_item(87)),
-    (2894, tm_item(90), tm_item(87)),
+    (838, tm_item(90), tm_item(43)),
+    (2894, tm_item(90), tm_item(43)),
+    (977, tm_item(75), tm_item(64)),
+    (2919, tm_item(75), tm_item(64)),
     (1255, tm_item(35), tm_item(46)),
     (2969, tm_item(35), tm_item(46)),
     (1394, tm_item(13), tm_item(90)),
     (2994, tm_item(13), tm_item(90)),
-    (1533, tm_item(24), tm_item(92)),
-    (3019, tm_item(24), tm_item(92)),
+    (1533, tm_item(24), tm_item(83)),
+    (3019, tm_item(24), tm_item(83)),
     # Held items (one offset each in vanilla)
     (1672, 251, 213),  # Silk Scarf -> Bright Powder
     (1811, 265, 217),  # Wide Lens -> Quick Claw
@@ -63,6 +65,8 @@ GOLDENROD_PATCHES: list[ItemPatch] = [
 
 CELADON_MEMBER = 804
 CELADON_PATCHES: list[ItemPatch] = [
+    (797, tm_item(32), tm_item(41)),
+    (2482, tm_item(32), tm_item(41)),
     (1075, tm_item(29), tm_item(49)),
     (2532, tm_item(29), tm_item(49)),
     (1214, tm_item(74), tm_item(67)),

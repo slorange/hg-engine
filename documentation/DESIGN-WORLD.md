@@ -173,8 +173,8 @@ Coin prizes at the department-store Game Corners **implemented**:
 
 | Location | TM pool |
 | -------- | ------- |
-| **Goldenrod Game Corner** | TM05, TM44, TM46, TM75, TM90, TM92 |
-| **Celadon Game Corner** | TM10, TM32, TM49, TM58, TM67, TM82 |
+| **Goldenrod Game Corner** | TM43, TM44, TM46, TM64, TM83, TM90 |
+| **Celadon Game Corner** | TM10, TM41, TM49, TM58, TM67, TM82 |
 
 **Held items** (implemented with TMs above):
 
@@ -220,6 +220,7 @@ Gym TM picks are intentionally **unlimited** over rematches
 | **Janine** | TM06, TM36, TM84 |
 | **Sabrina** | TM04, TM29, TM48, TM77, TM85 |
 | **Blaine** | TM11, TM35, TM38, TM50, TM61 |
+| **Blue** | TM20, TM32, TM75, TM87, TM92 |
 
 ---
 
@@ -282,7 +283,7 @@ Poké / Great / Ultra / Net / Repeat / Timer Balls; Repels; Escape Rope; Poké D
 | ----- | ----- |
 | **2F (upper)** | **Goldenrod:** Poké Balls, Repels, Escape Rope, Doll, Cheri → Persim berries — **Celadon:** same berry aisle as vanilla-style upper 2F |
 | **2F (lower)** | **Goldenrod:** **Linking Cord**, Chilan Berry, Silk Scarf, Grip Claw, Sticky Barb, Shed Shell — **Celadon:** Poké Balls, Repels, Escape Rope, Doll |
-| **TM floor** | **Celadon 3F:** TM12, 20, 21, 28, 41, 76, 78, 87 — **Goldenrod 5F:** TM16, 17, 33, 43, 54, 63, 64, 83 |
+| **TM floor** | **Celadon 3F:** TM12, 21, 28, 76, 78 — **Goldenrod 5F:** TM16, 17, 33, 54, 63 |
 | **Battle items** | **Celadon 5F left / Goldenrod 3F:** Power Bracer–Weight + Macho Brace (replaces X items) |
 | **Vitamins** | Protein–HP Up + **Rare Candy**, **PP Up**, **PP Max** |
 | **Celadon 4F** | **Linking Cord**, Sun & Leaf Stones, Rindo Berry, Miracle Seed, Grip Claw, Sticky Barb, Shed Shell |

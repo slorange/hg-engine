@@ -62,3 +62,8 @@ Blaine	TM61	Will-O-Wisp	Fire	Status	-	85	15	2	Proposed		The user shoots a sinist
 Blaine	TM38	Fire Blast	Fire	Special	110	85	5	8	Proposed		The foe is attacked with an intense blast of all-consuming fire. It may also leave the target with a burn.
 Blaine	TM50	Overheat	Fire	Special	130	90	5	8	Proposed		The user attacks the foe at full power. The attack’s recoil sharply reduces the user’s Sp. Atk stat.
 Blaine	TM35	Flamethrower	Fire	Special	90	100	15	10	Proposed		The foe is scorched with an intense blast of fire. The target may also be left with a burn.
+Blue	TM87	Swagger	Normal	Status	-	85	15	0	In game		The user enrages the foe into confusion, but also sharply raises the foe’s Attack.
+Blue	TM20	Safeguard	Normal	Status	-	-	25	2	In game		The user creates a protective field that prevents status problems for five turns.
+Blue	TM32	Double Team	Normal	Status	-	-	15	4	In game		The user creates illusory copies of itself to raise its evasiveness.
+Blue	TM75	Swords Dance	Normal	Status	-	-	20	6	In game		The user dances to raise its spirit and sharply boost its Attack.
+Blue	TM92	Trick Room	Psychic	Status	-	-	5	8	In game		The user creates a bizarre area in which slower Pokémon move first for five turns.

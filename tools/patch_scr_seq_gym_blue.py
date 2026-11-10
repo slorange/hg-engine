@@ -13,7 +13,14 @@ import subprocess
 import sys
 from pathlib import Path
 
-from patch_scr_seq_gym_falkner import ROM, extract_scripts, patch_script_slot, script_offset
+from patch_scr_seq_gym_falkner import (
+    ROM,
+    armips_args,
+    config_flag,
+    extract_scripts,
+    patch_script_slot,
+    script_offset,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "include/config.h"
@@ -23,8 +30,11 @@ SLOT_ONLOAD = 2
 SLOT_COORD = 3
 VANILLA_MEMBER = ROOT / f"build/a012_vanilla/2_{MEMBER_INDEX:03d}"
 PYTHON = ROOT / ".venv/bin/python"
+SLOT0_ASM = ROOT / "armips/scr_seq/scr_seq_blue_gym_slot0.s"
+SLOT0_BIN = ROOT / "build/blue_gym_slot0.bin"
 SLOT3_ASM = ROOT / "armips/scr_seq/scr_seq_blue_gym_slot3.s"
 SLOT3_BIN = ROOT / "build/blue_gym_slot3.bin"
+LEADER_SLOT = 0
 FLAG_HIDE_VIRIDIAN_GYM_BLUE = 758
 
 
@@ -77,29 +87,39 @@ def main(argv: list[str]) -> int:
     target = Path(argv[1])
     vanilla = load_vanilla_member()
 
-    if not openworld_story_skip():
-        target.write_bytes(vanilla)
-        print(f"OPENWORLD_STORY_SKIP off; left vanilla scr_seq in {target}")
-        return 0
-
     SLOT3_BIN.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.check_call([str(ARMIPS), str(SLOT3_ASM)])
-    slot3_blob = SLOT3_BIN.read_bytes()
-    if not slot3_blob:
-        raise ValueError(f"empty slot blob {SLOT3_BIN}")
+    slot3_blob = b""
+    if openworld_story_skip():
+        subprocess.check_call([str(ARMIPS), str(SLOT3_ASM)])
+        slot3_blob = SLOT3_BIN.read_bytes()
+        if not slot3_blob:
+            raise ValueError(f"empty slot blob {SLOT3_BIN}")
 
     data = bytearray(vanilla)
-    onload_start = script_offset(data, SLOT_ONLOAD)
-    onload = bytearray(extract_scripts(data)[SLOT_ONLOAD])
-    n = patch_onload_show_blue(onload)
-    data[onload_start : onload_start + len(onload)] = onload
-    patch_script_slot(data, SLOT_COORD, slot3_blob)
+    notes: list[str] = []
+
+    if openworld_story_skip():
+        onload_start = script_offset(data, SLOT_ONLOAD)
+        onload = bytearray(extract_scripts(data)[SLOT_ONLOAD])
+        n = patch_onload_show_blue(onload)
+        data[onload_start : onload_start + len(onload)] = onload
+        patch_script_slot(data, SLOT_COORD, slot3_blob)
+        notes.append(f"OnLoad {n}x setflag758->clearflag758, coord slot {len(slot3_blob)}b")
+    else:
+        notes.append("story skip off")
+
+    if config_flag("GYM_BADGE_COUNT_FIELD_REWARDS"):
+        subprocess.check_call([str(ARMIPS), *armips_args(), str(SLOT0_ASM)])
+        slot0_blob = SLOT0_BIN.read_bytes()
+        if not slot0_blob:
+            raise ValueError(f"empty slot blob {SLOT0_BIN}")
+        patch_script_slot(data, LEADER_SLOT, slot0_blob)
+        notes.append(f"leader slot {LEADER_SLOT} {len(slot0_blob)}b")
+    else:
+        notes.append("gym TM rewards off")
 
     target.write_bytes(data)
-    print(
-        f"patched Viridian Gym in {target} ({len(data)} bytes): "
-        f"OnLoad {n}x setflag758->clearflag758, coord slot {len(slot3_blob)}b"
-    )
+    print(f"patched Viridian Gym in {target} ({len(data)} bytes): " + ", ".join(notes))
     return 0
 
 

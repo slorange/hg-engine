@@ -86,7 +86,7 @@ u16 sGoldenrodDepartment4F[] = {
 };
 
 u16 sGoldenrodDepartment5F[] = {
-    ITEM_TM016, ITEM_TM017, ITEM_TM033, ITEM_TM043, ITEM_TM054, ITEM_TM063, ITEM_TM064, ITEM_TM083, 0xFFFF
+    ITEM_TM016, ITEM_TM017, ITEM_TM033, ITEM_TM054, ITEM_TM063, 0xFFFF
 };
 
 u16 sGoldenrodHerbs[] = {
@@ -141,7 +141,7 @@ u16 sCeladonDepartmentLower2F[] = {
 };
 
 u16 sCeladonDepartment3F[] = {
-    ITEM_TM012, ITEM_TM020, ITEM_TM021, ITEM_TM028, ITEM_TM041, ITEM_TM076, ITEM_TM078, 0xFFFF
+    ITEM_TM012, ITEM_TM021, ITEM_TM028, ITEM_TM076, ITEM_TM078, 0xFFFF
 };
 
 u16 sCeladonDepartment4F[] = {
