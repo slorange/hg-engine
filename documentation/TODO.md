@@ -31,6 +31,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | What to test |
 | ---- | ------ | ------------ |
 | **Brock — Gym TM choice menu** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Pewter Gym post-defeat TM picker: labels match unlock order then TM number; badge minimums per [`gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv); menu selections map correctly (values **0–5**); rematch TM flow. [HACK-NOTES § Pewter Gym](HACK-NOTES.md#pewter-gym--brock--gym-tm-choice-pool-prototype). |
+| **Janine — Gym TM (single option skips menu)** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Fuchsia: under **6** badges, Toxic is given with no menu. At **6** badges, Toxic + Poison Jab menu. At **8**, Sludge Bomb is added. Rematch uses the same rule. [HACK-NOTES § Fuchsia Gym](HACK-NOTES.md#fuchsia-gym--janine--gym-tm-choice-pool). |
 | **Day Care respects level cap** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Day Care EXP must not raise Pokémon above the current badge-based player cap. Unconfirmed, needs investigation or testing |
 | **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
 
@@ -41,7 +42,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
 | **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
-| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | **Working prototype: Brock** (full pool, choice menu after defeat, badge-gated, including rematch) — [HACK-NOTES § Pewter Gym](HACK-NOTES.md#pewter-gym--brock--gym-tm-choice-pool-prototype). Proposed per-TM badge minimums for all Leaders: [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv).  Remaining: roll out to other Leaders (badge minimums, rematch, farewell text) |
+| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | In tree: Brock, Misty, Lt. Surge, Janine (one unlocked TM skips the menu). Badge minimums: [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). Remaining: other Leaders |
 
 ---
 

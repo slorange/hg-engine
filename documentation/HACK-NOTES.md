@@ -601,7 +601,8 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Clair | member **943**, slot **0** — `scr_seq_clair_gym_slot13.s`, `data/text/631.txt`; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge) |
 | Brock (Kanto) | member **752**, slot **0** — `scr_seq_brock_gym_slot0.s`, text **462**, trainer **253** / rematch **720**; TM choice + badge gating + rematch — [Pewter Gym](#pewter-gym--brock--gym-tm-choice-pool-prototype). `FLAG_GOT_TM80_FROM_BROCK` (**383**) = took a Brock TM. On-transition slot **3** (level scripts **525**) — leave vanilla |
 | Misty (Kanto) | member **760**, slot **0** — `scr_seq_misty_gym_slot0.s`, text **469** (pre **8**, post **9**, badge **10**, revisit **13**, labels **17–19**, rematch **20–23**); trainer **254** / rematch **721**; TM03 / TM18 / TM55 (Brine **4** badges) — [Cerulean Gym](#cerulean-gym--misty--gym-tm-choice-pool). `FLAG_GOT_TM03_FROM_MISTY` (**384**). On-transition slot **3** (level scripts **533**) — leave vanilla; slots **4–7** = Machine Part / Rocket (story skip flags) — do not patch |
-| Lt. Surge (Kanto) | member **778**, slot **23** (script **24**) — `scr_seq_surge_gym_slot23.s`, text **485**; trainer **255** / rematch **722** — [Vermilion Gym](#vermilion-gym--lt-surge--gym-tm-choice-pool). **`MAP_T06GYM0101` (365)** is the playable interior (warp from Cerulean-side Vermilion **051**); header `MAP_T08GYM0101` (480) / scr **809** is a different member (gymmick only, no leader `trainer_battle`). `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**). On-transition **script 23** = slot **22** (level scripts **551**); slots **0–22** = trash-can puzzle — patch slot **23** only |
+| Lt. Surge (Kanto) | member **778**, slot **23** (script **24**) — `scr_seq_surge_gym_slot23.s`, text **485**; trainer **255** / rematch **722** — [Vermilion Gym](#vermilion-gym--lt-surge--gym-tm-choice-pool). **`MAP_T06GYM0101` (365)** is the playable interior (warp from Vermilion **051**). `MAP_T08GYM0101` (480) / scr **809** is **Fuchsia Gym (Janine)**, not Vermilion. `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**). On-transition **script 23** = slot **22** (level scripts **551**); slots **0–22** = trash-can puzzle — patch slot **23** only |
+| Janine (Kanto) | member **809**, slot **1** (script **2**) — `scr_seq_janine_gym_slot1.s`, text **514** (pre **0**, post **1**, badge **2**, revisit **4**, labels **19–21**, rematch **22–25**); trainer **257** / rematch **724**; TM06 always, TM84 @**6**, TM36 @**8**. Below **6** badges the menu is skipped and TM06 is given directly — [Fuchsia Gym](#fuchsia-gym--janine--gym-tm-choice-pool). `FLAG_GOT_TM84_FROM_JANINE` (**301**). On-transition slot **0** (level scripts **582** = `02 01 00`) — leave vanilla |
 | Patch tools | `tools/patch_scr_seq_gym_{falkner,morty,pryce,jasmine,clair,brock,misty,surge}.py` — all but Pryce use `patch_script_slot()` (appends the new slot body, repoints only that slot; vanilla bytes never move); **Pryce is special** (do not rebuild 932) |
 | Badge test hook (fixed Nov 2026) | `hooks` line `PlayerProfile_TestBadgeFlag_hook 02028F98` used branch register **r1**, which is the `badgeNumber` argument — the stub overwrote it with the hook address, so every non-bypass `TestBadgeFlag` returned FALSE (trainer card showed no badges, `CheckBadge` always 0, mart badge rows hidden) while `count_badges` / save menu still counted correctly. Now **r2**. **Rule:** the last column in `hooks` is the scratch register for the jump stub — pick one that is **not an argument** of the hooked function (r0–r3 are args) |
 | Slot order pitfall | Vanilla slot bodies are often stored **out of table order** (e.g. 943: slot 0 at byte 274, slot 1 at 26). The old `extract_scripts` + `build_scr_seq` rebuild silently dropped / misaligned slots — fixed in `patch_scr_seq_gym_falkner.py` only. Ferry / rod-guru / Mom / other patchers still carry their **own copy** of the old rebuild; unaudited — suspect them first if a patched map crashes on entry or an NPC runs the wrong script |
@@ -725,7 +726,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 | **Whitney** | **886** | **0** (+ slots 1, 4) | **Hard** — sore-loser state machine (first win = cry, no badge; chase in slot 1; badge on second talk). Inject `.include` only on the badge-grant path; do not replace whole script. |
 | Bugsy | TBD | TBD | Run `inspect_gym_slots.py` after vanilla extract |
 | Chuck | TBD | TBD | |
-| Janine | TBD | TBD | Kanto |
+| Janine | **809** | **1** | Shipped — [Fuchsia Gym](#fuchsia-gym--janine--gym-tm-choice-pool) |
 
 **Template for “easy” leaders (Falkner / Morty / Pryce / Jasmine pattern):** one leader slot, copy script skeleton, set badge + TM constants, fix **text indices** (blank-line banks vs compact), wire `narcs.mk` + patch py + verify member.
 
@@ -784,7 +785,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Per-leader text to author when rolling out:** TM labels, rematch offer, rematch accept, rematch win, farewell (4 custom lines + labels). Check `data/Trainers.c` for a vanilla rematch trainer id (same `TRAINERCLASS_LEADER_*`, higher index — e.g. Brock 253 / 720).
 
-**Not done yet:** remaining leaders after Misty, and generating labels from `src/item.c` instead of hand-typing. Menu height with >6 entries untested (Brock is the largest pool at 6).
+**Not done yet:** leaders after Janine, and generating labels from `src/item.c` instead of hand-typing. Menu height with >6 entries untested (Brock is the largest pool at 6). If only one pool TM is unlocked, skip the menu and give that TM (Janine / Toxic below 6 badges).
 
 ### Cerulean Gym — Misty + Gym TM choice pool
 
@@ -805,7 +806,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Status (Nov 2026):** shipped in tree — same Brock/Misty flow. Playtest before calling verified.
 
-**Map IDs:** playable interior **`MAP_T06GYM0101` (365)** → scr_seq **778**, level scripts **551**, msg bank **485**, zone_event **322**. Do **not** patch scr_seq **809** (`MAP_T08GYM0101` / header **480** — separate archive slice).
+**Map IDs:** playable interior **`MAP_T06GYM0101` (365)** → scr_seq **778**, level scripts **551**, msg bank **485**, zone_event **322**. `MAP_T08GYM0101` (header **480**) / scr_seq **809** / text **514** is Fuchsia Gym — see [Janine](#fuchsia-gym--janine--gym-tm-choice-pool).
 
 | What | Where |
 |------|--------|
@@ -815,6 +816,21 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 | Vanilla facts | `BADGE_THUNDER`, rematch **722**, `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**) |
 
 **Pool:** Shock Wave / Charge Beam (**0**); Thunder Wave (**2**); Thunder (**8**); Thunderbolt (**10**). Five-entry menu (same pattern as Brock).
+
+### Fuchsia Gym — Janine + Gym TM choice pool
+
+**Status (Nov 2026):** shipped in tree. Playtest before calling verified.
+
+**Map IDs:** `MAP_T08GYM0101` (480) → scr_seq **809**, level scripts **582**, msg bank **514**, zone_event **433**. Real Janine is zone **obj 2** (sprite **372**, hide flag **755**), **script 2 = slot 1**. Level scripts **582** = `02 01 00` → on-transition **script 1 = slot 0** (leave vanilla; it shows the real Janine). Disguise trainers stay in other slots.
+
+| What | Where |
+|------|--------|
+| Leader script | `armips/scr_seq/scr_seq_janine_gym_slot1.s` → `build/janine_gym_slot1.bin` |
+| Patch / verify | `tools/patch_scr_seq_gym_janine.py build/a012/2_809`; `verify_falkner_gym_hm_patch.py` |
+| Text | `data/text/514.txt` — vanilla **0–18**; appended **19–25** (TM labels in unlock order, rematch, farewell) |
+| Vanilla facts | trainer **257**, rematch **724**, `GiveBadge BADGE_SOUL` + `addvar VAR_UNK_4135`, `settrainerflag` **83 / 84 / 136 / 183**, `FLAG_GOT_TM84_FROM_JANINE` (**301**), `setvar VAR_TEMP_x400B, 111` around `trainer_battle` |
+
+**Pool:** Toxic (**0**), Poison Jab (**6**), Sludge Bomb (**8**). If `count_badges` is below **6**, only Toxic is legal, so `_tm_grant` skips the choose prompt and menu and gives TM06. At **6+** the menu is Toxic + Poison Jab; at **8+** Sludge Bomb is added. Same skip applies on a rematch.
 
 ---
 

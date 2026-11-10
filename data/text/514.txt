@@ -17,3 +17,10 @@ Or not!\r
 I feel stronger dressing up as Janine.
 Fuchsia City Pokémon Gym
 Fuchsia City Pokémon Gym\rLeader: Janine\nCertified Trainer!\f{STRVAR_1 3, 0, 0}
+TM06 Toxic
+TM84 Poison Jab
+TM36 Sludge Bomb
+Janine: Back again?\nThink you can see through me twice?
+Janine: Fufufu...\nLet’s see what you’ve learned!\r
+Janine: You’re still as sharp as ever.\r
+Janine: I’ll keep honing my Poison-type\nPokémon.\fCome back if you want another battle!\r
