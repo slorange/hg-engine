@@ -23,4 +23,4 @@ TM36 Sludge Bomb
 Janine: Back again?\nThink you can see through me twice?
 Janine: Fufufu...\nLet’s see what you’ve learned!\r
 Janine: You’re still as sharp as ever.\r
-Janine: I’ll keep honing my Poison-type\nPokémon.\fCome back if you want another battle!\r
+Janine: I’ll keep honing my\nPoison-type Pokémon.\fCome back if you want another battle!\r

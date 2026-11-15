@@ -18,3 +18,12 @@ Ecruteak City Pokémon Gym
 
 Ecruteak City Pokémon Gym\nGym Leader: Morty\rCertified Trainer!\f{STRVAR_1 3, 0, 0}
 
+TM56 Fling
+TM66 Payback
+TM65 Shadow Claw
+TM30 Shadow Ball
+TM79 Dark Pulse
+Morty: I sensed you would return.\nShall we battle again?
+Morty: Then let us see\nwhat the shadows show.\r
+Morty: You still see further\nthan I do.\r
+Morty: That technique is yours.\fThe Gym will be here when you return.\r

@@ -32,4 +32,4 @@ TM35 Flamethrower
 Blaine: Back for more heat?\nWant a rematch?
 Blaine: All right!\nI’ll turn up the heat!\r
 Blaine: Burned out again...\nYou’re something else.\r
-Blaine: Take that move and stoke your team.\fCome back when my Fire-types are ready!\r
+Blaine: Take that move and\nstoke your team.\fCome back when my\nFire-types are ready!\r

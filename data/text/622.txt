@@ -8,3 +8,11 @@ Pryce: I have advice to give you before\nwe take the picture.\rBreathe in and re
 Pryce: Let’s see...\nDid we get a good one?
 Pryce: That’s OK, too.\nSuit yourself.
 Your Photo Album is full.\rAccess your PC to delete\nsome pictures.
+TM07 Hail
+TM72 Avalanche
+TM14 Blizzard
+TM13 Ice Beam
+Pryce: You have returned.\nShall an old man test you again?
+Pryce: Good.\nShow me the strength you have gained.\r
+Pryce: Age is no match for your will.\r
+Pryce: Take this move with you.\fCome back when the road has\ntaught you more.\r

@@ -13,4 +13,4 @@ TM53 Energy Ball
 Erika: Hello again...\nShall we have another match?
 Erika: How lovely.\nPlease, give it your all.\r
 Erika: That was delightful once more.\r
-Erika: I hope that move helps your Pokémon bloom.\fCome back anytime you wish.\r
+Erika: I hope that move helps\nyour Pokémon bloom.\fCome back anytime you wish.\r

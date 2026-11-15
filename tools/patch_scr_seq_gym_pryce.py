@@ -25,6 +25,7 @@ VANILLA_MEMBER = ROOT / f"build/a012_vanilla/2_{MEMBER_INDEX:03d}"
 PYTHON = ROOT / ".venv/bin/python"
 HM_EXT_ASM = ROOT / "armips/scr_seq/scr_seq_pryce_gym_hm_ext.s"
 HM_EXT_BIN = ROOT / "build/pryce_gym_hm_ext.bin"
+HM_EXT_SYM = ROOT / "build/pryce_gym_hm_ext.sym"
 
 VANILLA_MEMBER_LEN = 528
 PLAY_FANFARE = 78
@@ -106,7 +107,30 @@ def make_goto_trampoline(from_offset: int, target_offset: int, pad_len: int) -> 
     return bytes(out)
 
 
-def patch_pryce_member(vanilla: bytes, hm_ext: bytes) -> bytes:
+def revisit_offset(sym_text: str) -> int:
+    """Byte offset of _pryce_revisit inside the assembled extension."""
+    for line in sym_text.splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[-1] == "_pryce_revisit":
+            return int(parts[0], 16)
+    raise ValueError("armips sym is missing _pryce_revisit")
+
+
+def retarget_badge_revisit(out: bytearray, revisit_file_off: int) -> None:
+    """Point the badge-owned branch at the extension rematch / bag-full retry.
+
+    Vanilla opcode at file 210 is goto_if eq -> 376, which is the photo script.
+    The TM trampoline already overwrites those bytes, so the branch has to move.
+    """
+    branch = 210
+    op, cond = struct.unpack_from("<HB", out, branch)
+    if op != 28 or cond != 1:
+        raise ValueError(f"expected badge-owned goto_if at {branch}, got op={op} cond={cond}")
+    after = branch + 7
+    struct.pack_into("<i", out, branch + 3, revisit_file_off - after)
+
+
+def patch_pryce_member(vanilla: bytes, hm_ext: bytes, revisit_in_ext: int) -> bytes:
     assert_vanilla_layout(vanilla)
     tm_start = find_post_badge_tm_start(vanilla)
     if tm_start >= VANILLA_MEMBER_LEN:
@@ -117,6 +141,7 @@ def patch_pryce_member(vanilla: bytes, hm_ext: bytes) -> bytes:
     pad_len = VANILLA_MEMBER_LEN - tm_start
     out[tm_start:VANILLA_MEMBER_LEN] = make_goto_trampoline(tm_start, ext_start, pad_len)
     out.extend(hm_ext)
+    retarget_badge_revisit(out, ext_start + revisit_in_ext)
     return bytes(out)
 
 
@@ -134,18 +159,19 @@ def main(argv: list[str]) -> int:
         return 0
 
     HM_EXT_BIN.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.check_call([str(ARMIPS), *armips_args(), str(HM_EXT_ASM)])
+    subprocess.check_call([str(ARMIPS), *armips_args(), "-sym", str(HM_EXT_SYM), str(HM_EXT_ASM)])
     hm_ext = HM_EXT_BIN.read_bytes()
     if not hm_ext:
         raise ValueError(f"empty HM extension blob {HM_EXT_BIN}")
+    revisit = revisit_offset(HM_EXT_SYM.read_text(encoding="utf-8"))
 
-    patched = patch_pryce_member(vanilla, hm_ext)
+    patched = patch_pryce_member(vanilla, hm_ext, revisit)
     target.write_bytes(patched)
     tm_start = find_post_badge_tm_start(vanilla)
     print(
         f"patched Pryce gym in {target} ({len(patched)} bytes, "
         f"retail {VANILLA_MEMBER_LEN}b preserved, goto @{tm_start}->528, "
-        f"hm_ext={len(hm_ext)}b)"
+        f"hm_ext={len(hm_ext)}b, revisit @{VANILLA_MEMBER_LEN + revisit})"
     )
     return 0
 

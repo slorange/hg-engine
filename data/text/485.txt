@@ -19,6 +19,6 @@ TM73 Thunder Wave
 TM25 Thunder
 TM24 Thunderbolt
 Lt. Surge: You’re back!\nWant another shot at me?
-Lt. Surge: Ha! That’s the spirit!\nLet’s see if you can handle my voltage!\r
+Lt. Surge: Ha! That’s the spirit!\nLet’s see if you can handle\fmy voltage!\r
 Lt. Surge: Not bad, kid!\nYou’ve earned another TM from me!\r
 Lt. Surge: I’ll keep my Electric types\ncharged up.\fCome back anytime you want\nanother battle!\r

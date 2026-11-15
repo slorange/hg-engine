@@ -15,5 +15,5 @@ TM85 Dream Eater
 TM29 Psychic
 Sabrina: I foresaw this reunion.\nShall we battle again?
 Sabrina: Then let us see if the future\nstill bends to you.\r
-Sabrina: Once again, you exceed my vision.\r
-Sabrina: Take this technique.\fReturn when you wish to test fate again.\r
+Sabrina: Once again, you\nexceed my vision.\r
+Sabrina: Take this technique.\fReturn when you wish\nto test fate again.\r

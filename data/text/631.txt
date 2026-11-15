@@ -12,3 +12,9 @@ Blackthorn City Pokémon Gym
 Blackthorn City Pokémon Gym\rLeader: Clair\nCertified Trainer!\f{STRVAR_1 3, 0, 0}
 Clair: ...Fine. I admit it.\rYou’ve earned the Rising Badge.\rTake it.\r
 The Rising Badge shows you are a Trainer\nworthy of the League.\rYour Pokémon will obey you without\fquestion.\r
+TM02 Dragon Claw
+TM59 Dragon Pulse
+Clair: Back again?\nYou want another battle?
+Clair: Fine.\nDon’t expect me to hold back.\r
+Clair: ...I still can’t accept this.\r
+Clair: Take it.\fCome back when you think\nyou can beat me again.\r

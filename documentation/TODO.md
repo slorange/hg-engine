@@ -31,11 +31,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | What to test |
 | ---- | ------ | ------------ |
 | **Brock — Gym TM choice menu** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Pewter Gym post-defeat TM picker: labels match unlock order then TM number; badge minimums per [`gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv); menu selections map correctly (values **0–5**); rematch TM flow. [HACK-NOTES § Pewter Gym](HACK-NOTES.md#pewter-gym--brock--gym-tm-choice-pool-prototype). |
-| **Janine — Gym TM (single option skips menu)** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Fuchsia: under **6** badges, Toxic is given with no menu. At **6** badges, Toxic + Poison Jab menu. At **8**, Sludge Bomb is added. Rematch uses the same rule. [HACK-NOTES § Fuchsia Gym](HACK-NOTES.md#fuchsia-gym--janine--gym-tm-choice-pool). |
-| **Blue — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Viridian: under **2** badges, Swagger is given with no menu. Then Safeguard (**2**), Double Team (**4**), Swords Dance (**6**), Trick Room (**8**). Rematch uses the same rule. [HACK-NOTES § Viridian Gym](HACK-NOTES.md#viridian-gym--blue--gym-tm-choice-pool). |
-| **Erika — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Celadon: under **2** badges, Bullet Seed is given with no menu. Then Grass Knot (**2**), Giga Drain (**4**), Solar Beam and Energy Ball (**8**). Rematch uses the same rule. [HACK-NOTES § Celadon Gym](HACK-NOTES.md#celadon-gym--erika--gym-tm-choice-pool). |
-| **Sabrina — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Saffron: Skill Swap and Psych Up are both available from the first badge, so the menu always opens. Then Calm Mind (**4**), Dream Eater (**6**), Psychic (**10**). Rematch uses the same rule. [HACK-NOTES § Saffron Gym](HACK-NOTES.md#saffron-gym--sabrina--gym-tm-choice-pool). |
-| **Blaine — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Cinnabar cave gym: under **2** badges, Sunny Day is given with no menu. Then Will-O-Wisp (**2**), Fire Blast and Overheat (**8**), Flamethrower (**10**). Rematch uses the same rule. [HACK-NOTES § Cinnabar Gym](HACK-NOTES.md#cinnabar-gym--blaine--gym-tm-choice-pool). |
+| **Johto — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Falkner, Morty, Jasmine, Pryce, Clair: menu follows the badge gates in [`gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). One unlocked TM skips the menu. Rematch uses the same rule. |
 | **Day Care respects level cap** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Day Care EXP must not raise Pokémon above the current badge-based player cap. Unconfirmed, needs investigation or testing |
 | **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
 
@@ -46,7 +42,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
 | **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
-| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | In tree: Brock, Misty, Lt. Surge, Erika, Janine, Sabrina, Blaine, Blue (one unlocked TM skips the menu). Badge minimums: [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). Remaining: Johto Leaders |
+| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | In tree: Falkner, Morty, Jasmine, Pryce, Clair, Brock, Misty, Lt. Surge, Erika, Janine, Sabrina, Blaine, Blue (one unlocked TM skips the menu). Badge minimums: [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). Remaining: Whitney, Bugsy, Chuck |
 
 ---
 
@@ -54,7 +50,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Wild ecology — remaining methods & specials** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | **Still:** Swarms, Safari Zone, Bug Contest, gifts, legendaries, static overworld |
+| **Wild ecology — remaining methods & specials** | [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) | **Still:** Swarms, Safari Zone, Bug Contest |
 | **Distance caps — Safari Zone** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked to distance table |
 | **Distance caps — Bug Catching Contest** | [Wilds-1 § Encounter methods](DESIGN-WILDS.md#encounter-methods-poc-coverage) | **Not yet** hooked |
 
@@ -65,11 +61,9 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
 | **Cross-region Fly (Johto ↔ Kanto)** | [World-1](DESIGN-WORLD.md#world-1-world-transportation), [Fly map § cross-region attempts](HACK-NOTES.md#cross-region-fly-attempts-pinned) | Kanto scroll works (`OPENWORLD_FLY_MAP` arm9 hook); destination filter still vanilla; overlay 101 patch sites tried in Sep 2026 all failed or no-op (see HACK-NOTES) |
-| **Abra Pokémon Center travel** | [World-1 § Abra fast travel](DESIGN-WORLD.md#abra-fast-travel) | **Not implemented** — visited-cities-only fast travel before Fly |
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |
 | **Violet / Fuchsia shard traders** | [World-7 § Rare battle berries](DESIGN-WORLD.md#world-7-berry-economy) | Liechi–Rowap via shard exchange menus |
-| **Move relearner — easy access** | | **Every Pokémon Center** is the target UX. Architecture choice: (1) one hub Center + warps with tracked return + dynamic exit, (2) patch every Center when adding features, or (3) hook Nurse Joy / PC interaction globally (may not cover new NPCs e.g. Abra teleporter). |
 | **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels) | Replace static per-spot item lists with random generation from the curated rare-item list |
 
 ---

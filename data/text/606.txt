@@ -23,3 +23,11 @@ Giggle...\rI know how capable you are\nfrom the Lighthouse.\rIt’s time you sho
 You are amazing...\rYou should aim even higher, since\nyou have such potential.\rHave you been to Mahogany Town?
 Olivine City Pokémon Gym
 Olivine City Pokémon Gym\rLeader: Jasmine\nCertified Trainer!\f{STRVAR_1 3, 0, 0}
+TM47 Steel Wing
+TM74 Gyro Ball
+TM23 Iron Tail
+TM91 Flash Cannon
+Jasmine: Um... hello again.\nWould you like a rematch?
+Jasmine: All right.\nI’ll do my best.\r
+Jasmine: You really are strong...\r
+Jasmine: Please take this.\fI hope it helps your Pokémon.\r

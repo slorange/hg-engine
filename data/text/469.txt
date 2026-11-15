@@ -19,6 +19,6 @@ TM03 Water Pulse
 TM18 Rain Dance
 TM55 Brine
 Misty: You again?\nCare for a rematch?
-Misty: Fine! Let’s see if you’ve gotten\nany better since last time!\r
+Misty: Fine! Let’s see if you’ve\ngotten any better since last time!\r
 Misty: You’re still as strong as ever.\nPick another move from me!\r
-Misty: I’ll keep training my Water-type\nPokémon.\fCome back anytime you want\nanother battle!\r
+Misty: I’ll keep training my\nWater-type Pokémon.\fCome back anytime you want\nanother battle!\r

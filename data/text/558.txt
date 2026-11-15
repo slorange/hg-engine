@@ -18,3 +18,10 @@ Violet City Pokémon Gym
 
 Violet City Pokémon Gym\nGym Leader: Falkner\rCertified Trainer!\f{STRVAR_1 3, 0, 0}
 
+TM40 Aerial Ace
+TM88 Pluck
+TM51 Roost
+Falkner: You’re back.\nWant another battle?
+Falkner: Show me how far you’ve flown.\r
+Falkner: The wind still favors you.\r
+Falkner: Take that move and\nkeep climbing.\fCome test your wings again anytime.\r

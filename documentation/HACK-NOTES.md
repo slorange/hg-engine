@@ -594,11 +594,11 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Field HM use | `OPENWORLD_FIELD_MOVES_NO_BADGE_GATE` — [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags) (verified Sep 2026) |
 | Shared logic | `armips/include/gym_badge_hm_reward.inc` — level cap (`10 + 4×badges`, 80 at 16) + HM table |
 | Shared text | `data/text/854.txt` — level cap, HM names, TM intro |
-| Falkner | scr_seq **859** — slots **0–5** patched (`tools/patch_scr_seq_gym_falkner.py`, armips slots **1–5**); zone_event **365** — drop hint **obj 3** only (`tools/patch_zone_event_violet_gym.py`); [Violet Gym](#violet-gym-falkner--859--zone_event-365) |
-| Morty | member **922**, slot **1** — `scr_seq_morty_gym_slot1.s`, `data/text/614.txt` |
-| Pryce | member **932** — **append-only** HM patch ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); `data/text/622.txt` |
-| Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, `data/text/606.txt` |
-| Clair | member **943**, slot **0** — `scr_seq_clair_gym_slot13.s`, `data/text/631.txt`; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge) |
+| Falkner | scr_seq **859** — slots **0–5** patched (`tools/patch_scr_seq_gym_falkner.py`, armips slots **1–5**); zone_event **365** — drop hint **obj 3** only (`tools/patch_zone_event_violet_gym.py`); TM choice in slot **1** (Aerial Ace + Pluck always, Roost @**4**), rematch **712**, text **558** indices **20–26** — [Violet Gym](#violet-gym-falkner--859--zone_event-365). `FLAG_GOT_TM51_FROM_FALKNER` (**115**) |
+| Morty | member **922**, slot **1** — `scr_seq_morty_gym_slot1.s`, text **614** (blank-line bank; labels **20–24**, rematch **25–28**). Fling + Payback always, Shadow Claw @**2**, Shadow Ball + Dark Pulse @**6**. Rematch **715**. `FLAG_GOT_TM30_FROM_MORTY` (**166**) |
+| Pryce | member **932** — **append-only** ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); text **622** labels **10–13**, rematch **14–17**. Hail only below **2** badges, Avalanche @**2**, Blizzard @**8**, Ice Beam @**10**. Rematch **716**. `FLAG_GOT_TM07_FROM_PRYCE` (**210**) |
+| Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, text **606** labels **25–28**, rematch **29–32**. Steel Wing only below **2** badges, Gyro Ball @**2**, Iron Tail + Flash Cannon @**6**. Rematch **717**. `FLAG_GOT_TM23_FROM_JASMINE` (**194**) |
+| Clair | member **943**, slot **0** — `scr_seq_clair_gym_slot13.s`, text **631** labels **14–15**, rematch **16–19**; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge). Dragon Claw only below **8** badges, then Dragon Pulse. Rematch **719**. `FLAG_GOT_TM59_FROM_CLAIR` (**218**) |
 | Brock (Kanto) | member **752**, slot **0** — `scr_seq_brock_gym_slot0.s`, text **462**, trainer **253** / rematch **720**; TM choice + badge gating + rematch — [Pewter Gym](#pewter-gym--brock--gym-tm-choice-pool-prototype). `FLAG_GOT_TM80_FROM_BROCK` (**383**) = took a Brock TM. On-transition slot **3** (level scripts **525**) — leave vanilla |
 | Misty (Kanto) | member **760**, slot **0** — `scr_seq_misty_gym_slot0.s`, text **469** (pre **8**, post **9**, badge **10**, revisit **13**, labels **17–19**, rematch **20–23**); trainer **254** / rematch **721**; TM03 / TM18 / TM55 (Brine **4** badges) — [Cerulean Gym](#cerulean-gym--misty--gym-tm-choice-pool). `FLAG_GOT_TM03_FROM_MISTY` (**384**). On-transition slot **3** (level scripts **533**) — leave vanilla; slots **4–7** = Machine Part / Rocket (story skip flags) — do not patch |
 | Lt. Surge (Kanto) | member **778**, slot **23** (script **24**) — `scr_seq_surge_gym_slot23.s`, text **485**; trainer **255** / rematch **722** — [Vermilion Gym](#vermilion-gym--lt-surge--gym-tm-choice-pool). **`MAP_T06GYM0101` (365)** is the playable interior (warp from Vermilion **051**). `MAP_T08GYM0101` (480) / scr **809** is **Fuchsia Gym (Janine)**, not Vermilion. `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**). On-transition **script 23** = slot **22** (level scripts **551**); slots **0–22** = trash-can puzzle — patch slot **23** only |
@@ -636,9 +636,10 @@ Rebuilding the offset table (or replacing “slot 1” with a full Leader script
 **Working approach** (`tools/patch_scr_seq_gym_pryce.py`, verified in-game Oct 2026):
 
 1. Copy the retail **528-byte** member verbatim (offset table: slot **0** → **190**, slot **1** → **10**).
-2. Leave bytes **190–315** unchanged (room entry through `SEQ_ME_BADGE` + `wait_fanfare`).
+2. Leave bytes **190–315** unchanged except the badge-owned branch at **210** (room entry through `SEQ_ME_BADGE` + `wait_fanfare`).
 3. Replace the vanilla TM tail (**315–528**) with opcode **22** `goto` to bytecode appended at file offset **528** (pad remainder with `scr_end` / zero).
-4. Append `armips/scr_seq/scr_seq_pryce_gym_hm_ext.s` → `build/pryce_gym_hm_ext.bin` (`gym_badge_hm_reward.inc` + TM07 grant).
+4. Append `armips/scr_seq/scr_seq_pryce_gym_hm_ext.s` → `build/pryce_gym_hm_ext.bin` (`gym_badge_hm_reward.inc` + the TM choice). Hail is item **334**. Below **2** badges the menu is skipped.
+5. Retarget the badge-owned `goto_if` at file **210** to `_pryce_revisit` in that extension (armips `-sym`). That branch used to enter the photo script at **376**, which this trampoline already overwrites. Revisit is now bag-full retry or rematch trainer **716**. Decline uses text **622** index **4**.
 
 `scripts/build/verify_falkner_gym_hm_patch.py` accepts HM bytecode in the appended tail (whole-member scan for **932**). Recon: `scripts/dev/decode_pryce_932.py`, `scripts/dev/inspect_gym_slots.py` on `build/a012_vanilla/2_932`.
 
@@ -704,7 +705,7 @@ Individual cities still require **`FLAG_SYS_FLYPOINT_*`** (Pokémon Center visit
 
 ### Violet Gym (Falkner) — 859 / zone_event 365
 
-**Status (Nov 2026):** Verified — leader HM/TM grant, elevator **up** and **down**, Sprout/hint guide **gone** (no NPC on the lift).
+**Status (Nov 2026):** Elevator and guide hide verified. TM choice is in the leader slot and still needs a playtest: Aerial Ace and Pluck from the first badge (menu always opens), Roost at **4**. Rematch trainer **712**.
 
 Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world patches **0–5** plus zone_event **365**.
 
@@ -752,7 +753,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 | TM flag | `FLAG_GOT_TM59_FROM_CLAIR` (**218**) — `_already_beaten` still grants TM if badge already owned |
 | Build / verify | `narcs.mk` → `2_943`, `2_137`; `scripts/build/verify_clair_gym_patch.py build/a012/2_943` |
 
-**Flow (shipped):** pre-battle (**631** **3**) → Morty-style `trainer_battle` + `check_battle_won` → post-win (**631** **4**) → `GiveJohtoBadgeOpenWorld` + midgame badge var → `SEQ_ME_BADGE` → `gym_badge_hm_reward.inc` (level cap; badge **1** → Flash mart line) → **854** TM intro → bag check → `SEQ_ME_WAZA` → TM59 → flavor (**631** **7**). Loss: **631** **5** then `white_out`.
+**Flow (shipped):** pre-battle (**631** **3**) → Morty-style `trainer_battle` + `check_battle_won` → post-win (**631** **4**) → `GiveJohtoBadgeOpenWorld` + midgame badge var → `SEQ_ME_BADGE` → `gym_badge_hm_reward.inc` (level cap; badge **1** → Flash mart line) → TM choice. Below **8** badges only Dragon Claw is legal, so the menu is skipped. At **8+** the menu is Dragon Claw + Dragon Pulse. Rematch trainer **719**; decline uses index **9**. Loss: **631** **5** then `white_out`.
 
 **Pitfalls:** Do not use **631** file line numbers as script indices (duplicate Yo! lines at **2–3** shift Clair intro to **3**). Vanilla slot **0** ended at msg **5** with no badge (Den trial design). Wrong scr_seq member (**938**) patches a non-playable gym map.
 
@@ -789,7 +790,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Per-leader text to author when rolling out:** TM labels, rematch offer, rematch accept, rematch win, farewell (4 custom lines + labels). Check `data/Trainers.c` for a vanilla rematch trainer id (same `TRAINERCLASS_LEADER_*`, higher index — e.g. Brock 253 / 720).
 
-**Not done yet:** Johto leaders still on a fixed TM (Whitney, Bugsy, Chuck, and the rest of the Johto set), and generating labels from `src/item.c` instead of hand-typing. Kanto gym TM choice is in tree. Menu height with >6 entries untested (Brock is the largest pool at 6). If only one pool TM is unlocked, skip the menu and give that TM.
+**Not done yet:** Whitney, Bugsy, and Chuck. Falkner, Morty, Jasmine, Pryce, and Clair now use the choice menu. Generating labels from `src/item.c` is still hand-typed. Menu height with >6 entries untested (Brock is the largest pool at 6). If only one pool TM is unlocked, skip the menu and give that TM.
 
 ### Cerulean Gym — Misty + Gym TM choice pool
 

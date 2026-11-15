@@ -17,4 +17,4 @@ TM92 Trick Room
 Blue: You again?\nThink you can take me this time?
 Blue: Heh!\nDon’t hold back!\r
 Blue: Tch...\nYou’re still the real deal.\r
-Blue: Take that and get stronger.\fCome back when you want another battle!\r
+Blue: Take that and get stronger.\fCome back when you want\nanother battle!\r
