@@ -22,6 +22,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-18** | **Saffron City Poké Mart** — the **second shop teller** (specialty clerk) is **missing** from the interior; only the badge-tier clerk remains. | `MAP_T11FS0101` / scr_seq **409**; specialty shelf **`sSaffronMart`** (mart index **15**). [HACK-NOTES § KB-18](HACK-NOTES.md#kb-18--saffron-mart-second-clerk-vanished). |
 | **KB-21** | **Mist** — when the **opponent** uses Mist, it starts **Sandstorm** (weather / message / field effect) instead of team Mist. **Player’s own Mist OK**. | Same data/scripts for both sides in source; suspect **enemy / trainer battle path** (party build, client IDs, or AI execution) — not `Moves.c` effect wiring. Repro vs trainers; compare `enemy_party` / battle controller for defender vs attacker. |
 | **KB-22** | **Thunder Wave** — when the **opponent** uses it, appears to **miss every time** (or never paralyzes). **Player’s own Thunder Wave OK**. | Player path works; enemy path may differ (`BattleSystem_CheckMoveHit`, before-move checks, or trainer move data). Repro vs wild vs trainer; note target types (Ground = no effect, not miss). |
+| **KB-23** | **Olivine Gym** — after Jasmine gives the Mineral Badge and you leave the gym, the player is stuck: no movement and no menu. | Reproduced as the **5th** Johto badge. That badge starts the Rocket event. Once the Radio Tower is under siege, Whitney cannot be unlocked. The Rocket `setvar` in `scr_seq_jasmine_gym_slot0.s` only runs when `count_badges` is exactly **3**, so it did not fire. At 5 badges the shared reward block grants HM02 Fly, then the TM menu. The lock is on the way out, so check Olivine’s on-transition / gym-exit script. |
 ---
 
 ## Needs testing
@@ -31,18 +32,8 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | What to test |
 | ---- | ------ | ------------ |
 | **Brock — Gym TM choice menu** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Pewter Gym post-defeat TM picker: labels match unlock order then TM number; badge minimums per [`gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv); menu selections map correctly (values **0–5**); rematch TM flow. [HACK-NOTES § Pewter Gym](HACK-NOTES.md#pewter-gym--brock--gym-tm-choice-pool-prototype). |
-| **Johto — Gym TM choice** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | Falkner, Morty, Jasmine, Pryce, Clair: menu follows the badge gates in [`gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). One unlocked TM skips the menu. Rematch uses the same rule. |
 | **Day Care respects level cap** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Day Care EXP must not raise Pokémon above the current badge-based player cap. Unconfirmed, needs investigation or testing |
 | **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
-
----
-
-## Gyms ([DESIGN-BATTLES.md](DESIGN-BATTLES.md))
-
-| Item | Design | Notes |
-| ---- | ------ | ----- |
-| **Gym Leader HM grants (all rows)** | [World-3](DESIGN-WORLD.md#badge--field-abilities-single-reference), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) | Badge-order table decided; rewrite Leader scripts — [Vanilla cleanup § HM](#superseded-hm-and-progression-teaching) |
-| **Gym TM choice pools** | [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) | In tree: Falkner, Morty, Jasmine, Pryce, Clair, Brock, Misty, Lt. Surge, Erika, Janine, Sabrina, Blaine, Blue (one unlocked TM skips the menu). Badge minimums: [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv). Remaining: Whitney, Bugsy, Chuck |
 
 ---
 
@@ -146,7 +137,6 @@ Target: Gym Leaders grant badge + TM + HM order ([Battle-3](DESIGN-BATTLES.md#fi
 
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
-| Vanilla per-Leader HM gifts (wrong move / wrong Leader) | Badge-order HM table | Rewrite Leader defeat scripts |
 | **HM fetch / delivery quests** (Bill's PC, SS Anne, etc.) | HMs from Gym Leaders | Remove or skip fetch chains |
 | NPCs teaching Cut / Surf / etc. (Bill, HM tutors, story gates) | Leaders grant HMs | Remove teach scripts; keep HM-respecting obstacles |
 | Whirlpool / Waterfall / Strength story gates on routes and dungeons | Badge-count unlock | Replace with badge checks or remove for open travel |

@@ -12,7 +12,7 @@
 | ------- | ------ |
 | [Battle-1. Fair Trainer Battles](#battle-1-fair-trainer-battles) | IMPLEMENTED |
 | [Battle-2. Badge Level Caps](#battle-2-badge-level-caps) | PARTIALLY IMPLEMENTED |
-| [Battle-3. Gyms](#battle-3-gyms) | PARTIALLY IMPLEMENTED |
+| [Battle-3. Gyms](#battle-3-gyms) | IMPLEMENTED |
 | [Battle-4. Experience](#battle-4-experience) | IMPLEMENTED |
 | Generated trainer & Gym parties | Moved — [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) |
 | Dynamic battle rosters & universal PC | Moved — [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) |
@@ -96,6 +96,8 @@ After trainer Pokémon levels are set from the [cap ladder](#cap-ladder), evolut
 
 # Battle-3. Gyms
 
+**Status: IMPLEMENTED**
+
 All **16** Johto and Kanto Gyms in **any order**; all **16 badges** required for Victory Road / League ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)).
 
 ## Levels
@@ -110,7 +112,7 @@ After a Leader battle:
 1. **Badge**
 2. **HM** — field ability for this badge count when that row grants a new unlock ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves))
 3. **TM** — player picks one from that Leader's pool they qualify for by badge count ([World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms))
-4. **Wild Pokemon Hint** ([Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle))
+4. **Wild Pokemon Hint** ([Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties))
 
 ## Rematches
 

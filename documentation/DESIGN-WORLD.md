@@ -11,7 +11,7 @@
 | [World-0. Open-World Principles](#world-0-open-world-principles) | DECIDED |
 | [World-1. World Transportation](#world-1-world-transportation) | PARTIALLY IMPLEMENTED |
 | [World-2. Routes and Content Gating](#world-2-routes-and-content-gating) | PARTIALLY IMPLEMENTED (PoC) |
-| [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | PARTIALLY IMPLEMENTED |
+| [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | IMPLEMENTED |
 | [World-4. TMs](#world-4-tms) | DECIDED — **core release target** (renewable shop TMs) |
 | [World-5. Evolution Methods (Trade & Stones)](#world-5-evolution-methods-trade--stones) | DECIDED |
 | [World-6. Shops](#world-6-shops) | DECIDED — **core release target** (TMs, evolution items) |
@@ -111,7 +111,7 @@ Before [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level
 
 # World-3. HMs and Field Moves
 
-**Status: PARTIALLY IMPLEMENTED** — unlock order below decided; Johto Gym HM pilot partial; full Leader grant flow not complete.
+**Status: IMPLEMENTED**
 
 Field abilities unlock by **badges earned** (any Gym order): when badge count hits a row below, the defeating Gym Leader grants that unlock with badge + TM ([Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)). Vanilla HM fetch quests and tutors are removed ([Story-3](DESIGN-STORY.md#story-3-story-and-script-policy)).
 
@@ -121,10 +121,10 @@ Field abilities unlock by **badges earned** (any Gym order): when badge count hi
 
 | Badges | Unlock | Notes |
 | ------ | ------ | ----- |
-| 1 | **Flash** | Dark Cave, Rock Tunnel, blocked until unlocked. Not an HM item. |
+| 1 | **Flash** | Dark Cave and Rock Tunnel stay blocked until this unlock. Sold as a TM in the general shop. |
 | 2 | **Cut** (HM01) |  |
 | 3 | **Rock Smash** (HM06) |  |
-| 4 | **Headbutt** | Not an HM item |
+| 4 | **Headbutt** | Sold as a TM in the general shop. |
 | 5 | **Fly** (HM02) |  |
 | 6 | **Surf** (HM03) |  |
 | 7 | **Strength** (HM04) |  |
@@ -136,18 +136,9 @@ Badge counts not in the table get Badge + TM only
 
 **Unchanged vanilla** (learn move, party menu — not badge-gated): Sweet Scent, Dig, Teleport.
 
-## Headbutt & Flash — battle teaching (vanilla vs target)
+## Flash and Headbutt
 
-**Vanilla HGSS:** **Flash** is a normal TM teach in battle. **Headbutt is not a TM** — tutor-only teach.
-
-**Target (this rom):** Badge **1** / **4** unlock **field** Flash and Headbutt ([table above](#badge--field-abilities-single-reference)) for party use when a Pokémon knows the move. Players who want those moves **in battle** need a teach item like any other field-adjacent move.
-
-**Open work:** add a **Headbutt TM** (vanilla has none), remove or bypass vanilla tutor gates, audit early learnsets, and sell Flash / Headbutt from badge-gated shops when ready.
-
-**Status today:** Johto Gym HM pilot grants badge + TM at some counts; Flash / Headbutt field unlock flow is not complete ([Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)).
-
-
----
+TM05 has been changed from Roar to Headbutt. Badge **1** puts Flash in the general shop. Badge **4** puts Headbutt there. The Leader who crosses that count mentions the shop instead of handing over an HM.
 
 ---
 
@@ -191,17 +182,15 @@ Prize menus are wired; **earning Coins is still vanilla** (**Voltorb Flip** on t
 
 ## Gym TMs
 
-**Not implemented**
+**Implemented**
 
-Each Gym Leader has a **curated TM pool** (table below). Every `(Leader, TM)` row has a **minimum badge count** (authored per TM; not necessarily uniform within a pool).
+Each Gym Leader has a **curated TM pool** (table below). Every TM has its own **minimum badge count**.
 
 After the player **defeats** that Leader (first clear or **rematch**), they **choose one TM** from that Leader's pool among entries whose badge requirement is **≤ badges earned** (including the badge just awarded). Same choice rules on rematch — renewable TM source ([Battle-3](DESIGN-BATTLES.md#rematches)).
 
 Gym TM picks are intentionally **unlimited** over rematches
 
 ### Leader TM pools
-
-**Badge count per TM** (minimum badges to offer that line in the choice menu) is defined in data when implemented — not listed here yet.
 
 | Leader | TM pool |
 | ------ | ------- |

@@ -19,7 +19,7 @@
 | [TODO.md](TODO.md) | — | **Release blockers** — known bugs, vanilla cleanup, Gym gates, intro/home gaps (not Future scope) |
 | [HACK-NOTES.md](HACK-NOTES.md) | — | Implementation recipes (see `.cursor/rules/agents.mdc`) |
 
-# Index-2. Game Identity
+# Game Identity
 
 **Pokémon Wandering Heart** is HeartGold and SoulSilver reimagined as a trainer’s road trip: you are one of many travelers, not the center of a scripted plot—free to roam Johto and Kanto, grow a roster far beyond six Pokémon, and take on all sixteen Gyms when you are ready, in an order that fits your route.
 

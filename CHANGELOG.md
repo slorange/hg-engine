@@ -66,6 +66,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 
 ### Gyms & story
 
+- **Gym rewards** — All 16 Leaders give a badge, increase the level cap, and may give an HM based on badge count. The player then chooses a TM from that Leader’s pool, which expands based on badge count. Rematches offer the TM choice again.
 - **Lt. Surge & Erika** — Cut trees removed outside Gyms; Celadon Gym maze trees removed; Leaders reachable without Cut.
 - **Jasmine** — Secret Medicine sold at Olivine Mart.
 - **Clair (Blackthorn)** — Battle Clair with no prior Gym badges or Rocket gates cleared; Dragon’s Den trial not required for the badge.

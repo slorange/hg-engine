@@ -584,7 +584,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 
 ## Gym Leader HM rewards (Johto pilot)
 
-**Status:** **Falkner**, **Jasmine**, **Pryce**, and **Clair** verified in-game (Falkner elevator + HM/TM — [Violet Gym](#violet-gym-falkner--859--zone_event-365); Clair — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge)). **Morty** leader HM OK; pre–Burned Tower elder line blank ([KB-8](TODO.md#known-bugs)). **Whitney** and remaining Johto leaders not started.
+**Status (Nov 2026):** all **16** Leaders playtested — badge, level-cap line, HM or mart mention, TM choice, and rematch. **Morty**’s pre–Burned Tower elder line is still blank ([KB-8](TODO.md#known-bugs)). Whitney’s first win still cries and withholds the badge; the reward block runs on the talk after the chase.
 
 **Design:** [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards) — after badge fanfare, grant field ability by **`count_badges`** (any-order Gyms), then TM. **Flash / Headbutt not implemented yet** (badge rows 1 and 4 grant badge + TM only). Headbutt battle teach needs a **custom TM** (not in vanilla); see [World-3 § Headbutt & Flash](DESIGN-WORLD.md#headbutt--flash--battle-teaching-vanilla-vs-target).
 
@@ -599,6 +599,9 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Pryce | member **932** — **append-only** ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); text **622** labels **10–13**, rematch **14–17**. Hail only below **2** badges, Avalanche @**2**, Blizzard @**8**, Ice Beam @**10**. Rematch **716**. `FLAG_GOT_TM07_FROM_PRYCE` (**210**) |
 | Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, text **606** labels **25–28**, rematch **29–32**. Steel Wing only below **2** badges, Gyro Ball @**2**, Iron Tail + Flash Cannon @**6**. Rematch **717**. `FLAG_GOT_TM23_FROM_JASMINE` (**194**) |
 | Clair | member **943**, slot **0** — `scr_seq_clair_gym_slot13.s`, text **631** labels **14–15**, rematch **16–19**; zone_event **137** — [Blackthorn Gym](#blackthorn-gym--clair-rising-badge). Dragon Claw only below **8** badges, then Dragon Pulse. Rematch **719**. `FLAG_GOT_TM59_FROM_CLAIR` (**218**) |
+| Bugsy | member **869**, slot **1** (script **2**) — `scr_seq_bugsy_gym_slot1.s`, text **567** labels **7–9**, rematch **10–13**. Silver Wind only below **4** badges, U-turn @**4**, X-Scissor @**6**. Rematch **713**. `FLAG_GOT_TM89_FROM_BUGSY` (**127**). Playable room is `MAP_T23GYM0102`; entrance **868** has no battle. On-transition slot **16** (level scripts **642**) — leave vanilla |
+| Whitney | member **886**, slot **0** only — `scr_seq_whitney_gym_slot0.s`, text **582** labels **14–18**, rematch **19–22**. First win cries (no badge). Slot **1** chase and slot **4** on-transition stay vanilla. Badge talk: Attract only below **2** badges, Facade @**2**, Return @**4**, Hyper Beam + Giga Impact @**8**. Rematch **714**. `FLAG_GOT_TM45_FROM_WHITNEY` (**133**) |
+| Chuck | member **877**, slot **0** — `scr_seq_chuck_gym_slot0.s`, text **574** labels **15–19**, rematch **20–23**. Brick Break only below **4** badges, Bulk Up + Drain Punch @**4**, Focus Punch @**6**, Focus Blast @**8**. Rematch **718**. `FLAG_GOT_TM01_FROM_CHUCK` (**186**). Still increments `VAR_UNK_4134` and sets `VAR_SCENE_ROCKET_TAKEOVER` when that counter is **3**. On-transition slot **1** (level scripts **650**) — leave vanilla. `VAR_TEMP_x4000 == 0` still shows the training line |
 | Brock (Kanto) | member **752**, slot **0** — `scr_seq_brock_gym_slot0.s`, text **462**, trainer **253** / rematch **720**; TM choice + badge gating + rematch — [Pewter Gym](#pewter-gym--brock--gym-tm-choice-pool-prototype). `FLAG_GOT_TM80_FROM_BROCK` (**383**) = took a Brock TM. On-transition slot **3** (level scripts **525**) — leave vanilla |
 | Misty (Kanto) | member **760**, slot **0** — `scr_seq_misty_gym_slot0.s`, text **469** (pre **8**, post **9**, badge **10**, revisit **13**, labels **17–19**, rematch **20–23**); trainer **254** / rematch **721**; TM03 / TM18 / TM55 (Brine **4** badges) — [Cerulean Gym](#cerulean-gym--misty--gym-tm-choice-pool). `FLAG_GOT_TM03_FROM_MISTY` (**384**). On-transition slot **3** (level scripts **533**) — leave vanilla; slots **4–7** = Machine Part / Rocket (story skip flags) — do not patch |
 | Lt. Surge (Kanto) | member **778**, slot **23** (script **24**) — `scr_seq_surge_gym_slot23.s`, text **485**; trainer **255** / rematch **722** — [Vermilion Gym](#vermilion-gym--lt-surge--gym-tm-choice-pool). **`MAP_T06GYM0101` (365)** is the playable interior (warp from Vermilion **051**). `MAP_T08GYM0101` (480) / scr **809** is **Fuchsia Gym (Janine)**, not Vermilion. `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**). On-transition **script 23** = slot **22** (level scripts **551**); slots **0–22** = trash-can puzzle — patch slot **23** only |
@@ -728,9 +731,9 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 | Leader | scr_seq | Leader slot | Notes |
 |--------|---------|-------------|--------|
-| **Whitney** | **886** | **0** (+ slots 1, 4) | **Hard** — sore-loser state machine (first win = cry, no badge; chase in slot 1; badge on second talk). Inject `.include` only on the badge-grant path; do not replace whole script. |
-| Bugsy | TBD | TBD | Run `inspect_gym_slots.py` after vanilla extract |
-| Chuck | TBD | TBD | |
+| **Whitney** | **886** | **0** (slots 1 and 4 vanilla) | Shipped — cry on the first win; badge, level cap, HM, and TM menu on the post-chase talk. |
+| Bugsy | **869** | **1** | Shipped — slot **16** on-transition left vanilla. |
+| Chuck | **877** | **0** | Shipped — slot **1** on-transition left vanilla. Rocket scene still keys off `VAR_UNK_4134 == 3`. |
 | Janine | **809** | **1** | Shipped — [Fuchsia Gym](#fuchsia-gym--janine--gym-tm-choice-pool) |
 
 **Template for “easy” leaders (Falkner / Morty / Pryce / Jasmine pattern):** one leader slot, copy script skeleton, set badge + TM constants, fix **text indices** (blank-line banks vs compact), wire `narcs.mk` + patch py + verify member.
@@ -779,8 +782,8 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 3. **Menu labels must be in the map's local msg bank** (`menu_init` reads the local bank; extern banks are not supported). Dump the whole bank to `data/text/<bank>.txt` (`tools/msgenc -d -c charmap.txt build/text/7_<bank> …` in Docker), normalize CRLF→LF, **append** labels at the end (never shift existing indices). **Decode and `nl -ba` the bank** — script `npc_msg` / menu indices are **0-based line indices** (line 18 in the dump = index **17**, a common off-by-one when appending after a 16-line vanilla bank).
 4. Label format `TM## MoveName` — move names from `sMachineMoves[]` in `src/item.c` (fork may differ from vanilla, e.g. TM05 = Headbutt). Item id = `328 + TM# − 1` (TM01 = 328, TM80 = 407).
 5. Copy Brock's `_tm_grant` block; keep **`touchscreen_menu_hide` / `touchscreen_menu_show` around the menu** — without hide the menu never draws and the game soft-locks on the prompt (A does nothing).
-6. **`menu_item_add` values must not be 0** — the touchscreen menu skips value **0** rows (Shock Wave with value 0 showed only Charge Beam + Thunder Wave). Use **1…N** for every offered TM and match `switch` / `case` to those values (Brock keeps **0** only on the last-gated TM added after ungated lines).
-6. Leaders already on the HM flow (Falkner, Morty, Pryce, Jasmine, Clair) currently use a fixed TM + `854` index **9** intro — replace that tail with the menu. Pryce is append-only (932) — patch his HM-ext blob, not a slot rebuild.
+6. **`menu_item_add` values are 0–N**, matching the `switch` / `case` labels. An unmatched result falls through to the 0-badge TM.
+7. Every Johto and Kanto leader is on this menu. Pryce stays append-only (932).
 
 **Pool data:** [`data/gym_tms/gym_tm_pools.tsv`](../data/gym_tms/gym_tm_pools.tsv) — one row per `(Leader, TM)` with move stats (from `data/Moves.c` / `sMachineMoves`), **Min Badges**, and **Status** (`In game` vs `Proposed`). Hand-edited planning sheet; **not read by the build yet** — when rolling a leader out, copy its Min Badges into that leader's `.s` (`BADGES_TMxx`) and flip Status. If a future generator emits menu labels / gating from it, wire it in `narcs.mk` and keep the TSV as the source of truth.
 
@@ -790,7 +793,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Per-leader text to author when rolling out:** TM labels, rematch offer, rematch accept, rematch win, farewell (4 custom lines + labels). Check `data/Trainers.c` for a vanilla rematch trainer id (same `TRAINERCLASS_LEADER_*`, higher index — e.g. Brock 253 / 720).
 
-**Not done yet:** Whitney, Bugsy, and Chuck. Falkner, Morty, Jasmine, Pryce, and Clair now use the choice menu. Generating labels from `src/item.c` is still hand-typed. Menu height with >6 entries untested (Brock is the largest pool at 6). If only one pool TM is unlocked, skip the menu and give that TM.
+**Shipped:** every Johto and Kanto leader uses the choice menu. Generating labels from `src/item.c` is still hand-typed. Menu height with >6 entries is untested (Brock is the largest pool at 6). If only one pool TM is unlocked, skip the menu and give that TM. Menu values are **0–N**, matching the `switch` cases.
 
 ### Cerulean Gym — Misty + Gym TM choice pool
 
