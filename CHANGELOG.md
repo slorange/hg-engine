@@ -47,6 +47,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 - **Full-party EXP share** — every non-fainted party member receives the **full** EXP for each KO.
 - **Full heal after every battle** — HP, PP, and status restored for the party (wild and trainer).
 - **Consumable held items restored after battle** — if a party Pokémon had a held item at the start of the fight, it is restored when the battle ends, including berries.
+- **HM moves** — can be replaced when a Pokémon learns a new move, without move deleter.
 
 ### Shops & items
 

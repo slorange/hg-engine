@@ -53,16 +53,9 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | **Cross-region Fly (Johto ↔ Kanto)** | [World-1](DESIGN-WORLD.md#world-1-world-transportation), [Fly map § cross-region attempts](HACK-NOTES.md#cross-region-fly-attempts-pinned) | Kanto scroll works (`OPENWORLD_FLY_MAP` arm9 hook); destination filter still vanilla; overlay 101 patch sites tried in Sep 2026 all failed or no-op (see HACK-NOTES) |
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |
+| **Dark Cave & Rock Tunnel (Flash)** | [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) | Entrance message until Flash (1 badge). |
 | **Violet / Fuchsia shard traders** | [World-7 § Rare battle berries](DESIGN-WORLD.md#world-7-berry-economy) | Liechi–Rowap via shard exchange menus |
 | **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels) | Replace static per-spot item lists with random generation from the curated rare-item list |
-
----
-
-## Battles & Pokémon systems ([DESIGN-BATTLES.md](DESIGN-BATTLES.md))
-
-| Item | Design | Notes |
-| ---- | ------ | ----- |
-| **HM removal via move replace** | [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) | HMs removable through normal move replacement, not only the Move Deleter |
 
 ---
 

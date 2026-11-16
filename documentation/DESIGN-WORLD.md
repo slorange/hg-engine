@@ -116,12 +116,11 @@ Before [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level
 Field abilities unlock by **badges earned** (any Gym order): when badge count hits a row below, the defeating Gym Leader grants that unlock with badge + TM ([Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)). Vanilla HM fetch quests and tutors are removed ([Story-3](DESIGN-STORY.md#story-3-story-and-script-policy)).
 
 
-## Badge → field abilities (single reference)
-
+## Badge → field abilities
 
 | Badges | Unlock | Notes |
 | ------ | ------ | ----- |
-| 1 | **Flash** | Dark Cave and Rock Tunnel stay blocked until this unlock. Sold as a TM in the general shop. |
+| 1 | **Flash** | Dark Cave and Rock Tunnel: a message at the entrance until this unlock. Sold as a TM in the general shop. |
 | 2 | **Cut** (HM01) |  |
 | 3 | **Rock Smash** (HM06) |  |
 | 4 | **Headbutt** | Sold as a TM in the general shop. |
@@ -129,7 +128,7 @@ Field abilities unlock by **badges earned** (any Gym order): when badge count hi
 | 6 | **Surf** (HM03) |  |
 | 7 | **Strength** (HM04) |  |
 | 10 | **Whirlpool** (HM05) |  |
-| 13 | **Waterfall** (HM07) |  |
+| 13 | **Waterfall** (HM07) | Route 26 and Route 27 stay blocked until this unlock. |
 | 16 | **Rock Climb** (HM08) |  |
 
 Badge counts not in the table get Badge + TM only

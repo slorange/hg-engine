@@ -208,7 +208,8 @@
 // REUSABLE_TMS will make TMs infinite and hide the quantity number.
 //#define REUSABLE_TMS
 
-// DELETABLE_HMS allows HMs to be forgotten, this also makes their quantity reduce, but the infinite TMs change prevents this.
+// DELETABLE_HMS lets an HM move be replaced when a Pokémon learns a new move.
+// HM items stay in the bag. PartyMenu_LearnMoveToSlot only consumes TMs and TRs.
 #define DELETABLE_HMS
 
 // MART_EXPANSION allows for adding and modifying items to the mart inventories

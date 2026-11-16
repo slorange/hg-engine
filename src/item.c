@@ -544,18 +544,21 @@ u16 ItemToMachineMove(u16 itemId)
     return sMachineMoves[index];
 }
 
+// TRUE means the move is locked and cannot be replaced. Field teaching, battle
+// level-up, and the bag's HM boot line all use this. DELETABLE_HMS unlocks HM moves.
 BOOL MoveIsHM(u16 moveId)
 {
+#ifdef DELETABLE_HMS
+    (void)moveId;
+    return FALSE;
+#else
     for (u8 i = 0; i < NUM_HMS; i++) {
         if (sMachineMoves[i + ITEM_HM01 - ITEM_TM001] == moveId) {
-#if defined(REUSABLE_TMS) && defined(DELETABLE_HMS)
-            return FALSE;
-#else
             return TRUE;
-#endif
         }
     }
     return FALSE;
+#endif
 }
 
 s32 LONG_CALL GetItemAttr_PreloadedItemData(ITEMDATA *itemData, u16 attrno)
