@@ -16,8 +16,7 @@ Slowpoke Well	D26R0102_SLOWPOKE_WELL_1F, D26R0103_SLOWPOKE_WELL_B2F	Cave	Cave		1
 Ilex Forest	D36R0101_ILEX_FOREST	Fresh	Forest	Bug	12	12	12	5	5	5	5		6	2	2
 Route 34	R34_ROUTE_34	Salt	Field	Normal, Fairy	12	12	12	5	5	5	5		6	2	2
 Route 35	R35_ROUTE_35	Fresh	Field	Normal, Fairy	12	12	12	5	5	5	5		6	2	2
-National Park	D22R0101_NATIONAL_PARK	Dry	Field	Bug	12	12	12						6	2	2
-National Park Bug Catching Contest	D22R0102_NATIONAL_PARK_BUG_CATCHING_CONTEST	Dry	Field	Bug	12	12	12							2	2
+National Park Bug Catching Contest	D22R0101_NATIONAL_PARK, D22R0102_NATIONAL_PARK_BUG_CATCHING_CONTEST	Dry	Field	Bug	12	12	12						6	2	2
 Route 36	R36_ROUTE_36	Dry	Field	Flying	12	12	12						6	2	2
 Route 37	R37_ROUTE_37	Dry	Field	Ghost	12	12	12						6	2	2
 Ecruteak City	T27_ECRUTEAK_CITY	Fresh	City	Ghost				5	5	5	5		6		

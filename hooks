@@ -66,6 +66,9 @@ arm9 AddBoxMonData_EditedCases_hook 0206F67C 0
 #02247B64 — Wilds-6 stub (placeholder mon + WildEncounterFinalizeForEncount)
 # Must not use r0–r3 for ldr/bx (SetEncountData args); omit reg → bl stub (255)
 0002 SetEncountData_Ecology 02247B64
+0002 BugContest_GenerateEcologyEncounter 02247ED8
+0024 BugContest_InitEcologyEntries 02259DF0
+0024 BugContest_JudgeEcologyMon 02259E60
 #endif
 # starters
 arm9 set_starter_hidden_ability_hook 02096158 5

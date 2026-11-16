@@ -58,6 +58,11 @@ Placement / text recon: `find_zone_event_member.py`, `find_msg_text.py` (see HAC
 
 **Wild encounter overlay 2 verify (Wilds-6 / KB-12):** `python3 scripts/dev/verify_encount_overlay2.py` after **`make test.nds`** — **`SetEncountData_Ecology`** (bl stub @ **`7B64`**) and **`modify_species`** @ **`7B42`**. Optional disasm helpers: `_dump_setencount_data.py`, `_dump_add_pokemon_param.py` (overlay 2 recon).
 
+**National Park / Bug-Catching Contest:** after building `test.nds` and
+`make -C tools/source/ecologygen`, run `python3 scripts/dev/verify_bug_contest_ecology.py`
+inside Docker. Checks the 17-family roster across seeds and periods, packaged
+contest hooks, and matching park caps for every start city.
+
 Test runner: `scripts/dev/run_tests.sh` (also used by CI).
 
 ## `local/`

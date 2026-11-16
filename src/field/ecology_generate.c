@@ -683,6 +683,17 @@ static void EcologyAssignRequiredRoutes(
         for (orderIndex = 0; orderIndex < (u8)(sizeof(sRequiredMethodOrder) / sizeof(sRequiredMethodOrder[0]));
              orderIndex++) {
             u8 method = sRequiredMethodOrder[orderIndex];
+            u16 bucketIndex = EcologyGroupMethodIndex(groupId, method);
+            u16 slot;
+            // A preceding required family may already have placed this partner.
+            for (slot = 0; slot < bucketFill[bucketIndex]; slot++) {
+                if (outSlots[slotBases[bucketIndex] + slot] == familyId) {
+                    break;
+                }
+            }
+            if (slot < bucketFill[bucketIndex]) {
+                continue;
+            }
             if (!EcologyFamilyHasCompatAtGroupMethod(groupId, familyId, method, TRUE)) {
                 continue;
             }

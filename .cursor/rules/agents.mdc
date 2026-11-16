@@ -34,6 +34,10 @@ When using [documentation/DESIGN.md](documentation/DESIGN.md) and `documentation
 
 Implementation recipes and ROM IDs: [documentation/HACK-NOTES.md](documentation/HACK-NOTES.md). First-time toolchain setup: [README (HG-Engine).md](README%20(HG-Engine).md).
 
+## Documentation formatting
+
+Keep each Markdown paragraph or list item on one source line; let editors wrap visually.
+
 ## Git (agents)
 
 **Read-only only.** Agents may run git commands that **inspect** state (`status`, `diff`, `log`, `show`, etc.). **Never commit, push, merge, rebase, reset, checkout, add, stash, or any other mutating git action** — the user handles all of that themselves. If they say they’re committing, they mean they will do it; don’t beat them to it.

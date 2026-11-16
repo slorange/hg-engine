@@ -204,6 +204,28 @@ static u8 ComputeWildLevelCap(u8 *failReason)
     return cap;
 }
 
+// Explicit bank lookup also works at the contest's gatehouse judging ceremony.
+u8 GetWildLevelCapForEncounterBank(u8 encBank)
+{
+    u8 cap;
+    if (WildLevelCapsFieldAddr == 0 || encBank >= WILD_LEVEL_CAP_NUM_ENCOUNTER_AREAS) {
+        return WILD_LEVEL_CAP_MIN;
+    }
+    cap = ((const u8 (*)[WILD_LEVEL_CAP_NUM_ENCOUNTER_AREAS])WildLevelCapsFieldAddr)
+        [ResolveStartCityIndex((u8)GetScriptVar(VAR_PLAYER_START_CITY))][encBank];
+    return cap < WILD_LEVEL_CAP_MIN ? WILD_LEVEL_CAP_MIN : cap;
+}
+
+u16 WildEncounterFamilyRoot(u16 species)
+{
+    return FindEncounterChainBase(species);
+}
+
+u16 WildEncounterStageAtLevel(u16 species, u8 level)
+{
+    return AdjustEncounterSpeciesForLevel(species, level, gf_rand());
+}
+
 // Encounter levels never go below 2 (no wild level 1).
 #define WILD_ENCOUNTER_LEVEL_MIN 2
 #define WILD_LEVEL_BABY_SPLIT_MIN_CAP 10
@@ -240,7 +262,7 @@ static u8 RollWildLevelAdultBand(u8 cap)
     return RollWildLevelUniform(adultLo, cap);
 }
 
-static u8 RollWildLevel(u8 cap)
+u8 RollWildLevel(u8 cap)
 {
     if (cap <= WILD_ENCOUNTER_LEVEL_MIN) {
         return WILD_ENCOUNTER_LEVEL_MIN;

@@ -1854,7 +1854,7 @@ Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAd
 
 **Map ID:** read from `SaveBlock2` → `LocalFieldData.currentPosition.mapId` (not `fsys->location`, which is often `MAP_EVERYWHERE` during encounters).
 
-**Not hooked:** Safari Zone (`data/SafariEncounters.c`), Bug Catching Contest (verify in-game path), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`.
+**Not hooked:** Safari Zone (`data/SafariEncounters.c`), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`. Bug Catching Contest is now hooked; see [National Park and contest](#national-park-and-bug-catching-contest-shared-pool).
 
 **Stage adjust:** `AdjustEncounterSpeciesForLevel()` — (1) `FindEncounterChainBase()` walks level-up prevos (`data/Evolutions.c`) **and** synthetic prevos (`data/synthetic_evolution_thresholds.tsv`) so authored finals devolve; (2) `WalkEncounterStageForLevel()` applies level-up then synthetic **forward** for the rolled/scaled level. Trade, stone, friendship, move-known, etc. **Verified Sep 2026** on wild and trainers. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution QoL: [Trade-item evolution](#trade-item-evolution-use-on-pokémon) + Linking Cord ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
 
@@ -1927,6 +1927,22 @@ All tracked — nothing belongs in `scripts/local/`:
 
 ---
 
+## National Park and Bug-Catching Contest shared pool
+
+**Status:** built and host-verified; needs in-game verification on a new save. Design: [Wilds-6 § National Park](DESIGN-WILDS.md#national-park-and-bug-catching-contest).
+
+- `data/ecology/ecology_locations.tsv` contains one **National Park Bug Catching Contest** group for encounter banks **23 and 24**, preserving Headbutt as a separate bucket. `gen_ecology_compatibility.py` pins the 17 `BCC` families into its land bucket and overrides ordinary land habitat restrictions only there. Other areas keep eight land slots. Required placement skips partners already placed in that bucket, so Volbeat/Illumise do not consume duplicate slots.
+- `src/ecology_encounter.c` samples the same saved assignment for both maps, retaining time eligibility and applying rarity weights **Common 9, Normal 3, Rare 1, Very Rare 1**. Filtered eligible-slot indexing is applied once.
+- Overlay **2**, **0x02247ED8**: replace the seven-argument contest internal generator with `BugContest_GenerateEcologyEncounter` in overlay 129. It caches the cap, builds an independent wild mon through the shared ecology finalizer, checks Repel against the final level, guarantees one perfect IV, and adds the mon to the enemy party. Vanilla Repel helper **0x02248290** stays in overlay 2.
+- Overlay **24**, **0x02259DF0**: replace `BugContest_InitEncounters` with `BugContest_InitEcologyEntries`, after vanilla opponent identity selection. NPC species come from the same park pool; quality rolls use the same 400-point maximum scale as the player. The first unused retail encounter entry stores the park cap for gatehouse judging. The retail **0xC0-byte** contest structure and contestant offset **0x70** are preserved and compile-time checked.
+- Overlay **24**, **0x02259E60**: replace exact-species judging with `BugContest_JudgeEcologyMon`. Entry value follows the evolutionary family; level contribution is bounded at 100 relative to the cached park cap. IV and remaining-HP components retain their percentage formulas. No timer, prize, party-backup, or catch-swap behavior changes.
+- `scripts/build/make.py` includes overlay **24** in `OVERLAYS_TO_DECOMPRESS`; its retail file is compressed, so hooks must be applied after decompression.
+- `scripts/build/patch_bug_contest_daily.py` patches scr_seq **151** (shared registration), **242** (Route 35 gate), and **245** (Route 36 gate) in place. Both gates use the contest NPC configuration every day. Registration uses a local Tuesday selector for valid vanilla opponent identities; the real calendar and **FLAG_DAILY_DID_BUG_CONTEST** remain unchanged. Text bank **246** describes daily availability and retains the compressed `{TRNAME}` NPC-name markers. Verify with `python3 scripts/build/patch_bug_contest_daily.py build/a012 --verify`.
+
+Verify after a full build and `make -C tools/source/ecologygen`: `python3 scripts/dev/verify_bug_contest_ecology.py`. This checks eight assignment seeds, all three time periods, original hook signatures, hooks in **test.nds**, and equal park caps for all 18 starting cities. Also run `verify_encount_overlay2.py` and `verify_overlay129_field_addrs.py`.
+
+Playtest normal grass and contest battles from near/far starts, including babies, evolved catches, Repel, catch replacement, no catch, timeout/balls exhausted, judging, prizes, party restoration, and full-party PC delivery.
+
 ## Per-save wild ecology shuffle (Wilds-6)
 
 **Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Deferred addon scope (Gym hints, flash persistence, other methods): [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
@@ -1998,7 +2014,7 @@ Toggle: **`IMPLEMENT_ECOLOGY_GENERATION`** in `include/config.h`.
 | Water type (family) | Salt/Fresh/Cave… vs non-Dry water tokens on group | Surf / rods |
 | **Type overlap** | Type1, Type2, Type (Vibe) vs eco-loc `Types` | Sets edge flag **`ECOLOGY_EDGE_TYPE_MATCH`** — **not** a hard filter (except themed land fill; see below) |
 
-Groups whose name contains **Bug Catching Contest** are skipped (`ECOLOGY_GROUP_FLAG_SHUFFLE` off). BCC families use separate authoring.
+National Park's normal and contest encounter banks share one group; the authored `Bug Catching Contest = BCC` families supply its 17 required land entries. See [National Park and contest](#national-park-and-bug-catching-contest-shared-pool).
 
 **Version:** `ECOLOGY_COMPAT_VERSION` = first 4 bytes of SHA256(**eco-fam** + **eco-loc**).
 
@@ -2008,7 +2024,7 @@ Derived in **gen-compat** from eco-loc columns (presence = `> 0`, not the numeri
 
 | Method | Slots when present |
 |--------|-------------------|
-| Land | **8** total (shared across time — not 24×3) |
+| Land | **8** total (shared across time — not 24×3); National Park exception: **17** |
 | Surf | **3** |
 | Old Rod | **2** |
 | Good Rod | **1** |
@@ -2083,7 +2099,7 @@ When eco-loc **`Types`** is non-empty, **gen-compat** stores `sEcologyGroupLocat
 
 Compare **dump-grp** Land `type_match=1` family count vs **2 × |Types|** for groups **with land**. Insufficient themed compat (Oct 2026 data):
 
-- **0 themed families:** National Park Bug Catching Contest (Bug), Route 10 (Electric), Route 4/9/24 (Water).
+- **0 themed families:** Route 10 (Electric), Route 4/9/24 (Water).
 - **1 themed family (need 2):** Route 37, Route 38 (Ghost — only Drifloon).
 
 Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); land theme guarantee does not apply there.

@@ -128,7 +128,9 @@ EDGE_REQUIRED_PIN = 1 << 1
 
 ECOLOGY_FAMILY_NO_PARTNER = 0xFF
 
-SKIP_GROUP_NAME_SUBSTRINGS = ("Bug Catching Contest",)
+SKIP_GROUP_NAME_SUBSTRINGS: tuple[str, ...] = ()
+NATIONAL_PARK_GROUP = "National Park Bug Catching Contest"
+NATIONAL_PARK_FAMILIES = 17
 
 # Only the named family may appear on this ecology group (shuffle + fill).
 EXCLUSIVE_GROUP_FAMILY: dict[str, str] = {
@@ -274,7 +276,8 @@ ECOLOGY_ROCK_SMASH_SLOTS = 2
 
 def method_slot_counts(row: dict[str, str]) -> list[int]:
     has_land = any(int_cell(row, key) > 0 for key in ("Morning", "Day", "Night"))
-    land = ECOLOGY_LAND_SLOTS if has_land else 0
+    land = (NATIONAL_PARK_FAMILIES if row["Name"].strip() == NATIONAL_PARK_GROUP
+            else ECOLOGY_LAND_SLOTS) if has_land else 0
     surf = ECOLOGY_SURF_SLOTS if int_cell(row, "Surf") > 0 else 0
     old_rod = ECOLOGY_OLD_ROD_SLOTS if int_cell(row, "Old Rod") > 0 else 0
     good_rod = ECOLOGY_GOOD_ROD_SLOTS if int_cell(row, "Good Rod") > 0 else 0
@@ -319,6 +322,7 @@ class Family:
     rock_smash: bool
     types: set[str]
     pin_only: bool
+    bug_contest: bool
 
 
 @dataclass
@@ -350,6 +354,9 @@ def load_families(path: Path, species_enums: dict[str, int]) -> list[Family]:
         special = (row.get("Special") or "").strip()
         required_raw = (row.get("Required on Route") or "").strip()
         required_group_names = [part.strip() for part in required_raw.split(",") if part.strip()]
+        bug_contest = (row.get("Bug Catching Contest") or "").strip() == "BCC"
+        if bug_contest:
+            required_group_names.append(NATIONAL_PARK_GROUP)
         if special and not required_group_names:
             continue
         pin_only = bool(special and required_group_names)
@@ -392,6 +399,7 @@ def load_families(path: Path, species_enums: dict[str, int]) -> list[Family]:
                 rock_smash=bool((row.get("Rock Smash") or "").strip()),
                 types=family_types,
                 pin_only=pin_only,
+                bug_contest=bug_contest,
             )
         )
     return families
@@ -571,6 +579,8 @@ def family_allowed_on_method_for_required(family: Family, method: int) -> bool:
 
 def required_methods_at_group(family: Family, group: Group) -> list[int]:
     """Methods that must be filled for Required on Route (rods → Old Rod only)."""
+    if group.name == NATIONAL_PARK_GROUP:
+        return [METHOD_LAND] if family.bug_contest else []
     methods: list[int] = []
     if group_has_method(group, METHOD_LAND) and habitat_ok_required_land(family, group):
         if wet_dry_ok(family, group, METHOD_LAND) and required_tag_ok(family, group):
@@ -666,6 +676,13 @@ def build_edges(families: list[Family], groups: list[Group]) -> list[Edge]:
             if not avoid_tag_ok(family, group):
                 continue
             for method in group.methods:
+                # The park's authored BCC roster replaces ordinary land habitat rules.
+                # Other methods retain their normal compatibility restrictions.
+                if group.name == NATIONAL_PARK_GROUP and method == METHOD_LAND:
+                    if family.bug_contest:
+                        edges.append(Edge(family.family_id, group.group_id, method,
+                                          EDGE_TYPE_MATCH | EDGE_REQUIRED_PIN))
+                    continue
                 if method == METHOD_LAND:
                     if family.fish_surf == "Fish":
                         continue
@@ -1307,6 +1324,8 @@ def main() -> None:
     species_enums = load_species_enum(args.species_header)
     enc_enum = load_encounter_enum(args.encounter_header)
     families = load_families(args.families, species_enums)
+    if sum(f.bug_contest for f in families) != NATIONAL_PARK_FAMILIES:
+        raise ValueError("National Park must have exactly 17 authored BCC families")
     resolve_pairings(families)
     groups = load_groups(args.locations, enc_enum)
     required_routes = build_required_routes(families, groups)

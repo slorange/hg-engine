@@ -20,7 +20,6 @@ const char *const sEcologyGroupNames[ECOLOGY_NUM_GROUPS] = {
     "Ilex Forest",
     "Route 34",
     "Route 35",
-    "National Park",
     "National Park Bug Catching Contest",
     "Route 36",
     "Route 37",

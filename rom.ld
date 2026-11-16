@@ -454,6 +454,7 @@ WeatherMoveReq = 0x021EB830 | 1;
 WeatherMoveMain = 0x021EB840 | 1;
 
 SetEncountData = 0x02247B64 | 1;
+BugContest_DoesRepelSuppress = 0x02248290 | 1;
 SetEncountDataSwarm_maybe = 0x02247DA0 | 1;
 
 gSafariBallRateTable = 0x0226C3CE;

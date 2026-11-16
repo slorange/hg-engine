@@ -30,6 +30,8 @@ def load_charmap(path):
 
     # Explicit whitespace safety
     valid_chars.update([' ', '\n', '\r', '\f'])
+    # msgenc handles this compressed trainer-name marker outside charmap.txt.
+    valid_commands.add('TRNAME')
 
     return valid_chars, valid_commands
 

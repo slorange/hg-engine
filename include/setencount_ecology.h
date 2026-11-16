@@ -2,6 +2,7 @@
 #define SETENCOUNT_ECOLOGY_H
 
 #include "pokemon.h"
+struct PartyPokemon *CreateEcologyWildMon(u32 encounterType, u32 rodType, u32 ivs);
 
 u32 LONG_CALL SetEncountData_Ecology(
     struct PartyPokemon *pp,
