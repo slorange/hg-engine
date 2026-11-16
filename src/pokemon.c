@@ -1919,6 +1919,84 @@ BOOL Pokemon_TryLevelUp(struct PartyPokemon *mon)
     return FALSE;
 }
 
+#define DAYCARE_PARTY_HEAP 4
+
+/**
+ *  @brief daycare steps that would pass the badge cap report the cap instead
+ *
+ *  Replaces ARM9 GetDaycareUpdatedLevel @ 0x0206C0A0. The man's growth
+ *  quote, withdrawal fee, and level readout all call this.
+ *  A mon already at or above the cap reports no growth.
+ */
+int GetDaycareUpdatedLevel(struct BoxPokemon *boxMon, u32 steps)
+{
+    u32 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+    u32 exp = GetBoxMonData(boxMon, MON_DATA_EXPERIENCE, NULL);
+    u32 level = CalcLevelBySpeciesAndExp(species, exp);
+    u32 cap = GetLevelCap();
+    u32 newExp;
+    u32 newLevel;
+
+    if (level >= 100 || level >= cap) {
+        return (int)level;
+    }
+
+    if (steps > (0xFFFFFFFFu - exp)) {
+        newExp = 0xFFFFFFFFu;
+    } else {
+        newExp = exp + steps;
+    }
+    newLevel = CalcLevelBySpeciesAndExp(species, newExp);
+    if (newLevel > cap) {
+        newLevel = cap;
+    }
+    return (int)newLevel;
+}
+
+/**
+ *  @brief withdraw a daycare mon, stopping level gain at the badge cap
+ *
+ *  Replaces ARM9 Save_Daycare_MoveMonToParty @ 0x0206BFC4.
+ *  Mons at or below the cap still run Daycare_LearnLevelUpMoves, which
+ *  stops on the cap through Pokemon_TryLevelUp. Mons above the cap
+ *  (Rare Candy) keep their level: their step EXP is not applied, so the
+ *  stat recalc cannot raise them.
+ */
+int Save_Daycare_MoveMonToParty(struct Party *party, DaycareMon *daycareMon, MessageFormat *msgFmt)
+{
+    struct PartyPokemon *mon = AllocMonZeroed(DAYCARE_PARTY_HEAP);
+    struct BoxPokemon *boxMon = DaycareMon_GetBoxMon(daycareMon);
+    DaycareMail *daycareMail = DaycareMon_GetExtras(daycareMon);
+    u32 species;
+    u32 level;
+
+    BufferBoxMonNickname(msgFmt, 0, boxMon);
+    species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+    CopyBoxPokemonToPokemon(boxMon, mon);
+    level = GetMonData(mon, MON_DATA_LEVEL, NULL);
+    if (level < 100 && level <= GetLevelCap()) {
+        u32 exp = GetMonData(mon, MON_DATA_EXPERIENCE, NULL);
+        u32 steps = DaycareMon_GetSteps(daycareMon);
+
+        if (steps > (0xFFFFFFFFu - exp)) {
+            exp = 0xFFFFFFFFu;
+        } else {
+            exp += steps;
+        }
+        SetMonData(mon, MON_DATA_EXPERIENCE, &exp);
+        Daycare_LearnLevelUpMoves(mon);
+    }
+    if (BoxMonIsHoldingMail(boxMon)) {
+        struct Mail *mail = DaycareMail_GetMailPtr(daycareMail);
+        SetMonData(mon, MON_DATA_MAIL_STRUCT, mail);
+    }
+    Party_AddMon(party, mon);
+    BoxMonInit(boxMon);
+    DaycareMon_SetSteps(daycareMon, 0);
+    Heap_Free(mon);
+    return (int)species;
+}
+
 #endif
 
 /**

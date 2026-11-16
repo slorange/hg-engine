@@ -394,6 +394,9 @@ arm9 CanUseItemOnMonInParty_hook 020902BC 5
 
 0012 ImplementLevelCap_hook 02245A28 3
 arm9 Pokemon_TryLevelUp 02070DB4 1
+# r1 carries steps / DaycareMon*, so use the unused fourth argument register.
+arm9 GetDaycareUpdatedLevel 0206C0A0 3
+arm9 Save_Daycare_MoveMonToParty 0206BFC4 3
 #ifndef UNCAP_CANDIES_FROM_LEVEL_CAP
 arm9 CapRareCandies 0208FEEA 1
 #endif

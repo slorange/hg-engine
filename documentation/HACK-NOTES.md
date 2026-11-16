@@ -932,6 +932,8 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Design:** [Battle-2](DESIGN-BATTLES.md#rare-candies) — EXP stops at badge cap; **Rare Candies may exceed the cap**.
 
+**Day Care verified in-game (Nov 16, 2026):** user confirmed capped growth, Rare Candy Pokémon above the cap, growth quotes, withdrawal fees, and normal withdrawals after the r3 hook correction. The reported second-deposit refusal was a misunderstanding of the dialogue, not a confirmed party-count bug.
+
 | Piece | Where |
 |-------|--------|
 | `GetLevelCap()` | `src/pokemon.c` — `GetPlayerLevelCapForBadges(PlayerProfile_CountBadges(...))`; **100** when `PlayerProfile.gameClear` |
@@ -939,6 +941,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 | `IMPLEMENT_LEVEL_CAP` / `UNCAP_CANDIES_FROM_LEVEL_CAP` | `include/config.h` (on) |
 | `ALLOW_LEVEL_CAP_EVOLVE` | Optional — Rare Candy at cap runs level-up evolution check (off by default) |
 | EXP / candy hooks | `ImplementLevelCap_hook` (battle EXP), `Pokemon_TryLevelUp` @ ARM9 (level-up + **EXP clamp at cap** — empty bar), `CanUseItemOnMonInParty`; `CapRareCandies` only when UNCAP off |
+| Day Care | `GetDaycareUpdatedLevel` @ `0x0206C0A0` (quote, fee, level readout) and `Save_Daycare_MoveMonToParty` @ `0x0206BFC4` (withdraw). Both hooks must branch through **r3**: r1 carries the step count or DaycareMon pointer and must survive the trampoline; clobbering it causes instant capped quotes and corrupt withdrawals. Mons at or below the cap still run vanilla `Daycare_LearnLevelUpMoves` @ `0x0206BF60`, which stops on the cap through `Pokemon_TryLevelUp`. Mons already above the cap do not receive step EXP, so withdraw cannot raise them. Fee stays `(levels gained + 1) × 100` using the capped gain |
 | Wild catch above cap | `ShouldPreventMonCapture` / `PrintBallBlockedMessage` in `other_battle_calculators.c` — deflect + “too strong” msg when wild level **>** `GetLevelCap()` ([Battle-2 § Wild catches](DESIGN-BATTLES.md#wild-catches-above-the-player-cap)) |
 
 ---

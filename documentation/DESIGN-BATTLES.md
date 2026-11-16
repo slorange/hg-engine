@@ -11,7 +11,7 @@
 | Section | Status |
 | ------- | ------ |
 | [Battle-1. Fair Trainer Battles](#battle-1-fair-trainer-battles) | IMPLEMENTED |
-| [Battle-2. Badge Level Caps](#battle-2-badge-level-caps) | PARTIALLY IMPLEMENTED |
+| [Battle-2. Badge Level Caps](#battle-2-badge-level-caps) | IMPLEMENTED |
 | [Battle-3. Gyms](#battle-3-gyms) | IMPLEMENTED |
 | [Battle-4. Experience](#battle-4-experience) | IMPLEMENTED |
 | Generated trainer & Gym parties | Moved — [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) |
@@ -50,7 +50,7 @@ Deferred to [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--univers
 
 # Battle-2. Badge Level Caps
 
-**Status: PARTIALLY IMPLEMENTED**
+**Status: IMPLEMENTED**
 
 Level caps follow **badge progression**, not map position ([World-0](DESIGN-WORLD.md#world-0-open-world-principles)).
 
@@ -85,6 +85,10 @@ After trainer Pokémon levels are set from the [cap ladder](#cap-ladder), evolut
 - Each candy is a **deliberate spike**, not a party-wide bypass.
 - Example: at 6 badges (cap 34), two candies can push a Quilava to 36 for an early evolution before the next cap increase.
 - While rare candies are available in shop, they are expensive and should be used as a last resort.
+
+## Day Care
+
+Day Care levels stop at the badge cap. The man's growth quote and the withdrawal fee use those same levels. A Pokémon already above the cap keeps that level, and the fee is the no-growth charge.
 
 ## Wild catches above the player cap
 

@@ -982,6 +982,15 @@ BOOL LONG_CALL BoxMonSetFastModeOn(struct BoxPokemon *boxmon);
  *  @return BoxPokemon requested
  */
 struct BoxPokemon *LONG_CALL Daycare_GetBoxMonI(Daycare *daycare, int idx);
+struct BoxPokemon *LONG_CALL DaycareMon_GetBoxMon(DaycareMon *daycareMon);
+DaycareMail *LONG_CALL DaycareMon_GetExtras(DaycareMon *daycareMon);
+u32 LONG_CALL DaycareMon_GetSteps(DaycareMon *daycareMon);
+void LONG_CALL DaycareMon_SetSteps(DaycareMon *daycareMon, u32 steps);
+struct Mail *LONG_CALL DaycareMail_GetMailPtr(DaycareMail *daycareMail);
+void LONG_CALL Daycare_LearnLevelUpMoves(struct PartyPokemon *mon);
+u32 LONG_CALL BoxMonIsHoldingMail(struct BoxPokemon *boxMon);
+u32 LONG_CALL Party_AddMon(struct Party *party, struct PartyPokemon *mon);
+void LONG_CALL Heap_Free(void *ptr);
 
 /**
  *  @brief set a PartyPokemon's personality

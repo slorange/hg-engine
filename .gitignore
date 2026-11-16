@@ -95,6 +95,7 @@ rom_gen*.ld
 .zed
 compile_commands.json
 CLAUDE.md
+/AGENTS.md
 
 sdat/*
 *.swav
