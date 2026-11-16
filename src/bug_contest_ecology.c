@@ -6,12 +6,24 @@
 #include "bug_contest_ecology.h"
 #include "constants/encounter_tables.h"
 #include "constants/species.h"
-#include "ecology/ecology_compat_access.h"
+#include "constants/generated/ecology_compat.h"
 #include "ecology/ecology_encounter.h"
 #include "setencount_ecology.h"
 #include "wild_level_caps.h"
 
 #define PARK_BANK ENCDATA_D22R0101_NATIONAL_PARK
+#define CONTEST_OPPONENT_ROLLS 5
+
+static u16 ContestStatTotal(struct PartyPokemon *mon)
+{
+    u16 total = 0;
+    u8 stat;
+    // Max HP and the five battle stats are consecutive MON_DATA fields.
+    for (stat = 0; stat < 6; stat++) {
+        total += GetMonData(mon, MON_DATA_MAXHP + stat, NULL);
+    }
+    return total;
+}
 
 // Only called from overlay 2, while its vanilla Repel check remains resident.
 BOOL LONG_CALL BugContest_DoesRepelSuppress(u8 level, void *encounterGen);
@@ -47,75 +59,47 @@ u32 BugContest_GenerateEcologyEncounter(FieldSystem *fsys, struct PartyPokemon *
     return added;
 }
 
-static u16 ContestEntryValue(u16 species)
-{
-    u16 family;
-    species = WildEncounterFamilyRoot(species);
-    if (!EcologyCompatSessionEnsure()) {
-        return 60;
-    }
-    for (family = 0; family < ECOLOGY_NUM_FAMILIES; family++) {
-        EcologyFamilyInfo info = ECO_FAMILY_INFO(family);
-        if (info.baseSpecies == species) {
-            if (info.rarity == ECOLOGY_RARITY_COMMON) {
-                return 60;
-            }
-            return info.rarity == ECOLOGY_RARITY_NORMAL ? 80 : 100;
-        }
-    }
-    return 60;
-}
-
 // Replaces InitEncounters, after vanilla has selected the five NPC identities.
-// The cap snapshot stays valid after warping to the gatehouse for judging.
 void BugContest_InitEcologyEntries(BugContest *contest)
 {
-    u8 i, stat;
+    struct PartyPokemon *candidate = AllocMonZeroed(contest->heapId);
+    u8 i, roll;
     u8 cap = GetWildLevelCapForEncounterBank(PARK_BANK);
-    contest->encounters[0].lvlmax = cap;
-    for (i = 0; i < 5; i++) {
-        u16 species = EcologyRollSpeciesForEncounterBank(PARK_BANK, ECOLOGY_METHOD_LAND);
-        u8 level = RollWildLevel(cap);
-        u16 ivTotal = 31;
-        u16 score;
-        if (species == 0) {
-            species = SPECIES_CATERPIE;
-        }
-        score = ContestEntryValue(species) + level * 100 / cap;
-        for (stat = 1; stat < 6; stat++) {
-            ivTotal += gf_rand() % 32;
-        }
-        score += ivTotal * 100 / 186;
-        score += 50 + gf_rand() % 51;
-        contest->contestants[i].data.species = WildEncounterStageAtLevel(species, level);
-        contest->contestants[i].score = score;
+    u32 perfectIv = 31;
+    if (candidate == NULL) {
+        return;
     }
+    for (i = 0; i < 5; i++) {
+        contest->contestants[i].score = 0;
+        for (roll = 0; roll < CONTEST_OPPONENT_ROLLS; roll++) {
+            u16 species = EcologyRollSpeciesForEncounterBank(PARK_BANK, ECOLOGY_METHOD_LAND);
+            u8 level = RollWildLevel(cap);
+            u32 personality = (u32)gf_rand() | ((u32)gf_rand() << 16);
+            u16 score;
+            if (species == 0) {
+                species = SPECIES_CATERPIE;
+            }
+            // CreateMon resets the reused buffer. Random nature/IVs, zero EVs,
+            // and one perfect IV match the contest's wild-mon rules.
+            PokeParaSet(candidate, species, level, 32, TRUE, personality, 0, 0);
+            SetMonData(candidate, MON_DATA_HP_IV + gf_rand() % 6, &perfectIv);
+            ApplyWildEncounterLevelAndStage(candidate, level);
+            score = ContestStatTotal(candidate);
+            if (score > contest->contestants[i].score) {
+                contest->contestants[i].data.species = GetMonData(candidate, MON_DATA_SPECIES, NULL);
+                contest->contestants[i].score = score;
+            }
+        }
+    }
+    sys_FreeMemoryEz(candidate);
 }
 
 u16 BugContest_JudgeEcologyMon(BugContest *contest, struct PartyPokemon *mon)
 {
-    u16 score, ivTotal = 0;
-    u32 cap, levelScore, maxHp;
-    u8 i;
     if ((contest->flags & 1) == 0 || mon == NULL) {
         return 0;
     }
-    cap = contest->encounters[0].lvlmax;
-    if (cap == 0) {
-        cap = GetWildLevelCapForEncounterBank(PARK_BANK);
-    }
-    score = ContestEntryValue(GetMonData(mon, MON_DATA_SPECIES, NULL));
-    levelScore = GetMonData(mon, MON_DATA_LEVEL, NULL) * 100 / cap;
-    score += levelScore > 100 ? 100 : levelScore;
-    for (i = 0; i < 6; i++) {
-        ivTotal += GetMonData(mon, MON_DATA_HP_IV + i, NULL);
-    }
-    score += ivTotal * 100 / 186;
-    maxHp = GetMonData(mon, MON_DATA_MAXHP, NULL);
-    if (maxHp != 0) {
-        score += GetMonData(mon, MON_DATA_HP, NULL) * 100 / maxHp;
-    }
-    return score;
+    return ContestStatTotal(mon);
 }
 
 #endif

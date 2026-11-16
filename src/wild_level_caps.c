@@ -216,16 +216,6 @@ u8 GetWildLevelCapForEncounterBank(u8 encBank)
     return cap < WILD_LEVEL_CAP_MIN ? WILD_LEVEL_CAP_MIN : cap;
 }
 
-u16 WildEncounterFamilyRoot(u16 species)
-{
-    return FindEncounterChainBase(species);
-}
-
-u16 WildEncounterStageAtLevel(u16 species, u8 level)
-{
-    return AdjustEncounterSpeciesForLevel(species, level, gf_rand());
-}
-
 // Encounter levels never go below 2 (no wild level 1).
 #define WILD_ENCOUNTER_LEVEL_MIN 2
 #define WILD_LEVEL_BABY_SPLIT_MIN_CAP 10
@@ -340,6 +330,14 @@ static void SetWildMonLevel(struct PartyPokemon *pp, u8 level)
     pp->party.level = level;
 }
 
+void ApplyWildEncounterLevelAndStage(struct PartyPokemon *pp, u8 level)
+{
+    ApplyWildSpeciesStageForLevel(pp, level);
+    SetWildMonLevel(pp, level);
+    ApplyEncounterGenderAfterStageAdjust(pp);
+    RecalcPartyPokemonStats(pp);
+}
+
 // Called from WildEncSingle / WildWaterEncSingle while FieldSystem is still valid.
 void CacheWildLevelCapFromFieldSystem(FieldSystem *fsysArg)
 {
@@ -433,10 +431,7 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
     level = ChooseWildLevel(failReason, cap, encBank, usedCachedCap, sWildLevelCapDebug.mapId);
 #endif
     // Stage adjust needs field-overlay rodata; skip safely if build-time patch missing.
-    ApplyWildSpeciesStageForLevel(pp, level);
-    SetWildMonLevel(pp, level);
-    ApplyEncounterGenderAfterStageAdjust(pp);
-    RecalcPartyPokemonStats(pp);
+    ApplyWildEncounterLevelAndStage(pp, level);
 
     sWildLevelCapDebug.usedCachedCap = usedCachedCap;
     sWildLevelCapDebug.appliedLevel = level;

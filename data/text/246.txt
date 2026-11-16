@@ -13,7 +13,7 @@ Uh-oh...\nYou have more than one Pokémon.\rYou’ll have to use {STRVAR_1 1, 0,
       
 Fine, we’ll hold your other Pokémon\nwhile you compete.\r{STRVAR_1 3, 0, 0}’s Pokémon were left with\nthe Contest Helper.\r
 Here are the Sport Balls for the\nContest.\r{STRVAR_1 3, 0, 0} received 20 Sport Balls.\r
-The person who gets the strongest bug\nPokémon is the winner.\rYou have 4 hours.\rIf you run out of Sport Balls, you’re\ndone.\rYou can keep the last Pokémon you\ncatch as your own.\rGo out and catch the strongest\nBug-type Pokémon you can find!\r
+We add up all six stats of your\nPokémon. Highest total wins!\rWe use maximum HP, so weakening a\nPokémon won’t reduce its score.\rYou have 4 hours.\rIf you run out of Sport Balls, you’re\ndone.\rYou can keep the last Pokémon you\ncatch as your own.\rGo out and catch the strongest\nBug-type Pokémon you can find!\r
 Oh no!\rI’m sorry, you don’t have enough\nroom to catch any more Pokémon.
 OK. We hope you’ll take part in the\nfuture.
 Today’s Bug-Catching Contest is over.\rWe hope you will participate again in\nthe future.
@@ -50,7 +50,7 @@ Don: Got it? I’m going to win! Don’t\nbother me.
 Don: Luck plays a big part in this.\rYou never know if Pokémon will\nappear.
 Don: You won? The winner is you!?\rI’m so jealous... It’d be fantastic\nto be the winner...
 Ed: My PARASECT makes Pokémon fall\nasleep with Spore.
-Ed: You can’t win with Pokémon that are\nrun down or low on HP.
+Ed: Maximum HP counts for judging,\nnot the HP remaining after a catch.
 Ed: I envy you. I just couldn’t do it\nthis time.
 Abby: I’ve been training Pokémon that\ninflict status problems for\fthis contest.
 Abby: I heard that using Pokémon with\nbeautiful colors makes it easier to win.\fI wonder if that’s true?
@@ -62,7 +62,7 @@ Benny: ...... ...... ......\n...... ...... Ssssh!\rYou’ll scare off SCYTHER.\n
 Benny: Listen, I caught a SCYTHER\nbefore, but I didn’t win.
 Benny: I just came to see how things\nwere going today, you know?\rI’ll really try my best next time!
 Barry: You should weaken bug Pokémon\nfirst, then throw a Poké Ball.
-Barry: It’s easier to win if you get a\nhigh-level bug Pokémon. But I think\fthey also consider some other points.
+Barry: High levels and evolved Pokémon\nusually mean a higher stat total.
 Barry: That Pokémon you caught...\nIt’s awesome!
 Cindy: I really love bug Pokémon!
 Cindy: I really love bug Pokémon!\rDid I already say that?
