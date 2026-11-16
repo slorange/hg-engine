@@ -794,7 +794,7 @@ ZONE_EVENT_NARC := $(BUILD_NARC)/zone_event.narc
 ZONE_EVENT_TARGET := $(FILESYS)/a/0/3/2
 ZONE_EVENT_DEPENDENCIES_DIR := data/zone_event
 ZONE_EVENT_JSONS := $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/*.json)
-ZONE_EVENT_PATCH_SCRIPTS := $(wildcard tools/patch_zone_event*.py) scripts/dev/verify_olivine_rod_guru_zone_event.py scripts/dev/verify_start_city_patch.py
+ZONE_EVENT_PATCH_SCRIPTS := $(wildcard tools/patch_zone_event*.py) scripts/dev/verify_olivine_rod_guru_zone_event.py scripts/dev/verify_start_city_patch.py scripts/dev/verify_saffron_mart_clerks.py
 ZONE_EVENT_DEPENDENCIES := tools/zone_event_enc.py tools/extract_zone_event_vanilla.py include/config.h $(ZONE_EVENT_JSONS) $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/events/*) $(ZONE_EVENT_PATCH_SCRIPTS)
 
 $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
@@ -805,7 +805,6 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r32_badge.py $(ZONE_EVENT_DIR)/2_033
 	$(PYTHON) tools/patch_zone_event_gym_cut_trees.py $(ZONE_EVENT_DIR)/2_051 $(ZONE_EVENT_DIR)/2_052 $(ZONE_EVENT_DIR)/2_352 $(ZONE_EVENT_DIR)/2_114
 	$(PYTHON) tools/patch_zone_event_r35_cut_tree.py $(ZONE_EVENT_DIR)/2_036
-	$(PYTHON) tools/patch_zone_event_violet_gym.py $(ZONE_EVENT_DIR)/2_365
 	$(PYTHON) tools/patch_zone_event_blackthorn_gym_clair.py $(ZONE_EVENT_DIR)/2_137
 	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_t23_azalea.py $(ZONE_EVENT_DIR)/2_071
@@ -842,6 +841,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_cinnabar_blue.py $(ZONE_EVENT_DIR)/2_054
 	$(PYTHON) tools/patch_zone_event_start_city.py $(ZONE_EVENT_DIR)
 	$(PYTHON) scripts/dev/verify_start_city_patch.py
+	$(PYTHON) scripts/dev/verify_saffron_mart_clerks.py $(ZONE_EVENT_DIR)/2_365
 	$(NARCHIVE) create $@ $(ZONE_EVENT_DIR) -nf
 
 .PHONY: $(ZONE_EVENT_NARC)

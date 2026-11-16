@@ -252,32 +252,24 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 
 ### KB-18 — Saffron Mart second clerk vanished
 
-**Symptom ([TODO.md](TODO.md#known-bugs)):** Inside **Saffron City’s Poké Mart**, the **second teller** (specialty clerk — Up-Grade, Dubious Disc, Twisted Spoon, Payapa Berry) is **gone**. The main clerk still opens the badge-tier **`ScrCmd_MartBuy`** list.
+**Status (Nov 2026):** **Fixed**, playtested — removed from [TODO.md](TODO.md#known-bugs). Cause was `tools/patch_zone_event_violet_gym.py` deleting obj **3** / script **2** on member **365**, which is this mart, not Violet Gym (member **131**). That patch is gone. `scripts/dev/verify_saffron_mart_clerks.py` fails the zone-event build if either clerk object is missing.
+
+**Was:** Inside **Saffron City’s Poké Mart**, the **second teller** (specialty clerk — Up-Grade, Dubious Disc, Twisted Spoon, Payapa Berry) was **gone**. The main clerk still opens the badge-tier **`ScrCmd_MartBuy`** list.
 
 **Design:** [World-6 § Shops](DESIGN-WORLD.md#world-6-shops) — Saffron specialty line matches **`sSaffronMart[]`** in **`src/field/mart.c`**.
-
-**Repro:** Enter Saffron Poké Mart (`T11FS0101`) → compare to another city with two clerks (e.g. Olivine — second clerk still expected) → confirm only one NPC offers shop dialogue / no **`std_special_mart`** clerk on the counter.
 
 **IDs (retail HGSS naming):**
 
 | What | Value |
 | ---- | ----- |
 | Map header | **`MAP_T11FS0101`** (**409**) |
-| scr_seq NARC member | **409** (`build/a012/2_409`) |
-| Specialty inventory | **`sSaffronMart`** — repoint index **15** in [Mart expansion](#mart-expansion-srcfieldmartc) table (`VAR_SPECIAL_x8004` for **`std_special_mart`**, same pattern as Olivine **10** → **`sOlivineMart`**) |
+| Zone event member | **365** (`build/a032/2_365`) — not the map header |
+| scr_seq NARC member | **409** (`build/a012/2_409`), slot **1** — `setvar VAR_SPECIAL_x8004, 15` then `std_special_mart` |
+| Specialty inventory | **`sSaffronMart`** — repoint index **15** (`repoints` @ `0210FA78`) |
 
-**Fix direction (open):**
+**Verify:** Saffron Mart → **two** clerks at the counter → second opens Up-Grade, Dubious Disc, Twisted Spoon, Payapa Berry. Violet Gym elevator and hidden guide unchanged (scripts still on scr_seq **859**; zone **131** untouched).
 
-| Track | What to check |
-| ----- | ------------- |
-| **zone_event** | Second clerk **obj** — **`hide_flag`**, missing object, or wrong **`scriptId`** on **`409_T11FS0101.json`** (or equivalent extract) |
-| **scr_seq** | Obj script still **`callstd std_special_mart`** with **`VAR_SPECIAL_x8004 = 15`**; not replaced by **`ScrCmd_MartBuy`**-only path from **`MART_EXPANSION`** |
-| **Story flags** | Mom / open-world skip sets **`hide_person`** or hide flags that affect this map (compare vanilla vs new save) |
-| **Regression scope** | Other Kanto/Johto marts with two clerks — all missing or Saffron-only |
-
-**Verify after fix:** Saffron Mart → **two** clerks visible → second opens specialty stock (Up-Grade, etc.).
-
-**Related:** [Mart expansion](#mart-expansion-srcfieldmartc), [Olivine Secret Medicine](#olivine-secret-medicine-jasmine) (working second-clerk reference).
+**Related:** [Mart expansion](#mart-expansion-srcfieldmartc), [Violet Gym](#violet-gym-falkner--859--zone_event-131).
 
 ### KB-19 — Wild shiny sparkle vs caught mon
 
@@ -594,7 +586,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Field HM use | `OPENWORLD_FIELD_MOVES_NO_BADGE_GATE` — [Field HM badge bypass](#field-hm-use-without-per-gym-badge-flags) (verified Sep 2026) |
 | Shared logic | `armips/include/gym_badge_hm_reward.inc` — level cap (`10 + 4×badges`, 80 at 16) + HM table |
 | Shared text | `data/text/854.txt` — level cap, HM names, TM intro |
-| Falkner | scr_seq **859** — slots **0–5** patched (`tools/patch_scr_seq_gym_falkner.py`, armips slots **1–5**); zone_event **365** — drop hint **obj 3** only (`tools/patch_zone_event_violet_gym.py`); TM choice in slot **1** (Aerial Ace + Pluck always, Roost @**4**), rematch **712**, text **558** indices **20–26** — [Violet Gym](#violet-gym-falkner--859--zone_event-365). `FLAG_GOT_TM51_FROM_FALKNER` (**115**) |
+| Falkner | scr_seq **859** — slots **0–5** patched (`tools/patch_scr_seq_gym_falkner.py`, armips slots **1–5**). Zone event is **131** (`T22GYM0101`) and stays vanilla — do **not** edit member **365** (that is the Saffron Poké Mart). TM choice in slot **1** (Aerial Ace + Pluck always, Roost @**4**), rematch **712**, text **558** indices **20–26** — [Violet Gym](#violet-gym-falkner--859--zone_event-131). `FLAG_GOT_TM51_FROM_FALKNER` (**115**) |
 | Morty | member **922**, slot **1** — `scr_seq_morty_gym_slot1.s`, text **614** (blank-line bank; labels **20–24**, rematch **25–28**). Fling + Payback always, Shadow Claw @**2**, Shadow Ball + Dark Pulse @**6**. Rematch **715**. `FLAG_GOT_TM30_FROM_MORTY` (**166**) |
 | Pryce | member **932** — **append-only** ([Mahogany Gym — Pryce scr_seq 932](#mahogany-gym--pryce-scr_seq-932)); text **622** labels **10–13**, rematch **14–17**. Hail only below **2** badges, Avalanche @**2**, Blizzard @**8**, Ice Beam @**10**. Rematch **716**. `FLAG_GOT_TM07_FROM_PRYCE` (**210**) |
 | Jasmine | member **913**, slot **0** — `scr_seq_jasmine_gym_slot0.s`, text **606** labels **25–28**, rematch **29–32**. Steel Wing only below **2** badges, Gyro Ball @**2**, Iron Tail + Flash Cannon @**6**. Rematch **717**. `FLAG_GOT_TM23_FROM_JASMINE` (**194**) |
@@ -706,22 +698,22 @@ Individual cities still require **`FLAG_SYS_FLYPOINT_*`** (Pokémon Center visit
 **Next:** identify live spot filter; 2-byte patches after disasm. Session recon was **`scripts/local/`** only (not in git).
 
 
-### Violet Gym (Falkner) — 859 / zone_event 365
+### Violet Gym (Falkner) — 859 / zone_event 131
 
 **Status (Nov 2026):** Elevator and guide hide verified. TM choice is in the leader slot and still needs a playtest: Aerial Ace and Pluck from the first badge (menu always opens), Roost at **4**. Rematch trainer **712**.
 
-Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world patches **0–5** plus zone_event **365**.
+Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world patches scr_seq **0–5** only. Zone event member **131** (`T22GYM0101`) stays vanilla. Member **365** is the Saffron Poké Mart (`T11FS0101`); an object-removal patch aimed at “Violet Gym obj 3” deleted that mart’s specialty clerk (obj **3**, script **2**). Do not strip objects from **131** either: guide NPCs stay in the file and are hidden with flags **739** / **740**.
 
 | Slot | Role | Patch |
 |------|------|-------|
 | 0 | OnLoad | **`patch_scr_seq_gym_falkner.py`** — keep vanilla **`violet_gym_init` (324)** (3D lift platform + gymmick save); prepend **`setflag` 739/740** (Sprout-skip guide hide); **`hide_person 1`** (opcode **101**) right after init and again before `scr_end`. **Must not** omit init (lift disappears; **`VioletGymElevator`** crashes). **Must not** remove **obj 1** from zone_event (init / `hide_person` need the object index). |
 | 1 | Falkner leader + HM table | `scr_seq_falkner_gym_slot1.s` |
-| 2 | Hint NPC (was obj 3 script 2) | `scr_seq_falkner_gym_slot2.s` — harmless if obj 3 removed |
+| 2 | Hint NPC (zone **131** obj **3**, script **3**, flag **740**) | `scr_seq_falkner_gym_slot2.s` — hidden by flag; leave the object in place |
 | 3 | Sprout gate talk (obj 1 script 3) | `scr_seq_falkner_gym_slot3.s` — obj 1 hidden after OnLoad |
 | 4 | Upper lift pad (obj 2 script 4) | `scr_seq_falkner_gym_slot4.s` — `violet_gym_elevator` (vanilla slot **4** was empty) |
-| 5 | Lower lift (objs 4–5, scripts 10201/10202) | `scr_seq_falkner_gym_slot5.s` — elevator only (no TM51 / Roost gate) |
+| 5 | Lower lift (engine scripts **10201** / **10202**) | `scr_seq_falkner_gym_slot5.s` — elevator only (no TM51 / Roost gate) |
 
-**Zone_event 365 (after patch):** **5** objects — Falkner **obj 0**, Sprout-slot **obj 1** (kept, hidden), upper pad **obj 2**, lift attendants **objs 4–5**; duplicate hint **obj 3** removed.
+**Zone_event 131 (vanilla, not patched):** Falkner **obj 0** (script **2**), guide **obj 3** (script **3**, flag **740**), guide **obj 4** (script **6**, flag **739**). `hide_person 1` in the OnLoad script still needs **obj 1** present on this member.
 
 **New saves:** `openworld_story_skip_flags.inc` sets **739** and **740** so the guide stays hidden on first gym entry.
 
@@ -1693,7 +1685,7 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 **Verify:** build ROM → sample Goldenrod/Celadon dept floors (both clerks), one town specialty mart, badge-gated 2F shelf at 0 vs 8 badges.
 
-**Known bug:** Saffron second clerk missing — [KB-18](#kb-18--saffron-mart-second-clerk-vanished).
+**Saffron second clerk:** restored — [KB-18](#kb-18--saffron-mart-second-clerk-vanished). Do not delete objects on zone member **365**.
 
 ---
 
