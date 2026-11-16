@@ -174,6 +174,15 @@ Coin prizes at the department-store Game Corners **implemented**:
 | **Goldenrod Game Corner** | Bright Powder, Quick Claw, Wide Lens, Metronome |
 | **Celadon Game Corner** | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
 
+### Pokémon prizes
+
+Renewable coin prizes at the same clerks.
+
+| Location | Pokémon |
+| -------- | ------- |
+| **Goldenrod Game Corner** | Rotom, Wobbuffet, Smeargle |
+| **Celadon Game Corner** | Porygon, Eevee, Castform |
+
 ### Coin income (not implemented)
 
 **Temporary pricing:** all Game Corner TM, held-item, and Pokémon prizes cost **50 Coins** until proper coin income and tiered pricing ship. This is a playtest shortcut only — not the long-term economy.
@@ -226,6 +235,8 @@ Every standard evolution stone is **renewably buyable** at themed town marts and
 Some evolution items also drop from **Rock Smash** as a field source.
 
 Player stone evolution rules are **unchanged** (use a stone on an eligible Pokémon). Flexible stone mechanics (type-matching shortcuts, high-level paths without stones) are deferred — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).
+
+Eevee also becomes **Jolteon** by leveling up on **Route 10**. **Magneton** and **Nosepass** become **Magnezone** and **Probopass** on that same route. Thunder Stone still works anywhere for all three.
 
 ### Trade evolutions — with held item
 
@@ -298,7 +309,7 @@ Themed Evolution items, held items, resist berries:
 | Viridian | Protector, Soft Sand, Shuca Berry |
 | Blackthorn / Battle Frontier | Dragon Scale, Dragon Fang, Haban Berry |
 | Mt. Moon Square | Moon Stone |
-| Mahogany | Poké Ball, Never-Melt Ice, Yache Berry, Razor Claw |
+| Mahogany | Poké Ball, Ice Stone, Never-Melt Ice, Yache Berry, Razor Claw |
 | Indigo Plateau | Ultra & Timer Balls, Max Repel, Lum Berry, Leftovers, Shell Bell, Focus Sash, Choice Band / Specs / Scarf, Life Orb |
 
 ---
@@ -388,11 +399,21 @@ Curated prize lists aligned with the matrix (not the ground/hidden random pool, 
 
 ## Pokédex milestone rewards
 
-**Pokédex completion thresholds** grant rare items. Milestones are **curated** (specific rewards at specific counts), not random rolls from the ground/hidden pool. Exact items, amounts, and thresholds TBD.
+**Pokédex completion thresholds** grant rare items. Milestones are **curated** (specific rewards at specific counts), not random rolls from the ground/hidden pool. Exact items, amounts, and thresholds TBD. The research society in Pokémon Centers may be where these are claimed ([Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society)).
 
 ## Mints, Bottle Caps, Ability Capsules and Patches
 
-Add these items to the game with sources per the matrix. Expect **one-time** overworld acquisition (including **Ground / Hidden** where marked) plus **effort-gated, renewable postgame** acquisition through Pokéathlon, Battle Frontier, Bug Contest, and Pokédex milestones as applicable. Likely also include a way to change **Hidden Power** type (exact item TBD).
+**Status: USE CODE ONLY** — Mints, Ability Capsules, and Ability Patches work if the player has one. Nothing in the world gives them out yet. Bottle Caps have icons and text, and no effect. Acquisition stays the matrix above: one-time ground and hidden finds, plus effort-gated renewable postgame sources where that row is marked.
+
+**Mints.** Using one stores that nature and consumes the Mint. The summary screen shows the new nature. Stat calculation still uses the personality nature, so battles do too.
+
+**Ability Capsule.** Swaps the two regular abilities when the species has two different ones. A Hidden Ability blocks it. Consumed on use.
+
+**Ability Patch.** Switches between the regular ability and the Hidden Ability when the species has one. Consumed on use.
+
+**Bottle Caps.** Silver and Gold Caps cannot be used. Hyper Training is not implemented.
+
+**Hidden Power** type is set by using an Arceus Plate on the Pokémon. The plate stays in the bag ([Future-15](DESIGN-FUTURE.md#hidden-power)). Until then, the type stays IV-dependent. The Unown collection scales Hidden Power’s power ([Future-12](DESIGN-FUTURE.md#future-12-unown-collection-quest)).
 
 ---
 

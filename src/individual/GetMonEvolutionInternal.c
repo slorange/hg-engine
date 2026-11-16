@@ -200,11 +200,11 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
                     *method_ret = EVO_LEVEL_FEMALE;
                 }
                 break;
-            case EVO_MAGNETIC_FIELD: // magnetic field at route 43+kanto power plant
+            case EVO_MAGNETIC_FIELD: // Route 10 (kanto power plant outside)
             {
                 u32 location = gFieldSysPtr->location->mapId;
 
-                if (location == 45 || location == 18) {
+                if (location == 18) {
                     target = evoTable[i].target & 0x7FF;
                     *method_ret = EVO_MAGNETIC_FIELD;
                 }

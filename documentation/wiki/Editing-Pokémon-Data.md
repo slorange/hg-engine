@@ -397,7 +397,7 @@ Pokémon that evolve via `EVO_MON_IN_PARTY` evolve upon level up when the specif
 
 Pokémon that evolve via `EVO_LEVEL_MALE`, `EVO_LEVEL_FEMALE` evolve when they reach the specified level and are specifically the sex that is specified in the name of the method.
 
-Pokémon that evolve via `EVO_LEVEL_ELECTRIC_FIELD` evolve when leveled up in Route 43 or in the Power Plant.
+Pokémon that evolve via `EVO_LEVEL_ELECTRIC_FIELD` evolve when leveled up on Route 10.
 
 Pokémon that evolve via `EVO_LEVEL_MOSSY_STONE` evolve when leveled up in Ilex or Viridian Forests.
 

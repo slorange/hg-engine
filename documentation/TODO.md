@@ -62,8 +62,6 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Hidden Ability rates** | | Wild **10%** HA; ordinary trainers **20%**; Gym trainers **30%** |
-| **Trainer IVs / EVs** | [Battle-2](DESIGN-BATTLES.md#battle-2-badge-level-caps) | Scale trainer **EVs** with badges; **higher IVs** for Gym Leaders |
 | **HM removal via move replace** | [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) | HMs removable through normal move replacement, not only the Move Deleter |
 
 ---

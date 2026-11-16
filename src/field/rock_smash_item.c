@@ -46,6 +46,7 @@ static const u16 RockSmashItemPool[] = {
     ITEM_THUNDER_STONE,
     ITEM_WATER_STONE,
     ITEM_LEAF_STONE,
+    ITEM_ICE_STONE,
     ITEM_SHINY_STONE,
     ITEM_DUSK_STONE,
     ITEM_DAWN_STONE,

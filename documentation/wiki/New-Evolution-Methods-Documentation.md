@@ -142,7 +142,7 @@ The Pokémon will evolve when leveling up a female above the specified level.
 
 ### Level Up in an Electric Field
 
-The Pokémon will evolve when leveling up in Route 43 or outside the Kanto Power Plant.
+The Pokémon will evolve when leveling up on Route 10 (outside the Kanto Power Plant).
 
 ### Level Up near a Mossy Stone
 
@@ -156,7 +156,7 @@ The Pokémon will evolve when leveling up in the bottom floors of Ice Path or th
 
 The Pokémon will evolve when leveling up above the specified level during the day.
 
-### Level Up During the Nigt
+### Level Up During the Night
 
 The Pokémon will evolve when leveling up above the specified level during the night.
 

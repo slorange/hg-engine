@@ -23,6 +23,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
 | [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
+| [Future-15. Pokémon Research Society](#future-15-pokémon-research-society) |
 | [Priority](#priority) |
 
 ---
@@ -281,6 +282,7 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 | **Apricorn crafting** | Convert Apricorns into specialty Poké Balls using Kurt’s service ([Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance)), without returning to Azalea. | Planned |
 | **Move Tutor** | Make special move tutoring available from any Center. | Maybe |
 | **Specialty Trader** | Exchange items or currencies for selected rewards. Inventory and pricing TBD. | Maybe |
+| **Research representative** | Register Arceus Plates and claim plate and Pokédex rewards ([Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society)). | Planned |
 
 Other services may be added as future systems develop. Keep location-specific shops and rewards in the world when they provide a meaningful reason to explore.
 
@@ -328,11 +330,36 @@ All other Leaders use their vanilla Gym type only.
 ## TMs and Held Items
 Once a trainer's team is generated, we also give the trainer some TMs randomly, and teach them to their team where appropriate. TM list will need to be curated so no useless TMs are taught. Number and Quality of TMs should increase as Badge count increases. Gym trainers should have more of that Gym's type of TMs. Gym Leaders should get an additional boost of Number and Quality of TMs.
 
+## IVs, EVs, and Nature
+
+Scale trainer **EVs** with badges. **Gym Leaders** have higher **IVs** than ordinary trainers. **Nature** agrees with the EV spread and whether the set is physical or special.
+
+## Trainer class
+
+Class biases the species pool and how finished the set is. A late-game Youngster and a late-game Ace Trainer can share a badge count and still differ.
+
+## Abilities
+
+| Who | Hidden Ability |
+| --- | -------------- |
+| Wild Pokémon | **10%** |
+| Ordinary trainers | **20%** |
+| Gym trainers | **30%** |
+
+**Ability tiers.** Rank abilities into tiers, then use those tiers to set the odds for trainer and Gym Leader Pokémon.
+
+**Set synergy.** Swift Swim + Drizzle, Guts + Flame Orb, Choice Band − Swords Dance.
+
+**Further considerations:** PP, form, gender, friendship, ball, shiny.
+
 ## Technical investigation
 
 - random species for generated teams;
 - monotype generation with curated exceptions.
 - tms and held items
+- badge-scaled EVs, higher Gym Leader IVs, and natures matched to the spread
+- trainer-class bias for species and set quality
+- hidden-ability rates, ability-tier odds, and set synergy
 
 ---
 
@@ -519,7 +546,7 @@ Scaling is linear from 0 unique forms registered to 28.
 | **Hidden Power (all Pokémon)** | **60** BP, fixed base power (not IV-dependent) | **100** BP, same fixed-power rule |
 | **Catch rate (Unown)** | **255** | **3** |
 
-- **Hidden Power type** remains **IV-dependent** today; a dedicated item changes type (align with [World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels) Hidden Power plans).
+- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-15](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed ([World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels)).
 - **Ability (Unown only):** custom ability — all **damaging** moves deal **+33%**; Unown is **typeless** (no weaknesses, resistances, or STAB).
 - **Wild held item:** **50%** chance to hold **TM10 (Hidden Power)**.
 
@@ -575,7 +602,8 @@ Each location’s **theme word** lists the **unique letter forms** that can appe
 ### UX and postgame hooks
 
 - **Caught indicator:** Prefer showing the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
-- Unown collection may grant **clues** or **unlock options** for legendary / mythical postgame content ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) — TBD).
+- Unown collection may grant **clues** or **unlock options** for legendary / mythical postgame content ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes), [Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society) — TBD).
+- The research society may also give a reward for each newly registered Unown form ([Future-15](DESIGN-FUTURE.md#pokédex-research)).
 
 ## Open design questions
 
@@ -610,6 +638,20 @@ Example — Rapidash (natural level **40**):
 | 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **35** |
 | 2nd stage, stone-only (e.g. Gloom, Poliwhirl) | matching stone at any level | **50** |
 
+## Eevee
+
+Every species has room for **9** evolution methods. Eevee already fills that list: the stones, friendship, and Fairy-move methods, plus leveling up on Route 10 for Jolteon ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
+
+Eevee is the exception. These extra methods are added for Eevee only. The limit stays **9** for every other species.
+
+| Extra method | Evolves into | Alongside |
+| --- | --- | --- |
+| Moss rock (Ilex Forest or Viridian Forest) | Leafeon | Leaf Stone |
+| Icy rock (Ice Path B3F or Seafoam Islands B4F) | Glaceon | Ice Stone |
+| Dawn Stone | Espeon | daytime friendship |
+| Dusk Stone | Umbreon | nighttime friendship |
+| Shiny Stone | Sylveon | knowing a Fairy move |
+
 ## Open design questions
 
 - Exact −5 behaviour: one-time per stage, permanent flag, or repeatable?
@@ -629,12 +671,85 @@ Ideas that do not have their own `Future-*` section yet.
 - **Expanded Pokédex / generations** — release scope stays [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) (Gen I–IV plus the Volcarona line); HG-Engine could extend through Gen IX minus Paradox and DLC. Include selected cross-gen evolutions when scope expands — e.g. **Sylveon**, **Kleavor**, **Wyrdeer**, **Annihilape**, **Farigiraf**, **Dudunsparce** (methods TBD per line).
 - **Starter selection** could be revisited.
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
-- **Ability tiers** — rank abilities into tiers to set odds for trainer and Gym Leader Pokémon.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
 - **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
 - **Pokémon balance** — every species reasonably viable; encounter rarity roughly reflects power; adjust BST, abilities, and learnsets as needed.
-- **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …).
+- **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …). Plate and Pokédex collection is [Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society).
 - **Battle AI** — increase switching for type matchups when no good damaging move is available.
+
+---
+
+# Future-15. Pokémon Research Society
+
+A shared research organization with representatives in every Pokémon Center. The representative is a service in the shared hub ([Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub)), so the player can register finds and claim rewards from any Center.
+
+The society handles two related collection systems: **Arceus Plate** research and **Pokédex** completion rewards.
+
+## Plate research
+
+All **17** Arceus Plates, including the **Pixie Plate**, are distributed throughout Johto and Kanto.
+
+The player shows plates to a researcher, who registers them and gives them back. Plates are never consumed.
+
+Each newly registered plate unlocks one Pokémon reward. Rewards progress through tiers, and the player chooses one Pokémon from the current tier.
+
+Most plates are found loose in caves and optional areas. Locations may be randomized per save. Some sit behind badge-gated field obstacles ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+
+Some plates may instead be tied to a specific encounter:
+
+| Plate | Encounter |
+| ----- | --------- |
+| Flame, Zap, Icicle | Legendary birds |
+| Splash | Red Gyarados |
+| Mind | Mewtwo |
+
+The challenge is collecting plates across the whole world. Each find stays a modest exploration goal.
+
+Plates may grant a stronger damage bonus than ordinary type-boosting items. Whether they do is still open.
+
+## Hidden Power
+
+Using a plate on a Pokémon sets that Pokémon’s **Hidden Power** type to the plate’s type. The plate stays in the bag. Plates are never consumed, including when shown to the researchers above.
+
+Until a plate is used, Hidden Power’s type stays IV-dependent. That roll can be any type, including **Fairy**. It skips Fairy today, because Fairy occupies the old ??? type slot; the roll should include Fairy too. The Unown collection still scales Hidden Power’s power ([Future-12](DESIGN-FUTURE.md#future-12-unown-collection-quest)).
+
+## Pokémon rewards
+
+| Tier | Plates | Rewards |
+| ---- | ------ | ------- |
+| 1 | 1–4 | Kecleon, Delibird, Spinda, Chatot |
+| 2 | 5–7 | Dunsparce, Wobbuffet, Tyrogue |
+| 3 | 8–10 | Togepi, Riolu, Eevee |
+| 4 | 11–13 | Lapras, Snorlax, Spiritomb |
+| 5 | 14–15 | Shaymin, Manaphy |
+| 6 | 16–17 | Undecided mythical, Arceus |
+
+Tiers **1–5** are obtainable before the Elite Four. Tiers **1–4** are awarded as eggs.
+
+Tiers **5** and **6** are location reports. The researcher describes newly detected activity, and the player investigates. **Arceus** is the final reward, potentially encountered at **Sinjoh Ruins**.
+
+The last two plates are reserved for postgame areas, potentially **Cerulean Cave** and **Mt. Silver**.
+
+**Wobbuffet** (tier 2) and **Eevee** (tier 3) are also Game Corner prizes ([World-4](DESIGN-WORLD.md#pokémon-prizes)).
+
+## Pokédex research
+
+The same organization could also manage Pokédex completion rewards ([World-8](DESIGN-WORLD.md#pokédex-milestone-rewards)).
+
+Milestones grant items, or location information for other legendary and mythical Pokémon.
+
+The same researchers may give a reward each time the player registers a new Unown form ([Future-12](DESIGN-FUTURE.md#future-12-unown-collection-quest)). What that reward is remains open.
+
+## Open design questions
+
+- Organization name and NPC presentation.
+- Pokédex milestones and reward structure.
+- What the researchers give for each newly registered Unown form.
+- Whether plate locations are randomized, and how hints work.
+- How plates are split between exploration, encounters, and Pokédex rewards.
+- Which mythical shares tier 6 with Arceus.
+- Whether plates deal more damage than ordinary type-boosting items.
+- Whether plate rewards and Pokédex rewards stay separate tracks or become more integrated.
 
 ---
 
@@ -667,5 +782,6 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
 | [Future-11](#future-11-encounter-stage-selection-wild--trainer) Stage rates | 5 | 1 | 1 | 1 | 2 | 3 | — |
 | [Future-9](#future-9-time-advancement) Time advancement | 4 | 1 | 1 | 1 | 3 | 1 | — |
+| [Future-15](#future-15-pokémon-research-society) Pokémon Research Society | 3 | 2 | 3 | 3 | 2 | 2 | [Future-6](#future-6-shared-pokémon-center-hub) |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
 | [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | Moon Ball  wants [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) |
