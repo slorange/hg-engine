@@ -12,7 +12,7 @@ Celadon scr_seq member 804 (T07R0501 dept 5F):
 Each changed prize is patched at fixed offsets from vanilla HeartGold scr_seq extract.
 All TM, held-item, and Pokémon prize costs are flattened to PRIZE_COIN_COST (temporary).
 
-Pokémon prizes (give_mon species u16):
+Pokémon prizes (species variable passed to give_mon, all level 10):
   Goldenrod: Rotom, Wobbuffet, Smeargle
   Celadon: Porygon, Eevee, Castform
 
@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 # Temporary playtest shortcut until coin income + real pricing ship.
 PRIZE_COIN_COST = 50
+PRIZE_LEVEL = 10
 
 # offset, expected_item_id, new_item_id
 ItemPatch = tuple[int, int, int]
@@ -36,7 +37,7 @@ ItemPatch = tuple[int, int, int]
 # offset, expected_vanilla_cost, new_cost
 CostPatch = tuple[int, int, int]
 
-# offset, expected_species_id, new_species_id (give_mon argument)
+# offset, expected_species_id, new_species_id (species variable assignment/compare)
 SpeciesPatch = tuple[int, int, int]
 
 
@@ -119,14 +120,10 @@ GOLDENROD_SPECIES_PATCHES: list[SpeciesPatch] = [
     (2497, 147, 235),
     (2509, 27, 235),
     (2616, 63, 479),
-    (2621, 23, 202),
     (2652, 23, 202),
-    (2657, 23, 202),
     (2688, 27, 235),
-    (2693, 23, 202),
     (2776, 63, 479),
     (2799, 23, 202),
-    (2814, 27, 235),
     (2822, 27, 235),
 ]
 
@@ -135,7 +132,6 @@ CELADON_SPECIES_PATCHES: list[SpeciesPatch] = [
     (2165, 122, 137),
     (2189, 137, 351),
     (2267, 122, 137),
-    (2359, 137, 351),
     (2391, 122, 137),
 ]
 
@@ -160,7 +156,6 @@ CELADON_COST_PATCHES: list[CostPatch] = [
     (1865, 1000, PRIZE_COIN_COST),
     (1986, 1000, PRIZE_COIN_COST),
     (2004, 1000, PRIZE_COIN_COST),
-    (2209, 3333, PRIZE_COIN_COST),
     (2284, 3333, PRIZE_COIN_COST),
     (2402, 3333, PRIZE_COIN_COST),
     (2320, 6666, PRIZE_COIN_COST),
@@ -183,6 +178,26 @@ SPECIES_MEMBERS: dict[int, list[SpeciesPatch]] = {
     GOLDENROD_MEMBER: GOLDENROD_SPECIES_PATCHES,
     CELADON_MEMBER: CELADON_SPECIES_PATCHES,
 }
+
+# Shared GiveMon command for each clerk. Species comes from VAR 0x4002.
+GIVE_MON_OFFSETS = {GOLDENROD_MEMBER: 2744, CELADON_MEMBER: 2359}
+PARTY_CHECK_OFFSETS = {GOLDENROD_MEMBER: 2517, CELADON_MEMBER: 2197}
+
+
+def validate_pokemon_flow(data: bytes, member: int) -> None:
+    """Protect the party gate, GiveMon opcode and species-selection jumps."""
+    offset = PARTY_CHECK_OFFSETS[member]
+    expected = struct.pack("<HHHHHHBi", 332, 0x8005, 17, 0x8005, 6, 28, 5, 13)
+    if data[offset:offset + len(expected)] != expected:
+        raise ValueError(f"2_{member}: party-space branch was modified")
+    offset = GIVE_MON_OFFSETS[member]
+    expected = struct.pack("<7H", 137, 0x4002, PRIZE_LEVEL, 0, 0, 0, 0x800C)
+    if data[offset:offset + len(expected)] != expected:
+        raise ValueError(f"2_{member}: expected GiveMon at level {PRIZE_LEVEL}")
+    if member == GOLDENROD_MEMBER:
+        for offset, expected_jump in ((2621, 23), (2657, 23), (2693, 23), (2814, 27)):
+            if struct.unpack_from("<i", data, offset)[0] != expected_jump:
+                raise ValueError(f"2_{member}: modified prize branch at {offset}")
 
 
 def read_u16(data: bytes, offset: int) -> int:
@@ -266,15 +281,20 @@ def patch_file(path: Path, member: int) -> None:
     apply_patches(data, patches)
     apply_cost_patches(data, cost_patches)
     apply_species_patches(data, species_patches)
+    level_offset = GIVE_MON_OFFSETS[member] + 4
+    if read_u16(data, level_offset) != 15:
+        raise ValueError(f"2_{member}: expected vanilla prize level 15")
+    write_u16(data, level_offset, PRIZE_LEVEL)
     validate_patches(bytes(data), patches, f"2_{member}")
     validate_cost_patches(bytes(data), cost_patches, f"2_{member}")
     validate_species_patches(bytes(data), species_patches, f"2_{member}")
+    validate_pokemon_flow(bytes(data), member)
 
     if len(data) != vanilla_size:
         raise ValueError(f"2_{member} size changed {vanilla_size} -> {len(data)}")
 
     path.write_bytes(data)
-    writes = len(patches) + len(cost_patches) + len(species_patches)
+    writes = len(patches) + len(cost_patches) + len(species_patches) + 1
     print(
         f"patched Game Corner prizes in {path} ({len(data)} bytes, "
         f"{writes} offset writes)"

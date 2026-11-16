@@ -56,7 +56,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Jasmine medicine | [Olivine Secret Medicine (Jasmine)](#olivine-secret-medicine-jasmine) |
 | Mart inventories | [Mart expansion (`src/field/mart.c`)](#mart-expansion-srcfieldmartc) → [KB-18](#kb-18--saffron-mart-second-clerk-vanished) |
 | Trade-item evolution | [Trade-item evolution (use on Pokémon)](#trade-item-evolution-use-on-pokémon) |
-| Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) → [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full) |
+| Game Corner TMs | [Game Corner TM prizes](#game-corner-tm-prizes) |
 | Overlay 129 (32 KiB) | [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) |
 | Wild distance caps | [Wild level caps (distance-based)](#wild-level-caps-distance-based--verified-poc) → [Formula](#formula-and-table), [Runtime](#runtime-pipeline), [Synthetic edges](#editing-synthetic-stage-edges) |
 | Wild ecology shuffle ([Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle)) | [Per-save ecology](#per-save-wild-ecology-shuffle-wilds-6) → [ROM PoC](#ecology-rom-integration-in-rom-poc), [Files](#ecology-file-shorthand), [Mom gen / overlay 131](#mom-gen-overlay-131-vs-host-ecologygen), [Encounter hooks (KB-12)](#kb-12--wild-ecology-encounter-hooks-setencountdata), [129↔131 (KB-11)](#kb-11--undefined-instruction-from-overlay-129--field-code-calls), [Mom freeze (KB-14)](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer) |
@@ -180,26 +180,6 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 **Fix (shipped):** **`static const EcologyCompatView *sEcoGenCompatView`**, **`sEcoGenCompatView = view`** at gen entry, local **`ECO_*`** macro overrides in **`ecology_generate.c`**. Do **not** revert to **`gEcologyCompatView`** inside overlay **131**.
 
 **Related:** [Mom gen — overlay 131 vs host](#mom-gen-overlay-131-vs-host-ecologygen), [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls) (wild hook must not call **131** code; Mom **function pointer** to **`EcologyGenerateWorld`** is a separate, patched path).
-
-### KB-15 — Game Corner Pokémon prizes (“party’s full”)
-
-**Symptom ([TODO.md](TODO.md#known-bugs)):** At **Goldenrod** or **Celadon** Game Corner prize clerks, choosing a **Pokémon** coin prize shows *“Your party’s full! Please make some room before you come back.”* while the party still has free slots (fewer than six Pokémon visible in the party menu).
-
-**Design:** [World-4 § Game Corner TMs](DESIGN-WORLD.md#game-corner-tms) — renewable Pokémon prizes (Rotom / Wobbuffet / Smeargle; Porygon / Eevee / Castform).
-
-**Repro:** Coin Case → prize clerk → **Pokémon** submenu (not TM or held items) → enough Coins → confirm. Maps / scr_seq: [Game Corner TM prizes](#game-corner-tm-prizes) (**910** Goldenrod, **804** Celadon).
-
-**Player text:** Goldenrod bank **603** msg **6**; Celadon bank **509** — same “party’s full” line (`data/text/603.txt`, `data/text/509.txt`). Bag-full copy is a **different** message (msg **5** on **603**).
-
-**Fix direction (open):**
-
-| Track | What to check |
-| ----- | ------------- |
-| **Inflated party count** | Vanilla prize flow branches on party size **≥ 6** before **`give_mon`** (scr cmd **137**). Wrong count with fewer living mons → false “full” — compare **`party->count`** vs **`PokeParty_GetPokeCount`** / **`MON_DATA_SPECIES_EXISTS`** per slot ([Heal § party corruption](#heal-after-every-battle), [KB-13](#kb-13--kb-17--wild-encounter-overwrote-the-party-lead-fixed)). Open-world intro **3×** `give_mon` may leave bad **`count`** on some saves. |
-| **`give_mon` / `GiveMon` failure** | Script may use the same branch when **`GiveMon`** → **`PokeParty_Add`** returns FALSE even if count &lt; 6. Bisect **`PokeParaSet`** for patched species (**479**, **351**, etc. — `tools/patch_scr_seq_game_corner.py`); confirm scr **`give_mon`** passes u16 species (**`armips/asm/abilities.s`** @ **`0x0204D132`**). Hook: **`GiveMon`** @ **`0x020541DC`** (`hooks`). |
-| **Regression scope** | Confirm TM / held-item prizes still succeed on the same clerk — narrows to Pokémon prize script path in **910** / **804**, not Coin deduction globally. |
-
-**Verify after fix:** new save → 50+ Coins → buy each Pokémon prize once with 1–5 party members; repeat with a full party of six to see the real full message.
 
 ### KB-16 — Encounter moves not rebuilt after species/level change
 
@@ -1756,15 +1736,23 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 
 | File | Role |
 | ---- | ---- |
-| `tools/patch_scr_seq_game_corner.py` | Item-id, coin-cost, and give_mon species `u16` patches in `2_910` / `2_804` after vanilla extract |
-| `scripts/build/verify_game_corner_patch.py` | Patched item ids, costs, and species at each fixed offset |
+| `tools/patch_scr_seq_game_corner.py` | Item-id, coin-cost, species-variable, and prize-level `u16` patches in `2_910` / `2_804` after vanilla extract |
+| `scripts/build/verify_game_corner_patch.py` | Patched item ids, costs, species, level 10 GiveMon commands, party-space gates, and protected Goldenrod jumps |
 | `data/text/603.txt`, `data/text/509.txt` | Prize menu labels (TMs, held items, Pokémon) |
 
 **Build:** wired in `narcs.mk` after gym scr_seq patches.
 
 **Verify in-game:** Coin Case → Goldenrod Game Corner → right-hand clerk → TM, held-item, and Pokémon submenus; Celadon dept store 5F prize clerk → same lists (different corner).
 
-**Known bugs:** Pokémon submenu party full — [KB-15](#kb-15--game-corner-pokémon-prizes-partys-full).
+### Pokémon prize levels and script safety
+
+**Prize level:** all Pokémon prizes at both clerks arrive at **level 10** (`PRIZE_LEVEL` in `tools/patch_scr_seq_game_corner.py`). Each clerk assigns the selected species to variable **0x4002**, then calls one shared **GiveMon** command (**137**): offset **2744** in Goldenrod member **910**, **2359** in Celadon member **804**. The level argument is the `u16` at command offset **+4**; vanilla was **15**.
+
+**Celadon false party-full fix (formerly KB-15; user-tested Nov 16, 2026):** the coin-cost patch at **2209** mistook bytes **05 0D** for price **3333**. Those bytes are actually the conditional-branch condition **5** and the first byte of relative jump **13**, immediately after the party-count comparison against six. Writing **50** corrupted the branch that skips the full-party message. Remove this cost entry; the real 3333-Coin comparison and deduction operands are at **2284** and **2402**. A species patch at **2359** also mistook the GiveMon opcode **137** for Porygon and replaced the command with **351**; remove that entry too. Castform is selected by the species-variable assignment at **2189**.
+
+**Goldenrod control-flow cleanup:** remove species entries at **2621**, **2657**, **2693**, and **2814**. Their vanilla values **23 / 23 / 23 / 27** are relative jump offsets, not species operands. Goldenrod purchases appeared fine in the user's initial test; these were additional confirmed bytecode errors, not the confirmed source of the Celadon symptom.
+
+**Guard against recurrence:** a matching numeric value alone does not prove an offset is an item, price, or species operand. `validate_pokemon_flow` checks both complete vanilla party-space gates, both GiveMon commands (opcode, species variable, level, remaining arguments), and the four protected Goldenrod jumps. The patcher and build verifier both call it. Verification passed on the rebuilt scripts; the user confirmed the playable fix and level change. Existing saves work; reload the rebuilt `test.nds` in DeSmuME.
 
 **Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented).
 
