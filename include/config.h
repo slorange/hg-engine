@@ -71,7 +71,7 @@
 
 // IMPLEMENT_CRITICAL_CAPTURE defines whether or not throwing a poké ball has a certain percent chance of a guaranteed capture called a critical throw
 // commenting this line out disables critical captures
-#define IMPLEMENT_CRITICAL_CAPTURE
+// #define IMPLEMENT_CRITICAL_CAPTURE
 
 // if critical capture generation is 9 or above, then the critical capture animation will be triggered if the mon is going to be caught and has already been caught.
 // this will also make the critical capture species only count the regional dex species.
@@ -129,7 +129,7 @@
 
 // Friendship grants additional bonuses.
 // Comment out the line below to revert back to Gen 5- behaviour
-#define FRIENDSHIP_EFFECTS
+// #define FRIENDSHIP_EFFECTS
 
 // RESTORE_ITEMS_AT_BATTLE_END will restore held items that are single-use at the end of battle (Gen 9),
 // including berries. Comment out to revert to Gen 8- behavior (held items not renewed after battle).

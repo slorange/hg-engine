@@ -2,6 +2,27 @@
 
 Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/SoulSilver.
 
+### HG-Engine
+
+Behavior inherited from HG-Engine.
+
+- **Fast text** — dialogue prints nearly instantly, regardless of the text-speed setting.
+- **60 FPS battles** — battles run at 60 frames per second. The overworld keeps the usual speed.
+- **No overworld poison** — a poisoned Pokémon does not lose HP while walking.
+- **PC boxes** — **30** boxes instead of 18.
+- **Repel prompt** — when a Repel runs out, the game offers another: Max Repel, then Super Repel, then Repel.
+- **Friendship evolutions** — need **160** friendship instead of 220.
+- **Vitamins** — raise EVs up to **252** in a stat instead of stopping at 100.
+- **No low-HP beep** — the critical-health warning sound is off.
+- **Nature arrows** — the summary stats page marks which stats a nature raises and lowers.
+- **Summary stats** — on a Pokémon’s summary stats page, **L** shows EVs, **R** shows IVs, and **Select** returns to the normal stats.
+- **Fairy type and type chart** — Fairy is present. Steel does not resist Ghost or Dark.
+- **Moves, abilities, and learnsets** — later-generation moves, abilities, and level-up learnsets.
+- **Move values** — some moves use Pokémon Champions power, type, accuracy, or effect chance on top of Scarlet and Violet values. Move PP stays on the Scarlet and Violet numbers.
+- **Scaled experience** — a higher-level Pokémon gains less experience from a weaker foe. Catching a wild Pokémon also awards experience.
+- **Poké Ball rates** — most balls use current-generation catch rates. A Friend Ball sets friendship to **150**. Safari, Lure, and Sport Balls keep HeartGold rates.
+- **HP bars** — drain and fill at a fixed speed.
+
 ### New game & starting experience
 
 - **Shortened Professor Oak intro** dialogue.
@@ -44,7 +65,7 @@ Player-facing changes in Pokémon Wandering Heart compared to vanilla HeartGold/
 ### Battles & QoL
 
 - **Badge-based player level cap** — party Pokémon stop gaining levels from EXP at **10 + 4×badges** ( **80** at 16 badges; **100** after becoming Champion). **Rare Candies** can still raise level above the current cap.
-- **Full-party EXP share** — every non-fainted party member receives the **full** EXP for each KO.
+- **Full-party EXP share** — every non-fainted party member receives the **full** EXP for each KO. Those same Pokémon also receive that KO’s **EVs**, including ones already at the level cap.
 - **Full heal after every battle** — HP, PP, and status restored for the party (wild and trainer).
 - **Consumable held items restored after battle** — if a party Pokémon had a held item at the start of the fight, it is restored when the battle ends, including berries.
 - **HM moves** — can be replaced when a Pokémon learns a new move, without move deleter.

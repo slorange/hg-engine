@@ -8,6 +8,11 @@
 # 0224A112
 0012 08012852 08
 
+# Task_DistributeExp state 0: nop the per-mon EV bl (was bl DistributeEffortValues).
+# Task_DistributeExp_Extend grants the KO's EVs to every living party member once,
+# including Pokémon at or above the badge cap. Two thumb nops (mov r8, r8).
+0012 02245B3A C0 46 C0 46
+
 #ifdef ALLOW_SAVE_CHANGES
 #ifdef ITEM_POCKET_EXPANSION
 

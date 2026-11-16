@@ -1328,6 +1328,45 @@ static void FullPartyExpShareAssignExp(struct BattleStruct *sp, u32 totalexp)
 }
 #endif // FULL_PARTY_EXP_SHARE
 
+// Living party members earn the KO's EVs even when the level cap blocks EXP.
+// The vanilla grant inside Task_DistributeExp is nop'd (bytereplacement @ 0x02245B3A).
+static BOOL PartyMonEligibleForEffortValues(struct PartyPokemon *pp)
+{
+    if (pp == NULL) {
+        return FALSE;
+    }
+    if (GetMonData(pp, MON_DATA_SPECIES, NULL) == 0) {
+        return FALSE;
+    }
+    if (GetMonData(pp, MON_DATA_IS_EGG, NULL)) {
+        return FALSE;
+    }
+    if (GetMonData(pp, MON_DATA_HP, NULL) == 0) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static void GivePartyEffortValuesForFaint(struct EXP_CALCULATOR *expcalc, int exp_client_no)
+{
+    struct BattleStruct *sp = expcalc->sp;
+    struct Party *party = BattleWorkPokePartyGet(expcalc->bw, exp_client_no);
+    int count = BattleWorkPokeCountGet(expcalc->bw, exp_client_no);
+    int i;
+
+    for (i = 0; i < count; i++) {
+        struct PartyPokemon *mon = BattleWorkPokemonParamGet(expcalc->bw, exp_client_no, i);
+
+        if (!PartyMonEligibleForEffortValues(mon)) {
+            continue;
+        }
+        DistributeEffortValues(party,
+            (u32)i,
+            sp->battlemon[sp->fainting_client].species,
+            sp->battlemon[sp->fainting_client].form_no);
+    }
+}
+
 /**
  *  @brief task to distribute experience
  *
@@ -1336,6 +1375,7 @@ static void FullPartyExpShareAssignExp(struct BattleStruct *sp, u32 totalexp)
  */
 void Task_DistributeExp_Extend(void *arg0, void *work)
 {
+    static u8 sPartyEvsGivenThisTask;
     int sel_mons_no = 0;
     int client_no;
 #ifndef FULL_PARTY_EXP_SHARE
@@ -1534,17 +1574,22 @@ void Task_DistributeExp_Extend(void *arg0, void *work)
 
 #endif
 
-    // distribute effort values to level_cap pokémon who would otherwise not get it
-    // 把基础点数分配给已经到达等级上限的宝可梦。
-    if (expcalc->seq_no == 0 && sel_mons_no < BattleWorkPokeCountGet(expcalc->bw, exp_client_no) && GetMonData(BattleWorkPokemonParamGet(expcalc->bw, exp_client_no, sel_mons_no), MON_DATA_LEVEL, NULL) == GetLevelCap()) {
-        DistributeEffortValues(BattleWorkPokePartyGet(expcalc->bw, exp_client_no),
-            sel_mons_no,
-            sp->battlemon[sp->fainting_client].species,
-            sp->battlemon[sp->fainting_client].form_no);
+    // Once per faint (or capture-exp task). seq_no returns to 0 for every party
+    // slot, so the flag blocks a second payout; state 38 is the task's done step.
+    // A new KO always restarts at slot 0, which clears a flag left by an aborted task.
+    if (expcalc->seq_no == 0 && expcalc->work[6] == 0) {
+        sPartyEvsGivenThisTask = 0;
+    }
+    if (expcalc->seq_no == 0 && !sPartyEvsGivenThisTask) {
+        GivePartyEffortValuesForFaint(expcalc, exp_client_no);
+        sPartyEvsGivenThisTask = 1;
     }
 
 _skipAllThis:
     Task_DistributeExp(arg0, work);
+    if (expcalc->seq_no == 38) {
+        sPartyEvsGivenThisTask = 0;
+    }
 }
 
 #ifdef IMPLEMENT_CAPTURE_EXPERIENCE

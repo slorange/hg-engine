@@ -126,7 +126,9 @@ Gym Leaders can be rematched without a hard limit. Each rematch offers the same 
 
 **Status: IMPLEMENTED**
 
-**Full-party** EXP — each non-fainted party member receives full calculated EXP per KO (not split); no Exp Share item required. Fainted Pokémon receive **no** EXP. Pokémon already at the badge cap are **skipped** as recipients.
+**Full-party** EXP — each non-fainted party member receives full calculated EXP per KO (not split); no Exp Share item required. Fainted Pokémon receive **no** EXP. Pokémon already at the badge cap are **skipped** as EXP recipients.
+
+The same non-fainted party members receive that KO’s EVs, including Pokémon already at the badge cap. Fainted Pokémon receive no EVs.
 
 Combined with level caps, increased EXP should naturally push players to raise more Pokémon instead of just a permanent six.
 

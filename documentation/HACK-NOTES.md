@@ -898,7 +898,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Status:** verified in-game.
 
-**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-experience) — full-party EXP per KO (not split). Battle-limit recipients when [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) lands. Fainted bench mons get nothing. No Exp Share item required.
+**Design:** [Battle-4](DESIGN-BATTLES.md#battle-4-experience) — full-party EXP per KO (not split), and the same living party members receive that KO’s EVs, including those at the badge cap. Battle-limit recipients when [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) lands. Fainted bench mons get nothing. No Exp Share item required.
 
 | What | Where |
 |------|--------|
@@ -906,6 +906,8 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 | Hook | `Task_DistributeExp_Extend` in `src/battle/battle_script_commands.c` |
 
 **Verified:** bench mons gain EXP (and level) from wild/trainer KOs while only one mon is out in battle.
+
+**EVs:** the same KO pays EVs to every living, non-egg party member, including Pokémon at or above the badge cap. Fainted party members are skipped. Vanilla's per-mon EV `bl` in `Task_DistributeExp` (`0x02245B3A`) is nop'd in `bytereplacement`; `GivePartyEffortValuesForFaint` grants them once per faint or capture-exp task. Macho Brace, Power items, and Pokérus still apply per recipient inside `DistributeEffortValues`.
 
 ---
 
