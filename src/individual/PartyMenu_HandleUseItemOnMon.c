@@ -131,97 +131,98 @@ u32 UseItemMonAttrChangeCheck(struct PartyMenu *wk, void *dat)
         return TRUE;
     }
 
-    // handle tornadus/thundurus/landorus/enamorus
-
-    if (wk->args->itemId == ITEM_REVEAL_GLASS
-        && CanUseRevealGlass(pp) == TRUE) {
-        u32 currForm = GetMonData(pp, MON_DATA_FORM, NULL);
-        wk->args->species = currForm ^ 1; // toggle form between therian/incarnate
-        sys_FreeMemoryEz(dat);
-        PokeList_FormDemoOverlayLoad(wk);
-        ChangePartyPokemonToForm(pp, wk->args->species); // this works alright
-        return TRUE;
-    }
-
-    // handle oricorio form changes
-    // This code relies on the item ids of the nectars being consecutive
-
-    if (wk->args->itemId >= ITEM_RED_NECTAR && wk->args->itemId <= ITEM_PURPLE_NECTAR
-        && CanUseNectar(pp, wk->args->itemId) == TRUE) {
-        void *bag = Sav2_Bag_get(SaveBlock2_get());
-        wk->args->species = wk->args->itemId - ITEM_RED_NECTAR;
-        sys_FreeMemoryEz(dat);
-        PokeList_FormDemoOverlayLoad(wk);
-        ChangePartyPokemonToForm(pp, wk->args->species);
-        Bag_TakeItem(bag, wk->args->itemId, 1, 11);
-        return TRUE;
-    }
-
-#ifdef ALLOW_SAVE_CHANGES
-    // handle reshiram/zekrom and kyurem
-
-    u32 splicer_pos = CanUseDNASplicersGrabSplicerPos(pp, wk->args->party);
-    u32 reshiramBool = splicer_pos & RESHIRAM_MASK;
-    splicer_pos &= JUST_SPLICER_POS_MASK;
-
-    // TODO: handle correct item
-    if (wk->args->itemId == ITEM_DNA_SPLICERS_FUSE
-        && (splicer_pos < 6)) {
-        void *saveData = SaveBlock2_get();
-        struct SAVE_MISC_DATA *saveMiscData = Sav2_Misc_get(saveData);
-
-        if (GetMonData(pp, MON_DATA_FORM, NULL) != 0 && saveMiscData->isMonStored[STORED_MONS_DNA_SPLICERS]) // revert forme and put reshiram back in party
-        {
-            u32 currForm = GetMonData(pp, MON_DATA_FORM, NULL);
-
-            // grab reshiram from save
-            // add reshiram to party--can't just use PokeParty_Add because icons freak out when you tell them to animate something that isn't there
-            // PokeParty_Add(wk->args->party, &saveMiscData->storedMons[STORED_MONS_DNA_SPLICERS]);
-            struct PartyPokemon *reshiram = Party_GetMonByIndex(wk->args->party, splicer_pos);
-            *reshiram = saveMiscData->storedMons[STORED_MONS_DNA_SPLICERS];
-            partyMenuSignal = 1;
-
-            // delete reshiram from save--may just be able to leave the old data without having to deal with memset as long as we flag it as no mon there
-            memset((u8 *)&saveMiscData->storedMons[STORED_MONS_DNA_SPLICERS], 0, sizeof(struct PartyPokemon));
-            saveMiscData->isMonStored[STORED_MONS_DNA_SPLICERS] = 0;
-
-            wk->args->species = 0;
-
-            ChangePartyPokemonToForm(pp, 0);
-            SwapPartyPokemonMove(pp, currForm == 1 ? MOVE_ICE_BURN : MOVE_FREEZE_SHOCK, MOVE_GLACIATE);
-            SwapPartyPokemonMove(pp, currForm == 1 ? MOVE_FUSION_FLARE : MOVE_FUSION_BOLT, MOVE_SCARY_FACE);
-        } else if (saveMiscData->isMonStored[STORED_MONS_DNA_SPLICERS] == 0) // return nothing otherwise
-        {
-            // grab reshiram from party
-            // store reshiram in save
-            saveMiscData->storedMons[STORED_MONS_DNA_SPLICERS] = *Party_GetMonByIndex(wk->args->party, splicer_pos); // may have to directly memcpy this but this is good for the moment
-            // delete reshiram from party--splicer_pos has the position to delete
-            PokeParty_Delete(wk->args->party, splicer_pos);
-            saveMiscData->isMonStored[STORED_MONS_DNA_SPLICERS] = 1;
-
-            if (splicer_pos < wk->partyMonIndex) // adjust this position back so that the right pokemon's forme gets changed
-            {
-                wk->partyMonIndex--;
-                pp = Party_GetMonByIndex(wk->args->party, wk->partyMonIndex);
-            }
-
-            if (reshiramBool) { // turn to white kyurem
-                wk->args->species = 1;
-            } else { // turn to black kyurem
-                wk->args->species = 2;
-            }
-
-            ChangePartyPokemonToForm(pp, wk->args->species);
-            SwapPartyPokemonMove(pp, MOVE_GLACIATE, wk->args->species == 1 ? MOVE_ICE_BURN : MOVE_FREEZE_SHOCK);
-            SwapPartyPokemonMove(pp, MOVE_SCARY_FACE, wk->args->species == 1 ? MOVE_FUSION_FLARE : MOVE_FUSION_BOLT);
-        } else {
-            return FALSE;
-        } // get out because no changes should be made
-        sys_FreeMemoryEz(dat);
-        PokeList_FormDemoOverlayLoad(wk);
-        return TRUE;
-    }
-#endif
+// Unused: retained for reference; commented out to save space in overlay 129.
+//     // handle tornadus/thundurus/landorus/enamorus
+//
+//     if (wk->args->itemId == ITEM_REVEAL_GLASS
+//         && CanUseRevealGlass(pp) == TRUE) {
+//         u32 currForm = GetMonData(pp, MON_DATA_FORM, NULL);
+//         wk->args->species = currForm ^ 1; // toggle form between therian/incarnate
+//         sys_FreeMemoryEz(dat);
+//         PokeList_FormDemoOverlayLoad(wk);
+//         ChangePartyPokemonToForm(pp, wk->args->species); // this works alright
+//         return TRUE;
+//     }
+//
+//     // handle oricorio form changes
+//     // This code relies on the item ids of the nectars being consecutive
+//
+//     if (wk->args->itemId >= ITEM_RED_NECTAR && wk->args->itemId <= ITEM_PURPLE_NECTAR
+//         && CanUseNectar(pp, wk->args->itemId) == TRUE) {
+//         void *bag = Sav2_Bag_get(SaveBlock2_get());
+//         wk->args->species = wk->args->itemId - ITEM_RED_NECTAR;
+//         sys_FreeMemoryEz(dat);
+//         PokeList_FormDemoOverlayLoad(wk);
+//         ChangePartyPokemonToForm(pp, wk->args->species);
+//         Bag_TakeItem(bag, wk->args->itemId, 1, 11);
+//         return TRUE;
+//     }
+//
+// #ifdef ALLOW_SAVE_CHANGES
+//     // handle reshiram/zekrom and kyurem
+//
+//     u32 splicer_pos = CanUseDNASplicersGrabSplicerPos(pp, wk->args->party);
+//     u32 reshiramBool = splicer_pos & RESHIRAM_MASK;
+//     splicer_pos &= JUST_SPLICER_POS_MASK;
+//
+//     // TODO: handle correct item
+//     if (wk->args->itemId == ITEM_DNA_SPLICERS_FUSE
+//         && (splicer_pos < 6)) {
+//         void *saveData = SaveBlock2_get();
+//         struct SAVE_MISC_DATA *saveMiscData = Sav2_Misc_get(saveData);
+//
+//         if (GetMonData(pp, MON_DATA_FORM, NULL) != 0 && saveMiscData->isMonStored[STORED_MONS_DNA_SPLICERS]) // revert forme and put reshiram back in party
+//         {
+//             u32 currForm = GetMonData(pp, MON_DATA_FORM, NULL);
+//
+//             // grab reshiram from save
+//             // add reshiram to party--can't just use PokeParty_Add because icons freak out when you tell them to animate something that isn't there
+//             // PokeParty_Add(wk->args->party, &saveMiscData->storedMons[STORED_MONS_DNA_SPLICERS]);
+//             struct PartyPokemon *reshiram = Party_GetMonByIndex(wk->args->party, splicer_pos);
+//             *reshiram = saveMiscData->storedMons[STORED_MONS_DNA_SPLICERS];
+//             partyMenuSignal = 1;
+//
+//             // delete reshiram from save--may just be able to leave the old data without having to deal with memset as long as we flag it as no mon there
+//             memset((u8 *)&saveMiscData->storedMons[STORED_MONS_DNA_SPLICERS], 0, sizeof(struct PartyPokemon));
+//             saveMiscData->isMonStored[STORED_MONS_DNA_SPLICERS] = 0;
+//
+//             wk->args->species = 0;
+//
+//             ChangePartyPokemonToForm(pp, 0);
+//             SwapPartyPokemonMove(pp, currForm == 1 ? MOVE_ICE_BURN : MOVE_FREEZE_SHOCK, MOVE_GLACIATE);
+//             SwapPartyPokemonMove(pp, currForm == 1 ? MOVE_FUSION_FLARE : MOVE_FUSION_BOLT, MOVE_SCARY_FACE);
+//         } else if (saveMiscData->isMonStored[STORED_MONS_DNA_SPLICERS] == 0) // return nothing otherwise
+//         {
+//             // grab reshiram from party
+//             // store reshiram in save
+//             saveMiscData->storedMons[STORED_MONS_DNA_SPLICERS] = *Party_GetMonByIndex(wk->args->party, splicer_pos); // may have to directly memcpy this but this is good for the moment
+//             // delete reshiram from party--splicer_pos has the position to delete
+//             PokeParty_Delete(wk->args->party, splicer_pos);
+//             saveMiscData->isMonStored[STORED_MONS_DNA_SPLICERS] = 1;
+//
+//             if (splicer_pos < wk->partyMonIndex) // adjust this position back so that the right pokemon's forme gets changed
+//             {
+//                 wk->partyMonIndex--;
+//                 pp = Party_GetMonByIndex(wk->args->party, wk->partyMonIndex);
+//             }
+//
+//             if (reshiramBool) { // turn to white kyurem
+//                 wk->args->species = 1;
+//             } else { // turn to black kyurem
+//                 wk->args->species = 2;
+//             }
+//
+//             ChangePartyPokemonToForm(pp, wk->args->species);
+//             SwapPartyPokemonMove(pp, MOVE_GLACIATE, wk->args->species == 1 ? MOVE_ICE_BURN : MOVE_FREEZE_SHOCK);
+//             SwapPartyPokemonMove(pp, MOVE_SCARY_FACE, wk->args->species == 1 ? MOVE_FUSION_FLARE : MOVE_FUSION_BOLT);
+//         } else {
+//             return FALSE;
+//         } // get out because no changes should be made
+//         sys_FreeMemoryEz(dat);
+//         PokeList_FormDemoOverlayLoad(wk);
+//         return TRUE;
+//     }
+// #endif
 
     // handle ability capsule
 
@@ -279,15 +280,16 @@ u32 UseItemMonAttrChangeCheck(struct PartyMenu *wk, void *dat)
  *  @param pp PartyPokemon to check reveal glass against
  *  @return TRUE if reveal glass can be used; FALSE otherwise
  */
-BOOL CanUseRevealGlass(struct PartyPokemon *pp)
-{
-    u32 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
-
-    if (species == SPECIES_TORNADUS || species == SPECIES_THUNDURUS || species == SPECIES_LANDORUS) {
-        return TRUE;
-    }
-    return FALSE;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// BOOL CanUseRevealGlass(struct PartyPokemon *pp)
+// {
+//     u32 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
+//
+//     if (species == SPECIES_TORNADUS || species == SPECIES_THUNDURUS || species == SPECIES_LANDORUS) {
+//         return TRUE;
+//     }
+//     return FALSE;
+// }
 
 /**
  *  @brief check if a certain type of nectar can be used on a PartyPokemon
@@ -296,15 +298,16 @@ BOOL CanUseRevealGlass(struct PartyPokemon *pp)
  *  @param nectar Nectar item id to check for
  *  @return TRUE if nectar can be used; FALSE otherwise
  */
-BOOL CanUseNectar(struct PartyPokemon *pp, u16 nectar)
-{
-    u32 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
-    u16 form = (u16)GetMonData(pp, MON_DATA_FORM, NULL);
-    if (species == SPECIES_ORICORIO && form != nectar - ITEM_RED_NECTAR) {
-        return TRUE;
-    }
-    return FALSE;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// BOOL CanUseNectar(struct PartyPokemon *pp, u16 nectar)
+// {
+//     u32 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
+//     u16 form = (u16)GetMonData(pp, MON_DATA_FORM, NULL);
+//     if (species == SPECIES_ORICORIO && form != nectar - ITEM_RED_NECTAR) {
+//         return TRUE;
+//     }
+//     return FALSE;
+// }
 
 /**
  *  @brief check if DNA splicers can be used, return position in party if so
@@ -313,31 +316,32 @@ BOOL CanUseNectar(struct PartyPokemon *pp, u16 nectar)
  *  @param party Party to search through for matching DNA splicers pokémon
  *  @return party position of pokémon that can be stored by the DNA splicers or'd with RESHIRAM_MASK if reshiram is the first pokémon found
  */
-u32 CanUseDNASplicersGrabSplicerPos(struct PartyPokemon *pp, struct Party *party)
-{
-    u32 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
-    u32 form_no = GetMonData(pp, MON_DATA_FORM, NULL);
-
-    if (species != SPECIES_KYUREM) // return invalid party slot if species isn't kyurem
-    {
-        return 6;
-    }
-
-    for (s32 i = 0; i < ((form_no != 0) ? 6 : party->count); i++) // check all 6 party slots if looking to revert
-    {
-        struct PartyPokemon *currentmon = Party_GetMonByIndex(party, i);
-        u32 species2 = GetMonData(currentmon, MON_DATA_SPECIES, NULL);
-
-        if (species2 == 0 && form_no != 0) // looking for empty slot to dump reshiram to from save
-        {
-            return i;
-        } else if ((species2 == SPECIES_RESHIRAM || species2 == SPECIES_ZEKROM) && form_no == 0) // looking for a reshiram to store to the save
-        {
-            return (species2 == SPECIES_RESHIRAM ? RESHIRAM_MASK : 0) | i;
-        }
-    }
-    return 6;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// u32 CanUseDNASplicersGrabSplicerPos(struct PartyPokemon *pp, struct Party *party)
+// {
+//     u32 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
+//     u32 form_no = GetMonData(pp, MON_DATA_FORM, NULL);
+//
+//     if (species != SPECIES_KYUREM) // return invalid party slot if species isn't kyurem
+//     {
+//         return 6;
+//     }
+//
+//     for (s32 i = 0; i < ((form_no != 0) ? 6 : party->count); i++) // check all 6 party slots if looking to revert
+//     {
+//         struct PartyPokemon *currentmon = Party_GetMonByIndex(party, i);
+//         u32 species2 = GetMonData(currentmon, MON_DATA_SPECIES, NULL);
+//
+//         if (species2 == 0 && form_no != 0) // looking for empty slot to dump reshiram to from save
+//         {
+//             return i;
+//         } else if ((species2 == SPECIES_RESHIRAM || species2 == SPECIES_ZEKROM) && form_no == 0) // looking for a reshiram to store to the save
+//         {
+//             return (species2 == SPECIES_RESHIRAM ? RESHIRAM_MASK : 0) | i;
+//         }
+//     }
+//     return 6;
+// }
 
 u32 CanUseAbilityCapsule(struct PartyPokemon *pp)
 {

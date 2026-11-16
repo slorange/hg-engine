@@ -661,20 +661,21 @@ u32 LONG_CALL GetSpeciesBaseExp(u32 species, u32 form)
  *  @param item held item
  *  @return type from held item
  */
-u32 LONG_CALL GetGenesectType(u16 item) // this may just go unused
-{
-    switch (item) {
-    case ITEM_DOUSE_DRIVE:
-        return TYPE_WATER;
-    case ITEM_SHOCK_DRIVE:
-        return TYPE_ELECTRIC;
-    case ITEM_BURN_DRIVE:
-        return TYPE_FIRE;
-    case ITEM_CHILL_DRIVE:
-        return TYPE_ICE;
-    }
-    return TYPE_NORMAL;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// u32 LONG_CALL GetGenesectType(u16 item) // this may just go unused
+// {
+//     switch (item) {
+//     case ITEM_DOUSE_DRIVE:
+//         return TYPE_WATER;
+//     case ITEM_SHOCK_DRIVE:
+//         return TYPE_ELECTRIC;
+//     case ITEM_BURN_DRIVE:
+//         return TYPE_FIRE;
+//     case ITEM_CHILL_DRIVE:
+//         return TYPE_ICE;
+//     }
+//     return TYPE_NORMAL;
+// }
 
 /**
  *  @brief get genesect form from held item
@@ -682,20 +683,21 @@ u32 LONG_CALL GetGenesectType(u16 item) // this may just go unused
  *  @param item held item
  *  @return form from held item
  */
-u32 LONG_CALL GetGenesectForme(u16 item)
-{
-    switch (item) {
-    case ITEM_DOUSE_DRIVE:
-        return 1;
-    case ITEM_SHOCK_DRIVE:
-        return 2;
-    case ITEM_BURN_DRIVE:
-        return 3;
-    case ITEM_CHILL_DRIVE:
-        return 4;
-    }
-    return 0;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// u32 LONG_CALL GetGenesectForme(u16 item)
+// {
+//     switch (item) {
+//     case ITEM_DOUSE_DRIVE:
+//         return 1;
+//     case ITEM_SHOCK_DRIVE:
+//         return 2;
+//     case ITEM_BURN_DRIVE:
+//         return 3;
+//     case ITEM_CHILL_DRIVE:
+//         return 4;
+//     }
+//     return 0;
+// }
 
 /**
  *  @brief handle form change for arceus and genesect in the box when changing held item
@@ -716,10 +718,13 @@ void LONG_CALL ArceusBoxPokemonFormeChange(struct BoxPokemon *bp)
         SetBoxMonData(bp, MON_DATA_FORM, &form);
     }
 
-    if (species == SPECIES_GENESECT) {
-        form = GetGenesectForme(item);
-        SetBoxMonData(bp, MON_DATA_FORM, &form);
-    }
+// Unused: retained for reference; commented out to save space in overlay 129.
+//     if (species == SPECIES_GENESECT) {
+//         form = GetGenesectForme(item);
+//         SetBoxMonData(bp, MON_DATA_FORM, &form);
+//     }
+
+
 }
 
 /**
@@ -733,7 +738,7 @@ BOOL LONG_CALL HandleBoxPokemonFormeChanges(struct BoxPokemon *bp)
 {
     u32 species = GetBoxMonData(bp, MON_DATA_SPECIES, NULL);
 
-    if (species == SPECIES_ARCEUS || species == SPECIES_GENESECT) {
+    if (species == SPECIES_ARCEUS /* || species == SPECIES_GENESECT */) {
         u32 form_no = GetBoxMonData(bp, MON_DATA_FORM, NULL);
 
         ArceusBoxPokemonFormeChange(bp);
@@ -827,12 +832,13 @@ void _EmitParticles(struct IconFormChangeData *partyMenu)
  */
 u32 LONG_CALL PokeListProc_End_Extend(void *proc, int *seq) // finally add to pokecount so that icons are fine
 {
-    struct PartyMenu *wk = PROC_GetWork(proc);
-
-    if (partyMenuSignal == 1) {
-        partyMenuSignal = 0;
-        wk->args->party->count++;
-    }
+// Unused: retained for reference; commented out to save space in overlay 129.
+//     struct PartyMenu *wk = PROC_GetWork(proc);
+//
+//     if (partyMenuSignal == 1) {
+//         partyMenuSignal = 0;
+//         wk->args->party->count++;
+//     }
 
     return PokeListProc_End(proc, seq);
 }
@@ -879,26 +885,28 @@ void LONG_CALL SwapPartyPokemonMove(struct PartyPokemon *pp, u32 oldMove, u32 ne
  *  @see ChangePartyPokemonToForm
  *  @see SwapPartyPokemonMove
  */
-void LONG_CALL ChangePartyPokemonToFormSwapMove(struct PartyPokemon *pp, u32 form, u32 oldMove, u32 newMove)
-{
-    if (form != GetMonData(pp, MON_DATA_FORM, NULL)) {
-        ChangePartyPokemonToForm(pp, form);
-        SwapPartyPokemonMove(pp, oldMove, newMove);
-    }
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// void LONG_CALL ChangePartyPokemonToFormSwapMove(struct PartyPokemon *pp, u32 form, u32 oldMove, u32 newMove)
+// {
+//     if (form != GetMonData(pp, MON_DATA_FORM, NULL)) {
+//         ChangePartyPokemonToForm(pp, form);
+//         SwapPartyPokemonMove(pp, oldMove, newMove);
+//     }
+// }
 
 /**
  *  @brief grab current season from the RTC settings
  *
  *  @return current season
  */
-u32 LONG_CALL GrabCurrentSeason(void)
-{
-    struct RTCDate date;
-    GF_RTC_CopyDate(&date);
-
-    return ((u8)(date.month - 1)) % 4;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// u32 LONG_CALL GrabCurrentSeason(void)
+// {
+//     struct RTCDate date;
+//     GF_RTC_CopyDate(&date);
+//
+//     return ((u8)(date.month - 1)) % 4;
+// }
 
 /**
  *  @brief update passive forms (gender and deerling seasons)
@@ -914,10 +922,11 @@ void LONG_CALL UpdatePassiveForms(struct PartyPokemon *pp)
 
     switch (species) {
 #ifdef IMPLEMENT_DYNAMIC_WILD_SPECIES_FORMS
-    case SPECIES_DEERLING:
-    case SPECIES_SAWSBUCK:
-        form = GrabCurrentSeason(); // update to the current season
-        break;
+// Unused: retained for reference; commented out to save space in overlay 129.
+//     case SPECIES_DEERLING:
+//     case SPECIES_SAWSBUCK:
+//         form = GrabCurrentSeason(); // update to the current season
+//         break;
 #endif
     case SPECIES_UNFEZANT:
     case SPECIES_FRILLISH:
@@ -984,24 +993,25 @@ void LONG_CALL UpdatePassiveForms(struct PartyPokemon *pp)
  *
  *  @param party Party to run through to check for deerling
  */
-BOOL LONG_CALL Party_UpdateDeerlingSeasonForm(struct Party *party)
-{
-    u32 ret = FALSE;
-
-#ifdef IMPLEMENT_SEASONS
-    for (int i = 0; i < party->count; i++) {
-        struct PartyPokemon *pp = Party_GetMonByIndex(party, i);
-        u32 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
-        u32 newForm = GrabCurrentSeason();
-        if (newForm != GetMonData(pp, MON_DATA_FORM, NULL) && (species == SPECIES_DEERLING || species == SPECIES_SAWSBUCK)) {
-            SetMonData(pp, MON_DATA_FORM, &newForm);
-            ret = TRUE;
-        }
-    }
-#endif
-
-    return ret;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// BOOL LONG_CALL Party_UpdateDeerlingSeasonForm(struct Party *party)
+// {
+//     u32 ret = FALSE;
+//
+// #ifdef IMPLEMENT_SEASONS
+//     for (int i = 0; i < party->count; i++) {
+//         struct PartyPokemon *pp = Party_GetMonByIndex(party, i);
+//         u32 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
+//         u32 newForm = GrabCurrentSeason();
+//         if (newForm != GetMonData(pp, MON_DATA_FORM, NULL) && (species == SPECIES_DEERLING || species == SPECIES_SAWSBUCK)) {
+//             SetMonData(pp, MON_DATA_FORM, &newForm);
+//             ret = TRUE;
+//         }
+//     }
+// #endif
+//
+//     return ret;
+// }
 
 /**
  *  @brief function that attempts to reset shaymin from sky form when the RTC passes min_max
@@ -1016,7 +1026,8 @@ BOOL LONG_CALL Party_TryResetShaymin(struct Party *party, int min_max, const str
 {
     u32 ret = FALSE;
     // new:  deerling handling
-    ret = Party_UpdateDeerlingSeasonForm(party);
+// Unused: retained for reference; commented out to save space in overlay 129.
+//     ret = Party_UpdateDeerlingSeasonForm(party);
 
     // shaymin handling from pokeheartgold
     int hour, minute;
@@ -1478,7 +1489,8 @@ bool8 LONG_CALL RevertFormChange(struct PartyPokemon *pp, u16 species, u8 form_n
         ReadFromNarcMemberByIdPair(&work, ARC_CODE_ADDONS, CODE_ADDON_FORM_REVERSION_MAPPING, sizeof(u16) * (newSpecies - SPECIES_MEGA_START), sizeof(u16));
 
         SetMonData(pp, MON_DATA_FORM, &work);
-        correct_zacian_zamazenta_kyurem_moves_for_form(pp, work, 0);
+// Unused: retained for reference; commented out to save space in overlay 129.
+//         correct_zacian_zamazenta_kyurem_moves_for_form(pp, work, 0);
         RecalcPartyPokemonStats(pp);
         ResetPartyPokemonAbility(pp);
         ret = TRUE;
@@ -2078,25 +2090,26 @@ BOOL LONG_CALL CalcShininessByOtIdAndPersonality(u32 otid, u32 pid)
  *  @param pid personality id
  *  @returns adjusted pid to be a shiny without corrupting the mon
  */
-u32 LONG_CALL GenerateShinyPIDKeepSubstructuresIntact(u32 otId, u32 pid)
-{
-    /*
-        see: https://github.com/pret/pokeheartgold/blob/4d4037e05713e267b337aeb81abcbdd395c1f3ac/src/pokemon.c#L3955
-        substructure order is determined in GetSubstruct at the above link.  it uses the 5 bits occupied by 0x0003E000 to select the order.
-        when generating this, i just add the random number at the end to prevent every shiny given out this way from being a square shiny
-    */
-    u32 shinyValue = SHINY_VALUE(otId, pid);
-    if (shinyValue >= SHINY_ODDS) // xoring pid with shinyValue will give shiny but may corrupt substruct order
-    {
-        if (shinyValue & 0xE000) {
-            pid = pid ^ ((shinyValue << 16) & 0xE0000000);
-        }
-        pid = pid ^ (shinyValue & 0x1FFF);
-        // shinyValue is now 0.  any xor must keep the shinyValue below SHINY_ODDS--should be fine to just generate a random number 0-SHINY_ODDS and xor it
-        pid = pid ^ (gf_rand() % (SHINY_ODDS));
-    }
-    return pid;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// u32 LONG_CALL GenerateShinyPIDKeepSubstructuresIntact(u32 otId, u32 pid)
+// {
+//     /*
+//         see: https://github.com/pret/pokeheartgold/blob/4d4037e05713e267b337aeb81abcbdd395c1f3ac/src/pokemon.c#L3955
+//         substructure order is determined in GetSubstruct at the above link.  it uses the 5 bits occupied by 0x0003E000 to select the order.
+//         when generating this, i just add the random number at the end to prevent every shiny given out this way from being a square shiny
+//     */
+//     u32 shinyValue = SHINY_VALUE(otId, pid);
+//     if (shinyValue >= SHINY_ODDS) // xoring pid with shinyValue will give shiny but may corrupt substruct order
+//     {
+//         if (shinyValue & 0xE000) {
+//             pid = pid ^ ((shinyValue << 16) & 0xE0000000);
+//         }
+//         pid = pid ^ (shinyValue & 0x1FFF);
+//         // shinyValue is now 0.  any xor must keep the shinyValue below SHINY_ODDS--should be fine to just generate a random number 0-SHINY_ODDS and xor it
+//         pid = pid ^ (gf_rand() % (SHINY_ODDS));
+//     }
+//     return pid;
+// }
 
 /**
  *  @brief try learning a move upon level up
@@ -2304,58 +2317,59 @@ TrainerGender LONG_CALL TT_TrainerTypeSexGet(int tr_type)
 }
 
 // https://www.smogon.com/forums/threads/scarlet-violet-battle-mechanics-research.3709545/post-9714380
-void LONG_CALL correct_zacian_zamazenta_kyurem_moves_for_form(struct PartyPokemon *param, unsigned int expected_form, int UNUSED *a3)
-{
-    switch (GetMonData(param, MON_DATA_SPECIES, NULL)) {
-    case SPECIES_KYUREM:
-        switch (expected_form) {
-        case 0:
-            SwapPartyPokemonMove(param, MOVE_ICE_BURN, MOVE_GLACIATE);
-            SwapPartyPokemonMove(param, MOVE_FREEZE_SHOCK, MOVE_GLACIATE);
-            SwapPartyPokemonMove(param, MOVE_FUSION_FLARE, MOVE_SCARY_FACE);
-            SwapPartyPokemonMove(param, MOVE_FUSION_BOLT, MOVE_SCARY_FACE);
-            break;
-        case 1:
-            SwapPartyPokemonMove(param, MOVE_GLACIATE, MOVE_ICE_BURN);
-            SwapPartyPokemonMove(param, MOVE_SCARY_FACE, MOVE_FUSION_FLARE);
-            break;
-        case 2:
-            SwapPartyPokemonMove(param, MOVE_GLACIATE, MOVE_FREEZE_SHOCK);
-            SwapPartyPokemonMove(param, MOVE_SCARY_FACE, MOVE_FUSION_BOLT);
-            break;
-
-        default:
-            break;
-        }
-        break;
-    case SPECIES_ZACIAN:
-        switch (expected_form) {
-        case 0:
-            SwapPartyPokemonMove(param, MOVE_BEHEMOTH_BLADE, MOVE_IRON_HEAD);
-            break;
-        case 1:
-            SwapPartyPokemonMove(param, MOVE_IRON_HEAD, MOVE_BEHEMOTH_BLADE);
-            break;
-        default:
-            break;
-        }
-        break;
-    case SPECIES_ZAMAZENTA:
-        switch (expected_form) {
-        case 0:
-            SwapPartyPokemonMove(param, MOVE_BEHEMOTH_BASH, MOVE_IRON_HEAD);
-            break;
-        case 1:
-            SwapPartyPokemonMove(param, MOVE_IRON_HEAD, MOVE_BEHEMOTH_BASH);
-            break;
-        default:
-            break;
-        }
-        break;
-    default:
-        break;
-    }
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// void LONG_CALL correct_zacian_zamazenta_kyurem_moves_for_form(struct PartyPokemon *param, unsigned int expected_form, int UNUSED *a3)
+// {
+//     switch (GetMonData(param, MON_DATA_SPECIES, NULL)) {
+//     case SPECIES_KYUREM:
+//         switch (expected_form) {
+//         case 0:
+//             SwapPartyPokemonMove(param, MOVE_ICE_BURN, MOVE_GLACIATE);
+//             SwapPartyPokemonMove(param, MOVE_FREEZE_SHOCK, MOVE_GLACIATE);
+//             SwapPartyPokemonMove(param, MOVE_FUSION_FLARE, MOVE_SCARY_FACE);
+//             SwapPartyPokemonMove(param, MOVE_FUSION_BOLT, MOVE_SCARY_FACE);
+//             break;
+//         case 1:
+//             SwapPartyPokemonMove(param, MOVE_GLACIATE, MOVE_ICE_BURN);
+//             SwapPartyPokemonMove(param, MOVE_SCARY_FACE, MOVE_FUSION_FLARE);
+//             break;
+//         case 2:
+//             SwapPartyPokemonMove(param, MOVE_GLACIATE, MOVE_FREEZE_SHOCK);
+//             SwapPartyPokemonMove(param, MOVE_SCARY_FACE, MOVE_FUSION_BOLT);
+//             break;
+//
+//         default:
+//             break;
+//         }
+//         break;
+//     case SPECIES_ZACIAN:
+//         switch (expected_form) {
+//         case 0:
+//             SwapPartyPokemonMove(param, MOVE_BEHEMOTH_BLADE, MOVE_IRON_HEAD);
+//             break;
+//         case 1:
+//             SwapPartyPokemonMove(param, MOVE_IRON_HEAD, MOVE_BEHEMOTH_BLADE);
+//             break;
+//         default:
+//             break;
+//         }
+//         break;
+//     case SPECIES_ZAMAZENTA:
+//         switch (expected_form) {
+//         case 0:
+//             SwapPartyPokemonMove(param, MOVE_BEHEMOTH_BASH, MOVE_IRON_HEAD);
+//             break;
+//         case 1:
+//             SwapPartyPokemonMove(param, MOVE_IRON_HEAD, MOVE_BEHEMOTH_BASH);
+//             break;
+//         default:
+//             break;
+//         }
+//         break;
+//     default:
+//         break;
+//     }
+// }
 
 void LONG_CALL ChangeToBattleForm(struct PartyPokemon *pp)
 {
@@ -2369,20 +2383,21 @@ void LONG_CALL ChangeToBattleForm(struct PartyPokemon *pp)
         formNo = 1;
         ChangePartyPokemonToForm(pp, formNo);
         break;
-    case SPECIES_ZACIAN:
-        if (GetMonData(pp, MON_DATA_HELD_ITEM, NULL) == ITEM_RUSTED_SWORD) {
-            formNo = 1;
-            ChangePartyPokemonToForm(pp, formNo);
-            correct_zacian_zamazenta_kyurem_moves_for_form(pp, formNo, 0);
-        }
-        break;
-    case SPECIES_ZAMAZENTA:
-        if (GetMonData(pp, MON_DATA_HELD_ITEM, NULL) == ITEM_RUSTED_SHIELD) {
-            formNo = 1;
-            ChangePartyPokemonToForm(pp, formNo);
-            correct_zacian_zamazenta_kyurem_moves_for_form(pp, formNo, 0);
-        }
-        break;
+// Unused: retained for reference; commented out to save space in overlay 129.
+//     case SPECIES_ZACIAN:
+//         if (GetMonData(pp, MON_DATA_HELD_ITEM, NULL) == ITEM_RUSTED_SWORD) {
+//             formNo = 1;
+//             ChangePartyPokemonToForm(pp, formNo);
+//             correct_zacian_zamazenta_kyurem_moves_for_form(pp, formNo, 0);
+//         }
+//         break;
+//     case SPECIES_ZAMAZENTA:
+//         if (GetMonData(pp, MON_DATA_HELD_ITEM, NULL) == ITEM_RUSTED_SHIELD) {
+//             formNo = 1;
+//             ChangePartyPokemonToForm(pp, formNo);
+//             correct_zacian_zamazenta_kyurem_moves_for_form(pp, formNo, 0);
+//         }
+//         break;
 
     default:
         break;

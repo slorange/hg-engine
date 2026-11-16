@@ -4,65 +4,18 @@
 
 #include "../include/constants/encounter_tables.h"
 #include "../include/constants/generated/ecology_compat.h"
-#include "../include/constants/save_arrays.h"
 #include "../include/ecology/ecology_compat_access.h"
 #include "../include/ecology/ecology_compat_view.h"
 #include "../include/ecology/ecology_encounter.h"
 #include "../include/ecology/ecology_generate.h"
 #include "../include/ecology/ecology_save.h"
-#include "../include/local_field_data.h"
+#include "../include/encounter_location.h"
 #include "../include/pokemon.h"
 #include "../include/rtc.h"
 #include "../include/save.h"
 #include "../include/types.h"
 
-extern FieldSystem *gFieldSysPtr;
-extern FieldSystem *sPersistFieldSysPtr;
-
 u8 LONG_CALL MapHeader_GetWildEncounterBank(u32 mapId);
-
-static FieldSystem *EcologyResolveFieldSystem(void)
-{
-    if (gFieldSysPtr != NULL) {
-        return gFieldSysPtr;
-    }
-    return sPersistFieldSysPtr;
-}
-
-static BOOL EcologyResolveMapId(u16 *mapIdOut)
-{
-    SaveData *saveData = SaveBlock2_get();
-    LocalFieldData *localFieldData;
-    FieldSystem *fsys;
-
-    if (saveData != NULL) {
-        localFieldData = (LocalFieldData *)SaveArray_Get(saveData, SAVE_LOCAL_FIELD_DATA);
-        if (localFieldData != NULL) {
-            *mapIdOut = (u16)localFieldData->currentPosition.mapId;
-            return TRUE;
-        }
-    }
-
-    fsys = EcologyResolveFieldSystem();
-    if (fsys == NULL) {
-        return FALSE;
-    }
-
-    if (fsys->savedata != NULL) {
-        localFieldData = (LocalFieldData *)SaveArray_Get(fsys->savedata, SAVE_LOCAL_FIELD_DATA);
-        if (localFieldData != NULL) {
-            *mapIdOut = (u16)localFieldData->currentPosition.mapId;
-            return TRUE;
-        }
-    }
-
-    if (fsys->location != NULL) {
-        *mapIdOut = (u16)fsys->location->mapId;
-        return TRUE;
-    }
-
-    return FALSE;
-}
 
 static s8 EcologyFindGroupForEncBank(u8 encBank)
 {
@@ -209,7 +162,7 @@ u16 EcologyApplySpeciesOverrideForMethod(u16 vanillaSpecies, u8 ecologyMethod)
         return vanillaSpecies;
     }
 
-    if (!EcologyResolveMapId(&mapId)) {
+    if (!EncounterResolveMapId(&mapId)) {
         return vanillaSpecies;
     }
     ecologySpecies = EcologyRollSpeciesForEncounterBank(MapHeader_GetWildEncounterBank(mapId), ecologyMethod);

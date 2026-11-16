@@ -47,10 +47,11 @@ void EcologySetGenDebugStage(u8 stage)
     sEcologyGenDebugStage = stage;
 }
 
-u8 EcologyGetGenDebugStage(void)
-{
-    return sEcologyGenDebugStage;
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// u8 EcologyGetGenDebugStage(void)
+// {
+//     return sEcologyGenDebugStage;
+// }
 
 static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
 {

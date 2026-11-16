@@ -34,11 +34,12 @@ void LONG_CALL BufferItemNamePlural(MessageFormat *msgFmt, u32 fieldno, u32 item
     BufferOffsetItemLineFromFile(msgFmt, fieldno, itemId, fileId);
 }
 
-void LONG_CALL BufferItemNameGiveItem(MessageFormat *msgFmt, u32 fieldno, u32 itemId)
-{
-    enum ItemGeneration gen = ITEM_GENERATION(itemId);
-    u32 fileId = (gen == CUSTOM)
-        ? MSG_DATA_ITEM_GIVE_ITEM_CUSTOM
-        : MSG_DATA_ITEM_FILE(MSG_DATA_ITEM_GIVE_ITEM_GEN4, gen);
-    BufferOffsetItemLineFromFile(msgFmt, fieldno, itemId, fileId);
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// void LONG_CALL BufferItemNameGiveItem(MessageFormat *msgFmt, u32 fieldno, u32 itemId)
+// {
+//     enum ItemGeneration gen = ITEM_GENERATION(itemId);
+//     u32 fileId = (gen == CUSTOM)
+//         ? MSG_DATA_ITEM_GIVE_ITEM_CUSTOM
+//         : MSG_DATA_ITEM_FILE(MSG_DATA_ITEM_GIVE_ITEM_GEN4, gen);
+//     BufferOffsetItemLineFromFile(msgFmt, fieldno, itemId, fileId);
+// }

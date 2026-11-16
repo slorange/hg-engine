@@ -379,12 +379,13 @@ void ItemMenuUseFunc_Mint(struct ItemMenuUseData *data, const struct ItemCheckUs
 void ItemMenuUseFunc_Nectar(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED);
 void ItemMenuUseFunc_RotomCatalog(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED);
 
+// Reveal Glass, DNA Splicers, and Nectar handlers are commented out to save space in overlay 129; keep their slots NULL so the remaining item-use indices stay unchanged.
 const struct ItemUseFuncDat sNewItemFieldUseFuncs[] = {
-    { ItemMenuUseFunc_RevealGlass, ItemFieldUseFunc_RevealGlass, NULL },
-    { ItemMenuUseFunc_DNASplicers, ItemFieldUseFunc_DNASplicers, NULL },
+    { NULL, NULL, NULL },
+    { NULL, NULL, NULL },
     { ItemMenuUseFunc_AbilityCapsule, NULL, NULL },
     { ItemMenuUseFunc_Mint, NULL, NULL },
-    { ItemMenuUseFunc_Nectar, NULL, NULL },
+    { NULL, NULL, NULL },
     { ItemMenuUseFunc_RotomCatalog, NULL, NULL },
 };
 
@@ -606,43 +607,53 @@ s32 LONG_CALL GetItemAttr_PreloadedItemData(ITEMDATA *itemData, u16 attrno)
     return 0;
 }
 
-void ItemMenuUseFunc_RevealGlass(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED)
-{
-    FieldSystem *fieldSystem = data->taskManager->fieldSystem; // TaskManager_GetFieldSystem(data->taskManager);
-    struct BagViewAppWork *env = data->taskManager->env; // TaskManager_GetEnvironment(data->taskManager);
-    env->atexit_TaskEnv = sub_0203FAE8(fieldSystem, HEAPID_WORLD, ITEM_REVEAL_GLASS);
-    sub_0203C8F0(env, 0x0203CA9C | 1);
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// Do not delete this comment or the commented-out functions below; retain them for reference and possible restoration.
+// void ItemMenuUseFunc_RevealGlass(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED)
+// {
+//     FieldSystem *fieldSystem = data->taskManager->fieldSystem; // TaskManager_GetFieldSystem(data->taskManager);
+//     struct BagViewAppWork *env = data->taskManager->env; // TaskManager_GetEnvironment(data->taskManager);
+//     env->atexit_TaskEnv = sub_0203FAE8(fieldSystem, HEAPID_WORLD, ITEM_REVEAL_GLASS);
+//     sub_0203C8F0(env, 0x0203CA9C | 1);
+// }
 
-BOOL ItemFieldUseFunc_RevealGlass(struct ItemFieldUseData *data)
-{
-    RegisteredItem_CreateGoToAppTask(data, (FieldApplicationWorkCtor)_CreateRevealGlassWork, FALSE);
-    return TRUE;
-}
+// BOOL ItemFieldUseFunc_RevealGlass(struct ItemFieldUseData *data)
+// {
+//     RegisteredItem_CreateGoToAppTask(data, (FieldApplicationWorkCtor)_CreateRevealGlassWork, FALSE);
+//     return TRUE;
+// }
 
-void *_CreateRevealGlassWork(FieldSystem *fieldSystem)
-{
-    return sub_0203FAE8(fieldSystem, HEAPID_WORLD, ITEM_REVEAL_GLASS);
-}
+// void *_CreateRevealGlassWork(FieldSystem *fieldSystem)
+// {
+//     return sub_0203FAE8(fieldSystem, HEAPID_WORLD, ITEM_REVEAL_GLASS);
+// }
 
-void ItemMenuUseFunc_DNASplicers(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED)
-{
-    FieldSystem *fieldSystem = data->taskManager->fieldSystem; // TaskManager_GetFieldSystem(data->taskManager);
-    struct BagViewAppWork *env = data->taskManager->env; // TaskManager_GetEnvironment(data->taskManager);
-    env->atexit_TaskEnv = sub_0203FAE8(fieldSystem, HEAPID_WORLD, ITEM_DNA_SPLICERS_FUSE); // TODO: handle correct item
-    sub_0203C8F0(env, 0x0203CA9C | 1);
-}
+// void ItemMenuUseFunc_DNASplicers(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED)
+// {
+//     FieldSystem *fieldSystem = data->taskManager->fieldSystem; // TaskManager_GetFieldSystem(data->taskManager);
+//     struct BagViewAppWork *env = data->taskManager->env; // TaskManager_GetEnvironment(data->taskManager);
+//     env->atexit_TaskEnv = sub_0203FAE8(fieldSystem, HEAPID_WORLD, ITEM_DNA_SPLICERS_FUSE); // TODO: handle correct item
+//     sub_0203C8F0(env, 0x0203CA9C | 1);
+// }
 
-BOOL ItemFieldUseFunc_DNASplicers(struct ItemFieldUseData *data)
-{
-    RegisteredItem_CreateGoToAppTask(data, (FieldApplicationWorkCtor)_CreateDNASplicersWork, FALSE);
-    return TRUE;
-}
+// BOOL ItemFieldUseFunc_DNASplicers(struct ItemFieldUseData *data)
+// {
+//     RegisteredItem_CreateGoToAppTask(data, (FieldApplicationWorkCtor)_CreateDNASplicersWork, FALSE);
+//     return TRUE;
+// }
 
-void *_CreateDNASplicersWork(FieldSystem *fieldSystem)
-{
-    return sub_0203FAE8(fieldSystem, HEAPID_WORLD, ITEM_DNA_SPLICERS_FUSE); // TODO: handle correct item
-}
+// void *_CreateDNASplicersWork(FieldSystem *fieldSystem)
+// {
+//     return sub_0203FAE8(fieldSystem, HEAPID_WORLD, ITEM_DNA_SPLICERS_FUSE); // TODO: handle correct item
+// }
+
+// void ItemMenuUseFunc_Nectar(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED)
+// {
+//     FieldSystem *fieldSystem = data->taskManager->fieldSystem; // TaskManager_GetFieldSystem(data->taskManager);
+//     struct BagViewAppWork *env = data->taskManager->env; // TaskManager_GetEnvironment(data->taskManager);
+//     env->atexit_TaskEnv = sub_0203FAE8(fieldSystem, HEAPID_WORLD, data->itemId);
+//     sub_0203C8F0(env, 0x0203CA9C | 1);
+// }
 
 void ItemMenuUseFunc_AbilityCapsule(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED)
 {
@@ -653,14 +664,6 @@ void ItemMenuUseFunc_AbilityCapsule(struct ItemMenuUseData *data, const struct I
 }
 
 void ItemMenuUseFunc_Mint(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED)
-{
-    FieldSystem *fieldSystem = data->taskManager->fieldSystem; // TaskManager_GetFieldSystem(data->taskManager);
-    struct BagViewAppWork *env = data->taskManager->env; // TaskManager_GetEnvironment(data->taskManager);
-    env->atexit_TaskEnv = sub_0203FAE8(fieldSystem, HEAPID_WORLD, data->itemId);
-    sub_0203C8F0(env, 0x0203CA9C | 1);
-}
-
-void ItemMenuUseFunc_Nectar(struct ItemMenuUseData *data, const struct ItemCheckUseData *dat2 UNUSED)
 {
     FieldSystem *fieldSystem = data->taskManager->fieldSystem; // TaskManager_GetFieldSystem(data->taskManager);
     struct BagViewAppWork *env = data->taskManager->env; // TaskManager_GetEnvironment(data->taskManager);

@@ -42,6 +42,18 @@ const u8 sPocketCountBytes[8] = {
     NUM_BAG_KEY_ITEMS,
 };
 
+// Match pocket IDs to their storage; capacities remain in sPocketCounts.
+static const u16 sPocketOffsets[8] = {
+    [POCKET_ITEMS] = __builtin_offsetof(BAG_DATA, items),
+    [POCKET_MEDICINE] = __builtin_offsetof(BAG_DATA, medicine),
+    [POCKET_BALLS] = __builtin_offsetof(BAG_DATA, balls),
+    [POCKET_TMHMS] = __builtin_offsetof(BAG_DATA, TMsHMs),
+    [POCKET_BERRIES] = __builtin_offsetof(BAG_DATA, berries),
+    [POCKET_MAIL] = __builtin_offsetof(BAG_DATA, mail),
+    [POCKET_BATTLE_ITEMS] = __builtin_offsetof(BAG_DATA, battleItems),
+    [POCKET_KEY_ITEMS] = __builtin_offsetof(BAG_DATA, keyItems),
+};
+
 void SortPocket(ITEM_SLOT *slots, u32 count);
 void SortTMHMPocket(ITEM_SLOT *slots, u32 count);
 void PocketCompaction(ITEM_SLOT *slots, u32 count);
@@ -118,39 +130,9 @@ void Bag_UnregisterItem(BAG_DATA *bag, u16 itemId)
 u32 Bag_GetItemPocket(BAG_DATA *bag, u16 itemId, ITEM_SLOT **ppSlots, u32 *pCount, int heap_id)
 {
     u32 pocket = GetItemData(itemId, ITEM_PARAM_FIELD_POCKET, heap_id);
-    switch (pocket) {
-    case POCKET_KEY_ITEMS:
-        *ppSlots = bag->keyItems;
-        *pCount = NUM_BAG_KEY_ITEMS;
-        break;
-    case POCKET_ITEMS:
-        *ppSlots = bag->items;
-        *pCount = NUM_BAG_ITEMS;
-        break;
-    case POCKET_BERRIES:
-        *ppSlots = bag->berries;
-        *pCount = NUM_BAG_BERRIES;
-        break;
-    case POCKET_MEDICINE:
-        *ppSlots = bag->medicine;
-        *pCount = NUM_BAG_MEDICINE;
-        break;
-    case POCKET_BALLS:
-        *ppSlots = bag->balls;
-        *pCount = NUM_BAG_BALLS;
-        break;
-    case POCKET_BATTLE_ITEMS:
-        *ppSlots = bag->battleItems;
-        *pCount = NUM_BAG_BATTLE_ITEMS;
-        break;
-    case POCKET_MAIL:
-        *ppSlots = bag->mail;
-        *pCount = NUM_BAG_MAIL;
-        break;
-    case POCKET_TMHMS:
-        *ppSlots = bag->TMsHMs;
-        *pCount = NUM_BAG_TMS_HMS;
-        break;
+    if (pocket < NELEMS(sPocketOffsets)) {
+        *ppSlots = (ITEM_SLOT *)((u8 *)bag + sPocketOffsets[pocket]);
+        *pCount = sPocketCounts[pocket];
     }
     return pocket;
 }
@@ -258,22 +240,10 @@ ITEM_SLOT *Bag_GetItemSlotForRemove(BAG_DATA *bag, u16 itemId, u16 quantity, int
 
 BOOL Bag_TakeItem(BAG_DATA *bag, u16 itemId, u16 quantity, int heap_id)
 {
-    ITEM_SLOT *slot = Bag_GetItemSlotForRemove(bag, itemId, quantity, heap_id);
-    if (slot == NULL) {
-        return FALSE;
-    }
-    slot->quantity -= quantity;
-    if (slot->quantity == 0) {
-        slot->id = ITEM_NONE;
-    }
-    {
-        u32 count;
-        u32 UNUSED pocket_id;
-
-        pocket_id = Bag_GetItemPocket(bag, itemId, &slot, &count, heap_id);
-        PocketCompaction(slot, count);
-    }
-    return TRUE;
+    ITEM_SLOT *slots;
+    u32 count;
+    Bag_GetItemPocket(bag, itemId, &slots, &count, heap_id);
+    return Pocket_TakeItem(slots, count, itemId, quantity);
 }
 
 BOOL Pocket_TakeItem(ITEM_SLOT *slots, u32 count, u16 itemId, u16 quantity)
@@ -423,34 +393,11 @@ void SortTMHMPocket(ITEM_SLOT *slots, u32 count)
 // returns a BAG_VIEW but we don't have to care about that
 void *CreateBagView(BAG_DATA *bag, const u8 *pockets, int heap_id)
 {
-    int i;
     void *ret = BagView_New(heap_id);
-    for (i = 0; pockets[i] != 0xFF; i++) {
-        switch (pockets[i]) {
-        case POCKET_KEY_ITEMS:
-            BagView_SetItem(ret, bag->keyItems, POCKET_KEY_ITEMS, i);
-            break;
-        case POCKET_ITEMS:
-            BagView_SetItem(ret, bag->items, POCKET_ITEMS, i);
-            break;
-        case POCKET_BERRIES:
-            BagView_SetItem(ret, bag->berries, POCKET_BERRIES, i);
-            break;
-        case POCKET_MEDICINE:
-            BagView_SetItem(ret, bag->medicine, POCKET_MEDICINE, i);
-            break;
-        case POCKET_BALLS:
-            BagView_SetItem(ret, bag->balls, POCKET_BALLS, i);
-            break;
-        case POCKET_BATTLE_ITEMS:
-            BagView_SetItem(ret, bag->battleItems, POCKET_BATTLE_ITEMS, i);
-            break;
-        case POCKET_MAIL:
-            BagView_SetItem(ret, bag->mail, POCKET_MAIL, i);
-            break;
-        case POCKET_TMHMS:
-            BagView_SetItem(ret, bag->TMsHMs, POCKET_TMHMS, i);
-            break;
+    for (int i = 0; pockets[i] != 0xFF; i++) {
+        u8 pocket = pockets[i];
+        if (pocket < NELEMS(sPocketOffsets)) {
+            BagView_SetItem(ret, (ITEM_SLOT *)((u8 *)bag + sPocketOffsets[pocket]), pocket, i);
         }
     }
     return ret;
@@ -458,49 +405,10 @@ void *CreateBagView(BAG_DATA *bag, const u8 *pockets, int heap_id)
 
 ITEM_SLOT *Bag_GetPocketSlotN(BAG_DATA *bag, u8 pocket, int n)
 {
-    ITEM_SLOT *slots;
-    int count;
-
-    switch (pocket) {
-    case POCKET_KEY_ITEMS:
-        slots = bag->keyItems;
-        count = NUM_BAG_KEY_ITEMS;
-        break;
-    case POCKET_ITEMS:
-        slots = bag->items;
-        count = NUM_BAG_ITEMS;
-        break;
-    case POCKET_BERRIES:
-        slots = bag->berries;
-        count = NUM_BAG_BERRIES;
-        break;
-    case POCKET_MEDICINE:
-        slots = bag->medicine;
-        count = NUM_BAG_MEDICINE;
-        break;
-    case POCKET_BALLS:
-        slots = bag->balls;
-        count = NUM_BAG_BALLS;
-        break;
-    case POCKET_BATTLE_ITEMS:
-        slots = bag->battleItems;
-        count = NUM_BAG_BATTLE_ITEMS;
-        break;
-    case POCKET_MAIL:
-        slots = bag->mail;
-        count = NUM_BAG_MAIL;
-        break;
-    case POCKET_TMHMS:
-        slots = bag->TMsHMs;
-        count = NUM_BAG_TMS_HMS;
-        break;
-    default:
-        return 0;
+    if (pocket >= NELEMS(sPocketOffsets) || n >= sPocketCounts[pocket]) {
+        return NULL;
     }
-    // UB: If pocket invalid, count and slot are uninitialized
-    if (n >= count) {
-        return 0;
-    }
+    ITEM_SLOT *slots = (ITEM_SLOT *)((u8 *)bag + sPocketOffsets[pocket]);
     return &slots[n];
 }
 

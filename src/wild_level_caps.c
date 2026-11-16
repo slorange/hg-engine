@@ -1,9 +1,8 @@
 #include "config.h"
 #include "constants/encounter_tables.h"
 #include "constants/generated/wild_level_caps.h"
-#include "constants/save_arrays.h"
 #include "debug.h"
-#include "local_field_data.h"
+#include "encounter_location.h"
 #include "pokemon.h"
 #include "save.h"
 #include "script.h"
@@ -85,51 +84,6 @@ static void ClearCachedWildLevelCap(void)
     sWildCapCache.valid = FALSE;
 }
 
-static FieldSystem *ResolveFieldSystem(void)
-{
-    if (gFieldSysPtr != NULL) {
-        return gFieldSysPtr;
-    }
-
-    return sPersistFieldSysPtr;
-}
-
-// SaveBlock2_get() stays valid during battle; fsys->savedata/location often do not.
-static BOOL ResolveMapId(u16 *mapIdOut)
-{
-    SaveData *saveData = SaveBlock2_get();
-    LocalFieldData *localFieldData;
-    FieldSystem *fsys;
-
-    if (saveData != NULL) {
-        localFieldData = (LocalFieldData *)SaveArray_Get(saveData, SAVE_LOCAL_FIELD_DATA);
-        if (localFieldData != NULL) {
-            *mapIdOut = (u16)localFieldData->currentPosition.mapId;
-            return TRUE;
-        }
-    }
-
-    fsys = ResolveFieldSystem();
-    if (fsys == NULL) {
-        return FALSE;
-    }
-
-    if (fsys->savedata != NULL) {
-        localFieldData = (LocalFieldData *)SaveArray_Get(fsys->savedata, SAVE_LOCAL_FIELD_DATA);
-        if (localFieldData != NULL) {
-            *mapIdOut = (u16)localFieldData->currentPosition.mapId;
-            return TRUE;
-        }
-    }
-
-    if (fsys->location != NULL) {
-        *mapIdOut = (u16)fsys->location->mapId;
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
 static u8 ResolveStartCityIndex(u8 startCityVar)
 {
     if (startCityVar < WILD_LEVEL_CAP_NUM_START_CITIES) {
@@ -153,7 +107,7 @@ static u8 ComputeWildLevelCap(u8 *failReason)
     sWildLevelCapDebug.startCityVar = 0;
     sWildLevelCapDebug.startCityIndex = 0;
 
-    if (!ResolveMapId(&mapId)) {
+    if (!EncounterResolveMapId(&mapId)) {
         *failReason = WLC_FAIL_LOCATION_NULL;
         return WILD_LEVEL_CAP_MIN;
     }
@@ -349,7 +303,7 @@ void CacheWildLevelCapFromFieldSystem(FieldSystem *fsysArg)
     sWildLevelCapDebug.persistFsys = (u32)sPersistFieldSysPtr;
     sWildLevelCapDebug.gFieldSysPtrVal = (u32)gFieldSysPtr;
 
-    fsys = ResolveFieldSystem();
+    fsys = EncounterResolveFieldSystem();
     sWildLevelCapDebug.resolvedFsys = (u32)fsys;
 
     sWildCapCache.cap = ComputeWildLevelCap(&failReason);

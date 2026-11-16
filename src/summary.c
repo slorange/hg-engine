@@ -61,42 +61,26 @@ static void UpdatePokemonData(struct SummaryState *summary, u8 mode)
 #define GREEN          (COLOR(9, 10, 0))
 #define WHITE          (COLOR(0xE, 0xF, 0))
 
-static s8 sNatureStatEffects[25][6] = {
-    // atk, def, spatk, spdef, speed
-    { 0, 0, 0, 0, 0, 0 }, // Hardy
-    { 0, 1, -1, 0, 0, 0 }, // Lonely
-    { 0, 1, 0, 0, 0, -1 }, // Brave
-    { 0, 1, 0, -1, 0, 0 }, // Adamant
-    { 0, 1, 0, 0, -1, 0 }, // Naughty
-    { 0, -1, 1, 0, 0, 0 }, // Bold
-    { 0, 0, 0, 0, 0, 0 }, // Docile
-    { 0, 0, 1, 0, 0, -1 }, // Relaxed
-    { 0, 0, 1, -1, 0, 0 }, // Impish
-    { 0, 0, 1, 0, -1, 0 }, // Lax
-    { 0, -1, 0, 0, 0, 1 }, // Timid
-    { 0, 0, -1, 0, 0, 1 }, // Hasty
-    { 0, 0, 0, 0, 0, 0 }, // Serious
-    { 0, 0, 0, -1, 0, 1 }, // Jolly
-    { 0, 0, 0, 0, -1, 1 }, // Naive
-    { 0, -1, 0, 1, 0, 0 }, // Modest
-    { 0, 0, -1, 1, 0, 0 }, // Mild
-    { 0, 0, 0, 1, 0, -1 }, // Quiet
-    { 0, 0, 0, 0, 0, 0 }, // Bashful
-    { 0, 0, 0, 1, -1, 0 }, // Rash
-    { 0, -1, 0, 0, 1, 0 }, // Calm
-    { 0, 0, -1, 0, 1, 0 }, // Gentle
-    { 0, 0, 0, 0, 1, -1 }, // Sassy
-    { 0, 0, 0, -1, 1, 0 }, // Careful
-    { 0, 0, 0, 0, 0, 0 }, // Quirky
-};
+static s8 NatureStatEffect(u32 nature, u8 windowIdx)
+{
+    // Windows: HP, Attack, Defense, Sp. Attack, Sp. Defense, Speed.
+    // Nature IDs use Attack, Defense, Speed, Sp. Attack, Sp. Defense.
+    static const u8 windowToStat[] = { 0, 0, 1, 3, 4, 2 };
+    if (windowIdx == 0) {
+        return 0; // Natures never modify HP.
+    }
+    u8 stat = windowToStat[windowIdx];
+    // The quotient boosts a stat and the remainder lowers one; neutral natures cancel.
+    return (nature / 5 == stat) - (nature % 5 == stat);
+}
 
 static void PrintStatNumberWithColor(struct SummaryState *summary, u8 windowIdx, u32 justify)
 {
     u32 nature = GetBoxMonNatureCountMints(Summary_GetPokemonData(summary));
     u32 color = BLACK;
-    if (sNatureStatEffects[nature][windowIdx] > 0) {
+    if (NatureStatEffect(nature, windowIdx) > 0) {
         color = RED;
-    } else if (sNatureStatEffects[nature][windowIdx] < 0) {
+    } else if (NatureStatEffect(nature, windowIdx) < 0) {
         color = BLUE;
     }
 
@@ -106,16 +90,17 @@ static void PrintStatNumberWithColor(struct SummaryState *summary, u8 windowIdx,
 void Summary_ColorizeStatScreen(struct SummaryState *summary, u32 mode)
 {
     u32 nature = GetBoxMonNatureCountMints(Summary_GetPokemonData(summary));
-    Summary_NumberToString(summary, 120, summary->pokemonData.attack, 3, 0);
-    PrintStatNumberWithColor(summary, 1, JUSTIFY_RIGHT);
-    Summary_NumberToString(summary, 121, summary->pokemonData.defense, 3, 0);
-    PrintStatNumberWithColor(summary, 2, JUSTIFY_RIGHT);
-    Summary_NumberToString(summary, 122, summary->pokemonData.spAttack, 3, 0);
-    PrintStatNumberWithColor(summary, 3, JUSTIFY_RIGHT);
-    Summary_NumberToString(summary, 123, summary->pokemonData.spDefense, 3, 0);
-    PrintStatNumberWithColor(summary, 4, JUSTIFY_RIGHT);
-    Summary_NumberToString(summary, 124, summary->pokemonData.speed, 3, 0);
-    PrintStatNumberWithColor(summary, 5, JUSTIFY_RIGHT);
+    const u16 stats[] = {
+        summary->pokemonData.attack,
+        summary->pokemonData.defense,
+        summary->pokemonData.spAttack,
+        summary->pokemonData.spDefense,
+        summary->pokemonData.speed,
+    };
+    for (int stat = 0; stat < 5; stat++) {
+        Summary_NumberToString(summary, 120 + stat, stats[stat], 3, 0);
+        PrintStatNumberWithColor(summary, 1 + stat, JUSTIFY_RIGHT);
+    }
 
     for (int i = 0; i < 6; i++) {
         FillWindowPixelBuffer(&summary->defnWindows[0xF + i], 0);
@@ -123,10 +108,10 @@ void Summary_ColorizeStatScreen(struct SummaryState *summary, u32 mode)
         {
             u32 msgId = 110;
             u32 color = WHITE;
-            if (sNatureStatEffects[nature][i] > 0) {
+            if (NatureStatEffect(nature, i) > 0) {
                 msgId = 196 - 1; // Stat+
                 color = RED_INVERT;
-            } else if (sNatureStatEffects[nature][i] < 0) {
+            } else if (NatureStatEffect(nature, i) < 0) {
                 msgId = 201 - 1; // Stat-
                 color = BLUE_INVERT;
             }
@@ -208,7 +193,7 @@ u16 ModifyStatByNature(u32 nature, u16 n, u8 statIndex)
         statIndex--;
     }
 
-    switch (sNatureStatEffects[nature][statIndex]) {
+    switch (NatureStatEffect(nature, statIndex)) {
     case 1:
         // NOTE: will overflow for n > 595 because the intermediate value is cast to u16 before the division.
         retVal = n * 110;

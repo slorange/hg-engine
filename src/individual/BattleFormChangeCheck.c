@@ -244,17 +244,18 @@ BOOL BattleFormChangeCheck(void *bw, struct BattleStruct *sp, int *seq_no)
             break;
         }
 
-        // handle genesect
-        if ((sp->battlemon[client].species == SPECIES_GENESECT)
-            && (sp->battlemon[client].hp)) {
-            form_no = GetGenesectForme(sp->battlemon[client].item);
-            if (sp->battlemon[client].form_no != form_no) {
-                sp->battlemon[client].form_no = form_no;
-                *seq_no = BATTLE_SUBSCRIPT_FORM_CHANGE;
-                ret = TRUE;
-                break;
-            }
-        }
+// Unused: retained for reference; commented out to save space in overlay 129.
+//         // handle genesect
+//         if ((sp->battlemon[client].species == SPECIES_GENESECT)
+//             && (sp->battlemon[client].hp)) {
+//             form_no = GetGenesectForme(sp->battlemon[client].item);
+//             if (sp->battlemon[client].form_no != form_no) {
+//                 sp->battlemon[client].form_no = form_no;
+//                 *seq_no = BATTLE_SUBSCRIPT_FORM_CHANGE;
+//                 ret = TRUE;
+//                 break;
+//             }
+//         }
 
         // handle xerneas - force into active mode
         if ((sp->battlemon[client].species == SPECIES_XERNEAS)

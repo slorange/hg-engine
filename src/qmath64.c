@@ -15,7 +15,8 @@ u64 LONG_CALL QMul64_RoundUp(u64 i, u64 q)
     return QMul64(i, q, UQ412__0_5);
 }
 
-u64 LONG_CALL QMul64_RoundDown(u64 i, u64 q)
-{
-    return QMul64(i, q, UQ412__0_5_BUT_LOWER);
-}
+// Unused: retained for reference; commented out to save space in overlay 129.
+// u64 LONG_CALL QMul64_RoundDown(u64 i, u64 q)
+// {
+//     return QMul64(i, q, UQ412__0_5_BUT_LOWER);
+// }
