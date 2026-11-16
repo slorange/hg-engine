@@ -1065,6 +1065,8 @@ struct BattleStruct {
     PursuitContext pursuitContext;
     DancerContext dancerContext;
     MagicBounceContext magicBounceContext;
+    // Per-party-mon damaging hits this battle. ServerInit zeroes these; switching/revival must not.
+    u8 rageFistHits[4][6];
 };
 
 enum {

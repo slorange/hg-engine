@@ -210,6 +210,13 @@ int UNUSED CalcBaseDamageInternal(struct BattleSystem *bw, struct BattleStruct *
         movepower = (255 - AttackingMon.happiness) * 10 / 25;
         break;
     // Counter-based
+    case MOVE_RAGE_FIST: {
+        u32 team = SanitizeClientForTeamAccess(bw, attacker);
+        u32 slot = sp->sel_mons_no[attacker];
+        u32 hits = slot < 6 ? sp->rageFistHits[team][slot] : 0;
+        movepower = 50 + 50 * (hits > 6 ? 6 : hits);
+        break;
+    }
     // Fury Cutter's damage cap is handled in src/battle/battle_script_commands.c.
     // By default, the modern cap is 3 (meaning furyCutterCount will be between 0-2).
     case MOVE_FURY_CUTTER:

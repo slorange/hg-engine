@@ -55,6 +55,8 @@ static const u16 RockSmashItemPool[] = {
     ITEM_DEEP_SEA_SCALE,
     ITEM_METAL_COAT,
     ITEM_HARD_STONE,
+    ITEM_BLACK_AUGURITE,
+    ITEM_PEAT_BLOCK,
 };
 
 #define NUM_ROCK_SMASH_ITEMS NELEMS(RockSmashItemPool)

@@ -57,6 +57,17 @@ void ServerHPCalc(struct BattleSystem *bw, struct BattleStruct *sp)
             sp->battlerIdTemp = sp->defence_client;
         } else {
             BOOL negatedDamage = FALSE;
+            // This path runs once per damaging strike, after Substitute has been handled.
+            // Count before Endure/False Swipe can reduce actual HP loss to zero.
+            if (sp->damage < 0 && sp->attack_client != sp->defence_client
+                && sp->battlemon[sp->defence_client].hp > 0
+                && GetMoveSplit(sp, sp->current_move_index) != SPLIT_STATUS) {
+                u32 team = SanitizeClientForTeamAccess(bw, sp->defence_client);
+                u32 slot = sp->sel_mons_no[sp->defence_client];
+                if (slot < 6 && sp->rageFistHits[team][slot] < 6) {
+                    sp->rageFistHits[team][slot]++;
+                }
+            }
             // limit damage value to current hp
             if ((sp->battlemon[sp->defence_client].hp + sp->damage) <= 0) {
                 sp->damage = (sp->battlemon[sp->defence_client].hp) * -1;

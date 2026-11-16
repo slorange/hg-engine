@@ -41713,6 +41713,10 @@
         "Move": "MOVE_CALM_MIND"
       },
       {
+        "Level": 31,
+        "Move": "MOVE_PSYSHIELD_BASH"
+      },
+      {
         "Level": 32,
         "Move": "MOVE_ROLE_PLAY"
       },
@@ -41815,8 +41819,7 @@
       "MOVE_DISABLE",
       "MOVE_SPITE",
       "MOVE_MEGAHORN",
-      "MOVE_EXTRASENSORY",
-      "MOVE_PSYSHIELD_BASH"
+      "MOVE_EXTRASENSORY"
     ],
     "TutorMoves": [
       "MOVE_BODY_SLAM",

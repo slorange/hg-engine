@@ -668,8 +668,6 @@ Shop availability for stones: [World-6](DESIGN-WORLD.md#world-6-shops).
 Ideas that do not have their own `Future-*` section yet.
 
 - **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
-- **Expanded Pokédex / generations** — release scope stays [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) (Gen I–IV plus the Volcarona line); HG-Engine could extend through Gen IX minus Paradox and DLC. Include selected cross-gen evolutions when scope expands — e.g. **Sylveon**, **Kleavor**, **Wyrdeer**, **Annihilape**, **Farigiraf**, **Dudunsparce** (methods TBD per line).
-- **Starter selection** could be revisited.
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
 - **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.

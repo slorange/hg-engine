@@ -247,6 +247,18 @@ Examples: Dragon Scale → Kingdra, Metal Coat → Scizor, Protector → Rhyperi
 
 **Linking Cord** — use on the Pokémon like a stone for plain trade lines. **Marts:** Goldenrod dept **2F lower** and Celadon dept **4F** ([World-6 § dept stores](#goldenrod--celadon-department-stores)).
 
+### Later-generation evolutions of existing families
+
+The seven additions in [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) use these methods:
+
+- **Eevee → Sylveon:** level up with high friendship while knowing a Fairy-type move; this takes priority over Espeon and Umbreon.
+- **Scyther → Kleavor:** use **Black Augurite** directly. Available from **Pewter Mart** and **Rock Smash** drops.
+- **Stantler → Wyrdeer:** level up knowing **Psyshield Bash**, learned at **31**. Psyshield Bash is not a Stantler egg move.
+- **Ursaring → Ursaluna:** level up **at night while holding a Peat Block**. Available from **Viridian Mart** and **Rock Smash** drops. Keep this method until the broader [full-moon system](DESIGN-FUTURE.md#future-2-full-moon-system) is implemented.
+- **Primeape → Annihilape:** level up knowing **Rage Fist**, learned at **35**.
+- **Girafarig → Farigiraf:** level up knowing **Twin Beam**, learned at **32**.
+- **Dunsparce → Dudunsparce:** level up knowing **Hyper Drill**, learned at **32**.
+
 ---
 
 
@@ -304,8 +316,8 @@ Themed Evolution items, held items, resist berries:
 | Lavender | Dusk Stone, Reaper Cloth, Black Glasses, Spell Tag, Kasib, Colbur Berries |
 | Saffron | Up-Grade, Dubious Disc, Twisted Spoon, Payapa Berry |
 | Fuchsia | Shiny Stone, Poison Barb, Kebia Berry, Toxic Orb, Black Sludge |
-| Pewter | Hard Stone, Charti Berry |
-| Viridian | Protector, Soft Sand, Shuca Berry |
+| Pewter | Black Augurite, Hard Stone, Charti Berry |
+| Viridian | Peat Block, Protector, Soft Sand, Shuca Berry |
 | Blackthorn / Battle Frontier | Dragon Scale, Dragon Fang, Haban Berry |
 | Mt. Moon Square | Moon Stone |
 | Mahogany | Poké Ball, Ice Stone, Never-Melt Ice, Yache Berry, Razor Claw |

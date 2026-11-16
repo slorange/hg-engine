@@ -199,10 +199,11 @@ Count **families**, not species (Poliwag + Poliwrath = 1). Use Pokédex caught f
 
 **Status: DECIDED (release scope)**
 
-**Ship scope:** **Gen I–IV plus the Volcarona line**. No broad Gen V+ rollout in the first release.
+**Ship scope:** Gen I–IV plus the Volcarona line and Sylveon, Kleavor, Wyrdeer, Ursaluna, Annihilape, Farigiraf, and Dudunsparce. No broad Gen V+ rollout planned.
 
+Every included family must have an acquisition source.
 
-Broader dex / generations: [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes).
+Evolution methods and item acquisition: [World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones).
 
 ---
 

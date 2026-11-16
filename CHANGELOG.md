@@ -46,12 +46,13 @@ Behavior inherited from HG-Engine.
 
 ### Wild encounters
 
+- **Later-generation evolutions** — Sylveon, Kleavor, Wyrdeer, Ursaluna, Annihilape, Farigiraf, and Dudunsparce added to existing Gen I–IV families, with accessible evolution methods and items.
 - **Distance-based level caps** — wild levels depend on how far the current area is from your **chosen starting city** (18-city menu index matches the distance table).
 - **Level rolls** — most encounters sit near the area cap, but with a **15%** chance for a low level to help complete the dex.
 - **Stage and moves** — wild Pokémon's evolution stage and moves match the rolled level
 - **Wild catch vs. badge cap** — the player cannot catch a wild Pokémon whose level is above their level cap.
 - **Special evolution lines in the wild** — trade, stone, and similar lines can appear as their evolved forms at set level thresholds.
-- **Cinnabar Island** — walking wild encounters on the island (Slugma, Numel, Koffing, Torkoal, Magmar, rare Ditto and **Larvesta**).
+- **Cinnabar Island** — walking wild encounters on the island
 - **Wild held items** — species table rolls (**65%** common / **15%** rare / **20%** nothing); if still empty, **50%** chance of a random berry. With **Compound Eyes** lead: **70%** common / **30%** rare, then **always** a berry.
 - **Per-save wild ecology** — Each new game builds a shuffled assignment of Pokémon families to habitats and encounter methods. Pokémon encounters draw from this list instead of static tables. Applies to grass, caves, Surf, fishing, Headbutt, and Rock Smash. This is not pure random, assignments are filtered based on Type, Encounter method, Rarity, etc.
 - **Wild shinies** — Rate increased to **1/128**
