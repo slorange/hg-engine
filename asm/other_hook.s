@@ -2,6 +2,16 @@
 .align 2
 .thumb
 
+#ifdef IMPLEMENT_ECOLOGY_GENERATION
+// Overlay 24 BugContest_Judge tail. r4 is the contest; its original frame is
+// push {r3-r7,lr}. Keep vanilla ranking and return after replacing prize selection.
+.global BugContest_AssignPrize_hook
+BugContest_AssignPrize_hook:
+mov r0, r4
+bl BugContest_AssignPrize
+pop {r3-r7,pc}
+#endif
+
 /*不同形态的图片读取*/
 .global PokePicLoad
 PokePicLoad:

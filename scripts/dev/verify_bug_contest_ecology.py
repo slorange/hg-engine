@@ -16,7 +16,7 @@ from pathlib import Path
 import ndspy.rom
 import ndspy.narc
 
-from verify_encount_overlay2 import decode_bl_hook_target
+from verify_encount_overlay2 import decode_bl_hook_target, read_hook_pointer
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/build"))
@@ -85,6 +85,21 @@ def main() -> None:
         target = decode_bl_hook_target(overlay.data[offset:offset + 24], address)
         assert target == linked[symbol], (symbol, hex(target), hex(linked[symbol]))
         print(f"OK: packed overlay {index} {address:08X} -> {symbol}")
+
+    # Prize replacement is a tail hook, not a complete function replacement.
+    # Its pop must match the native judging prologue's saved registers.
+    retail = original_overlays[24]
+    assert retail.data[0x02259940 - retail.ramAddress:0x02259942 - retail.ramAddress] == bytes.fromhex("f8b5")
+    offset = 0x022599FA - retail.ramAddress
+    assert retail.data[offset:offset + 12] == bytes.fromhex("e07d0106890e04d0012916d0")
+    overlay = built_overlays[24]
+    target, _ = read_hook_pointer(overlay.data, 0x022599FA, 3, overlay.ramAddress)
+    assert target == linked["BugContest_AssignPrize_hook"] | 1
+    engine = built_overlays[129]
+    offset = linked["BugContest_AssignPrize_hook"] - engine.ramAddress
+    stub = engine.data[offset:offset + 8]
+    assert stub[:2] == bytes.fromhex("201c") and stub[6:8] == bytes.fromhex("f8bd")
+    print("OK: packed prize hook and native judging stack frame match")
 
     field_symbols = symbols("build/field_linked.o")
     field = built_overlays[131]

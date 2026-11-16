@@ -390,7 +390,11 @@ Replace vanilla static per-spot ground and hidden items with rolls from the cura
 
 Curated prize lists aligned with the matrix (not the ground/hidden random pool, not vanilla HGSS menus). Postgame menus can be **renewable but effort-gated** where balance calls for infinite access without shop trivialization.
 
-**Bug-Catching Contest:** The player **does not choose** the reward — stock prizes that are **always useful**, not situational duds (e.g. the wrong mint or evolution stone for their current party).
+**Bug-Catching Contest:**
+- **First:** Ability Patch, Gold Bottle Cap, or Ability Capsule.
+- **Second:** Star Piece, Bottle Cap, or PP Max.
+- **Third:** Nugget, Big Pearl, Rare Candy, or PP Up.
+- **Consolation:** Rare Bone, Big Mushroom, or Stardust.
 
 **Pokéathlon:** Exchange or prize menus stock items from the rows/columns where they are marked ✓.
 

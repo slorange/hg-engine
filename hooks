@@ -69,6 +69,7 @@ arm9 AddBoxMonData_EditedCases_hook 0206F67C 0
 0002 BugContest_GenerateEcologyEncounter 02247ED8
 0024 BugContest_InitEcologyEntries 02259DF0
 0024 BugContest_JudgeEcologyMon 02259E60
+0024 BugContest_AssignPrize_hook 022599FA 3
 #endif
 # starters
 arm9 set_starter_hidden_ability_hook 02096158 5

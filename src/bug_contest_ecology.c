@@ -5,6 +5,7 @@
 #include "battle.h"
 #include "bug_contest_ecology.h"
 #include "constants/encounter_tables.h"
+#include "constants/item.h"
 #include "constants/species.h"
 #include "constants/generated/ecology_compat.h"
 #include "ecology/ecology_encounter.h"
@@ -100,6 +101,45 @@ u16 BugContest_JudgeEcologyMon(BugContest *contest, struct PartyPokemon *mon)
         return 0;
     }
     return ContestStatTotal(mon);
+}
+
+// Called after vanilla judging has set placement (the upper six flag bits).
+// Keep the selected item in the retail prize field for announcement and claiming.
+void BugContest_AssignPrize(BugContest *contest)
+{
+    static const u16 first[] = {
+        ITEM_ABILITY_PATCH, ITEM_GOLD_BOTTLE_CAP, ITEM_ABILITY_CAPSULE,
+    };
+    static const u16 second[] = {
+        ITEM_STAR_PIECE, ITEM_BOTTLE_CAP, ITEM_PP_MAX,
+    };
+    static const u16 third[] = {
+        ITEM_NUGGET, ITEM_BIG_PEARL, ITEM_RARE_CANDY, ITEM_PP_UP,
+    };
+    static const u16 consolation[] = {
+        ITEM_RARE_BONE, ITEM_BIG_MUSHROOM, ITEM_STARDUST,
+    };
+    const u16 *pool;
+    u8 count;
+    switch (contest->flags >> 2) {
+    case 0:
+        pool = first;
+        count = NELEMS(first);
+        break;
+    case 1:
+        pool = second;
+        count = NELEMS(second);
+        break;
+    case 2:
+        pool = third;
+        count = NELEMS(third);
+        break;
+    default:
+        pool = consolation;
+        count = NELEMS(consolation);
+        break;
+    }
+    contest->prize = pool[gf_rand() % count];
 }
 
 #endif

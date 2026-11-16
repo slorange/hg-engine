@@ -47,7 +47,6 @@ Behavior inherited from HG-Engine.
 ### Wild encounters
 
 - **Distance-based level caps** — wild levels depend on how far the current area is from your **chosen starting city** (18-city menu index matches the distance table).
-- **Endgame and HM-gated wild caps** — selected areas ignore a low distance-only cap: **Flash** dungeons (Dark Cave, Rock Tunnel) floor **14**; **Whirlpool** areas (Whirl Islands) floor **50**; **Waterfall** routes **26** and **27** floor **62**; **Victory Road** fixed **75**; **Route 28**, **Mt. Silver**, and **Cerulean Cave** fixed **85** (same for every start city).
 - **Level rolls** — most encounters sit near the area cap, but with a **15%** chance for a low level to help complete the dex.
 - **Stage and moves** — wild Pokémon's evolution stage and moves match the rolled level
 - **Wild catch vs. badge cap** — the player cannot catch a wild Pokémon whose level is above their level cap.
@@ -56,6 +55,12 @@ Behavior inherited from HG-Engine.
 - **Wild held items** — species table rolls (**65%** common / **15%** rare / **20%** nothing); if still empty, **50%** chance of a random berry. With **Compound Eyes** lead: **70%** common / **30%** rare, then **always** a berry.
 - **Per-save wild ecology** — Each new game builds a shuffled assignment of Pokémon families to habitats and encounter methods. Pokémon encounters draw from this list instead of static tables. Applies to grass, caves, Surf, fishing, Headbutt, and Rock Smash. This is not pure random, assignments are filtered based on Type, Encounter method, Rarity, etc.
 - **Wild shinies** — Rate increased to **1/128**
+
+### Bug-Catching Contest & National Park
+
+- **Daily contests** — available every day instead of only Tuesday, Thursday, and Saturday.
+- **Scoring** — the sum of maximum HP, Attack, Defense, Special Attack, Special Defense, and Speed replaces vanilla judging.
+- **Prizes** — Ability Patches / Capsules, Bottle Caps, PP Up / Max, Rare Candies, Valuables
 
 ### Fishing
 

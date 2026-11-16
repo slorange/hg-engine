@@ -231,7 +231,9 @@ National Park grass and the Bug-Catching Contest share one pool of 17 families. 
 
 Both modes use the park's [distance cap](#wilds-1-starting-city-distance-based-wild-level-caps), [level distribution](#level-distribution), and [encounter stages](#wilds-3-encounter-stage-evolution--devolution).
 
-Contest score is the sum of **maximum HP, Attack, Defense, Sp. Atk, Sp. Def, and Speed**. There are no separate rarity, IV, level, or remaining-HP bonuses. Level, base stats, IVs, and nature contribute through the actual stats. Each NPC competitor generates **five** candidates from the same eligible park pool and level distribution, with random nature and IVs, zero EVs, and one guaranteed perfect IV as in player contest encounters. They keep the candidate with the highest stat total. The contest is available **every day**, with **one entry per day**. The time limit is **four in-game hours**, using the existing accelerated clock. It retains Sport Balls, the party restriction, catch replacement, and prizes.
+Contest score is the sum of the stats, including maximum HP, not current HP. The contest is available **every day**, with **one entry per day**. The time limit is **four in-game hours**, using the existing accelerated clock (roughly 5 minutes).
+
+See [World-8. Item acquisition channels](#world-8-item-acquisition-channels) for reward details
 
 ## Persistence and seed
 
