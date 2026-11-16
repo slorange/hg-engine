@@ -227,13 +227,11 @@ This is **not fully random**. Species and families must still appear in appropri
 
 ## National Park and Bug-Catching Contest
 
-National Park grass and the Bug-Catching Contest share **one pool of 17 families**: Caterpie, Weedle, Paras, Venonat, Scyther, Pinsir, Ledyba, Spinarak, Yanma, Heracross, Wurmple, Nincada, Volbeat, Illumise, Kricketot, Combee, and Skorupi.
-
-All 17 belong to the park in every save, an exception to the usual eight-family land pool. Their existing time-of-day eligibility still applies. Common families are more frequent than normal or rare families, with the same odds inside and outside the contest. The pool does not change with weekday or National Pokédex ownership. Headbutt and other encounter methods retain their separate rules.
+National Park grass and the Bug-Catching Contest share one pool of 17 families. All 17 belong to the park in every save, an exception to the usual eight-family land pool and the random assignment per save file.
 
 Both modes use the park's [distance cap](#wilds-1-starting-city-distance-based-wild-level-caps), [level distribution](#level-distribution), and [encounter stages](#wilds-3-encounter-stage-evolution--devolution).
 
-Contest judging awards a family entry value of **60 / 80 / 100** for common / normal / rare-or-rarer families, plus up to **100** each for level relative to the park cap, IV quality, and remaining HP. Evolution stage does not change the family entry value. NPC contestants draw from the same pool and use the same score scale. The contest is available **every day**, with **one entry per day**. It retains its real-time timer, Sport Balls, party restriction, catch replacement, and prizes.
+Contest judging awards a family entry value of **60 / 80 / 100** for common / normal / rare-or-rarer families, plus up to **100** each for level relative to the park cap, IV quality, and remaining HP. Evolution stage does not change the family entry value. NPC contestants draw from the same pool and use the same score scale. The contest is available **every day**, with **one entry per day**. The time limit is **four in-game hours**, using the existing accelerated clock. It retains Sport Balls, the party restriction, catch replacement, and prizes.
 
 ## Persistence and seed
 

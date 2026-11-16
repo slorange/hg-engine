@@ -13,7 +13,7 @@ Uh-oh...\nYou have more than one Pokémon.\rYou’ll have to use {STRVAR_1 1, 0,
       
 Fine, we’ll hold your other Pokémon\nwhile you compete.\r{STRVAR_1 3, 0, 0}’s Pokémon were left with\nthe Contest Helper.\r
 Here are the Sport Balls for the\nContest.\r{STRVAR_1 3, 0, 0} received 20 Sport Balls.\r
-The person who gets the strongest bug\nPokémon is the winner.\rYou have 20 minutes.\rIf you run out of Sport Balls, you’re\ndone.\rYou can keep the last Pokémon you\ncatch as your own.\rGo out and catch the strongest\nBug-type Pokémon you can find!\r
+The person who gets the strongest bug\nPokémon is the winner.\rYou have 4 hours.\rIf you run out of Sport Balls, you’re\ndone.\rYou can keep the last Pokémon you\ncatch as your own.\rGo out and catch the strongest\nBug-type Pokémon you can find!\r
 Oh no!\rI’m sorry, you don’t have enough\nroom to catch any more Pokémon.
 OK. We hope you’ll take part in the\nfuture.
 Today’s Bug-Catching Contest is over.\rWe hope you will participate again in\nthe future.

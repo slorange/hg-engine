@@ -2,6 +2,15 @@
 #include "include/debug.h"
 #include "include/constants/save.h"
 
+# Bug-Catching Contest: 240 game minutes (4 hours), preserving the existing clock.
+# FieldSystem_UpdateBugContest: cmp r0, #20 -> cmp r0, #240.
+0001 021E7A7E F0 28
+# BugContestGetTimeLeft: compare and subtract the same 240-minute limit.
+0001 02202A9A F0 29
+0001 02202A9E F0 20
+# Remaining minutes can now exceed 99: format up to three digits.
+0001 02202AB0 03 23
+
 #updating old moves
 
 #Binding moves 1/8th

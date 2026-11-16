@@ -115,8 +115,6 @@ u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
     u16 familyId;
     u16 species;
     u8 i;
-    u16 totalWeight = 0;
-    u16 roll;
     u16 slotBases[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];
     const EcologyWorldSave *eco;
 
@@ -191,27 +189,8 @@ u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
         return 0;
     }
 
-    // Ordinary areas keep equal slot odds; the park uses family rarity weights.
-    if (method == ECOLOGY_METHOD_LAND
-        && (encBank == ENCDATA_D22R0101_NATIONAL_PARK
-            || encBank == ENCDATA_D22R0102_NATIONAL_PARK_BUG_CATCHING_CONTEST)) {
-        static const u8 weights[] = { 3, 9, 1, 1 };
-        for (i = 0; i < eligibleCount; i++) {
-            familyId = eco->familyIds[base + eligible[i]];
-            totalWeight += weights[ECO_FAMILY_INFO(familyId).rarity];
-        }
-        roll = gf_rand() % totalWeight;
-        for (pickIndex = 0; pickIndex < eligibleCount - 1; pickIndex++) {
-            familyId = eco->familyIds[base + eligible[pickIndex]];
-            i = weights[ECO_FAMILY_INFO(familyId).rarity];
-            if (roll < i) {
-                break;
-            }
-            roll -= i;
-        }
-    } else {
-        pickIndex = gf_rand() % eligibleCount;
-    }
+    // Uniform selection among slots eligible at the current time, including the park.
+    pickIndex = gf_rand() % eligibleCount;
     familyId = eco->familyIds[(u16)(base + eligible[pickIndex])];
     species = ECO_FAMILY_INFO(familyId).baseSpecies;
     if (species == 0) {
