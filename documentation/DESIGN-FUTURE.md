@@ -19,10 +19,10 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-9. Time advancement](#future-9-time-advancement) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
+| [Future-11. Pokémon Research Society](#future-11-pokémon-research-society) |
 | [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
 | [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
-| [Future-15. Pokémon Research Society](#future-15-pokémon-research-society) |
 | [Priority](#priority) |
 
 ---
@@ -281,7 +281,7 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 | **Apricorn crafting** | Convert Apricorns into specialty Poké Balls using Kurt’s service ([Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance)), without returning to Azalea. | Planned |
 | **Move Tutor** | Make special move tutoring available from any Center. | Maybe |
 | **Specialty Trader** | Exchange items or currencies for selected rewards. Inventory and pricing TBD. | Maybe |
-| **Research representative** | Register Arceus Plates and claim plate and Pokédex rewards ([Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society)). | Planned |
+| **Research representative** | Register Arceus Plates and claim plate and Pokédex rewards ([Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society)). | Planned |
 
 Other services may be added as future systems develop. Keep location-specific shops and rewards in the world when they provide a meaningful reason to explore.
 
@@ -497,153 +497,7 @@ Map-level trainer generation, movement, and placement — distinct from [Battle-
 
 ---
 
-# Future-12. Unown collection quest
-
-Collect all **28 Unown forms** across Johto and Kanto. Each **unique form** registered in the Pokédex **permanently** improves **all Unown** in the player’s collection. Completing forms also improves **Hidden Power globally** for every Pokémon (not only Unown).
-
-## Progression
-
-Scaling is linear from 0 unique forms registered to 28.
-
-| Track | At 0 forms | At 28 forms |
-| ----- | ---------- | ----------- |
-| **BST** | 44 / 66 / 44 / 66 / 44 / 44 (**308** total) | 100 / 150 / 100 / 150 / 100 / 100 (**700** total) |
-| **Hidden Power (all Pokémon)** | **60** BP, fixed base power (not IV-dependent) | **100** BP, same fixed-power rule |
-| **Catch rate (Unown)** | **255** | **3** |
-
-- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-15](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed ([World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels)).
-- **Ability (Unown only):** custom ability — all **damaging** moves deal **+33%**; Unown is **typeless** (no weaknesses, resistances, or STAB).
-- **Wild held item:** **50%** chance to hold **TM10 (Hidden Power)**.
-
-## Moveset
-
-| Level | Moves |
-| ----- | ----- |
-| 1 | Secret Power, Ancient Power, Ominous Wind, Silver Wind, Hidden Power |
-| 15 | Teleport |
-| 30 | Safeguard |
-| 45 | Recover |
-| 60 | Perish Song |
-
-## Encounter locations
-
-Each location’s **theme word** lists the **unique letter forms** that can appear there. Letters may overlap between locations.
-
-| Location | Theme / available forms |
-| -------- | ------------------------ |
-| Ruins of Alph | RUINS + ALPH + UNOWN |
-| Dark Cave | DARK |
-| Union Cave | UNION |
-| Slowpoke Well | SLOW |
-| Ilex Forest | ILEX |
-| Sprout Tower | GROW |
-| Burned Tower | FIRE |
-| Bell Tower | BELL |
-| Mt. Mortar | MORTAR |
-| Lake of Rage | RAGE |
-| Ice Path | ICE |
-| Dragon's Den | DRAGON |
-| Whirl Islands | WHIRL |
-| Mt. Moon | MOON |
-| Rock Tunnel | ROCK |
-| Diglett's Cave | DIG |
-| Seafoam Islands | FROST |
-| Victory Road | VICTORY |
-| Tohjo Falls | TOHJO |
-| Cinnabar | MAGMA |
-
-### Endgame and exclusive forms
-
-- **Q**, **Z**, **!**, **?** — one each from a **Johto roamer**, **Kanto roamer**, **Mt. Silver**, and **Cerulean Cave** (exact assignments TBD).
-- **V** and **Y** — **Victory Road only** ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) **16-badge** gate).
-
-### Wild encounter rules
-
-- At each designated location, **5%** of wild encounters are **Unown** instead of the normal slot species.
-- When Unown is selected, pick **uniformly** among that location’s allowed forms; otherwise use normal encounter tables.
-- Applies to **grass**, **cave**, **Surf**, **Rock Smash**, and **Headbutt**.
-- **Ruins of Alph** needs a special case — vanilla-style **100% Unown** areas remain; do not double-stack the 5% rule blindly.
-
-### UX and postgame hooks
-
-- **Caught indicator:** Prefer showing the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
-- Unown collection may grant **clues** or **unlock options** for legendary / mythical postgame content ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes), [Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society) — TBD).
-- The research society may also give a reward for each newly registered Unown form ([Future-15](DESIGN-FUTURE.md#pokédex-research)).
-
-## Open design questions
-
-- How global Hidden Power BP scales per form vs only at milestones.
-- Roamer / Mt. Silver / Cerulean Cave assignments for **!** and **?**.
-
----
-
-# Future-13. Expanded stone mechanics
-
-Evolution stones become more flexible for the matching **elemental type** (Fire Stone on Fire-types, Water Stone on Water-types, etc.).
-
-## Pokémon that do not normally evolve with that stone
-
-Using the matching stone **lowers the next natural level-up evolution by ~5 levels** (one step toward the target stage). Exact stacking rules TBD.
-
-Example — Cyndaquil line (natural levels **16** / **36**):
-
-- Stone on Fire-type at **11+** / **31+** instead of waiting for 16 / 36.
-
-Example — Rapidash (natural level **40**):
-
-- Level **40** as today, **or** Fire Stone on Ponyta/Rapidash at **35+**.
-
-## Pokémon that normally evolve by stone only
-
-- **Stone at any level** (keep the classic convenience).
-- **Also** a **high level-up path** without the stone.
-
-| Stage pattern | Stone | Level without stone |
-| ------------------------------------------------- | --------------------------- | ------------------- |
-| 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **35** |
-| 2nd stage, stone-only (e.g. Gloom, Poliwhirl) | matching stone at any level | **50** |
-
-## Eevee
-
-Every species has room for **9** evolution methods. Eevee already fills that list: the stones, friendship, and Fairy-move methods, plus leveling up on Route 10 for Jolteon ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
-
-Eevee is the exception. These extra methods are added for Eevee only. The limit stays **9** for every other species.
-
-| Extra method | Evolves into | Alongside |
-| --- | --- | --- |
-| Moss rock (Ilex Forest or Viridian Forest) | Leafeon | Leaf Stone |
-| Icy rock (Ice Path B3F or Seafoam Islands B4F) | Glaceon | Ice Stone |
-| Dawn Stone | Espeon | daytime friendship |
-| Dusk Stone | Umbreon | nighttime friendship |
-| Shiny Stone | Sylveon | knowing a Fairy move |
-
-## Open design questions
-
-- Exact −5 behaviour: one-time per stage, permanent flag, or repeatable?
-- Dual-types: either type matches, or primary type only?
-- Using a stone on a Pokémon with no evolution in that line — no effect?
-- Interaction with [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) evolution exclusions for generated trainer teams.
-
-Shop availability for stones: [World-6](DESIGN-WORLD.md#world-6-shops).
-
----
-
-# Future-14. Other potential changes
-
-Ideas that do not have their own `Future-*` section yet.
-
-- **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
-- **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
-- **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
-- **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
-- **Pokémon balance** — every species reasonably viable; encounter rarity roughly reflects power; adjust BST, abilities, and learnsets as needed.
-- **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …). Plate and Pokédex collection is [Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society).
-- **Battle AI** — increase switching for type matchups when no good damaging move is available.
-- **Separate Blackthorn and Battle Frontier shops** — give each shop its own inventory so Blackthorn’s themed stock can change independently of the Battle Frontier.
-
----
-
-# Future-15. Pokémon Research Society
+# Future-11. Pokémon Research Society
 
 A shared research organization with representatives in every Pokémon Center. The representative is a service in the shared hub ([Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub)), so the player can register finds and claim rewards from any Center.
 
@@ -717,6 +571,155 @@ The same researchers may give a reward each time the player registers a new Unow
 
 ---
 
+# Future-12. Unown collection quest
+
+Collect all **28 Unown forms** across Johto and Kanto. Each **unique form** registered in the Pokédex **permanently** improves **all Unown** in the player’s collection. Completing forms also improves **Hidden Power globally** for every Pokémon (not only Unown).
+
+## Progression
+
+Scaling is linear from 0 unique forms registered to 28.
+
+| Track | At 0 forms | At 28 forms |
+| ----- | ---------- | ----------- |
+| **BST** | 44 / 66 / 44 / 66 / 44 / 44 (**308** total) | 100 / 150 / 100 / 150 / 100 / 100 (**700** total) |
+| **Hidden Power (all Pokémon)** | **60** BP, fixed base power (not IV-dependent) | **100** BP, same fixed-power rule |
+| **Catch rate (Unown)** | **255** | **3** |
+
+- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-11](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed ([World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels)).
+- **Ability (Unown only):** custom ability — all **damaging** moves deal **+33%**; Unown is **typeless** (no weaknesses, resistances, or STAB).
+- **Wild held item:** **50%** chance to hold **TM10 (Hidden Power)**.
+
+## Moveset
+
+| Level | Moves |
+| ----- | ----- |
+| 1 | Secret Power, Ancient Power, Ominous Wind, Silver Wind, Hidden Power |
+| 15 | Teleport |
+| 30 | Safeguard |
+| 45 | Recover |
+| 60 | Perish Song |
+
+## Encounter locations
+
+Each location’s **theme word** lists the **unique letter forms** that can appear there. Letters may overlap between locations.
+
+| Location | Theme / available forms |
+| -------- | ------------------------ |
+| Ruins of Alph | RUINS + ALPH + UNOWN |
+| Dark Cave | DARK |
+| Union Cave | UNION |
+| Slowpoke Well | SLOW |
+| Ilex Forest | ILEX |
+| Sprout Tower | GROW |
+| Burned Tower | FIRE |
+| Bell Tower | BELL |
+| Mt. Mortar | MORTAR |
+| Lake of Rage | RAGE |
+| Ice Path | ICE |
+| Dragon's Den | DRAGON |
+| Whirl Islands | WHIRL |
+| Mt. Moon | MOON |
+| Rock Tunnel | ROCK |
+| Diglett's Cave | DIG |
+| Seafoam Islands | FROST |
+| Victory Road | VICTORY |
+| Tohjo Falls | TOHJO |
+| Cinnabar | MAGMA |
+
+### Endgame and exclusive forms
+
+- **Q**, **Z**, **!**, **?** — one each from a **Johto roamer**, **Kanto roamer**, **Mt. Silver**, and **Cerulean Cave** (exact assignments TBD).
+- **V** and **Y** — **Victory Road only** ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) **16-badge** gate).
+
+### Wild encounter rules
+
+- At each designated location, **5%** of wild encounters are **Unown** instead of the normal slot species.
+- When Unown is selected, pick **uniformly** among that location’s allowed forms; otherwise use normal encounter tables.
+- Applies to **grass**, **cave**, **Surf**, **Rock Smash**, and **Headbutt**.
+- **Ruins of Alph** needs a special case — vanilla-style **100% Unown** areas remain; do not double-stack the 5% rule blindly.
+
+### UX and postgame hooks
+
+- **Caught indicator:** Prefer showing the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
+- Unown collection may grant **clues** or **unlock options** for legendary / mythical postgame content ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes), [Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society) — TBD).
+- The research society may also give a reward for each newly registered Unown form ([Future-11](DESIGN-FUTURE.md#pokédex-research)).
+
+## Open design questions
+
+- How global Hidden Power BP scales per form vs only at milestones.
+- Roamer / Mt. Silver / Cerulean Cave assignments for **!** and **?**.
+
+---
+
+# Future-13. Expanded stone mechanics
+
+Evolution stones become more flexible for the matching **elemental type** (Fire Stone on Fire-types, Water Stone on Water-types, etc.).
+
+## Pokémon that do not normally evolve with that stone
+
+Using a matching stone causes **immediate evolution** once the Pokémon reaches **75% of its normal level-up evolution level, rounded up**. Either current type may match. This advances one stage, consumes the stone on successful use, and stores no permanent level reduction. Below the requirement, the party menu shows **LV** followed by the required level; incompatible Pokémon remain **UNABLE**, and eligible Pokémon show **ABLE**.
+
+**Proof of concept implemented:** Fire, Water, Leaf, Thunder, and Ice Stones match Fire, Water, Grass, Electric, and Ice respectively. Only plain level-up evolutions qualify. Existing explicit stone evolutions retain their usual behavior. Move-known evolutions are excluded; all other special methods and additional items remain outside the proof of concept.
+
+Example — Cyndaquil line (natural levels **14** / **36**):
+
+- Fire Stone at **11+** / **27+** instead of waiting for 14 / 36.
+
+Example — Rapidash (natural level **40**):
+
+- Ponyta evolves normally at **40**, or immediately with a Fire Stone at **30+**. Rapidash has no further plain level-up evolution, so this does not make it eligible for another stage.
+
+## Pokémon that normally evolve by stone only
+
+- **Stone at any level** (keep the classic convenience).
+- **Also** a **high level-up path** without the stone.
+
+| Stage pattern | Stone | Level without stone |
+| ------------------------------------------------- | --------------------------- | ------------------- |
+| 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **40** |
+| 2nd stage, stone-only (e.g. Gloom, Poliwhirl) | matching stone at any level | **55** |
+
+## Eevee
+
+Every species has room for **9** evolution methods. Eevee already fills that list: the stones, friendship, and Fairy-move methods, plus leveling up on Route 10 for Jolteon ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
+
+Eevee is the exception. These extra methods are added for Eevee only. The limit stays **9** for every other species.
+
+| Extra method | Evolves into | Alongside |
+| --- | --- | --- |
+| Moss rock (Ilex Forest or Viridian Forest) | Leafeon | Leaf Stone |
+| Icy rock (Ice Path B3F or Seafoam Islands B4F) | Glaceon | Ice Stone |
+| Dawn Stone | Espeon | daytime friendship |
+| Dusk Stone | Umbreon | nighttime friendship |
+| Shiny Stone | Sylveon | knowing a Fairy move |
+
+## Open design questions
+
+- Which additional items match which types, including non-elemental stones and items such as Metal Coat?
+- Which special evolution methods beyond plain level-up should support early item evolution? Move-known methods remain excluded.
+- High-level alternatives for friendship and other special methods, and player branch selection. Eevee receives no high-level fallback.
+- High-level fallbacks should intentionally cap wild/trainer probability curves; branching encounters use their existing random branch selection at the ceiling.
+- Interaction with [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) evolution exclusions for generated trainer teams.
+
+Shop availability for stones: [World-6](DESIGN-WORLD.md#world-6-shops).
+
+---
+
+# Future-14. Other potential changes
+
+Ideas that do not have their own `Future-*` section yet.
+
+- **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
+- **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
+- **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
+- **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
+- **Pokémon balance** — every species reasonably viable; encounter rarity roughly reflects power; adjust BST, abilities, and learnsets as needed.
+- **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …). Plate and Pokédex collection is [Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society).
+- **Battle AI** — increase switching for type matchups when no good damaging move is available.
+- **Separate Blackthorn and Battle Frontier shops** — give each shop its own inventory so Blackthorn’s themed stock can change independently of the Battle Frontier.
+
+---
+
 # Priority
 
 Working scores for what to build next. [Future-14](#future-14-other-potential-changes) is a list of leftovers, not one feature, so it has no row.
@@ -745,6 +748,6 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
 | [Future-9](#future-9-time-advancement) Time advancement | 4 | 1 | 1 | 1 | 3 | 1 | — |
-| [Future-15](#future-15-pokémon-research-society) Pokémon Research Society | 3 | 2 | 3 | 3 | 2 | 2 | [Future-6](#future-6-shared-pokémon-center-hub) |
+| [Future-11](#future-11-pokémon-research-society) Pokémon Research Society | 3 | 2 | 3 | 3 | 2 | 2 | [Future-6](#future-6-shared-pokémon-center-hub) |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
 | [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | Moon Ball  wants [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) |

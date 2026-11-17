@@ -3,6 +3,7 @@
 #include "types.h"
 
 #include "pokemon.h"
+#include "stone_level_evolution.h"
 
 #include "constants/ability.h"
 #include "constants/file.h"
@@ -1141,6 +1142,10 @@ BOOL LONG_CALL CanUseItemOnMonInParty(struct Party *party, u16 itemID, s32 party
 {
     struct PartyPokemon *mon = Party_GetMonByIndex(party, partyIdx);
 
+    if (GetStoneLevelEvolutionRequirement(mon, itemID) != 0) {
+        return GetMonEvolution(party, mon, EVOCTX_ITEM_USE, itemID, NULL) != SPECIES_NONE;
+    }
+
     if (GetItemData(itemID, ITEM_PARAM_LEVEL_UP, heapID) && GetMonData(mon, MON_DATA_LEVEL, NULL) == 100 && GetMonEvolution(party, mon, EVOCTX_LEVELUP, itemID, NULL)) {
         return TRUE;
     }
@@ -1171,6 +1176,39 @@ BOOL LONG_CALL CanUseItemOnMonInParty(struct Party *party, u16 itemID, s32 party
  *  @param method_ret pointer to an integer to store the evolution method that was used to evolve
  *  @return the target species to evolve into
  */
+u8 LONG_CALL GetStoneLevelEvolutionRequirement(struct PartyPokemon *mon, u16 item)
+{
+    struct {
+        struct Evolution entries[MAX_EVOS_PER_POKE];
+        u16 terminator;
+    } table;
+    u16 species;
+    u32 form;
+    u8 type1, type2;
+    int i;
+    // Avoid NARC reads for unrelated item checks in the party menu.
+    if (item != ITEM_FIRE_STONE && item != ITEM_WATER_STONE && item != ITEM_LEAF_STONE &&
+        item != ITEM_THUNDER_STONE && item != ITEM_ICE_STONE) {
+        return 0;
+    }
+    if (GetMonData(mon, MON_DATA_IS_EGG, NULL)) {
+        return 0;
+    }
+    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    form = GetMonData(mon, MON_DATA_FORM, NULL);
+    type1 = GetMonData(mon, MON_DATA_TYPE_1, NULL);
+    type2 = GetMonData(mon, MON_DATA_TYPE_2, NULL);
+    species = PokeOtherFormMonsNoGet(species, form);
+    ReadWholeNarcMemberByIdPair(&table, ARC_EVOLUTIONS, species);
+    for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
+        u8 required = StoneLevelEvolutionRequirement(item, type1, type2, &table.entries[i]);
+        if (required != 0) {
+            return required;
+        }
+    }
+    return 0;
+}
+
 u16 LONG_CALL GetMonEvolution(struct Party *party, struct PartyPokemon *pokemon, u8 context, u16 usedItem, int *method_ret)
 {
     u32 ovyId, target, offset;

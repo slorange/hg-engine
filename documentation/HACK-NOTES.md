@@ -2266,3 +2266,12 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 **Gym-area story skip (Radio Tower / Elm phone coord):** vanilla **coord script 2** at world **(272, 239)** (west of the gym) when **`VAR_UNK_4078`** is 0 — not the rival hide flag (**470**). Mom intro sets **4078 → 1** (`openworld_story_skip_flags.inc`); **`tools/patch_scr_seq_olivine_gym_story.py`** NOPs scr_seq **911** slot **2** entry; **`tools/patch_zone_event_olivine_gym_story.py`** removes the coord from **074**.
 
+
+
+## Elemental stone early-evolution proof of concept
+
+`include/stone_level_evolution.h` supplies the shared rule: Fire/Water/Leaf/Thunder/Ice Stone must match either current Pokémon type, the evolution method must be plain `EVO_LEVEL`, and the requirement is `(normalLevel * 3 + 3) / 4`. No species exceptions, new evolution entries, or saved modifiers are used. Existing explicit item methods take priority in `src/individual/GetMonEvolutionInternal.c`. Both item-check and item-use contexts resolve through this path; `CanUseItemOnMonInParty` explicitly routes matching level-up cases through the item-use resolver before the existing bag-consumption gate.
+
+`GetStoneLevelEvolutionRequirement` in `src/pokemon.c` reads the full evolution NARC record, including its trailing terminator, for the shared threshold. `PartyMenu_PrintEvoStoneCompatString` replaces ARM9 `0x0207DC20` via `hooks`; its original caller remains in place. Below-level compatible Pokémon display `LVnn` in the existing compatibility window. Native ABLE/UNABLE strings and palette are retained. The hook address and call signature were checked against ARM9 disassembly and pret’s `party_context_menu.c`.
+
+Verification: Docker/Linux `python3 scripts/dev/verify_stone_level_evolution.py` compiles the actual requirement reader, item-resolution branch, and menu-label function against the current evolution data. Tests cover all five stones, either matching type, rounded thresholds, immediate targets, native stone methods, wrong types/items, final forms, move-known exclusions, eggs, and LV32/ABLE/UNABLE output. In-game menu rendering and evolution animation still require playtesting. Design: [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).

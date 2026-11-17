@@ -414,7 +414,7 @@ Curated prize lists aligned with the matrix (not the ground/hidden random pool, 
 
 ## Pokédex milestone rewards
 
-**Pokédex completion thresholds** grant rare items. Milestones are **curated** (specific rewards at specific counts), not random rolls from the ground/hidden pool. Exact items, amounts, and thresholds TBD. The research society in Pokémon Centers may be where these are claimed ([Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society)).
+**Pokédex completion thresholds** grant rare items. Milestones are **curated** (specific rewards at specific counts), not random rolls from the ground/hidden pool. Exact items, amounts, and thresholds TBD. The research society in Pokémon Centers may be where these are claimed ([Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society)).
 
 ## Mints, Bottle Caps, Ability Capsules and Patches
 
@@ -428,7 +428,7 @@ Curated prize lists aligned with the matrix (not the ground/hidden random pool, 
 
 **Bottle Caps.** Silver and Gold Caps cannot be used. Hyper Training is not implemented.
 
-**Hidden Power** type is set by using an Arceus Plate on the Pokémon. The plate stays in the bag ([Future-15](DESIGN-FUTURE.md#hidden-power)). Until then, the type stays IV-dependent. The Unown collection scales Hidden Power’s power ([Future-12](DESIGN-FUTURE.md#future-12-unown-collection-quest)).
+**Hidden Power** type is set by using an Arceus Plate on the Pokémon. The plate stays in the bag ([Future-11](DESIGN-FUTURE.md#hidden-power)). Until then, the type stays IV-dependent. The Unown collection scales Hidden Power’s power ([Future-12](DESIGN-FUTURE.md#future-12-unown-collection-quest)).
 
 ---
 

@@ -15,6 +15,7 @@
 #include "battle.h"
 #include "overlay.h"
 #include "pokemon.h"
+#include "stone_level_evolution.h"
 #include "rtc.h"
 #include "save.h"
 #include "script.h"
@@ -75,7 +76,7 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
 
     species = PokeOtherFormMonsNoGet(species, form); // factor in form into species to cover shit like galarian corsola + cap pikachu that can't evolve
 
-    evoTable = sys_AllocMemory(3, MAX_EVOS_PER_POKE * sizeof(struct Evolution));
+    evoTable = sys_AllocMemory(3, MAX_EVOS_PER_POKE * sizeof(struct Evolution) + sizeof(u16));
     ReadWholeNarcMemberByIdPair(evoTable, ARC_EVOLUTIONS, species);
 
     switch (context) {
@@ -396,6 +397,19 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
                 target = evoTable[i].target & 0x7FF;
                 *method_ret = 0;
                 break;
+            }
+        }
+        // Explicit item evolutions above take priority and retain their normal rules.
+        if (target == SPECIES_NONE && !GetMonData(pokemon, MON_DATA_IS_EGG, NULL)) {
+            u8 type1 = GetMonData(pokemon, MON_DATA_TYPE_1, NULL);
+            u8 type2 = GetMonData(pokemon, MON_DATA_TYPE_2, NULL);
+            for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
+                u8 required = StoneLevelEvolutionRequirement(usedItem, type1, type2, &evoTable[i]);
+                if (required != 0 && level >= required) {
+                    target = evoTable[i].target & 0x07FF;
+                    *method_ret = 0;
+                    break;
+                }
             }
         }
 #if defined(IMPLEMENT_LEVEL_CAP) && defined(ALLOW_LEVEL_CAP_EVOLVE)
