@@ -12,9 +12,9 @@
 | [World-1. World Transportation](#world-1-world-transportation) | PARTIALLY IMPLEMENTED |
 | [World-2. Routes and Content Gating](#world-2-routes-and-content-gating) | PARTIALLY IMPLEMENTED (PoC) |
 | [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | IMPLEMENTED |
-| [World-4. TMs](#world-4-tms) | DECIDED — **core release target** (renewable shop TMs) |
-| [World-5. Evolution Methods (Trade & Stones)](#world-5-evolution-methods-trade--stones) | DECIDED |
-| [World-6. Shops](#world-6-shops) | DECIDED — **core release target** (TMs, evolution items) |
+| [World-4. TMs](#world-4-tms) | PARTIALLY IMPLEMENTED |
+| [World-5. Evolution Methods (Trade & Stones)](#world-5-evolution-methods-trade--stones) | IMPLEMENTED |
+| [World-6. Shops](#world-6-shops) | IMPLEMENTED |
 | [World-7. Berry economy](#world-7-berry-economy) | IMPLEMENTED |
 | [World-8. Item acquisition channels](#world-8-item-acquisition-channels) | PARTIALLY IMPLEMENTED |
 | [World-9. Accelerated day/night cycle](#world-9-accelerated-daynight-cycle) | PARTIALLY IMPLEMENTED |

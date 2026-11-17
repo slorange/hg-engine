@@ -206,8 +206,9 @@ static u8 RollWildLevelAdultBand(u8 cap)
     return RollWildLevelUniform(adultLo, cap);
 }
 
-u8 RollWildLevel(u8 cap)
+u8 RollWildLevel(u8 cap, BOOL *babyRoll)
 {
+    *babyRoll = FALSE;
     if (cap <= WILD_ENCOUNTER_LEVEL_MIN) {
         return WILD_ENCOUNTER_LEVEL_MIN;
     }
@@ -217,6 +218,7 @@ u8 RollWildLevel(u8 cap)
     }
 
     if ((gf_rand() % 100) < WILD_LEVEL_BABY_ROLL_PERCENT) {
+        *babyRoll = TRUE;
         return RollWildLevelUniform(WILD_ENCOUNTER_LEVEL_MIN, WILD_LEVEL_BABY_MAX);
     }
 
@@ -247,8 +249,9 @@ static u8 DiagnosticWildLevel(u8 failReason, u8 cap)
 }
 #endif
 
-static u8 ChooseWildLevel(u8 failReason, u8 cap, u8 encBank, u8 usedCachedCap, u16 mapId)
+static u8 ChooseWildLevel(u8 failReason, u8 cap, u8 encBank, u8 usedCachedCap, u16 mapId, BOOL *babyRoll)
 {
+    *babyRoll = FALSE;
 #ifdef DEBUG_WILD_LEVEL_CAP_LEVELS
     (void)encBank;
     (void)usedCachedCap;
@@ -263,13 +266,13 @@ static u8 ChooseWildLevel(u8 failReason, u8 cap, u8 encBank, u8 usedCachedCap, u
     if (failReason != WLC_FAIL_NONE) {
         return WILD_LEVEL_CAP_MIN;
     }
-    return RollWildLevel(cap);
+    return RollWildLevel(cap, babyRoll);
 #endif
 }
 
-static void ApplyWildSpeciesStageForLevel(struct PartyPokemon *pp, u8 level)
+static void ApplyWildSpeciesStageForLevel(struct PartyPokemon *pp, u8 level, BOOL babyRoll)
 {
-    ApplyEncounterStageAdjustToMon(pp, level, gf_rand());
+    ApplyEncounterStageAdjustToMon(pp, level, (u32)gf_rand() | ((u32)gf_rand() << 16), ENCOUNTER_STAGE_WILD, babyRoll);
 }
 
 static void SetWildMonLevel(struct PartyPokemon *pp, u8 level)
@@ -284,9 +287,9 @@ static void SetWildMonLevel(struct PartyPokemon *pp, u8 level)
     pp->party.level = level;
 }
 
-void ApplyWildEncounterLevelAndStage(struct PartyPokemon *pp, u8 level)
+void ApplyWildEncounterLevelAndStage(struct PartyPokemon *pp, u8 level, BOOL babyRoll)
 {
-    ApplyWildSpeciesStageForLevel(pp, level);
+    ApplyWildSpeciesStageForLevel(pp, level, babyRoll);
     SetWildMonLevel(pp, level);
     ApplyEncounterGenderAfterStageAdjust(pp);
     RecalcPartyPokemonStats(pp);
@@ -356,6 +359,7 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
     u8 encBank;
     u8 usedCachedCap;
     u8 failReason;
+    BOOL babyRoll = FALSE;
 
     if (pp == NULL) {
         return;
@@ -382,10 +386,10 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
         }
     }
 #else
-    level = ChooseWildLevel(failReason, cap, encBank, usedCachedCap, sWildLevelCapDebug.mapId);
+    level = ChooseWildLevel(failReason, cap, encBank, usedCachedCap, sWildLevelCapDebug.mapId, &babyRoll);
 #endif
     // Stage adjust needs field-overlay rodata; skip safely if build-time patch missing.
-    ApplyWildEncounterLevelAndStage(pp, level);
+    ApplyWildEncounterLevelAndStage(pp, level, babyRoll);
 
     sWildLevelCapDebug.usedCachedCap = usedCachedCap;
     sWildLevelCapDebug.appliedLevel = level;

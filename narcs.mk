@@ -213,7 +213,7 @@ SYNTHETIC_EVO_EDGES_H := include/constants/generated/synthetic_evo_edges.h
 SYNTHETIC_EVO_EDGES_SCRIPT := scripts/build/gen_synthetic_evo_edges.py
 SYNTHETIC_EVO_EDGES_TSV := data/synthetic_evolution_thresholds.tsv
 
-$(SYNTHETIC_EVO_EDGES_C) $(SYNTHETIC_EVO_EDGES_H): $(SYNTHETIC_EVO_EDGES_TSV) $(SYNTHETIC_EVO_EDGES_SCRIPT) include/constants/species.h
+$(SYNTHETIC_EVO_EDGES_C) $(SYNTHETIC_EVO_EDGES_H): $(SYNTHETIC_EVO_EDGES_TSV) data/encounter_babies.txt $(SYNTHETIC_EVO_EDGES_SCRIPT) include/constants/species.h
 	$(PYTHON) $(SYNTHETIC_EVO_EDGES_SCRIPT)
 
 WILD_LEVEL_CAPS_C := src/field/wild_level_caps_data.c

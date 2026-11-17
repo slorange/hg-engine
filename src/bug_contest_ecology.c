@@ -74,7 +74,8 @@ void BugContest_InitEcologyEntries(BugContest *contest)
         contest->contestants[i].score = 0;
         for (roll = 0; roll < CONTEST_OPPONENT_ROLLS; roll++) {
             u16 species = EcologyRollSpeciesForEncounterBank(PARK_BANK, ECOLOGY_METHOD_LAND);
-            u8 level = RollWildLevel(cap);
+            BOOL babyRoll;
+            u8 level = RollWildLevel(cap, &babyRoll);
             u32 personality = (u32)gf_rand() | ((u32)gf_rand() << 16);
             u16 score;
             if (species == 0) {
@@ -84,7 +85,7 @@ void BugContest_InitEcologyEntries(BugContest *contest)
             // and one perfect IV match the contest's wild-mon rules.
             PokeParaSet(candidate, species, level, 32, TRUE, personality, 0, 0);
             SetMonData(candidate, MON_DATA_HP_IV + gf_rand() % 6, &perfectIv);
-            ApplyWildEncounterLevelAndStage(candidate, level);
+            ApplyWildEncounterLevelAndStage(candidate, level, babyRoll);
             score = ContestStatTotal(candidate);
             if (score > contest->contestants[i].score) {
                 contest->contestants[i].data.species = GetMonData(candidate, MON_DATA_SPECIES, NULL);

@@ -81,8 +81,6 @@ static u16 PickTrainerLevelInBand(u8 floor, u8 ceiling)
     return (u16)(floor + (gf_rand() % range));
 }
 
-#if defined(TRAINER_GYM_LEADER_CAP_LEVEL)
-
 /**
  *  @brief true for Johto/Kanto Gym Leader trainer classes
  */
@@ -111,7 +109,25 @@ static BOOL IsGymLeaderTrainerClass(u8 trainerClass)
     }
 }
 
-#endif // TRAINER_GYM_LEADER_CAP_LEVEL
+
+
+// Class identity is shared by original fights and rematches.
+static u8 TrainerEncounterStageContext(u8 trainerClass)
+{
+    if (IsGymLeaderTrainerClass(trainerClass)) {
+        return ENCOUNTER_STAGE_LEADER;
+    }
+    switch (trainerClass) {
+    case TRAINERCLASS_ELITE_FOUR_WILL:
+    case TRAINERCLASS_ELITE_FOUR_KAREN:
+    case TRAINERCLASS_ELITE_FOUR_KOGA:
+    case TRAINERCLASS_ELITE_FOUR_BRUNO:
+    case TRAINERCLASS_CHAMPION:
+        return ENCOUNTER_STAGE_LEADER;
+    default:
+        return ENCOUNTER_STAGE_TRAINER;
+    }
+}
 
 #if defined(TRAINER_SPECIES_STAGE_ADJUST)
 
@@ -230,8 +246,8 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         } else {
             level = PickTrainerLevelInBand(trainerLevelFloor, trainerLevelCap);
         }
-        /* Independent roll for random50 synthetic branches (same global RNG as level). */
-        encounterBranchRoll = gf_rand();
+        /* One seed per slot for stage branches and probability rolls. */
+        encounterBranchRoll = (u32)gf_rand() | ((u32)gf_rand() << 16);
 #else
         encounterBranchRoll = 0;
 #endif
@@ -449,7 +465,8 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         ChangeToBattleForm(mons[i]);
 
 #if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
-        ApplyEncounterStageAdjustToMon(mons[i], (u8)level, encounterBranchRoll);
+        ApplyEncounterStageAdjustToMon(mons[i], (u8)level, encounterBranchRoll,
+            TrainerEncounterStageContext(bp->trainer_data[num].tr_type), FALSE);
         ResetPartyPokemonAbility(mons[i]);
 #endif
 

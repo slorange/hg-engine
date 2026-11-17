@@ -8,13 +8,15 @@
 
 | Section | Status |
 | ------- | ------ |
-| [Wilds-1. Starting-City Distance-Based Wild Level Caps](#wilds-1-starting-city-distance-based-wild-level-caps) | PARTIALLY IMPLEMENTED |
+| [Wilds-1. Starting-City Distance-Based Wild Level Caps](#wilds-1-starting-city-distance-based-wild-level-caps) | IMPLEMENTED* |
 | [Wilds-2. Wild Pokémon Level Range](#wilds-2-wild-pokémon-level-range) | IMPLEMENTED |
-| [Wilds-3. Encounter Stage (Evolution & Devolution)](#wilds-3-encounter-stage-evolution--devolution) | IMPLEMENTED (wild + trainer) |
+| [Wilds-3. Encounter Stage (Evolution & Devolution)](#wilds-3-encounter-stage-evolution--devolution) | IMPLEMENTED |
 | [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | IMPLEMENTED |
 | [Wilds-5. Pokémon Generations / Content Scope](#wilds-5-pokémon-generations--content-scope) | DECIDED (release scope) |
-| [Wilds-6. Per-save wild ecology shuffle](#wilds-6-per-save-wild-ecology-shuffle) | PARTIALLY IMPLEMENTED |
+| [Wilds-6. Per-save wild ecology shuffle](#wilds-6-per-save-wild-ecology-shuffle) | IMPLEMENTED* |
 | Expanded Pokédex / generations | Moved — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) |
+
+Wilds 1 and Wilds 6 are implemented with the exception of Safari Zone.
 
 **Encounter pipeline (wild grass/cave/etc.):** [Wilds-6](#wilds-6-per-save-wild-ecology-shuffle) species (where hooked) → [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps) area cap → [Wilds-2](#wilds-2-wild-pokémon-level-range) rolled level → [Wilds-3](#wilds-3-encounter-stage-evolution--devolution) species stage. **Trainer battles** use the same stage rules after their level is set ([Battle-2 § Trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)).
 
@@ -129,39 +131,48 @@ After the level is rolled, [Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evo
 
 # Wilds-3. Encounter Stage (Evolution & Devolution)
 
-**Status: IMPLEMENTED** — shared by **wild encounters** (after [Wilds-2](DESIGN-WILDS.md#level-distribution) roll) and **trainer Pokémon** (after [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) assigns level). Player party evolution ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)) is separate.
+**Status: IMPLEMENTED** — wild encounters resolve their stage after the [Wilds-2](DESIGN-WILDS.md#level-distribution) level roll; trainer teams resolve it after [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) assigns level. Player-owned Pokémon use their actual evolution methods ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
 
-For both wild and trainer Pokemon, we need to handle the cases where 
- - A first stage pokemon is now high level
- - A late stage pokemon is now low level
+For both wild and trainer mons, we need to handle the cases where a first stage pokemon is now high level, and a late stage pokemon is now low level.
 
-Once **level is fixed**, stage adjust:
+For level up evolutions this is trivial, we evolve or devolve based on the level. Learned move evolutions use the level the move is learned. Example in this ROM Piloswine learns Ancient Power at 36, so that is the threshold we use for wild and trainer Piloswine.
 
-1. Walk **prevos** through level-up evolution chains and **synthetic edges** to find the chain root (so authored finals **devolve** at low levels).
-2. Walk **forward** from that root, applying level-up thresholds then synthetic edges (minimum level per edge) up to a bounded number of steps.
+## Baby species
 
-Wild and trainer battles use the **same** rules today. Gym Leaders use the same path at battle start ([Battle-3](DESIGN-BATTLES.md#battle-3-gyms)). Wishlist: different evolution rates by context — [Future-11](DESIGN-FUTURE.md#future-11-encounter-stage-selection-wild--trainer).
+Ordinary wild encounters and trainer teams skip Pichu, Cleffa, Igglybuff, Togepi, Smoochum, Elekid, Magby, Azurill, Wynaut, Budew, Chingling, Bonsly, Mime Jr., Happiny, Munchlax, Riolu, and Mantyke. Their first non-baby stage is the family’s minimum encounter stage, regardless of level or its usual evolution method.
 
-## Synthetic evolution stages
+The special low-level baby roll in [Wilds-2](DESIGN-WILDS.md#level-distribution) may still produce these babies. A low level from an ordinary roll does not grant this exception.
 
-Synthetic thresholds stand in for trade, stone, friendship, move-known, and similar methods so tables can list one species without every high-level encounter being fully evolved.
+## Item and friendship evolution
 
-**Authoring tiers** (each data row has an explicit `min_level`; tiers guide the sheet, not runtime logic):
+For wild pokemon, a distinction is made for item evolutions based on whether this item could be found in the wild. Wild pokemon cannot evolve from friendship evolution.
 
-| Vanilla method | Stage 1 | Stage 2 |
-|----------------|--------:|--------:|
-| Trade (incl. held item) | 20 | 35 |
-| Stone (incl. location-based) | 25 | 35 |
-| Friendship (incl. time-of-day variants) | 20 | 30 |
-| Move-known | HGSS learn level + 1 | — |
+**Natural items:** evolution stones, King’s Rock, Dragon Scale, Metal Coat, Reaper Cloth, Prism Scale, Razor Fang, Razor Claw, Deep Sea Tooth, Deep Sea Scale, Black Augurite, and Peat Block. Their encounter evolution does not require an actual item, time of day, or location condition.
 
-**Special:** Piloswine → Mamoswine uses **34** (AncientPower is Lv1/relearner in HGSS; Swinub → Piloswine at 33).
+**Trainer-only items:** Link Cable, Up-Grade, Dubious Disc, Protector, Electirizer, and Magmarizer. Their evolutions do not occur through wild stage selection.
 
-**Branches:** empty = single outcome; `random50` = pick one row at random for the same source + `min_level` (Gloom, Poliwhirl, Clamperl, Wurmple).
+**Wild natural-item evolutions:** probability increases linearly from **0%** at the later of **level 15** or **five levels after the source stage becomes available**, to **100% at level 60**. For example, Growlithe starts at 15; Poliwhirl becomes available at 25, so its Poliwrath/Politoed curve starts at 30. Once a source stage is available at level 60 or above, its natural-item evolution is certain.
 
-**Deferred until later:** Eevee, Tyrogue, Shedinja, gendered evolutions (Burmy, Combee, Gallade, Froslass, etc.).
+**Trainer item evolutions:** probability increases linearly from **0% at 15** to **100% at 40** for ordinary trainers, or **100% at 25** for Gym Leaders and Elite Four. These endpoints use absolute level rather than time spent in the source stage. The Champion uses the same tier as Elite Four. Leader rematches retain Leader rates; ordinary rematches retain ordinary rates.
 
-Battle presentation (moves, stats, name, caught mon) follows the **resolved** stage species.
+**Trainer friendship evolutions:** probability increases linearly from **0% at 15** to **100% at 25** for ordinary trainers, or **100% at 20** for the Leader tier.
+
+## Fixed move-known thresholds
+
+Minor adjustments made to the learnset to adjust evolution levels:
+- Aipom → Ambipom: Double Hit at **28**; 
+- Lickitung → Lickilicky: Rollout at **30**.
+- Stantler → Wyrdeer: Psyshield Bash at **31**.
+- Tangela → Tangrowth: AncientPower at **32**; 
+- Girafarig → Farigiraf: Twin Beam at **32**; 
+- Dunsparce → Dudunsparce: Hyper Drill at **32**.
+- Yanma → Yanmega: AncientPower at **33**; 
+- Primeape → Annihilape: Rage Fist at **35**.
+- Piloswine → Mamoswine: AncientPower at **36** (Also Swinub → Piloswine at **22**)
+
+## Special Cases
+
+Where a pokemon can have multiple evolutions and the requirements are met, one is chosen at random. This applies to Wurmple, Nincada, Tyrogue, Kirlia, Snorunt, Eevee, Scyther. An additional check is done to ensure we don't end up with a gender / mon combination that isn't possible. If the pokemon ends up being a gallade or vespiquen then the gender is adjusted.
 
 ---
 

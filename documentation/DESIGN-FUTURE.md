@@ -19,7 +19,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-9. Time advancement](#future-9-time-advancement) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
-| [Future-11. Encounter stage selection (wild + trainer)](#future-11-encounter-stage-selection-wild--trainer) |
 | [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
 | [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
@@ -286,6 +285,10 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 
 Other services may be added as future systems develop. Keep location-specific shops and rewards in the world when they provide a meaningful reason to explore.
 
+## Existing Center NPCs
+
+Combining all Pokémon Centers into one shared interior will remove the NPCs from individual Centers. The existing NPC list has been reviewed: the **Route 32 fisherman** is the only one to preserve, and he must move outside the Center. The remaining flavor text, Bill event that eventually leads to an Eevee, and in-Center trades do not need to be preserved.
+
 ## Open Questions
 
 - Which existing Center interior should be used as the shared hub, and how should services be arranged for quick access?
@@ -494,44 +497,6 @@ Map-level trainer generation, movement, and placement — distinct from [Battle-
 
 ---
 
-# Future-11. Encounter stage selection (wild + trainer)
-
-**Release behaviour** ([Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution), [Battle-2 trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)): after an encounter level is known, `AdjustEncounterSpeciesForLevel` walks **prevos** through level-up and synthetic edges to the chain root, then walks **forward** applying both edge types (level ≥ `min_level` → step to evolved form; below threshold → lower stage). Verified Sep 2026 for wild rolls and trainer scaling (including devolving authored trade/stone finals). Wild and trainer battles share one ruleset today. Player evolution ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)) — trade-item use-on-Pokémon and Linking Cord shipped; wild/trainer stage adjust is separate.
-
-## Probabilistic synthetic evolutions
-
-Today, crossing a synthetic threshold always evolves (except explicit `random50` **branch** picks among equally authored outcomes — Gloom, Poliwhirl, Clamperl, Wurmple — not partial rates on a single edge).
-
-**Wishlist:** optional **partial** evolution for special methods (stone, trade, friendship, etc.) so tables can still list base species without every high-level encounter being fully evolved.
-
-| Idea | Example |
-|------|---------|
-| Fixed rate above threshold | 50% of Growlithe at Lv 25+ appear as Arcanine; 50% stay Growlithe. |
-| Level-scaled rate | Same threshold (e.g. 25), but probability rises with level — Lv 15 → 10%, Lv 30 → 40%, Lv 45 → 70%. |
-| Method-specific defaults | Stone-tier edges might default to higher certainty; friendship-tier edges might default to lower. |
-
-Authoring could extend `synthetic_evolution_thresholds.tsv` (or successor data) with `probability`, curves, or per-method columns. RNG should be **per encounter** (wild) or **per slot** (trainer), stable for that battle.
-
-## Wild vs trainer vs Gym Leader divergence
-
-Release: **identical** stage logic for wild rolls and trainer battle-start scaling (Gym Leaders use the same path at battle start today — [Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
-
-**Wishlist:** separate parameters or TSV views by **encounter context**, with a simple ordering for synthetic-edge certainty:
-
-**wild** → **ordinary trainer** → **Gym Leader** (each step: higher evolution rates across method classes, not only friendship).
-
-| Method class | Wild (example intent) | Ordinary trainer | Gym Leader |
-|--------------|----------------------|------------------|------------|
-| Friendship / happiness | Very rare — wild mons do not “grind friendship” | Common — cared-for teams | Very common — ace teams feel fully bonded |
-| Trade / held-item | Moderate — ecology, not player trades | Higher — plausible off-screen trades | Highest — elite teams with rare evolutions |
-| Stone / location stone | Lower — stones are player tools | Slightly higher | Highest — Leaders’ signature lines often fully evolved at cap |
-
-Rematches and Elite Four would share the **Gym Leader** tier
-
-Implementation sketch: `AdjustEncounterSpeciesForLevel` gains a **context** flag (`wild`, `trainer`, `gym_leader`, …) that selects probability tables, tier offsets, or multipliers without duplicating level-up chain logic.
-
----
-
 # Future-12. Unown collection quest
 
 Collect all **28 Unown forms** across Johto and Kanto. Each **unique form** registered in the Pokédex **permanently** improves **all Unown** in the player’s collection. Completing forms also improves **Hidden Power globally** for every Pokémon (not only Unown).
@@ -674,6 +639,7 @@ Ideas that do not have their own `Future-*` section yet.
 - **Pokémon balance** — every species reasonably viable; encounter rarity roughly reflects power; adjust BST, abilities, and learnsets as needed.
 - **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …). Plate and Pokédex collection is [Future-15](DESIGN-FUTURE.md#future-15-pokémon-research-society).
 - **Battle AI** — increase switching for type matchups when no good damaging move is available.
+- **Separate Blackthorn and Battle Frontier shops** — give each shop its own inventory so Blackthorn’s themed stock can change independently of the Battle Frontier.
 
 ---
 
@@ -778,7 +744,6 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
-| [Future-11](#future-11-encounter-stage-selection-wild--trainer) Stage rates | 5 | 1 | 1 | 1 | 2 | 3 | — |
 | [Future-9](#future-9-time-advancement) Time advancement | 4 | 1 | 1 | 1 | 3 | 1 | — |
 | [Future-15](#future-15-pokémon-research-society) Pokémon Research Society | 3 | 2 | 3 | 3 | 2 | 2 | [Future-6](#future-6-shared-pokémon-center-hub) |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |

@@ -18949,10 +18949,6 @@
         "Move": "MOVE_LICK"
       },
       {
-        "Level": 6,
-        "Move": "MOVE_ROLLOUT"
-      },
-      {
         "Level": 12,
         "Move": "MOVE_SUPERSONIC"
       },
@@ -18963,6 +18959,10 @@
       {
         "Level": 24,
         "Move": "MOVE_DISABLE"
+      },
+      {
+        "Level": 30,
+        "Move": "MOVE_ROLLOUT"
       },
       {
         "Level": 30,
@@ -20189,12 +20189,12 @@
         "Move": "MOVE_POISON_POWDER"
       },
       {
-        "Level": 24,
-        "Move": "MOVE_ANCIENT_POWER"
-      },
-      {
         "Level": 28,
         "Move": "MOVE_KNOCK_OFF"
+      },
+      {
+        "Level": 32,
+        "Move": "MOVE_ANCIENT_POWER"
       },
       {
         "Level": 32,
@@ -33961,12 +33961,12 @@
         "Move": "MOVE_SCREECH"
       },
       {
-        "Level": 29,
-        "Move": "MOVE_AGILITY"
+        "Level": 28,
+        "Move": "MOVE_DOUBLE_HIT"
       },
       {
-        "Level": 32,
-        "Move": "MOVE_DOUBLE_HIT"
+        "Level": 29,
+        "Move": "MOVE_AGILITY"
       },
       {
         "Level": 36,
@@ -39488,10 +39488,6 @@
         "Move": "MOVE_MUD_SLAP"
       },
       {
-        "Level": 1,
-        "Move": "MOVE_ANCIENT_POWER"
-      },
-      {
         "Level": 15,
         "Move": "MOVE_ICE_SHARD"
       },
@@ -39506,6 +39502,10 @@
       {
         "Level": 30,
         "Move": "MOVE_ICY_WIND"
+      },
+      {
+        "Level": 36,
+        "Move": "MOVE_ANCIENT_POWER"
       },
       {
         "Level": 37,
@@ -75768,12 +75768,12 @@
         "Move": "MOVE_RECYCLE"
       },
       {
-        "Level": 28,
-        "Move": "MOVE_PSYBEAM"
+        "Level": 24,
+        "Move": "MOVE_MIMIC"
       },
       {
-        "Level": 32,
-        "Move": "MOVE_MIMIC"
+        "Level": 28,
+        "Move": "MOVE_PSYBEAM"
       },
       {
         "Level": 36,

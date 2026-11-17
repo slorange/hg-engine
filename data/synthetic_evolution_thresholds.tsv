@@ -1,87 +1,94 @@
-from	to	min_level	branch
-Pikachu	Raichu	35	
-Nidorina	Nidoqueen	35	
-Nidorino	Nidoking	35	
-Clefairy	Clefable	35	
-Vulpix	Ninetales	25	
-Jigglypuff	Wigglytuff	35	
-Golbat	Crobat	30	
-Gloom	Vileplume	35	random50
-Gloom	Bellossom	35	random50
-Growlithe	Arcanine	25	
-Poliwhirl	Poliwrath	35	random50
-Poliwhirl	Politoed	35	random50
-Kadabra	Alakazam	35	
-Machoke	Machamp	35	
-Weepinbell	Victreebel	35	
-Graveler	Golem	35	
-Slowpoke	Slowking	20	
-Magneton	Magnezone	35	
-Shellder	Cloyster	25	
-Haunter	Gengar	35	
-Onix	Steelix	20	
-Exeggcute	Exeggutor	25	
-Lickitung	Lickilicky	34	
-Rhydon	Rhyperior	35	
-Chansey	Blissey	30	
-Tangela	Tangrowth	34	
-Seadra	Kingdra	35	
-Staryu	Starmie	25	
-Scyther	Scizor	20	
-Electabuzz	Electivire	35	
-Magmar	Magmortar	35	
-Porygon	Porygon2	20	
-Pichu	Pikachu	20	
-Cleffa	Clefairy	20	
-Igglybuff	Jigglypuff	20	
-Togepi	Togetic	20	
-Togetic	Togekiss	35	
-Aipom	Ambipom	33	
-Sunkern	Sunflora	25	
-Yanma	Yanmega	34	
-Murkrow	Honchkrow	25	
-Misdreavus	Mismagius	25	
-Gligar	Gliscor	25	
-Sneasel	Weavile	25	
-Piloswine	Mamoswine	34	
-Porygon2	Porygon-Z	35	
-Wurmple	Silcoon	7	random50
-Wurmple	Cascoon	7	random50
-Lombre	Ludicolo	35	
-Nuzleaf	Shiftry	35	
-Nincada	Ninjask	20	random50
-Nincada	Shedinja	20	random50
-Azurill	Marill	20	
-Nosepass	Probopass	25	
-Skitty	Delcatty	25	
-Roselia	Roserade	35	
-Feebas	Milotic	25	
-Dusclops	Dusknoir	35	
-Clamperl	Huntail	20	random50
-Clamperl	Gorebyss	20	random50
-Budew	Roselia	20	
-Buneary	Lopunny	20	
-Chingling	Chimecho	20	
-Burmy	Wormadam	20	random50
-Burmy	Mothim	20	random50
-Combee	Vespiquen	21	
-Kirlia	Gallade	30	random50
-Kirlia	Gardevoir	30	random50
-Snorunt	Froslass	42	random50
-Snorunt	Glalie	42	random50
-Bonsly	Sudowoodo	18	
-Mime Jr.	Mr. Mime	19	
-Happiny	Chansey	20	
-Munchlax	Snorlax	20	
-Riolu	Lucario	20	
-Mantyke	Mantine	20	
-Tyrogue	Hitmonlee	20	random50
-Tyrogue	Hitmonchan	20	random50
-Tyrogue	Hitmontop	20	random50
-Eevee	Vaporeon	25	random50
-Eevee	Jolteon	25	random50
-Eevee	Flareon	25	random50
-Eevee	Espeon	25	random50
-Eevee	Umbreon	25	random50
-Eevee	Leafeon	25	random50
-Eevee	Glaceon	25	random50
+from	to	method	min_level	branch	requirement
+Pikachu	Raichu	natural_item			Thunder Stone
+Nidorina	Nidoqueen	natural_item			Moon Stone
+Nidorino	Nidoking	natural_item			Moon Stone
+Clefairy	Clefable	natural_item			Moon Stone
+Vulpix	Ninetales	natural_item			Fire Stone
+Jigglypuff	Wigglytuff	natural_item			Moon Stone
+Golbat	Crobat	friendship			Friendship
+Gloom	Vileplume	natural_item		random	Leaf Stone
+Gloom	Bellossom	natural_item		random	Sun Stone
+Growlithe	Arcanine	natural_item			Fire Stone
+Poliwhirl	Poliwrath	natural_item		random	Water Stone
+Poliwhirl	Politoed	natural_item		random	King’s Rock
+Kadabra	Alakazam	trainer_item			Link Cable
+Machoke	Machamp	trainer_item			Link Cable
+Weepinbell	Victreebel	natural_item			Leaf Stone
+Graveler	Golem	trainer_item			Link Cable
+Slowpoke	Slowking	natural_item			King’s Rock
+Magneton	Magnezone	natural_item			Thunder Stone
+Shellder	Cloyster	natural_item			Water Stone
+Haunter	Gengar	trainer_item			Link Cable
+Onix	Steelix	natural_item			Metal Coat
+Exeggcute	Exeggutor	natural_item			Leaf Stone
+Lickitung	Lickilicky	fixed	30		Rollout
+Rhydon	Rhyperior	trainer_item			Protector
+Chansey	Blissey	friendship			Friendship
+Tangela	Tangrowth	fixed	32		AncientPower
+Seadra	Kingdra	natural_item			Dragon Scale
+Staryu	Starmie	natural_item			Water Stone
+Scyther	Scizor	natural_item		random	Metal Coat
+Electabuzz	Electivire	trainer_item			Electirizer
+Magmar	Magmortar	trainer_item			Magmarizer
+Porygon	Porygon2	trainer_item			Up-Grade
+Pichu	Pikachu	friendship	20		Friendship
+Cleffa	Clefairy	friendship	20		Friendship
+Igglybuff	Jigglypuff	friendship	20		Friendship
+Togepi	Togetic	friendship	20		Friendship
+Togetic	Togekiss	natural_item			Shiny Stone
+Aipom	Ambipom	fixed	28		Double Hit
+Sunkern	Sunflora	natural_item			Sun Stone
+Yanma	Yanmega	fixed	33		AncientPower
+Murkrow	Honchkrow	natural_item			Dusk Stone
+Misdreavus	Mismagius	natural_item			Dusk Stone
+Gligar	Gliscor	natural_item			Razor Fang
+Sneasel	Weavile	natural_item			Razor Claw
+Piloswine	Mamoswine	fixed	36		AncientPower
+Porygon2	Porygon-Z	trainer_item			Dubious Disc
+Wurmple	Silcoon	fixed	7	random	
+Wurmple	Cascoon	fixed	7	random	
+Lombre	Ludicolo	natural_item			Water Stone
+Nuzleaf	Shiftry	natural_item			Leaf Stone
+Nincada	Ninjask	fixed	20	random	
+Nincada	Shedinja	fixed	20	random	
+Azurill	Marill	friendship	20		Friendship
+Nosepass	Probopass	natural_item			Thunder Stone
+Skitty	Delcatty	natural_item			Moon Stone
+Roselia	Roserade	natural_item			Shiny Stone
+Feebas	Milotic	natural_item			Prism Scale
+Dusclops	Dusknoir	natural_item			Reaper Cloth
+Clamperl	Huntail	natural_item		random	Deep Sea Tooth
+Clamperl	Gorebyss	natural_item		random	Deep Sea Scale
+Budew	Roselia	friendship	20		Friendship
+Buneary	Lopunny	friendship			Friendship
+Chingling	Chimecho	friendship	20		Friendship
+Burmy	Wormadam	fixed	20	random	
+Burmy	Mothim	fixed	20	random	
+Combee	Vespiquen	fixed	21		
+Kirlia	Gallade	fixed	30	random	
+Kirlia	Gardevoir	fixed	30	random	
+Snorunt	Froslass	fixed	42	random	
+Snorunt	Glalie	fixed	42	random	
+Bonsly	Sudowoodo	fixed	16		Mimic
+Mime Jr.	Mr. Mime	fixed	24		Mimic
+Happiny	Chansey	natural_item	20		Oval Stone
+Munchlax	Snorlax	friendship	20		Friendship
+Riolu	Lucario	friendship	20		Friendship
+Mantyke	Mantine	fixed	20		
+Tyrogue	Hitmonlee	fixed	20	random	
+Tyrogue	Hitmonchan	fixed	20	random	
+Tyrogue	Hitmontop	fixed	20	random	
+Eevee	Vaporeon	natural_item		random	Water Stone
+Eevee	Jolteon	natural_item		random	Thunder Stone
+Eevee	Flareon	natural_item		random	Fire Stone
+Eevee	Espeon	friendship		random	Friendship
+Eevee	Umbreon	friendship		random	Friendship
+Eevee	Leafeon	natural_item		random	Leaf Stone
+Eevee	Glaceon	natural_item		random	Ice Stone
+Scyther	Kleavor	natural_item		random	Black Augurite
+Ursaring	Ursaluna	natural_item			Peat Block
+Stantler	Wyrdeer	fixed	31		Psyshield Bash
+Primeape	Annihilape	fixed	35		Rage Fist
+Girafarig	Farigiraf	fixed	32		Twin Beam
+Dunsparce	Dudunsparce	fixed	32		Hyper Drill
+Eevee	Sylveon	friendship		random	Friendship

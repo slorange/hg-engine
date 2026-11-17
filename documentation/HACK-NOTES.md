@@ -901,7 +901,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 |---------|--------|--------|
 | Rescale levels | `TRAINER_LEVEL_SCALING` | `MakeTrainerPokemonParty()` in `src/field/enemy_party.c` — `CountPlayerBadges()`, `PickTrainerLevelInBand()` |
 | Level-up moves | `TRAINER_LEVEL_APPROPRIATE_MOVES` | Same — skips NARC move sets when set; **`ClearMonMoves`** then **`InitBoxMonMoveset()`** after stage adjust ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)) |
-| Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires level scaling): walk **prevos** (level-up + synthetic), then **forward** to the stage for scaled level. Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)). Offline check: `python3 scripts/dev/verify_encounter_stage.py` |
+| Stage adjust | `TRAINER_SPECIES_STAGE_ADJUST` | Same — `AdjustEncounterSpeciesForLevel()` in `include/encounter_species_stage.h` (requires level scaling): walk **prevos** (level-up + synthetic), then **forward** to the stage for scaled level. Tables: `gen_level_up_evo_tables.py` + `gen_synthetic_evo_edges.py`; `patch_level_up_evo_addrs.py` patches overlay 129 (shared with [wild stage adjust](#runtime-pipeline)). Docker/Linux check: `python3 scripts/dev/verify_encounter_stage.py` (compiles actual shared C) |
 | Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires level scaling |
 
 **Dependencies:** moves and stage adjust require `TRAINER_LEVEL_SCALING`; Gym Leader cap requires level scaling.
@@ -1833,6 +1833,17 @@ Field ROM spans `0x023C8000`–`0x023E0000`; overlay **129** sits in the **top**
 
 **Investigation-only candidates still unimplemented:** local buffers instead of heap allocations in `GetMoveData` and party-menu context creation, byte-sized fishing-family flags, further encounter/learn-move cleanup, and debug-only helper guards. Scratch compile/link probes do not constitute production changes or ROM playtests. Preserve readability and measure the linked blob: caching a repeatedly read value can increase code size even when it reduces runtime work.
 
+### Future systems requiring an overlay 129 budget review
+
+Before implementing any of the following, review the overlay split and measure current `build/output.bin` size. The last measured cleanup build (Nov 16, 2026) leaves **3,023 bytes** out of the **32,672-byte** custom-code allocation; this is shared headroom for all new features, not a separate allowance per system. The estimates below describe likely pressure on overlay 129, not measured byte requirements.
+
+- **[Future-3 — Unlimited learned moves](DESIGN-FUTURE.md#future-3-unlimited-learned-moves): large potential impact.** Shared Pokémon accessors, move learning, save format, and box storage cross field/battle boundaries. Plan data representation, save compatibility, and overlay residency before implementation; do not assume the full system fits in 129.
+- **[Future-8 — Dynamic rosters and universal PC](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc): large potential impact.** Collection access, Pokémon transfers, and shared party assumptions span multiple execution contexts. Plan resident adapters separately from battle roster tracking, AI, field services, and UI; assess RAM and save-storage requirements as well as code size.
+- **[Future-12 — Unown collection quest](DESIGN-FUTURE.md#future-12-unown-collection-quest): moderate potential impact.** Encounter/form selection, collection progress, and collection-dependent stat calculation may extend shared 129 code. Keep location/form lists and other large tables in external data or verified field rodata; battle ability/damage and capture logic should use their appropriate overlays.
+- **[Wilds-3 — Encounter stage probabilities and context](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution): small-to-moderate potential impact.** Wild stage adjustment executes in 129 while trainer generation executes in field code. Extend the shared rules carefully, keep probability tables outside 129, and avoid duplicating large stage-selection implementations.
+
+**Implementation guidance:** keep 129 additions limited to logic that must be available across the required contexts; use field, battle, individual, or explicitly managed overlays for the rest. Do not enlarge the linker window into another overlay's load region, or call unloaded field code from encounter hooks (see [KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)). Check both code and data residency, measure linked-size changes incrementally, and finish ROM-affecting work with the full playable-ROM build. A successful link or size check does not replace in-game testing.
+
 ### Related docs
 
 - Wild distance caps pipeline (uses this split): [below](#wild-level-caps-distance-based--verified-poc).
@@ -1882,7 +1893,7 @@ Runtime lookup: field-overlay `sWildLevelCaps` via patched `WildLevelCapsFieldAd
 
 **Not hooked:** Safari Zone (`data/SafariEncounters.c`), `modify_species_encounter_data_rare` (roamers), scripted `wild_battle`. Bug Catching Contest is now hooked; see [National Park and contest](#national-park-and-bug-catching-contest-shared-pool).
 
-**Stage adjust:** `AdjustEncounterSpeciesForLevel()` — (1) `FindEncounterChainBase()` walks level-up prevos (`data/Evolutions.c`) **and** synthetic prevos (`data/synthetic_evolution_thresholds.tsv`) so authored finals devolve; (2) `WalkEncounterStageForLevel()` applies level-up then synthetic **forward** for the rolled/scaled level. Trade, stone, friendship, move-known, etc. **Verified Sep 2026** on wild and trainers. **Deferred in TSV:** Eevee, Tyrogue, Shedinja, gendered splits (Burmy, Gallade, …). Player evolution QoL: [Trade-item evolution](#trade-item-evolution-use-on-pokémon) + Linking Cord ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
+**Stage adjust:** `AdjustEncounterSpeciesForLevel(species, level, entropy, context, allowBabies)` resolves the family root, then selects forward stages. Plain level-up tables come from `data/Evolutions.c`; `data/synthetic_evolution_thresholds.tsv` classifies fixed, natural-item, trainer-item, and friendship edges. `data/encounter_babies.txt` supplies the ordinary-encounter exclusions. Wild callers carry the actual baby-roll flag through `RollWildLevel` and `ApplyWildEncounterLevelAndStage`, including Bug-Catching Contest generated entries. Trainer context is selected by class, so Leader and Elite Four/Champion rematches keep elite rates while ordinary rematches do not. Branch and probability entropy are derived separately per source species from one slot/encounter seed; a failed roll is not retried during the stage walk. See [Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution) for curves, exceptions, and move-known levels. Existing gender corrections remain in `include/encounter_species_gender.h`.
 
 ### ARM9 scratch (`armips/asm/wild_level_caps.s`, `rom.ld`)
 
@@ -1932,7 +1943,7 @@ All tracked — nothing belongs in `scripts/local/`:
 | `scripts/build/gen_level_up_evo_tables.py` | build | Stage tables → `src/field/level_up_evo_tables.c` + `include/constants/generated/level_up_evo_tables.h` |
 | `scripts/build/patch_level_up_evo_addrs.py` | build | Patch `LevelUpEvoTablesFieldAddr`, `SyntheticEvoEdgesFieldAddr`, `WildLevelCapsFieldAddr` in `build/output.bin` (`Makefile`, `make.py`) |
 | `scripts/build/gen_synthetic_evo_edges.py` | build | TSV → `src/field/synthetic_evo_edges_data.c` + generated header (`narcs.mk`) |
-| `data/synthetic_evolution_thresholds.tsv` | data | Authoring source for synthetic stage edges (`from`, `to`, `min_level`, `branch`) |
+| `data/synthetic_evolution_thresholds.tsv` | data | Authoring source for synthetic stage edges (`from`, `to`, `method`, `min_level`, `branch`, `requirement`) |
 | `include/species_stage_for_level.h` | include | `AdjustSpeciesForLevel` (level-up forward bands only; used internally) |
 | `include/synthetic_evo_apply.h` | include | `PickSyntheticEvolutionStep` (inline; reads `gSyntheticEvoEdgesPtr`) |
 | `include/encounter_species_stage.h` | include | `AdjustEncounterSpeciesForLevel` — unified prevo walk + forward stage (wild + trainer) |
@@ -1946,8 +1957,8 @@ All tracked — nothing belongs in `scripts/local/`:
 
 ### Editing synthetic stage edges
 
-1. Edit `data/synthetic_evolution_thresholds.tsv` (`branch`: empty or `random50`).
-2. Run `python3 scripts/dev/verify_encounter_stage.py` (optional — catches obvious threshold mistakes).
+1. Edit `data/synthetic_evolution_thresholds.tsv`: `method` is `fixed`, `natural_item`, `trainer_item`, or `friendship`; `min_level` is required for fixed edges and retains old baby thresholds for baby-roll compatibility. Item and friendship edges otherwise leave it empty. `branch` is empty or `random` (uniform among permitted outcomes, including more than two). `requirement` labels the move/item for author review. Ordinary encounter baby exclusions live in `data/encounter_babies.txt`.
+2. Run `python3 scripts/dev/verify_encounter_stage.py` inside Docker/Linux. It compiles the actual shared C and checks method curves, baby-roll handling, class tiers, branch outcomes, move-learnset alignment, and multi-stage probabilities.
 3. Full `make` (or `python3 scripts/build/gen_synthetic_evo_edges.py`) regenerates field rodata.
 4. Rebuild `test.nds` — confirm both patch lines in the build log.
 

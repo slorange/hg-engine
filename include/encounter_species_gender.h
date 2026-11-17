@@ -41,13 +41,13 @@ static inline u16 ApplyGenderedStageAdjustCorrections(u16 species, u8 gender)
     return species;
 }
 
-static inline u16 AdjustEncounterSpeciesForLevelWithGender(u16 species, u8 level, u8 gender, u32 branchEntropy)
+static inline u16 AdjustEncounterSpeciesForLevelWithGender(u16 species, u8 level, u8 gender, u32 branchEntropy, u8 context, BOOL allowBabies)
 {
-    species = AdjustEncounterSpeciesForLevel(species, level, branchEntropy);
+    species = AdjustEncounterSpeciesForLevel(species, level, branchEntropy, context, allowBabies);
     return ApplyGenderedStageAdjustCorrections(species, gender);
 }
 
-static inline void ApplyEncounterStageAdjustToMon(struct PartyPokemon *pp, u8 level, u32 branchEntropy)
+static inline void ApplyEncounterStageAdjustToMon(struct PartyPokemon *pp, u8 level, u32 branchEntropy, u8 context, BOOL allowBabies)
 {
     u16 species;
     u16 adjusted;
@@ -66,7 +66,7 @@ static inline void ApplyEncounterStageAdjustToMon(struct PartyPokemon *pp, u8 le
 
     species = (u16)(GetMonData(pp, MON_DATA_SPECIES, NULL) & 0x07FF);
     gender = (u8)GetMonData(pp, MON_DATA_GENDER, NULL);
-    adjusted = AdjustEncounterSpeciesForLevelWithGender(species, level, gender, branchEntropy);
+    adjusted = AdjustEncounterSpeciesForLevelWithGender(species, level, gender, branchEntropy, context, allowBabies);
 
     if (adjusted != species) {
         SetMonData(pp, MON_DATA_SPECIES, &adjusted);

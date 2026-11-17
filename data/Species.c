@@ -19980,7 +19980,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
                 .speed = 0,
             },
             .wildHeldItems = {
-                .common = ITEM_NONE,
+                .common = ITEM_PRISM_SCALE,
                 .rare = ITEM_NONE,
             },
             .genderRatio = 127,
