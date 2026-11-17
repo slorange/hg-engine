@@ -15,7 +15,7 @@
 | [World-4. TMs](#world-4-tms) | DECIDED — **core release target** (renewable shop TMs) |
 | [World-5. Evolution Methods (Trade & Stones)](#world-5-evolution-methods-trade--stones) | DECIDED |
 | [World-6. Shops](#world-6-shops) | DECIDED — **core release target** (TMs, evolution items) |
-| [World-7. Berry economy](#world-7-berry-economy) | PARTIALLY IMPLEMENTED |
+| [World-7. Berry economy](#world-7-berry-economy) | IMPLEMENTED |
 | [World-8. Item acquisition channels](#world-8-item-acquisition-channels) | PARTIALLY IMPLEMENTED |
 | [World-9. Accelerated day/night cycle](#world-9-accelerated-daynight-cycle) | PARTIALLY IMPLEMENTED |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
@@ -327,7 +327,7 @@ Themed Evolution items, held items, resist berries:
 
 # World-7. Berry economy
 
-**Status: MOSTLY IMPLEMENTED** — Remaining item is Violet / Fuchsia shard traders (Liechi–Rowap).
+**Status: IMPLEMENTED**
 
 Berries stay a meaningful **held-item** layer: the player cannot use Bag items in trainer battles ([Battle-1](DESIGN-BATTLES.md#items)), so automatic berry effects remain one of the main in-battle effects. Growth via **Berry Pots** is unchanged in role.
 
@@ -349,7 +349,7 @@ Mom intro grants **Berry Pots** and **5× each** basic berry **Cheri through Per
 | Lum + Sitrus | Full status / 25% max HP | Badge-scaled regular marts (4 and 6 badges) | Implemented |
 | EV / friendship (Pomeg–Tamato) | −EVs, +friendship | Goldenrod Underground medicine seller (beside Haircut Brothers) | Implemented |
 | Type-resistance (Occa–Chilan) | Super-effective hit reduction | Themed **local specialty shops** ([World-6 § Town clerks](#town--route-specialty-clerks) — e.g. Wacan at Vermilion, Passho at Cerulean). Mom’s vanilla resist-berry purchasing **unchanged for now**. | Implemented |
-| Rare battle (Liechi–Rowap) | Pinch boosts, Enigma heal, Custap priority, Jaboca / Rowap counter | **Shard traders** in **Violet City** and **Fuchsia City** | Not implemented |
+| Rare battle (Liechi–Rowap) | Pinch boosts, Enigma heal, Custap priority, Jaboca / Rowap counter | **Shard traders** in **Violet City** and **Fuchsia City** | Implemented |
 
 ## Wild Pokémon holds
 
