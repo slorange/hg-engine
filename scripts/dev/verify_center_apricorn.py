@@ -2,6 +2,7 @@
 """Verify the craft NPC and exercise the compiled confirmation/error paths."""
 from pathlib import Path
 import struct
+from center_service_checks import body as slot_body
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -65,9 +66,7 @@ def simulate(body, quote=0, exchange=0, decline=False):
 
 def main():
     member = (ROOT / "build/a012/2_233").read_bytes()
-    assert struct.unpack_from("<H", member, 24)[0] == 0xFD13
-    start = 24 + struct.unpack_from("<i", member, 20)[0]
-    body = member[start:]
+    body = slot_body(member, 5)
     assert body == (ROOT / "build/center_apricorn.bin").read_bytes()
     assert simulate(body) == (1, 1)
     assert simulate(body, decline=True) == (0, 0)

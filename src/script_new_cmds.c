@@ -1,5 +1,6 @@
 #include "../include/config.h"
 #include "../include/apricorn_craft.h"
+#include "../include/abra_travel.h"
 #include "../include/constants/file.h"
 #include "../include/ecology/ecology_script.h"
 #include "../include/fishing_rod.h"
@@ -15,6 +16,7 @@
 #define SCRIPT_NEW_CMD_GIVE_JOHTO_BADGE       3
 #define SCRIPT_NEW_CMD_ECOLOGY_GENERATE       4
 #define SCRIPT_NEW_CMD_APRICORN_CRAFT         5
+#define SCRIPT_NEW_CMD_ABRA_TRAVEL            6
 #define SCRIPT_NEW_CMD_MAX 256
 
 BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
@@ -23,6 +25,8 @@ BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
     u16 UNUSED arg0 = ScriptReadHalfword(ctx);
 
     switch (sw) {
+    case SCRIPT_NEW_CMD_ABRA_TRAVEL:
+        return AbraTravel_Command(ctx, arg0);
     case SCRIPT_NEW_CMD_APRICORN_CRAFT: {
         u16 total, feeHundreds;
         u16 status = ApricornCraft_Run(ctx->fsys->savedata, arg0 != 0, &total, &feeHundreds);

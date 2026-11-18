@@ -705,7 +705,7 @@ SCR_SEQ_DEPENDENCIES_DIR := armips/scr_seq
 SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot2.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot3.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot4.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot5.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_morty_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_hm_ext.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_jasmine_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_clair_gym_slot13.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_brock_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_misty_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_surge_gym_slot23.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_janine_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_blue_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_erika_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_sabrina_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_blaine_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_bugsy_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_whitney_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_chuck_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/kanto_waters_landings.s
 SCR_SEQ_DEPENDENCIES := $(filter-out $(SCR_SEQ_PATCH_ONLY),$(wildcard $(SCR_SEQ_DEPENDENCIES_DIR)/*.s))
 
-$(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) armips/include/openworld_story_skip_flags.inc include/config.h scripts/build/patch_bug_contest_daily.py scripts/build/patch_shard_traders.py scripts/build/patch_field_hm_badges.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py
+$(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) armips/include/openworld_story_skip_flags.inc include/config.h scripts/build/patch_bug_contest_daily.py scripts/build/patch_shard_traders.py scripts/build/patch_field_hm_badges.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py
 	$(PYTHON) tools/extract_scr_seq_vanilla.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_field_hm_badges.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_bug_contest_daily.py $(SCR_SEQ_DIR)
@@ -741,6 +741,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) armips/include/op
 	$(PYTHON) scripts/build/patch_r32_outdoor_rod_guru.py scripts $(SCR_SEQ_DIR)/2_232
 	$(PYTHON) scripts/build/patch_center_relearner.py scripts $(SCR_SEQ_DIR)/2_233
 	$(PYTHON) scripts/build/patch_center_apricorn.py scripts $(SCR_SEQ_DIR)/2_233
+	$(PYTHON) scripts/build/patch_center_abra.py scripts $(SCR_SEQ_DIR)/2_233
 	$(PYTHON) tools/patch_scr_seq_olivine_gym_story.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) tools/patch_scr_seq_olivine_lighthouse.py $(SCR_SEQ_DIR)/2_066
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
@@ -798,7 +799,7 @@ ZONE_EVENT_NARC := $(BUILD_NARC)/zone_event.narc
 ZONE_EVENT_TARGET := $(FILESYS)/a/0/3/2
 ZONE_EVENT_DEPENDENCIES_DIR := data/zone_event
 ZONE_EVENT_JSONS := $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/*.json)
-ZONE_EVENT_PATCH_SCRIPTS := $(wildcard tools/patch_zone_event*.py) scripts/dev/verify_olivine_rod_guru_zone_event.py scripts/dev/verify_start_city_patch.py scripts/dev/verify_saffron_mart_clerks.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py
+ZONE_EVENT_PATCH_SCRIPTS := $(wildcard tools/patch_zone_event*.py) scripts/dev/verify_olivine_rod_guru_zone_event.py scripts/dev/verify_start_city_patch.py scripts/dev/verify_saffron_mart_clerks.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py
 ZONE_EVENT_DEPENDENCIES := tools/zone_event_enc.py tools/extract_zone_event_vanilla.py include/config.h $(ZONE_EVENT_JSONS) $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/events/*) $(ZONE_EVENT_PATCH_SCRIPTS)
 
 $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
@@ -835,6 +836,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) scripts/build/patch_r32_outdoor_rod_guru.py events $(ZONE_EVENT_DIR)
 	$(PYTHON) scripts/build/patch_center_relearner.py events $(ZONE_EVENT_DIR)/2_163
 	$(PYTHON) scripts/build/patch_center_apricorn.py events $(ZONE_EVENT_DIR)/2_163
+	$(PYTHON) scripts/build/patch_center_abra.py events $(ZONE_EVENT_DIR)/2_163
 	$(PYTHON) tools/patch_zone_event_olivine_gym_story.py $(ZONE_EVENT_DIR)/2_074
 	$(PYTHON) tools/patch_zone_event_w40_surf_gate.py $(ZONE_EVENT_DIR)
 	$(PYTHON) tools/patch_zone_event_w40_ferry.py $(ZONE_EVENT_DIR)/2_091

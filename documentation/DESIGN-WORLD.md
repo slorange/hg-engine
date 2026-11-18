@@ -388,7 +388,7 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 
 | Service | Description | Status |
 | ------- | ----------- | ------ |
-| **Abra fast travel** | Pay a fixed fee to travel to previously visited towns and cities. | Planned |
+| **Abra fast travel** | Pay $400 to choose a visited destination on the travel map, then Teleport to its usual Fly landing spot. Cancelling is free. | Implemented |
 | **Move Relearner** | Relearn moves for $300 per successfully learned move, without returning to Blackthorn. | Implemented |
 | **Rest / pass time** | Advance the clock to morning, day, or night. | Planned |
 | **Apricorn crafting** | Instantly exchange all carried Apricorns for their usual specialty balls, one per Apricorn, for $100 per ten Apricorns rounded up. Expanded recipes follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance). | Implemented |

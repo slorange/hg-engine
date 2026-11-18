@@ -30,3 +30,9 @@ The fee for all your Apricorns\nis ${STRVAR_1 52, 1, 0}00.\rYou don’t have eno
 Your Bag can’t hold all the balls.\nPlease make room and come back.\rI haven’t taken any Apricorns\nor money.
 I can’t get started right now.\nPlease try again in a moment.
 No problem. Bring your Apricorns\nback whenever you’re ready!
+Abra and I can Teleport you\nto a town you’ve visited.\rThe fare is $400.\nWould you like to travel?
+You’ll need $400 for the trip.
+No problem. Come back whenever\nyou’d like to travel!
+Hold on tight!\nAbra, use Teleport!
+We can’t make that trip right now.\nPlease try again.
+Abra: Aabra...
