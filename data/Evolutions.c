@@ -1886,7 +1886,7 @@ const EvolutionTable __data[MAX_SPECIES_INCLUDING_FORMS + 1] =
             { EVO_HAS_MOVE_TYPE, TYPE_FAIRY, SPECIES_SYLVEON },
             { EVO_FRIENDSHIP_DAY, 0, SPECIES_ESPEON },
             { EVO_FRIENDSHIP_NIGHT, 0, SPECIES_UMBREON },
-            { EVO_MAGNETIC_FIELD, 0, SPECIES_JOLTEON },
+            { EVO_NONE, 0, SPECIES_NONE },
         },
     },
 
@@ -4204,7 +4204,7 @@ const EvolutionTable __data[MAX_SPECIES_INCLUDING_FORMS + 1] =
         .entries = {
             { EVO_MAGNETIC_FIELD, 0, SPECIES_PROBOPASS },
             { EVO_STONE, ITEM_THUNDER_STONE, SPECIES_PROBOPASS },
-            { EVO_NONE, 0, SPECIES_NONE },
+            { EVO_STONE, ITEM_METAL_COAT, SPECIES_PROBOPASS },
             { EVO_NONE, 0, SPECIES_NONE },
             { EVO_NONE, 0, SPECIES_NONE },
             { EVO_NONE, 0, SPECIES_NONE },

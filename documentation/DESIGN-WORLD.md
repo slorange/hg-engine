@@ -19,7 +19,6 @@
 | [World-8. Item acquisition channels](#world-8-item-acquisition-channels) | PARTIALLY IMPLEMENTED |
 | [World-9. Accelerated day/night cycle](#world-9-accelerated-daynight-cycle) | PARTIALLY IMPLEMENTED |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
-| Expanded stone mechanics | Moved — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics) |
 | Pokémon Center hub services | [Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub) |
 
 ---
@@ -227,41 +226,48 @@ Gym TM picks are intentionally **unlimited** over rematches
 
 **Status: IMPLEMENTED**
 
-## Evolution stones
+## Evolution stones and items
 
-Every standard evolution stone is **renewably buyable** at themed town marts and dept-store shelves ([World-6 § What we’ve done](DESIGN-WORLD.md#what-weve-done)) — e.g. Fire at Ecruteak, Water at Cerulean — instead of vanilla’s mostly one-off pickups.
+Every standard evolution stone is **renewably buyable** at themed town marts and dept-store shelves ([World-6 § What we’ve done](DESIGN-WORLD.md#what-weve-done)) — e.g. Fire at Ecruteak, Water at Cerulean — instead of vanilla’s mostly one-off pickups. Some evolution items also drop from **Rock Smash** as a field source.
 
-Some evolution items also drop from **Rock Smash** as a field source.
+Existing explicit item evolutions keep their normal requirements: use the appropriate item directly on an eligible Pokémon. The early-evolution rule below adds options for ordinary level-up evolutions.
 
-Player stone evolution rules are **unchanged** (use a stone on an eligible Pokémon). Flexible stone mechanics (type-matching shortcuts, high-level paths without stones) are deferred — [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).
+## Early evolution with matching items
 
-Eevee also becomes **Jolteon** by leveling up on **Route 10**. **Magneton** and **Nosepass** become **Magnezone** and **Probopass** on that same route. Thunder Stone still works anywhere for all three.
+A matching item causes **immediate evolution** once the Pokémon reaches **90% of its normal level-up evolution level, rounded up, minus three levels** (minimum level 1). The item must match either type of the **resulting evolution**; a type lost on evolution does not qualify.
 
-### Trade evolutions — with held item
+**Type matches:** Fire Stone → Fire; Water Stone → Water; Leaf Stone → Grass; Thunder Stone → Electric; Ice Stone → Ice; Dusk Stone → Ghost; Metal Coat → Steel. A newly acquired type qualifies, so Pineco and Prinplup can use Metal Coat, and Seel can use Ice Stone.
 
-*Evolutions that normally require **trade while holding an item** evolve when the item is **used on the Pokémon** — no trade required.
+Only **plain level-up evolutions** qualify. Move-known, friendship, gender/stat/personality conditions, location requirements, and other special methods do not qualify for this shortcut. Pseudo legendaries are also excluded.
 
-Examples: Dragon Scale → Kingdra, Metal Coat → Scizor, Protector → Rhyperior, etc.
+Below the requirement, the party menu shows **LV** followed by the required level; eligible Pokémon show **ABLE**, and incompatible Pokémon show **UNABLE**.
 
-### Trade evolutions — no item
+Examples: Fire Stone evolves Cyndaquil at **10** instead of 14, Quilava at **30** instead of 36. Metal Coat evolves Pineco at **25** instead of 31 and Prinplup at **30** instead of 36. Ice Stone evolves Snorunt into Glalie at **35** instead of 42.
 
-**Linking Cord** — use on the Pokémon like a stone for plain trade lines. **Marts:** Goldenrod dept **2F lower** and Celadon dept **4F** ([World-6 § dept stores](#goldenrod--celadon-department-stores)).
+Wild and opposing trainer stage selection is separate: [Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution).
 
-### Later-generation evolutions of existing families
+## Trade evolutions
 
-The seven additions in [Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) use these methods:
+### With a held item
 
-- **Eevee → Sylveon:** level up with high friendship while knowing a Fairy-type move; this takes priority over Espeon and Umbreon.
-- **Scyther → Kleavor:** use **Black Augurite** directly. Available from **Pewter Mart** and **Rock Smash** drops.
-- **Stantler → Wyrdeer:** level up knowing **Psyshield Bash**, learned at **31**. Psyshield Bash is not a Stantler egg move.
-- **Ursaring → Ursaluna:** level up **at night while holding a Peat Block**. Available from **Viridian Mart** and **Rock Smash** drops. Keep this method until the broader [full-moon system](DESIGN-FUTURE.md#future-2-full-moon-system) is implemented.
-- **Primeape → Annihilape:** level up knowing **Rage Fist**, learned at **35**.
-- **Girafarig → Farigiraf:** level up knowing **Twin Beam**, learned at **32**.
-- **Dunsparce → Dudunsparce:** level up knowing **Hyper Drill**, learned at **32**.
+Evolutions that normally require **trade while holding an item** evolve when the item is **used on the Pokémon** — no trade required. Examples: Dragon Scale → Kingdra, Metal Coat → Scizor, Protector → Rhyperior.
+
+### Without an item
+
+**Linking Cord** — use on the Pokémon like a stone for plain trade lines.
+
+## Evolution changes from vanilla HGSS
+
+Alongside the item-use rules above, the following families have additional methods or changed evolution timing:
+
+- **Feebas → Milotic:** **Prism Scale** can be used directly.
+- **Swinub → Piloswine:** level **22**, reduced from 33.
+- **Eevee’s added item options:** Leaf Stone → Leafeon; Ice Stone → Glaceon; Dawn or Sun Stone → Espeon; Dusk or Moon Stone → Umbreon; Shiny Stone → Sylveon.
+- **Eevee’s location options:** level up in **Ilex Forest or Viridian Forest** for Leafeon, **Ice Path B3F or Seafoam Islands B4F** for Glaceon, or **Route 10** for Jolteon.
+- **Route 10 (outside Power Plant):** leveling up there evolves Magneton → Magnezone, Nosepass → Probopass, and Eevee → Jolteon. **Thunder Stone** also works anywhere for all three.
+- **Nosepass → Probopass:** **Metal Coat** also works.
 
 ---
-
-
 
 # World-6. Shops
 

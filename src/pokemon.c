@@ -1184,11 +1184,11 @@ u8 LONG_CALL GetStoneLevelEvolutionRequirement(struct PartyPokemon *mon, u16 ite
     } table;
     u16 species;
     u32 form;
-    u8 type1, type2;
     int i;
     // Avoid NARC reads for unrelated item checks in the party menu.
     if (item != ITEM_FIRE_STONE && item != ITEM_WATER_STONE && item != ITEM_LEAF_STONE &&
-        item != ITEM_THUNDER_STONE && item != ITEM_ICE_STONE) {
+        item != ITEM_THUNDER_STONE && item != ITEM_ICE_STONE &&
+        item != ITEM_METAL_COAT && item != ITEM_DUSK_STONE) {
         return 0;
     }
     if (GetMonData(mon, MON_DATA_IS_EGG, NULL)) {
@@ -1196,12 +1196,10 @@ u8 LONG_CALL GetStoneLevelEvolutionRequirement(struct PartyPokemon *mon, u16 ite
     }
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     form = GetMonData(mon, MON_DATA_FORM, NULL);
-    type1 = GetMonData(mon, MON_DATA_TYPE_1, NULL);
-    type2 = GetMonData(mon, MON_DATA_TYPE_2, NULL);
     species = PokeOtherFormMonsNoGet(species, form);
     ReadWholeNarcMemberByIdPair(&table, ARC_EVOLUTIONS, species);
     for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
-        u8 required = StoneLevelEvolutionRequirement(item, type1, type2, &table.entries[i]);
+        u8 required = StoneLevelEvolutionRequirement(item, &table.entries[i]);
         if (required != 0) {
             return required;
         }

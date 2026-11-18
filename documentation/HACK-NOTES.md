@@ -1676,7 +1676,7 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 ## Trade-item evolution (use on Pokémon)
 
-**Design:** [World-5 § Trade evolutions — with held item](DESIGN-WORLD.md#trade-evolutions--with-held-item) — use the held item **on** the Pokémon (like a stone), no trade required.
+**Design:** [World-5 § Trade evolutions — with held item](DESIGN-WORLD.md#with-a-held-item) — use the held item **on** the Pokémon (like a stone), no trade required.
 
 **Status:** verified in-game Sep 2026.
 
@@ -2270,8 +2270,17 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 ## Elemental stone early-evolution proof of concept
 
-`include/stone_level_evolution.h` supplies the shared rule: Fire/Water/Leaf/Thunder/Ice Stone must match either current Pokémon type, the evolution method must be plain `EVO_LEVEL`, and the requirement is `(normalLevel * 3 + 3) / 4`. No species exceptions, new evolution entries, or saved modifiers are used. Existing explicit item methods take priority in `src/individual/GetMonEvolutionInternal.c`. Both item-check and item-use contexts resolve through this path; `CanUseItemOnMonInParty` explicitly routes matching level-up cases through the item-use resolver before the existing bag-consumption gate.
+`include/stone_level_evolution.h` supplies the shared rule: Fire/Water/Leaf/Thunder/Ice/Dusk Stone or Metal Coat must match either evolved type (Fire/Water/Grass/Electric/Ice/Ghost/Steel respectively). The evolution method must be plain `EVO_LEVEL`, and the requirement is `max(1, ceil(normalLevel * 0.90) - 3)`. Only the target species/form’s personal types are checked; a type lost on evolution does not qualify. Nosepass additionally has a native Metal Coat item entry alongside Thunder Stone in `data/Evolutions.c`. Early item evolution unconditionally excludes targets Metang and Metagross, preserving both Beldum-family level evolutions. The generic acceleration rule adds no evolution entries or saved modifiers; Nosepass’s explicit Metal Coat option is a separate native item entry. Existing explicit item methods take priority in `src/individual/GetMonEvolutionInternal.c`. Both item-check and item-use contexts resolve through this path; `CanUseItemOnMonInParty` explicitly routes matching level-up cases through the item-use resolver before the existing bag-consumption gate.
 
 `GetStoneLevelEvolutionRequirement` in `src/pokemon.c` reads the full evolution NARC record, including its trailing terminator, for the shared threshold. `PartyMenu_PrintEvoStoneCompatString` replaces ARM9 `0x0207DC20` via `hooks`; its original caller remains in place. Below-level compatible Pokémon display `LVnn` in the existing compatibility window. Native ABLE/UNABLE strings and palette are retained. The hook address and call signature were checked against ARM9 disassembly and pret’s `party_context_menu.c`.
 
-Verification: Docker/Linux `python3 scripts/dev/verify_stone_level_evolution.py` compiles the actual requirement reader, item-resolution branch, and menu-label function against the current evolution data. Tests cover all five stones, either matching type, rounded thresholds, immediate targets, native stone methods, wrong types/items, final forms, move-known exclusions, eggs, and LV32/ABLE/UNABLE output. In-game menu rendering and evolution animation still require playtesting. Design: [Future-13](DESIGN-FUTURE.md#future-13-expanded-stone-mechanics).
+Verification: Docker/Linux `python3 scripts/dev/verify_stone_level_evolution.py` compiles the actual requirement reader, item-resolution branch, and menu-label function against the current evolution data. Tests cover all seven items, target types, hybrid rounded thresholds, immediate targets, native stone methods, wrong types/items, final forms, move-known exclusions, eggs, and LV35/ABLE/UNABLE output. In-game menu rendering and evolution animation still require playtesting. Design: [World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones).
+
+
+## Eevee supplementary player evolution methods
+
+`data/eevee_extra_evolutions.h` authors eight supplementary methods: mossy rock, icy rock, Route 10 magnetic field, Dawn/Sun → Espeon, Dusk/Moon → Umbreon, and Shiny → Sylveon. `include/eevee_evolutions.h` merges them into a temporary **16-entry** Eevee buffer in `GetMonEvolutionInternal`; all resolver loops use the per-species count. `MAX_EVOS_PER_POKE` remains **9**, and `data/Evolutions.c` plus all evolution NARC records keep their original size. Other readers, including early-stone hints, fishing family checks, and Eviolite checks, continue reading the original records. The same shared resolver source supplies field and battle evolution overlays.
+
+The merge preserves Eevee’s first six native entries (five stones and Fairy-move friendship), inserts the eight supplementary methods, then retains daytime/nighttime friendship. The ninth native slot is empty and excluded from Eevee’s active count. Consequently Fairy-move friendship wins over location, and all three location methods win over ordinary friendship. Explicit item choices work at any level; no level-only path is added. Encounter-stage TSV rules are separate and unchanged.
+
+Verification: `python3 scripts/dev/verify_stone_level_evolution.py` in Docker/Linux checks all ten Eevee item choices, both friendship outcomes, all four mossy/icy maps, Route 10, Fairy-move priority, the 16-versus-9 entry counts, and absence of a level-only fallback, alongside existing early-item regressions. Included in the successful Nov 17 playable-ROM build; new methods still need in-game confirmation.

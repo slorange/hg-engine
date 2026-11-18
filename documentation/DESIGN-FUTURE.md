@@ -21,7 +21,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Pokémon Research Society](#future-11-pokémon-research-society) |
 | [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
-| [Future-13. Expanded stone mechanics](#future-13-expanded-stone-mechanics) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
 | [Priority](#priority) |
 
@@ -651,60 +650,6 @@ Each location’s **theme word** lists the **unique letter forms** that can appe
 
 ---
 
-# Future-13. Expanded stone mechanics
-
-Evolution stones become more flexible for the matching **elemental type** (Fire Stone on Fire-types, Water Stone on Water-types, etc.).
-
-## Pokémon that do not normally evolve with that stone
-
-Using a matching stone causes **immediate evolution** once the Pokémon reaches **75% of its normal level-up evolution level, rounded up**. Either current type may match. This advances one stage, consumes the stone on successful use, and stores no permanent level reduction. Below the requirement, the party menu shows **LV** followed by the required level; incompatible Pokémon remain **UNABLE**, and eligible Pokémon show **ABLE**.
-
-**Proof of concept implemented:** Fire, Water, Leaf, Thunder, and Ice Stones match Fire, Water, Grass, Electric, and Ice respectively. Only plain level-up evolutions qualify. Existing explicit stone evolutions retain their usual behavior. Move-known evolutions are excluded; all other special methods and additional items remain outside the proof of concept.
-
-Example — Cyndaquil line (natural levels **14** / **36**):
-
-- Fire Stone at **11+** / **27+** instead of waiting for 14 / 36.
-
-Example — Rapidash (natural level **40**):
-
-- Ponyta evolves normally at **40**, or immediately with a Fire Stone at **30+**. Rapidash has no further plain level-up evolution, so this does not make it eligible for another stage.
-
-## Pokémon that normally evolve by stone only
-
-- **Stone at any level** (keep the classic convenience).
-- **Also** a **high level-up path** without the stone.
-
-| Stage pattern | Stone | Level without stone |
-| ------------------------------------------------- | --------------------------- | ------------------- |
-| 1st stage, stone-only (e.g. Exeggcute, Growlithe) | matching stone at any level | **40** |
-| 2nd stage, stone-only (e.g. Gloom, Poliwhirl) | matching stone at any level | **55** |
-
-## Eevee
-
-Every species has room for **9** evolution methods. Eevee already fills that list: the stones, friendship, and Fairy-move methods, plus leveling up on Route 10 for Jolteon ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
-
-Eevee is the exception. These extra methods are added for Eevee only. The limit stays **9** for every other species.
-
-| Extra method | Evolves into | Alongside |
-| --- | --- | --- |
-| Moss rock (Ilex Forest or Viridian Forest) | Leafeon | Leaf Stone |
-| Icy rock (Ice Path B3F or Seafoam Islands B4F) | Glaceon | Ice Stone |
-| Dawn Stone | Espeon | daytime friendship |
-| Dusk Stone | Umbreon | nighttime friendship |
-| Shiny Stone | Sylveon | knowing a Fairy move |
-
-## Open design questions
-
-- Which additional items match which types, including non-elemental stones and items such as Metal Coat?
-- Which special evolution methods beyond plain level-up should support early item evolution? Move-known methods remain excluded.
-- High-level alternatives for friendship and other special methods, and player branch selection. Eevee receives no high-level fallback.
-- High-level fallbacks should intentionally cap wild/trainer probability curves; branching encounters use their existing random branch selection at the ceiling.
-- Interaction with [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) evolution exclusions for generated trainer teams.
-
-Shop availability for stones: [World-6](DESIGN-WORLD.md#world-6-shops).
-
----
-
 # Future-14. Other potential changes
 
 Ideas that do not have their own `Future-*` section yet.
@@ -713,6 +658,7 @@ Ideas that do not have their own `Future-*` section yet.
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
 - **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
+- **Evolution levels** — review evolution levels. Ponyta → Rapidash at level 40 is tragic
 - **Pokémon balance** — every species reasonably viable; encounter rarity roughly reflects power; adjust BST, abilities, and learnsets as needed.
 - **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …). Plate and Pokédex collection is [Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society).
 - **Battle AI** — increase switching for type matchups when no good damaging move is available.
@@ -741,7 +687,6 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | — |
-| [Future-13](#future-13-expanded-stone-mechanics) Stone rules | 9 | 2 | 3 | 1 | 3 | 3 | — |
 | [Future-6](#future-6-shared-pokémon-center-hub) Shared Center hub | 8 | 3 | 3 | 2 | 1 | 3 | — |
 | [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | — |
 | [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |

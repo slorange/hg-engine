@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Host C checks for elemental stone thresholds, resolver item path, and menu labels."""
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 
@@ -23,8 +24,16 @@ def main():
     item = resolver[resolver.index("        for (i", resolver.index("    case EVOCTX_ITEM_CHECK:")):]
     item = item[:item.index("#if defined(IMPLEMENT_LEVEL_CAP)")]
     fixture = (ROOT / "scripts/dev/verify_stone_level_evolution.c").read_text()
+    species = (ROOT / "data/Species.c").read_text(encoding="utf-8")
+    types = re.findall(r"\[(SPECIES_\w+)\] = \{.*?\.types = \{ (TYPE_\w+), (TYPE_\w+) \}", species, re.S)
+    type_rows = "\n".join(f"    [{name}] = {{ {first}, {second} }}," for name, first, second in types)
+    fixture = fixture.replace("/* PERSONAL_TYPES */", type_rows)
     fixture = fixture.replace("/* REQUIREMENT_WRAPPER */", function(pokemon, "u8 LONG_CALL GetStoneLevelEvolutionRequirement("))
     fixture = fixture.replace("/* ITEM_RESOLUTION */", item)
+    level_cases = resolver[resolver.index("            case EVO_NONE:"):resolver.index("            case EVO_TRADE:")]
+    level_cases += resolver[resolver.index("            case EVO_MAGNETIC_FIELD:"):resolver.index("            case EVO_LEVEL_DAY:")]
+    level_cases += resolver[resolver.index("            case EVO_HAS_MOVE_TYPE:"):resolver.index("            case EVO_LEVEL_DARK_TYPE_MON_IN_PARTY:")]
+    fixture = fixture.replace("/* EEVEE_LEVEL_CASES */", level_cases)
     fixture = fixture.replace("/* MENU_LABEL */", function(menu, "void LONG_CALL PartyMenu_PrintEvoStoneCompatString("))
     with tempfile.TemporaryDirectory(prefix="stone_evolution_") as tmp:
         source = Path(tmp) / "test.c"

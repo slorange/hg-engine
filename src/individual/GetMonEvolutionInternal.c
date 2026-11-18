@@ -16,6 +16,7 @@
 #include "overlay.h"
 #include "pokemon.h"
 #include "stone_level_evolution.h"
+#include "eevee_evolutions.h"
 #include "rtc.h"
 #include "save.h"
 #include "script.h"
@@ -50,6 +51,7 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
     u16 pid_hi = 0;
     struct Evolution *evoTable;
     int method_local;
+    u8 evolutionCount;
     u32 form = GetMonData(pokemon, MON_DATA_FORM, NULL);
     u32 lowkey = 0;
 
@@ -76,13 +78,15 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
 
     species = PokeOtherFormMonsNoGet(species, form); // factor in form into species to cover shit like galarian corsola + cap pikachu that can't evolve
 
-    evoTable = sys_AllocMemory(3, MAX_EVOS_PER_POKE * sizeof(struct Evolution) + sizeof(u16));
+    evolutionCount = PlayerEvolutionEntryCount(species);
+    evoTable = sys_AllocMemory(3, evolutionCount * sizeof(struct Evolution) + sizeof(u16));
     ReadWholeNarcMemberByIdPair(evoTable, ARC_EVOLUTIONS, species);
+    AddEeveeEvolutionEntries(species, evoTable);
 
     switch (context) {
     case EVOCTX_LEVELUP:
         friendship = (u16)GetMonData(pokemon, MON_DATA_FRIENDSHIP, NULL);
-        for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
+        for (i = 0; i < evolutionCount; i++) {
             switch (evoTable[i].method) {
             case EVO_NONE:
                 break;
@@ -346,7 +350,7 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
         }
         break;
     case EVOCTX_TRADE:
-        for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
+        for (i = 0; i < evolutionCount; i++) {
             switch (evoTable[i].method) {
             case EVO_TRADE:
                 target = evoTable[i].target & 0x7FF;
@@ -372,7 +376,7 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
         break;
     case EVOCTX_ITEM_CHECK:
     case EVOCTX_ITEM_USE:
-        for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
+        for (i = 0; i < evolutionCount; i++) {
             if (evoTable[i].method == EVO_STONE && usedItem == evoTable[i].param) {
                 target = evoTable[i].target & 0x7FF;
                 *method_ret = 0;
@@ -401,10 +405,8 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
         }
         // Explicit item evolutions above take priority and retain their normal rules.
         if (target == SPECIES_NONE && !GetMonData(pokemon, MON_DATA_IS_EGG, NULL)) {
-            u8 type1 = GetMonData(pokemon, MON_DATA_TYPE_1, NULL);
-            u8 type2 = GetMonData(pokemon, MON_DATA_TYPE_2, NULL);
-            for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
-                u8 required = StoneLevelEvolutionRequirement(usedItem, type1, type2, &evoTable[i]);
+            for (i = 0; i < evolutionCount; i++) {
+                u8 required = StoneLevelEvolutionRequirement(usedItem, &evoTable[i]);
                 if (required != 0 && level >= required) {
                     target = evoTable[i].target & 0x07FF;
                     *method_ret = 0;
