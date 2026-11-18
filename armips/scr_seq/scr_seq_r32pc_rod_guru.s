@@ -11,11 +11,12 @@
 .equ ITEM_GOOD_ROD, 446
 .equ ITEM_SUPER_ROD, 447
 
-.equ MSG_GIVE_OLD, 12
-.equ MSG_GIVE_GOOD, 13
-.equ MSG_GIVE_SUPER, 14
-.equ MSG_PROGRESS, 15
-.equ MSG_ALL_DONE, 16
+// Route 32 outdoor message bank 380; original twenty messages stay intact.
+.equ MSG_GIVE_OLD, 20
+.equ MSG_GIVE_GOOD, 21
+.equ MSG_GIVE_SUPER, 22
+.equ MSG_PROGRESS, 23
+.equ MSG_ALL_DONE, 24
 
 .create "build/r32pc_rod_guru.bin", 0
     play_se SEQ_SE_DP_SELECT

@@ -1,6 +1,12 @@
 #include "include/config.h"
 #include "include/debug.h"
 
+#ifdef SHARED_POKEMON_CENTER
+# Full map-load replacement; preserve r0/r1 by jumping through r3.
+arm9 CenterHub_LoadMap 02052F94 3
+arm9 CenterHub_GetBlackoutSpawn 0203BB20 3
+#endif
+
 #overlay 1 is loaded in at 021E5900
 #overlay 2 is loaded in at 02245B80
 #overlay 12 is loaded in at 022378C0

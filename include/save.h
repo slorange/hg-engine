@@ -114,7 +114,8 @@ struct SAVE_MISC_DATA {
     /* 0x2D5 */ u8 dummy_02D5[3];
     /* 0x2D8 */ u32 togepiEggPersonality;
     /* 0x2DC */ u8 togepiEggGender;
-    /* 0x2DD */ u8 dummy_02DD[3];
+    // Former padding: 'CH' magic + stable 1-based Center ID; no layout change.
+    /* 0x2DD */ u8 centerHubOrigin[3];
 
 #ifdef ALLOW_SAVE_CHANGES
 

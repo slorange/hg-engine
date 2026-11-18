@@ -2222,11 +2222,23 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 ---
 
+## Shared Pokémon Center hub (Future-6)
+
+`SHARED_POKEMON_CENTER` in `include/config.h` routes the 24 ordinary Centers into Route 32 1F (`MAP_R32PC0101`, header 169), preserving its basement (170) and nurse/PC services. **Indigo Plateau is excluded**: its outdoor entrance, League lobby, scripts, and Elite Four access retain their existing behavior. No exterior warp tables are rewritten.
+
+`src/center_hub.c` fully replaces vanilla `sub_02052F94` at ARM9 **0x02052F94**, resolving the destination before map events load while retaining vanilla previous-position, warp-anchor, and dynamic-warp bookkeeping. The shared front door resolves to the originating Center's original outdoor map/warp. Returning from the shared basement or Union Room preserves the origin. Mom's house/elevator dynamic-warp slot remains independent. Avoid the previously failed mid-function `Field_InitMapEvents` approach.
+
+`SAVE_MISC_DATA.centerHubOrigin` occupies the three former padding bytes at **0x2DD–0x2DF**: magic `CH` and a stable 1-based Center ID. The save chunk size and following field offsets do not change. Never reorder `gCenterHubDoors`; append future destinations. Older/invalid records fall back to Route 32. Loading a save inside the hub preserves both player position and origin; a save made in another legacy Center stays there until the player next enters a Center. Runtime reload/flash behavior still needs emulator playtesting.
+
+The second hook, ARM9 **0x0203BB20** (`MapHeader_GetSpawnIdForDeathWarp`), uses the origin's original interior for blackout lookup, retaining the vanilla spawn table and each location's enabled/disabled blackout policy. Fly unlocks remain attached to the unchanged outdoor maps.
+
+Validation: Docker `make test.nds -j24`, then `.venv/bin/python scripts/dev/verify_center_hub.py` inside Docker; run `python scripts/dev/verify_r32_outdoor_rod_guru.py` for the fisherman. Routing host tests: `gcc -w -DCENTER_HUB_HOST_TEST -Iinclude src/center_hub.c scripts/dev/test_center_hub.c -o build/test_center_hub && build/test_center_hub` inside Docker. In-game: enter from two different cities, exit to each original door, save inside/restart/exit, visit the basement and return, and verify Indigo's entrance remains normal.
+
 ## Fishing Rod guru NPCs
 
 **Design:** [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression).
 
-**Ship status (Oct 2026):** **Ten** guru sites patched (nine outdoor/matrix + **Route 32 PC** interior). Build hooks in `narcs.mk`, text in `data/text/*.txt`, `scripts/build/check_rod_guru_text.py`. **R32 PC 1F** guru **obj 4** @ local **(4, 15)** (retail Fishing Brother tile; shared script, no Yes/No). Tier logic is global (`src/fishing_rod.c`, flags 117/189, Super = `hasitem`).
+**Ship status (Nov 2026):** **Ten** outdoor/matrix guru sites patched. Build hooks in `narcs.mk`, text in `data/text/*.txt`, `scripts/build/check_rod_guru_text.py`. **Route 32** guru **obj 19** @ world **(466, 419)** beside the Center entrance (shared rod progression, no Yes/No); the interior fisherman is removed. Tier logic is global (`src/fishing_rod.c`, flags 117/189, Super = `hasitem`).
 
 **Goal:** One shared fisherman script gives Old → Good → Super Rod based on Pokédex caught Water-type evolutionary families (any catch source). Dialogue is region-agnostic for reuse across gurus.
 
@@ -2243,7 +2255,7 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 | Fuchsia | `2_053` | `2_807` | 512 | `fuchsia_rod_guru` |
 | Route 24 | `2_025` | `2_215` | 362 | `r24_rod_guru` |
 | Route 25 | `2_026` | `2_216` | 363 | `r25_rod_guru` (mirror — same tile as R24) |
-| Route 32 PC 1F | `2_163` | `2_233` | 381 | `r32pc_rod_guru` (**local** coords) |
+| Route 32 outdoors | `2_033` | `2_232` (scriptId 11) | 380 (messages 20–24) | `scripts/build/patch_r32_outdoor_rod_guru.py` |
 
 **Guru coordinates:** Outdoor coordinates are world `(x, z)`; Route 32 Pokémon Center uses interior local coordinates.
 
@@ -2277,7 +2289,7 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 **Route 24 / 25 seam:** guru @ world **(1320, 65)** — duplicate object + scr_seq append on **both** **025**/**215**/**362** and **026**/**216**/**363** (see inventory table).
 
-**Route 32 PC 1F:** interior **163** / **233** / **381**; guru **local (4, 15)** — not outdoor R32 **033**. No `--world` lookup on PC floors.
+**Route 32:** for Future-6, the guru now stands outside at world **(466, 419)** beside the Center door **(468, 419)**. The build patch removes interior objects 4/5, appends outdoor script 11 while preserving the original route bytecode and relative branches, and uses outdoor text bank 380. Interior script member 233 stays vanilla. Verify after building with `python scripts/dev/verify_r32_outdoor_rod_guru.py`; check placement and conversation in-game.
 
 **Gym-area story skip (Radio Tower / Elm phone coord):** vanilla **coord script 2** at world **(272, 239)** (west of the gym) when **`VAR_UNK_4078`** is 0 — not the rival hide flag (**470**). Mom intro sets **4078 → 1** (`openworld_story_skip_flags.inc`); **`tools/patch_scr_seq_olivine_gym_story.py`** NOPs scr_seq **911** slot **2** entry; **`tools/patch_zone_event_olivine_gym_story.py`** removes the coord from **074**.
 

@@ -26,6 +26,9 @@
 // commenting out this define will disable kyurem's forme change method and keep saves compatible with pkhex
 #define ALLOW_SAVE_CHANGES
 
+// All outdoor Center doors share Route 32's interior; origin survives saving.
+#define SHARED_POKEMON_CENTER
+
 // CRY_PSEUDOBANK_START defines the first pseudobank to be used as cries in the sdat.  cries are loaded differently to save on RAM space
 #define CRY_PSEUDOBANK_START 778
 
