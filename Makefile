@@ -275,7 +275,7 @@ $(CODE_BUILD_DIRS):
 define SRC_OBJ_INC_DEFINE
 # this generates the objects as part of generating the dependency list which will just be massive files of rules
 $1: $2 $(LEARNSETS_HEADER) $(BATTLETESTS_HEADER) | $(dir $1)
-	$(CC) -MMD -MF $(basename $1).d $(CFLAGS) -c $2 -o $1
+	$(CC) -MMD -MF $(basename $1).d $$(CFLAGS) -c $2 -o $1
 	@#printf "\t$(CC) $(CFLAGS) -c $2 -o $1" >> $(basename $1).d
 
 -include $(basename $1).d

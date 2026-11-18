@@ -4,9 +4,8 @@
 #include "pokemon.h"
 
 /**
- * Post-table wild encounter setup (overlay 129).
- * Called from modify_species_encounter_data today; SetEncountData stub will call
- * this after a placeholder mon exists (Phase 2+).
+ * Resident entry points dispatch synchronous post-table generation to overlay
+ * 152, which is unloaded before returning to the encounter/battle caller.
  *
  * @param pp PartyPokemon being filled for the wild battler
  * @param vanillaTableSpecies species from the encounter table / EncountParamSet stack

@@ -1632,6 +1632,17 @@
       ],
       "symbol": "OVERLAY_CREATETRADEMON",
       "resolved": true
+    },
+    "152": {
+      "name": "Wild encounter generation",
+      "description": "Temporary service for ecology selection, distance caps, stage adjustment, held items, wild-mon creation and Bug-Catching Contest generation. Unloaded before returning to battle transition. Mom world generation remains in 131.",
+      "sources": [
+        "src/encounter/",
+        "src/encounter_dispatch.c",
+        "include/encounter_overlay.h"
+      ],
+      "symbol": "OVERLAY_ENCOUNTER_GENERATION",
+      "resolved": true
     }
   }
 }

@@ -35,7 +35,7 @@ def main():
     if not args.no_generate:
         subprocess.run(["python3", "scripts/build/gen_level_up_evo_tables.py"], cwd=ROOT, check=True)
         subprocess.run(["python3", "scripts/build/gen_synthetic_evo_edges.py"], cwd=ROOT, check=True)
-    wild = (ROOT / "src/wild_level_caps.c").read_text()
+    wild = (ROOT / "src/encounter/wild_level_caps.c").read_text()
     wild = wild[wild.index("// Encounter levels never"):wild.index("#ifdef DEBUG_WILD_LEVEL_CAP_LEVELS", wild.index("u8 RollWildLevel"))]
     trainers = (ROOT / "src/field/enemy_party.c").read_text()
     leader = trainers[trainers.index("static BOOL IsGymLeaderTrainerClass"):trainers.index("#if defined(TRAINER_SPECIES_STAGE_ADJUST)")]

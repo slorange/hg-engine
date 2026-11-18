@@ -146,6 +146,7 @@
 #define OVERLAY_PARTY_HANDLEUSEITEMONMON             149
 #define OVERLAY_INHERITMOVES                         150
 #define OVERLAY_CREATETRADEMON                       151
+#define OVERLAY_ENCOUNTER_GENERATION                  152
 
 #define MAX_ACTIVE_OVERLAYS 8
 
