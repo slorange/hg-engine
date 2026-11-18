@@ -660,7 +660,7 @@ Flash and Headbutt have **no** `TestBadgeFlag` call in vanilla field-move checks
 
 ### Fly map — Kanto destinations
 
-**Status: partial** — `OPENWORLD_FLY_MAP` in `include/config.h`. **Kanto map scroll** works via arm9 hook; **Johto ↔ Kanto fly destinations** are still vanilla (pinned — see [Cross-region fly attempts](#cross-region-fly-attempts-pinned)). **`Pokegear_GetMapUnlockLevel`** on linked arm9 at **`0x0202EE70`** (pret getter — **not** **`0x0202EE84`**, mid-function in rebased arm9 → Fly crash). Do **not** hook overlay 101 into overlay 129 (Fly map may unload 129).
+**Status: implemented, awaiting in-game cross-region Fly confirmation** — `OPENWORLD_FLY_MAP` in `include/config.h`. Kanto scrolling and Johto ↔ Kanto selection use ARM9 hooks. **`Pokegear_GetMapUnlockLevel`** on linked arm9 at **`0x0202EE70`** (pret getter — **not** **`0x0202EE84`**, mid-function in rebased arm9 → Fly crash). Do **not** hook overlay 101 into overlay 129 (Fly map may unload 129).
 
 Vanilla gates the Fly / Pokégear map on **`SavePokegear.mapUnlockLevel`** (0 = Johto scroll only, 2 = full Kanto), set by story **`ScrCmd_804`** — not by Mom’s `UpgradePokegear(1)` and **not** by `PlayerProfile.gameClear`. Cross-region spot picking compares each flypoint’s region to **`mapApp->curRegion`** (struct field @ **+0x0E** in overlay 101). Pret’s **`ov101_021EA7E4`** label does **not** line up with the live retail gate (see attempts below).
 
@@ -670,15 +670,19 @@ Vanilla gates the Fly / Pokégear map on **`SavePokegear.mapUnlockLevel`** (0 = 
 
 Individual cities still require **`FLAG_SYS_FLYPOINT_*`** (Pokémon Center visit). Re-scan after rebases: `python scripts/dev/verify_fly_map_hooks.py` (after `base/` exists).
 
+`PokegearTownMap_LaunchApp_hook` replaces the ARM9 launcher at **0x0203EAB0** before entering the map application. It preserves vanilla allocation (heap **11**, size **0x2C**), argument initialization (**0x02092D8C**), application launch (**0x0203EA5C**), and ownership/return pointer. For kind **0** (Fly), only transient `args.x/z` become **(28×32, 6×32)**, the native neutral Indigo region. This permits either region in the unmodified destination filter, as already used by Abra. Actual map ID, matrix marker/cursor coordinates, save pointer, visit flags, selection/cancellation and Fly landing/animation tasks remain native. Kind **1** (ordinary town map) keeps its original arguments. No saved location or actual Indigo map is changed.
+
+Validation: `python scripts/dev/verify_cross_region_fly.py` exercises the installed ARM9 hook and compiled launcher from Johto, Kanto and Indigo source arguments, verifies marker/result/save-pointer preservation and unchanged ordinary town maps, and compares the function bytes against packed overlay 129. Run `python scripts/dev/verify_abra_travel_arm.py` and `python scripts/dev/verify_center_abra.py` for Abra regression coverage. Playtest Fly in both directions, same-region Fly, unvisited destinations and cancellation after reloading `test.nds`.
+
 **Target ([World-1](DESIGN-WORLD.md#world-1-world-transportation), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)):** once HM Fly is unlocked, fly to **visited cities in both regions** without E4 or SS Aqua story prerequisites — without setting `gameClear` on new saves.
 
 #### Cross-region fly attempts (pinned)
 
-**Kept:** Kanto **map scroll** via arm9 **`Pokegear_GetMapUnlockLevel`** hook @ **`0x0202EE70`** only.
+**Historical attempts:** Kanto **map scroll** via arm9 **`Pokegear_GetMapUnlockLevel`** hook @ **`0x0202EE70`** was the only working change before the launcher fix above.
 
 **Tried (overlay 101, retail base ~`0x021E7740`):** pret-named helpers and guessed **`0x021EF09C`** / **`0x021E81A8`** patches — crash, no-op, or no cross-region spot pick. Pret labels do not match live callers; need BL graph from party Fly → overlay 101, not symbol grep.
 
-**Next:** identify live spot filter; 2-byte patches after disasm. Session recon was **`scripts/local/`** only (not in git).
+**Resolved approach (Nov 2026):** retain the native spot filter and supply the neutral region through launcher arguments, as with Abra. The failed overlay patches are not required. Earlier session recon was **`scripts/local/`** only (not in git).
 
 
 ### Violet Gym (Falkner) — 859 / zone_event 131

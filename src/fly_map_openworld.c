@@ -35,4 +35,24 @@ u8 Pokegear_GetMapUnlockLevel_hook(void *savePokegear)
     return level;
 }
 
+extern void LONG_CALL FlyMap_InitArgs(void *field, void *args);
+extern void LONG_CALL FlyMap_LaunchApp(void *field, void *args);
+
+// Replace the ARM9 town-map launcher, while it still runs in the field.
+// Only kind 0 (Fly selection) needs the neutral regional context. The GUI
+// gets its actual marker/cursor from matrixX/Y at +0x22, not x/z at +8.
+void *PokegearTownMap_LaunchApp_hook(void *field, int kind)
+{
+    u8 *args = sys_AllocMemoryLo(11, 0x2C);
+    memset(args, 0, 0x2C);
+    FlyMap_InitArgs(field, args);
+    args[0] = kind;
+    if (kind == 0) {
+        *(int *)(args + 8) = 28 * 32;
+        *(int *)(args + 12) = 6 * 32;
+    }
+    FlyMap_LaunchApp(field, args);
+    return args;
+}
+
 #endif // OPENWORLD_FLY_MAP

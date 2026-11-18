@@ -610,6 +610,7 @@ arm9 PlayerProfile_TestBadgeFlag_hook 02028F98 2
 
 #ifdef OPENWORLD_FLY_MAP
 arm9 Pokegear_GetMapUnlockLevel_hook 0202EE70 0
+arm9 PokegearTownMap_LaunchApp_hook 0203EAB0 3
 #endif
 
 # expand heal blocked moves

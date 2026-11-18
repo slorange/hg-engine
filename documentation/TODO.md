@@ -46,7 +46,6 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 | Item | Design | Notes |
 | ---- | ------ | ----- |
-| **Cross-region Fly (Johto ↔ Kanto)** | [World-1](DESIGN-WORLD.md#world-1-world-transportation), [Fly map § cross-region attempts](HACK-NOTES.md#cross-region-fly-attempts-pinned) | Kanto scroll works (`OPENWORLD_FLY_MAP` arm9 hook); destination filter still vanilla; overlay 101 patch sites tried in Sep 2026 all failed or no-op (see HACK-NOTES) |
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |
 | **Dark Cave & Rock Tunnel (Flash)** | [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) | Entrance message until Flash (1 badge). |
