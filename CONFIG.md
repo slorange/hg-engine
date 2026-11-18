@@ -1,6 +1,6 @@
 # Configuration Options
 
-`SHARED_POKEMON_CENTER` (`include/config.h` only) routes the 24 ordinary Pokémon Centers into the Route 32 interior and saves the originating door for the return trip. Indigo Plateau retains its existing behavior. The saved origin uses existing padding, preserving the save layout. See [Shared Pokémon Center hub](documentation/HACK-NOTES.md#shared-pokémon-center-hub-future-6) for hooks and verification.
+`SHARED_POKEMON_CENTER` (`include/config.h` only) routes the 24 ordinary Pokémon Centers into the Route 32 interior and saves the originating door for the return trip. Indigo Plateau retains its existing behavior. The saved origin uses existing padding, preserving the save layout. See [Shared Pokémon Center hub](documentation/HACK-NOTES.md#shared-pokémon-center-hub-world-10) for hooks and verification.
 
 ### ``armips\include\config.s`` and ``include\config.h``
  ``DISALLOW_DEXIT_GEN`` (``armips/include/config.s`` only) controls whether to disallow selection of dexited moves in later generations, or disallow selection of unimplemented moves.

@@ -7,6 +7,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/build"))
 from patch_center_relearner import relearner_object
+from patch_center_apricorn import craft_objects
 from patch_zone_event_r32pc_rod_guru import parse_zone_event
 
 
@@ -88,12 +89,13 @@ def simulate(body, *, money=1000, decline=False, slot=0, species=25, eligible=1,
 def main():
     vanilla = (ROOT / "build/a012_vanilla/2_233").read_bytes()
     current = (ROOT / "build/a012/2_233").read_bytes()
-    assert current[20:len(vanilla) + 4] == vanilla[16:], "original code changed"
+    assert current[24:len(vanilla) + 8] == vanilla[16:], "original code changed"
     for slot in range(4):
-        assert struct.unpack_from("<i", current, slot * 4)[0] == struct.unpack_from("<i", vanilla, slot * 4)[0] + 4
+        assert struct.unpack_from("<i", current, slot * 4)[0] == struct.unpack_from("<i", vanilla, slot * 4)[0] + 8
     start = 20 + struct.unpack_from("<i", current, 16)[0]
-    assert start == len(vanilla) + 4
-    body = current[start:]
+    assert start == len(vanilla) + 8
+    end = 24 + struct.unpack_from("<i", current, 20)[0]
+    body = current[start:end]
     assert body == (ROOT / "build/center_relearner.bin").read_bytes()
     assert simulate(body)[:3] == (700, 1, [300])
     assert simulate(body, money=300)[:3] == (0, 1, [300])
@@ -103,9 +105,9 @@ def main():
     assert simulate(body, money=299)[:3] == (299, 0, [])
     original = parse_zone_event((ROOT / "build/a032_vanilla/2_163").read_bytes())
     events = parse_zone_event((ROOT / "build/a032/2_163").read_bytes())
-    assert events[1] == [o for o in original[1] if struct.unpack_from("<H", o)[0] not in (4, 5)] + [relearner_object()]
+    assert events[1] == craft_objects([o for o in original[1] if struct.unpack_from("<H", o)[0] not in (4, 5)] + [relearner_object()])
     assert (events[0], events[2], events[3]) == (original[0], original[2], original[3])
-    assert len((ROOT / "data/text/381.txt").read_text(encoding="utf-8").splitlines()) == 25
+    assert len((ROOT / "data/text/381.txt").read_text(encoding="utf-8").splitlines()) == 32
     print("OK: Center relearner NPC; message-window lifecycle; original scripts/warps preserved; $300 only on success; exact funds, insufficient funds, refusal, party/move cancellation, Egg and no-moves paths")
 
 

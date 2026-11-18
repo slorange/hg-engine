@@ -2222,7 +2222,7 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 ---
 
-## Shared Pokémon Center hub (Future-6)
+## Shared Pokémon Center hub (World-10)
 
 `SHARED_POKEMON_CENTER` in `include/config.h` routes the 24 ordinary Centers into Route 32 1F (`MAP_R32PC0101`, header 169), preserving its basement (170) and nurse/PC services. **Indigo Plateau is excluded**: its outdoor entrance, League lobby, scripts, and Elite Four access retain their existing behavior. No exterior warp tables are rewritten.
 
@@ -2233,6 +2233,20 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 The second hook, ARM9 **0x0203BB20** (`MapHeader_GetSpawnIdForDeathWarp`), uses the origin's original interior for blackout lookup, retaining the vanilla spawn table and each location's enabled/disabled blackout policy. Fly unlocks remain attached to the unchanged outdoor maps.
 
 Validation: Docker `make test.nds -j24`, then `.venv/bin/python scripts/dev/verify_center_hub.py` inside Docker; run `python scripts/dev/verify_r32_outdoor_rod_guru.py` for the fisherman. Routing host tests: `gcc -w -DCENTER_HUB_HOST_TEST -Iinclude src/center_hub.c scripts/dev/test_center_hub.c -o build/test_center_hub && build/test_center_hub` inside Docker. In-game: enter from two different cities, exit to each original door, save inside/restart/exit, visit the basement and return, and verify Indigo's entrance remains normal.
+
+### Hub Apricorn crafting
+
+The remaining vanilla gift giver in Route 32 1F (zone_event **163**, object **6**, local **(1, 18)**) now uses scriptId **6**, replacing the vanilla Lure Ball gift even on saves that already claimed it. `scripts/build/patch_center_apricorn.py` runs after the relearner patch, appends script slot **5** in member **233**, and preserves all original code, movement data, NPC placement, and warp indices. Messages **25–31** are appended to bank **381**.
+
+`src/apricorn_craft.c` counts both ordinary Bag Apricorn stacks and the first seven colour-count bytes in the vanilla Apricorn Box. It exchanges everything immediately at **one ball per Apricorn**, using Kurt's mapping: red → Level, yellow → Moon, blue → Lure, green → Friend, pink → Love, white → Fast, black → Heavy. The fee is **100 × ceil(total / 10)** across all colours and both stores combined, with no fee for zero Apricorns. The confirmation quote prints fee hundreds followed by `00`, avoiding 16-bit script-var truncation for large fees.
+
+Custom command **208/subcommand 5** takes mode **0** to quote or **1** to recheck and commit. It outputs total in **0x8000**, fee hundreds in **0x8001**, and status in **0x800C** (0 success, 1 empty, 2 insufficient money, 3 insufficient ball space, 4 temporary allocation failure). It simulates every removal/addition on a temporary Bag copy, checks the 999-per-ball stack limit, and only then commits the Bag, zeroes the seven Box colour counts, and deducts money. It does not touch Kurt's pending order or Aprijuice. The standard purchase sound plays only after a successful commit. No new save fields are needed.
+
+Validation: compile/run `gcc -w -DAPRICORN_CRAFT_HOST_TEST -Iinclude src/apricorn_craft.c scripts/dev/test_apricorn_craft.c -o build/test_apricorn_craft && build/test_apricorn_craft` inside Docker. After building `test.nds`, run `python scripts/dev/verify_center_apricorn.py`, `python scripts/dev/verify_center_relearner.py`, and `python scripts/dev/verify_r32_outdoor_rod_guru.py`. The transaction test covers rounding, mixed colours/stores, cancellation safety, exact/insufficient funds, a full ball pocket, stack overflow, rollback after a later colour fails, preserved Kurt order bytes, and fees above 65535 dollars. In-game testing should check the quote, colour outputs, inventory/money, and an already-claimed vanilla-gift save.
+
+After a successful confirmation/exchange, the script closes the quote window, fades to black, waits **30 frames**, and fades back before the purchase sound and **“All done!”**. This is presentation only; it does not advance the accelerated clock or calendar. Declines and failed exchanges do not run the fade.
+
+**Workbench recon (v2):** Kurt's house uses matrix **127** → land_data member **239**. Its event member **158** contains three character objects and no furniture object. The land member contains a **528-byte placed-prop block (11 × 48-byte records)** before its BMD model, with model IDs **1, 56, 143, 142, 71, 139**. This is a promising route for transplanting furniture, but the workbench's exact prop/model and its compatibility with the Center's area model resources still need visual identification; no furniture was changed for the first service version.
 
 ### Hub Move Relearner
 
@@ -2299,7 +2313,7 @@ After Docker `make test.nds -j24`, run `python scripts/dev/verify_center_relearn
 
 **Route 24 / 25 seam:** guru @ world **(1320, 65)** — duplicate object + scr_seq append on **both** **025**/**215**/**362** and **026**/**216**/**363** (see inventory table).
 
-**Route 32:** for Future-6, the guru now stands outside at world **(466, 419)** beside the Center door **(468, 419)**. The build patch removes interior objects 4/5, appends outdoor script 11 while preserving the original route bytecode and relative branches, and uses outdoor text bank 380. The hub relearner subsequently occupies interior object 4 with a new script; the original scripts in member 233 remain intact. Verify after building with `python scripts/dev/verify_r32_outdoor_rod_guru.py`; check placement and conversation in-game.
+**Route 32:** for World-10, the guru now stands outside at world **(466, 419)** beside the Center door **(468, 419)**. The build patch removes interior objects 4/5, appends outdoor script 11 while preserving the original route bytecode and relative branches, and uses outdoor text bank 380. The hub relearner subsequently occupies interior object 4 with a new script; the original scripts in member 233 remain intact. Verify after building with `python scripts/dev/verify_r32_outdoor_rod_guru.py`; check placement and conversation in-game.
 
 **Gym-area story skip (Radio Tower / Elm phone coord):** vanilla **coord script 2** at world **(272, 239)** (west of the gym) when **`VAR_UNK_4078`** is 0 — not the rival hide flag (**470**). Mom intro sets **4078 → 1** (`openworld_story_skip_flags.inc`); **`tools/patch_scr_seq_olivine_gym_story.py`** NOPs scr_seq **911** slot **2** entry; **`tools/patch_zone_event_olivine_gym_story.py`** removes the coord from **074**.
 

@@ -23,3 +23,10 @@ This Pokémon has no forgotten moves\nthat I can help it remember.
 Your Pokémon remembered a move!\nThat will be $300. Thank you!
 Come see me whenever your Pokémon\nneeds help remembering a move.
 Which move should your Pokémon\nremember?
+I can turn your Apricorns\ninto Poké Balls.\rFor your {STRVAR_1 52, 0, 0} Apricorns,\nthe fee is ${STRVAR_1 52, 1, 0}00.
+All done!
+Bring me some Apricorns!\nI’ll make one ball from each one.\rIt’s $100 for every ten Apricorns,\nrounded up. No waiting required!
+The fee for all your Apricorns\nis ${STRVAR_1 52, 1, 0}00.\rYou don’t have enough money\njust yet.
+Your Bag can’t hold all the balls.\nPlease make room and come back.\rI haven’t taken any Apricorns\nor money.
+I can’t get started right now.\nPlease try again in a moment.
+No problem. Bring your Apricorns\nback whenever you’re ready!

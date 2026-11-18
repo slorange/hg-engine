@@ -18,8 +18,8 @@
 | [World-7. Berry economy](#world-7-berry-economy) | IMPLEMENTED |
 | [World-8. Item acquisition channels](#world-8-item-acquisition-channels) | PARTIALLY IMPLEMENTED |
 | [World-9. Accelerated day/night cycle](#world-9-accelerated-daynight-cycle) | PARTIALLY IMPLEMENTED |
+| [World-10. Shared Pokémon Center Hub](#world-10-shared-pokémon-center-hub) | PARTIALLY IMPLEMENTED |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
-| Pokémon Center hub services | [Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub) |
 
 ---
 
@@ -80,7 +80,7 @@ These include:
 
 **Status: NOT IMPLEMENTED** 
 
-Pokémon Centers may contain an Abra transportation service ([Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub) — shared hub desk).
+Pokémon Centers may contain an Abra transportation service ([World-10](DESIGN-WORLD.md#world-10-shared-pokémon-center-hub) — shared hub desk).
 
 Travel likely costs money.
 
@@ -372,6 +372,36 @@ Applies to:
 Does not apply to: 
 - Bug Catching Contest timer, Calendar date, Daily rollovers
 
-**Still open:** deliberate time advance — Pokémon Center rest in [Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub), portable camping in [Future-9](DESIGN-FUTURE.md#future-9-time-advancement); virtual calendar for [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
+**Still open:** deliberate time advance — Pokémon Center rest in [World-10](DESIGN-WORLD.md#world-10-shared-pokémon-center-hub), portable camping in [Future-9](DESIGN-FUTURE.md#future-9-time-advancement); virtual calendar for [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
+
+---
+
+# World-10. Shared Pokémon Center Hub
+
+**Status: PARTIALLY IMPLEMENTED**
+
+## Design Goal
+
+Pokémon Centers are **optional convenience hubs**, not required stops for healing or storage: battles already restore the party afterward ([Battle-1](DESIGN-BATTLES.md#recovery)), and [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) will provide PC access from the menu. Players can use the same services from any Center, avoiding unnecessary trips to specific NPCs across Johto and Kanto.
+
+## Services
+
+| Service | Description | Status |
+| ------- | ----------- | ------ |
+| **Abra fast travel** | Pay a fixed fee to travel to previously visited towns and cities. | Planned |
+| **Move Relearner** | Relearn moves for $300 per successfully learned move, without returning to Blackthorn. | Implemented |
+| **Rest / pass time** | Advance the clock to morning, day, or night. | Planned |
+| **Apricorn crafting** | Instantly exchange all carried Apricorns for their usual specialty balls, one per Apricorn, for $100 per ten Apricorns rounded up. Expanded recipes follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance). | Implemented |
+| **Move Tutor** | Make special move tutoring available from any Center. | Maybe |
+| **Specialty Trader** | Exchange items or currencies for selected rewards. Inventory and pricing TBD. | Maybe |
+| **Researchers** | Register Arceus Plates and claim plate and Pokédex rewards ([Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society)). | Planned |
+
+Other services may be added as future systems develop. Keep location-specific shops and rewards in the world when they provide a meaningful reason to explore.
+
+## Shared Interior
+
+Outdoor Pokémon Center entrances lead to a shared interior, tracking the originating Center so the exit returns to the correct outdoor door. The return destination persists when the player saves and restarts inside the Center. Indigo Plateau remains separate, preserving its unique layout and League access.
+
+Individual Centers’ NPCs do not carry over into the shared interior. The actual Pokemon Center used is the Route 32 one, and all vanilla npcs have been removed.
 
 ---

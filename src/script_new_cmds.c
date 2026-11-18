@@ -1,4 +1,5 @@
 #include "../include/config.h"
+#include "../include/apricorn_craft.h"
 #include "../include/constants/file.h"
 #include "../include/ecology/ecology_script.h"
 #include "../include/fishing_rod.h"
@@ -13,6 +14,7 @@
 #define SCRIPT_NEW_CMD_FISHING_ROD_REMAINING 2
 #define SCRIPT_NEW_CMD_GIVE_JOHTO_BADGE       3
 #define SCRIPT_NEW_CMD_ECOLOGY_GENERATE       4
+#define SCRIPT_NEW_CMD_APRICORN_CRAFT         5
 #define SCRIPT_NEW_CMD_MAX 256
 
 BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
@@ -21,6 +23,14 @@ BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
     u16 UNUSED arg0 = ScriptReadHalfword(ctx);
 
     switch (sw) {
+    case SCRIPT_NEW_CMD_APRICORN_CRAFT: {
+        u16 total, feeHundreds;
+        u16 status = ApricornCraft_Run(ctx->fsys->savedata, arg0 != 0, &total, &feeHundreds);
+        SetScriptVar(0x8000, total);
+        SetScriptVar(0x8001, feeHundreds);
+        SetScriptVar(0x800C, status);
+        break;
+    }
     case SCRIPT_NEW_CMD_REPEL_USE:;
 #ifdef IMPLEMENT_REUSABLE_REPELS
         u16 most_recent_repel = Repel_GetMostRecent();
