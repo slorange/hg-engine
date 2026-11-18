@@ -12,6 +12,11 @@
     setflag FLAG_BOAT_ARRIVED
     setflag FLAG_UNK_0F2
 
+// Snorlax — clear Route 11 / Route 12 blockers and prevent vanilla respawn
+    setflag FLAG_HIDE_ROUTE_11_SNORLAX
+    setflag FLAG_HIDE_ROUTE_12_SNORLAX
+    setflag FLAG_CAUGHT_SNORLAX
+
 // Azalea — D26R0102 post–Proton (+ 425/426 gym); scr_seq 866 patches well coord + rival scripts
     setflag FLAG_UNK_1A9
     clearflag FLAG_UNK_19E

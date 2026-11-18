@@ -43,6 +43,7 @@ Behavior inherited from HG-Engine.
 - **Route 36** — Sudowoodo roadblock removed.
 - **Route 32** — badge gate south toward Violet removed.
 - **Cut trees removed** — Ilex Forest and Route 35.
+- **Snorlax removed** — Outside Vermilion
 
 ### Wild encounters
 
