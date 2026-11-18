@@ -73,8 +73,8 @@
 
 ### Overlay 129 and ``linker.ld`` (this fork)
 
-See **[documentation/HACK-NOTES.md § Overlay 129 — engine code budget](documentation/HACK-NOTES.md#overlay-129-32-kib-engine-overlay)** for the 32 KiB limit, field vs 129 memory map, and the field-rodata + pointer-patch pattern.
+See **[documentation/HACK-NOTES.md § Overlay 129 — engine code budget](documentation/HACK-NOTES.md#overlay-129--engine-code-budget)** for the 40 KiB limit, field vs 129 memory map, and the field-rodata + pointer-patch pattern.
 
-``scripts/build/make.py`` inserts ``build/output.bin`` into ``overlay_0129.bin`` at ``OFFSET_START_IN_129`` (``0x60``), matching ``ORIGIN = 0x023D8000 + 0x60`` in ``src/linker.ld``. Large tables belong in ``src/field/``, not root ``src/``.
+``scripts/build/make.py`` inserts ``build/output.bin`` into ``overlay_0129.bin`` at ``OFFSET_START_IN_129`` (``0x60``), matching ``ORIGIN = 0x023D6000 + 0x60`` in ``src/linker.ld``. Large tables belong in ``src/field/``, not root ``src/``.
 
  NOTE:  It is strongly suggested that code edits and repoints be done through hg-engine since its move to get rid of the synthetic overlay.

@@ -110,7 +110,8 @@ def main() -> None:
     engine = built_overlays[129]
     offset = linked["WildLevelCapsFieldAddr"] - engine.ramAddress
     assert struct.unpack_from("<I", engine.data, offset)[0] == field_symbols["sWildLevelCaps"]
-    assert len(engine.data) + engine.bssSize <= 0x8000
+    assert engine.ramAddress == 0x023D6000
+    assert len(engine.data) + engine.bssSize <= 0xA000
     print("OK: both park maps share the cap for all 18 starts; engine overlay fits")
     print("verify_bug_contest_ecology: OK")
 

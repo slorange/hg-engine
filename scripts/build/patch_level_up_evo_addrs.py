@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OVERLAY129_LOAD = 0x023D8000
+OVERLAY129_LOAD = 0x023D6000
 OVERLAY129_FILE_SKIP = 0x60
 LEVEL_UP_TABLE_SYMBOL = "sLevelUpEvoTablesData"
 LEVEL_UP_ADDR_SYMBOL = "LevelUpEvoTablesFieldAddr"
@@ -58,7 +58,7 @@ def main():
 
     craft_addr = nm_address(args.field_elf, "ApricornCraft_FieldRun")
     craft_slot = nm_address(args.overlay_elf, "ApricornCraftFieldAddr")
-    if not 0x023C8000 <= (craft_addr & ~1) < 0x023D8000:
+    if not 0x023C8000 <= (craft_addr & ~1) < OVERLAY129_LOAD:
         raise SystemExit("Apricorn crafting must stay below overlay 129")
     patch_overlay_bin(args.overlay_bin, craft_slot, craft_addr | 1)
     print(f"Patched ApricornCraftFieldAddr = 0x{craft_addr | 1:08X}")

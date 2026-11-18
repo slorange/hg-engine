@@ -76,7 +76,7 @@ def main():
     field = struct.unpack_from('<8I', rom.arm9OverlayTable, 131*32)
     root = struct.unpack_from('<8I', rom.arm9OverlayTable, 129*32)
     assert field[1] + field[2] + field[3] <= root[1], 'field overlaps resident code'
-    assert root[2] + root[3] <= 0x8000
+    assert root[1] == 0x023D6000 and root[2] + root[3] <= 0xA000
     for loaded in (False, True):
         for commit in (False, True):
             m = CraftMachine(rom, loaded)
@@ -109,7 +109,7 @@ def main():
             assert len(m.added) == 1 and m.added[0][1] == 27
         if paid:
             assert 'memset' in m.checked
-    print(f'OK: packed field transaction quote/commit/failures, Thumb helper calls, dispatcher loaded/unloaded/null guards, no overlap; overlay 129 {root[2]} bytes, {0x8000-root[2]} free')
+    print(f'OK: packed field transaction quote/commit/failures, Thumb helper calls, dispatcher loaded/unloaded/null guards, no overlap; overlay 129 {root[2]} bytes, {0xA000-root[2]} free')
 
 
 if __name__ == '__main__':

@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 FIELD_ELF = ROOT / "build/field_linked.o"
 OVERLAY_ELF = ROOT / "build/linked.o"
 OUTPUT_BIN = ROOT / "build/output.bin"
-OVERLAY129_LOAD = 0x023D8000 + 0x60
+OVERLAY129_LOAD = 0x023D6000 + 0x60
 
 PATCHES = (
     ("LevelUpEvoTablesFieldAddr", "sLevelUpEvoTablesData"),

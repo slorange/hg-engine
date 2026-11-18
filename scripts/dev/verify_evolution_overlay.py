@@ -38,10 +38,10 @@ def main():
     assert all(name in root for name in ("OpenEvolutionOverlay", "CloseEvolutionOverlay",
                 "GetMonEvolution", "GetStoneLevelEvolutionRequirement", "PartyMenu_PrintEvoStoneCompatString"))
     blob = (ROOT / "build/output.bin").stat().st_size
-    packed_root = packed_overlay(129, 0x023D8000)
+    packed_root = packed_overlay(129, 0x023D6000)
     assert packed_root[0x60:0x60 + blob] == (ROOT / "build/output.bin").read_bytes()
-    assert blob <= 0x8000 - 0x60
-    print(f"PASS: relocated implementations absent from overlay 129; resident blob {blob} bytes, {0x8000 - 0x60 - blob} bytes free.")
+    assert blob <= 0xA000 - 0x60
+    print(f"PASS: relocated implementations absent from overlay 129; resident blob {blob} bytes, {0xA000 - 0x60 - blob} bytes free.")
 
 if __name__ == "__main__":
     main()

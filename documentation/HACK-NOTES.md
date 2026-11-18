@@ -1779,7 +1779,13 @@ Overlay **139** (`BattleFormChangeCheck`) starts at **0x023C2400**, rather than 
 
 Actual ranges are available from the ROM overlay table: **used end = RAM start + initialized code/data size + BSS size**, with end addresses exclusive. These sizes are decompressed RAM footprints, not compressed file sizes, linker capacity or runtime heap usage. `python scripts/dev/dump_overlay_memory.py` exports all entries to `build/overlay_memory_ranges.txt`. `python scripts/dev/build_overlay_viewer.py` generates `build/overlay-memory-viewer.html`, a local browser viewer with address windows, zoom/pan, ID/name filters, code/data versus BSS, descriptions and CSV export. It can also read another local `.nds` directly. Labels and unresolved source hints live in `scripts/dev/overlay_descriptions.json`; unverified vanilla purposes are explicitly unresolved.
 
-Measured Nov 18 after the Apricorn call-state fix: **129** occupies **0x023D8000–0x023DFCE9** (**31,977 bytes**, **791 bytes free** in its 32 KiB window); **130** occupies **0x023C4000–0x023D5D38** (**73,016 bytes**); **131** occupies **0x023C8000–0x023D2886** (**43,142 bytes**). The last **8 KiB** of 130's configured allocation, **0x023D6000–0x023D8000**, intersects no overlay code/data or BSS among all **152** ARM9 entries in that build. This is unused battle capacity, not a separate unallocated reservation. Moving 129 down by 8 KiB would leave battle only **712 bytes** of growth space and field **14,202 bytes** before the new resident boundary. No repartition has been implemented; changing it requires auditing loaders, linkers, address constants, patchers, other memory users and runtime transitions.
+Current layout after the Nov 18 resident expansion: **129** occupies **0x023D6000–0x023DDCE9** (**31,977 bytes**, **8,983 bytes free** in its **40 KiB** window ending at **0x023E0000**). It previously started at **0x023D8000**, with only **791 bytes free**. The lower **8 KiB** was reclaimed from unused battle/field capacity; no other overlay's initialized data or BSS intersects the expanded resident window among all **152** ARM9 entries. **130** remains at **0x023C4000–0x023D5D38** (**73,016 bytes**), with a new **72 KiB** linker capacity and **712 bytes free**. **131** remains at **0x023C8000–0x023D2886** (**43,142 bytes**), with a new **56 KiB** linker capacity and **14,202 bytes free**. Both linkers now reject growth past **0x023D6000**.
+
+Expansion implementation: `src/linker.ld`, `src/battle/linker.ld`, `src/field/linker.ld`, trainer-AI prefix assembly, field pointer patchers and budget verifiers use the new boundary. The 96-byte prefix is retained; the custom code starts at **0x023D6060**. `make.py` derives the overlay-table load address from the resident linker and all generated imports/hooks are relinked. Root and suboverlay linker scripts are explicit Make dependencies so address/limit changes cannot leave stale binaries. `python scripts/dev/verify_resident_layout.py` checks packed bytes, every ARM9/ARM7 overlay's code/data+BSS against the resident window, battle/field limits, trainer-AI branches into the relocated prefix, and the compiled boot-load thunk followed by resident code execution. Loader filesystem behavior is adapted in that test; it is not a complete emulator boot. Field pointer, evolution, encounter, Bug-Catching Contest, Center hub, actual ARM Apricorn transaction, Abra and Fly regression checks passed. User smoke test passed on Nov 18 after rebuilding: the expanded layout appears to work normally. For future relocations, restart the ROM and load the in-game save, not a pre-relocation emulator save state; smoke-test field/battle/menu transitions and NPC services alongside automated checks.
+
+**Next time 129 approaches capacity:** consider trimming unused functionality from battle overlay **130**, then extending 129 downward again into the recovered contiguous space. This successfully expanded 129 by **8 KiB** without repeatedly moving individual services into other overlays. Prefer evaluating this layout option before another round of service relocation. Battle currently has only **712 bytes** of growth margin, so further reclamation requires reducing its actual compiled size first; preserve deliberate battle headroom and check field 131 against the same new boundary. Audit all overlay/BSS ranges and other memory users again, update linkers, trainer-AI prefix origin, patchers and verification constants, regenerate all imports/hooks, rebuild the ROM and repeat the automated and in-game checks. Do not merely increase 129's length over live code.
+
+**Battle cleanup candidates:** Wandering Heart does not intend to use Mega Evolution, Dynamax, Z-Moves or Terastallization. Audit these systems and associated UI/support code for removal before the next repartition; the full savings have not been measured. An isolated compile probe disabling Mega Evolution and Primal Reversion reduced `src/battle/mega.c` from **1,296 to 224 bytes**, a **1,072-byte** object-level saving before linker alignment and wider cleanup. Those options remain enabled in production; the probe did not remove any feature. In contrast, removing Mega-specific cry handling from resident `src/pokemon.c` saved only **20 bytes**, and disabling the two options alone saved nothing there. General alternate-form mapping/reversion supports ordinary forms and must not be removed as if it were Mega-only. Reducing 130 creates potential resident capacity only after the memory boundary is explicitly moved again.
 
 Overlay gaps are not proof of free RAM. The broad **0x02280000–0x023C0000** gap is absent from the overlay table, but dynamic heap allocations and other memory users are not shown there; the current heap-3 size at ARM9 **0x020F62BC** is **0x110000 bytes**. Its precise runtime bounds have not been traced. Above 129, **0x023E0000** is also the SDK's initial ARM9 main-arena upper bound; absence of overlays between there and **0x02400000** does not establish reclaimable space. Heap/system/ARM7 reservations need a separate audit before using either apparent gap.
 
@@ -1789,14 +1795,14 @@ HG-Engine packs most **custom C/asm** into **overlay 129** (vanilla slot **129**
 
 | Overlay | Linker | Load origin | Size (linker) | What links here |
 |---------|--------|-------------|---------------|-----------------|
-| **129** | `src/linker.ld` | `0x023D8000 + 0x60` | `0x8000 − 0x60` (**32 KiB** total window) | All `src/*.c` + `asm/*.s` → `build/linked.o` → `build/output.bin` |
-| **Field (131)** | `src/field/linker.ld` | `0x023C8000` | `0x18000` (**96 KiB**) | All `src/field/*.c` → `build/field_linked.o` (evo tables, wild cap matrix, …) |
+| **129** | `src/linker.ld` | `0x023D6000 + 0x60` | `0xA000 − 0x60` (**40 KiB** total window) | All `src/*.c` + `asm/*.s` → `build/linked.o` → `build/output.bin` |
+| **Field (131)** | `src/field/linker.ld` | `0x023C8000` | `0xE000` (**56 KiB**) | All `src/field/*.c` → `build/field_linked.o` (evo tables, wild cap matrix, …) |
 
-Field ROM spans `0x023C8000`–`0x023E0000`; overlay **129** sits in the **top** of that range (`0x023D8000` onward). Field rodata that grows past the reservation can **overwrite** what 129 expects at boot — do not “make room” by extending field with a linker hole into 129’s window.
+Field capacity spans `0x023C8000`–`0x023D6000`; battle capacity spans `0x023C4000`–`0x023D6000`. Resident overlay **129** occupies `0x023D6000`–`0x023E0000`. Do not extend either contextual overlay into the resident window; linker limits and packed-ROM checks enforce this boundary.
 
 ### Hard limit
 
-- **129 code blob:** `build/output.bin` must stay within **32,672 bytes** (`0x8000 - 0x60`, matching `LENGTH` in `src/linker.ld`). The complete overlay has a **32 KiB** window, including the **96-byte** prefix before the custom blob.
+- **129 code blob:** `build/output.bin` must stay within **40,864 bytes** (`0xA000 - 0x60`, matching `LENGTH` in `src/linker.ld`). The complete overlay has a **40 KiB** window, including the **96-byte** prefix before the custom blob.
 - **Check after `make`:** `wc -c build/output.bin` (PowerShell: `(Get-Item build/output.bin).Length`). Re-check whenever you add root `src/*.c` logic, big `.rodata`, or new asm in `asm/`. The **Nov 16, 2026** cleanup build uses **29,649 bytes**, leaving **3,023 bytes**; remeasure after subsequent changes.
 - **Pack into ROM:** `scripts/build/make.py` writes `output.bin` into `overlay_0129.bin` at **`OFFSET_START_IN_129 = 0x60`** (matches the `+ 0x60` in `src/linker.ld`). Do not change one without the other.
 
@@ -1816,7 +1822,7 @@ Field ROM spans `0x023C8000`–`0x023E0000`; overlay **129** sits in the **top**
 **Anti-patterns:**
 
 - Linking multi-kilobyte `.rodata` into root `src/` (bloats `output.bin` fast).
-- Reserving field space with a linker hole that pushes field content into **`0x023D8000+`** (clobbered 129 in past experiments).
+- Reserving field space with a linker hole that pushes field content into **`0x023D6000+`** (clobbered 129 in past experiments).
 - Hooks that assume field overlay layout without using patched pointers (129 reloads; field addresses move per build).
 - **Calling field overlay functions from 129** via a patched function pointer ([KB-11](#kb-11--undefined-instruction-from-overlay-129--field-code-calls)).
 - **`armips/asm/syntheticoverlay.s`** experiments (async overlay **129** load / skipping the hooked prologue) — caused early boot **`0x02000F64`** ARM/Thumb faults on test builds; keep vanilla load unless actively debugging boot.
@@ -1933,7 +1939,7 @@ Stage tables live in **contiguous field overlay rodata** (`sLevelUpEvoTablesData
 
 Scratch survives overlay 129 reload; do not reuse these addresses for other features without updating `rom.ld`.
 
-**Overlay 129 size:** must stay **≤ 32 KiB** — see [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) (measure `build/output.bin`, field vs 129 split, pointer-patch recipe).
+**Overlay 129 size:** must stay **≤ 40 KiB** — see [Overlay 129 — engine code budget](#overlay-129-32-kib-engine-overlay) (measure `build/output.bin`, field vs 129 split, pointer-patch recipe).
 
 ### Debug toggles (turn off for normal play)
 

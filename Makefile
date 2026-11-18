@@ -309,7 +309,7 @@ ifneq (1,$(NOSCAN))
 $(foreach src, $(ALL_ASM_SRCS), $(eval $(call ASM_OBJ_INC_DEFINE,$(patsubst $(ASM_SUBDIR)/%.s,$(BUILD)/%.o, $(src)),$(src))))
 endif
 
-$(LINK):$(OBJS)
+$(LINK):$(OBJS) $(C_SUBDIR)/linker.ld rom.ld
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
 $(OUTPUT):$(LINK) $(BUILD)/field_linked.o
