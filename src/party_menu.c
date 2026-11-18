@@ -10,7 +10,7 @@
 #include "../include/message.h"
 #include "../include/overlay.h"
 #include "../include/pokemon.h"
-#include "../include/stone_level_evolution.h"
+#include "../include/evolution_overlay.h"
 #include "../include/types.h"
 #include "../include/window.h"
 
@@ -22,28 +22,14 @@ extern const s8 sButtonWindowIDs[][2][8];
 // Replacement for ARM9 0207DC20, the evolution-item compatibility label.
 void LONG_CALL PartyMenu_PrintEvoStoneCompatString(struct PartyMenu *partyMenu, u8 slot, u8 compatibility)
 {
-    struct Window *window = &partyMenu->windows[slot * 5 + PARTY_MENU_WINDOW_ID_MON1_COMPAT];
-    struct PartyPokemon *mon = Party_GetMonByIndex(partyMenu->args->party, slot);
-    String *string;
-    u8 required = compatibility ? GetStoneLevelEvolutionRequirement(mon, partyMenu->args->itemId) : 0;
-    FillWindowPixelBuffer(window, 0);
-    if (required != 0 && GetMonData(mon, MON_DATA_LEVEL, NULL) < required) {
-        // HGSS character codes: L, V, then decimal digits and the terminator.
-        u16 label[6] = { 0x0136, 0x0140, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF };
-        u8 index = 2;
-        if (required >= 10) {
-            label[index++] = 0x0121 + required / 10;
-        }
-        label[index] = 0x0121 + required % 10;
-        string = String_New(6, HEAP_ID_PARTY_MENU);
-        CopyU16ArrayToString(string, label);
-    } else {
-        string = NewString_ReadMsgData(partyMenu->msgData, compatibility ? 162 : 161);
+    u32 overlayId;
+    BOOL owned;
+    const struct EvolutionOverlayApi *api = OpenEvolutionOverlay(&overlayId, &owned);
+    if (api == NULL) {
+        return;
     }
-    AddTextPrinterParameterizedWithColor(window, 0, string, 0, 0,
-        TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
-    String_Delete(string);
-    ScheduleWindowCopyToVram(window);
+    api->printCompatibility(partyMenu, slot, compatibility);
+    CloseEvolutionOverlay(overlayId, owned);
 }
 
 // mirrors the button layout

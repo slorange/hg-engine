@@ -6,6 +6,20 @@
 #include "constants/pokemon.h"
 #include "constants/species.h"
 
+static inline u8 StoneLevelEvolutionItemType(u16 item)
+{
+    switch (item) {
+    case ITEM_FIRE_STONE: return TYPE_FIRE;
+    case ITEM_WATER_STONE: return TYPE_WATER;
+    case ITEM_LEAF_STONE: return TYPE_GRASS;
+    case ITEM_THUNDER_STONE: return TYPE_ELECTRIC;
+    case ITEM_ICE_STONE: return TYPE_ICE;
+    case ITEM_METAL_COAT: return TYPE_STEEL;
+    case ITEM_DUSK_STONE: return TYPE_GHOST;
+    default: return TYPE_NONE;
+    }
+}
+
 // Early item evolution applies only to plain level evolutions.
 static inline u8 StoneLevelEvolutionRequirement(u16 item, const struct Evolution *evolution)
 {
@@ -18,15 +32,9 @@ static inline u8 StoneLevelEvolutionRequirement(u16 item, const struct Evolution
         (evolution->target & 0x07FF) == SPECIES_METAGROSS) {
         return 0;
     }
-    switch (item) {
-    case ITEM_FIRE_STONE: type = TYPE_FIRE; break;
-    case ITEM_WATER_STONE: type = TYPE_WATER; break;
-    case ITEM_LEAF_STONE: type = TYPE_GRASS; break;
-    case ITEM_THUNDER_STONE: type = TYPE_ELECTRIC; break;
-    case ITEM_ICE_STONE: type = TYPE_ICE; break;
-    case ITEM_METAL_COAT: type = TYPE_STEEL; break;
-    case ITEM_DUSK_STONE: type = TYPE_GHOST; break;
-    default: return 0;
+    type = StoneLevelEvolutionItemType(item);
+    if (type == TYPE_NONE) {
+        return 0;
     }
     u16 target = evolution->target & 0x07FF;
     u8 form = evolution->target >> 11;

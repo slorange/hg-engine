@@ -28,13 +28,20 @@ def main():
     types = re.findall(r"\[(SPECIES_\w+)\] = \{.*?\.types = \{ (TYPE_\w+), (TYPE_\w+) \}", species, re.S)
     type_rows = "\n".join(f"    [{name}] = {{ {first}, {second} }}," for name, first, second in types)
     fixture = fixture.replace("/* PERSONAL_TYPES */", type_rows)
-    fixture = fixture.replace("/* REQUIREMENT_WRAPPER */", function(pokemon, "u8 LONG_CALL GetStoneLevelEvolutionRequirement("))
+    fixture = fixture.replace("/* REQUIREMENT_WRAPPER */", function(resolver, "static u8 GetStoneLevelEvolutionRequirementInternal("))
+    dispatch = function(pokemon, "const struct EvolutionOverlayApi *LONG_CALL OpenEvolutionOverlay(")
+    dispatch += "\n" + function(pokemon, "void LONG_CALL CloseEvolutionOverlay(")
+    dispatch += "\n" + function(pokemon, "u8 LONG_CALL GetStoneLevelEvolutionRequirement(")
+    dispatch += "\n" + function(pokemon, "u16 LONG_CALL GetMonEvolution(")
+    fixture = fixture.replace("/* OVERLAY_DISPATCH */", dispatch)
     fixture = fixture.replace("/* ITEM_RESOLUTION */", item)
     level_cases = resolver[resolver.index("            case EVO_NONE:"):resolver.index("            case EVO_TRADE:")]
     level_cases += resolver[resolver.index("            case EVO_MAGNETIC_FIELD:"):resolver.index("            case EVO_LEVEL_DAY:")]
     level_cases += resolver[resolver.index("            case EVO_HAS_MOVE_TYPE:"):resolver.index("            case EVO_LEVEL_DARK_TYPE_MON_IN_PARTY:")]
     fixture = fixture.replace("/* EEVEE_LEVEL_CASES */", level_cases)
-    fixture = fixture.replace("/* MENU_LABEL */", function(menu, "void LONG_CALL PartyMenu_PrintEvoStoneCompatString("))
+    renderer = function(resolver, "static void PartyMenu_PrintEvoStoneCompatStringInternal(")
+    renderer += "\n" + function(menu, "void LONG_CALL PartyMenu_PrintEvoStoneCompatString(")
+    fixture = fixture.replace("/* MENU_LABEL */", renderer)
     with tempfile.TemporaryDirectory(prefix="stone_evolution_") as tmp:
         source = Path(tmp) / "test.c"
         binary = Path(tmp) / "test"

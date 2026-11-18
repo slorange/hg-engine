@@ -6,6 +6,10 @@ extern int fflush(void *);
 #include "stone_level_evolution.h"
 #include "eevee_evolutions.h"
 #include "constants/file.h"
+#define EVOLUTION_OVERLAY_FIELD_API (&testFieldApi)
+#define EVOLUTION_OVERLAY_BATTLE_API (&testBattleApi)
+#include "evolution_overlay.h"
+#include "overlay.h"
 #undef THUMB_FUNC
 #define THUMB_FUNC
 #include "data/Evolutions.c"
@@ -21,6 +25,31 @@ static struct { void *unused; struct TestEvolutionLocation *location; } testFiel
 static struct PartyPokemon testMon;
 static u16 printed[8];
 static int printedMessage;
+static const struct EvolutionOverlayApi testFieldApi, testBattleApi;
+static BOOL loadedOverlays[160], failOverlayLoad;
+static u32 loadCount, unloadCount, lastOverlay;
+u32 IsOverlayLoaded(u32 id) { return loadedOverlays[id]; }
+u32 HandleLoadOverlay(u32 id, u32 mode)
+{
+    assert(mode == 2);
+    if (id == OVERLAY_GETMONEVOLUTION_SPECIFIC) {
+        assert(!loadedOverlays[OVERLAY_BATTLE_EXTENSION]);
+        assert(!loadedOverlays[OVERLAY_PARTY_HANDLEUSEITEMONMON]);
+    }
+    if (failOverlayLoad) return FALSE;
+    assert(!loadedOverlays[id]);
+    loadCount++;
+    lastOverlay = id;
+    loadedOverlays[id] = TRUE;
+    return TRUE;
+}
+void UnloadOverlayByID(u32 id)
+{
+    assert(loadedOverlays[id]);
+    loadedOverlays[id] = FALSE;
+    unloadCount++;
+}
+/* OVERLAY_DISPATCH */
 static const u8 personalTypes[MAX_SPECIES_INCLUDING_FORMS + 1][2] = {
 /* PERSONAL_TYPES */
 };
@@ -112,6 +141,18 @@ u8 AddTextPrinterParameterizedWithColor(void *window, u8 font, String *s, u32 x,
 void ScheduleWindowCopyToVram(struct Window *window) {}
 /* MENU_LABEL */
 
+static u16 mockEvolution(struct Party *party, struct PartyPokemon *mon, u8 context, u16 item, int *method)
+{
+    assert(mon == &testMon && context == EVOCTX_ITEM_USE && item == ITEM_FIRE_STONE);
+    return SPECIES_FLAREON;
+}
+static const struct EvolutionOverlayApi testFieldApi = {
+    mockEvolution, GetStoneLevelEvolutionRequirementInternal, PartyMenu_PrintEvoStoneCompatStringInternal,
+};
+static const struct EvolutionOverlayApi testBattleApi = {
+    mockEvolution, GetStoneLevelEvolutionRequirementInternal, PartyMenu_PrintEvoStoneCompatStringInternal,
+};
+
 static void setup(u16 species, u8 type1, u8 type2, u8 level)
 {
     testSpecies = species; testType1 = type1; testType2 = type2;
@@ -134,6 +175,36 @@ static void boundary(u16 species, u8 type1, u8 type2, u16 item, u8 required, u16
 }
 int main(void)
 {
+    u32 overlayId;
+    BOOL owned;
+    const struct EvolutionOverlayApi *api = OpenEvolutionOverlay(&overlayId, &owned);
+    assert(api == &testFieldApi && owned && overlayId == OVERLAY_GETMONEVOLUTION_SPECIFIC);
+    CloseEvolutionOverlay(overlayId, owned);
+    loadedOverlays[OVERLAY_PARTY_HANDLEUSEITEMONMON] = TRUE;
+    api = OpenEvolutionOverlay(&overlayId, &owned);
+    assert(api == &testBattleApi && owned && overlayId == OVERLAY_GETMONEVOLUTION_BATTLE);
+    CloseEvolutionOverlay(overlayId, owned);
+    assert(loadedOverlays[OVERLAY_PARTY_HANDLEUSEITEMONMON]);
+    loadedOverlays[OVERLAY_PARTY_HANDLEUSEITEMONMON] = FALSE;
+    loadedOverlays[OVERLAY_BATTLE_EXTENSION] = TRUE;
+    api = OpenEvolutionOverlay(&overlayId, &owned);
+    assert(api == &testBattleApi && owned);
+    CloseEvolutionOverlay(overlayId, owned);
+    loadedOverlays[OVERLAY_BATTLE_EXTENSION] = FALSE;
+    for (u32 variant = OVERLAY_GETMONEVOLUTION_SPECIFIC; variant <= OVERLAY_GETMONEVOLUTION_BATTLE; variant++) {
+        u32 beforeLoads = loadCount, beforeUnloads = unloadCount;
+        loadedOverlays[variant] = TRUE;
+        api = OpenEvolutionOverlay(&overlayId, &owned);
+        assert(overlayId == variant && !owned);
+        CloseEvolutionOverlay(overlayId, owned);
+        assert(loadedOverlays[variant] && loadCount == beforeLoads && unloadCount == beforeUnloads);
+        loadedOverlays[variant] = FALSE;
+    }
+    failOverlayLoad = TRUE;
+    assert(OpenEvolutionOverlay(&overlayId, &owned) == NULL && !owned);
+    failOverlayLoad = FALSE;
+    assert(GetMonEvolution(NULL, &testMon, EVOCTX_ITEM_USE, ITEM_FIRE_STONE, NULL) == SPECIES_FLAREON);
+    assert(loadCount == unloadCount);
     // A hypothetical Grass source cannot use Leaf Stone if the target loses Grass.
     struct Evolution waterDragon = { EVO_LEVEL, 40, SPECIES_KINGDRA };
     assert(StoneLevelEvolutionRequirement(ITEM_LEAF_STONE, &waterDragon) == 0);
@@ -237,7 +308,9 @@ int main(void)
     args.itemId = ITEM_ICE_STONE;
     setup(SPECIES_SNORUNT, TYPE_ICE, TYPE_ICE, 33);
     printedMessage = -1;
+    u32 beforeLoads = loadCount, beforeUnloads = unloadCount;
     PartyMenu_PrintEvoStoneCompatString(&menu, 0, 1);
+    assert(loadCount == beforeLoads + 1 && unloadCount == beforeUnloads + 1);
     assert(printedMessage == -1);
     assert(printed[0] == 0x136 && printed[1] == 0x140);
     assert(printed[2] == 0x124 && printed[3] == 0x126 && printed[4] == 0xFFFF); // LV35
@@ -247,6 +320,8 @@ int main(void)
     args.itemId = ITEM_FIRE_STONE;
     PartyMenu_PrintEvoStoneCompatString(&menu, 0, 1);
     assert(printedMessage == 162);
+    assert(loadCount == unloadCount);
+    puts("PASS: overlay selection, item-use/battle residency, borrowed overlays, load ownership, dispatch arguments, and single-load menu rendering.");
     args.itemId = ITEM_ICE_STONE;
     testEgg = TRUE;
     PartyMenu_PrintEvoStoneCompatString(&menu, 0, 1);

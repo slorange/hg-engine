@@ -17,6 +17,7 @@
 #include "pokemon.h"
 #include "stone_level_evolution.h"
 #include "eevee_evolutions.h"
+#include "evolution_overlay.h"
 #include "rtc.h"
 #include "save.h"
 #include "script.h"
@@ -445,3 +446,64 @@ u16 GetMonEvolutionInternal(struct Party *party, struct PartyPokemon *pokemon, u
 
     return target;
 }
+
+static u8 GetStoneLevelEvolutionRequirementInternal(struct PartyPokemon *mon, u16 item)
+{
+    struct {
+        struct Evolution entries[MAX_EVOS_PER_POKE];
+        u16 terminator;
+    } table;
+    u16 species;
+    u32 form;
+    int i;
+    // Avoid NARC reads for unrelated item checks in the party menu.
+    if (StoneLevelEvolutionItemType(item) == TYPE_NONE) {
+        return 0;
+    }
+    if (GetMonData(mon, MON_DATA_IS_EGG, NULL)) {
+        return 0;
+    }
+    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    form = GetMonData(mon, MON_DATA_FORM, NULL);
+    species = PokeOtherFormMonsNoGet(species, form);
+    ReadWholeNarcMemberByIdPair(&table, ARC_EVOLUTIONS, species);
+    for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
+        u8 required = StoneLevelEvolutionRequirement(item, &table.entries[i]);
+        if (required != 0) {
+            return required;
+        }
+    }
+    return 0;
+}
+
+static void PartyMenu_PrintEvoStoneCompatStringInternal(struct PartyMenu *partyMenu, u8 slot, u8 compatibility)
+{
+    struct Window *window = &partyMenu->windows[slot * 5 + PARTY_MENU_WINDOW_ID_MON1_COMPAT];
+    struct PartyPokemon *mon = Party_GetMonByIndex(partyMenu->args->party, slot);
+    String *string;
+    u8 required = compatibility ? GetStoneLevelEvolutionRequirementInternal(mon, partyMenu->args->itemId) : 0;
+    FillWindowPixelBuffer(window, 0);
+    if (required != 0 && GetMonData(mon, MON_DATA_LEVEL, NULL) < required) {
+        // HGSS character codes: L, V, then decimal digits and the terminator.
+        u16 label[6] = { 0x0136, 0x0140, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF };
+        u8 index = 2;
+        if (required >= 10) {
+            label[index++] = 0x0121 + required / 10;
+        }
+        label[index] = 0x0121 + required % 10;
+        string = String_New(6, HEAP_ID_PARTY_MENU);
+        CopyU16ArrayToString(string, label);
+    } else {
+        string = NewString_ReadMsgData(partyMenu->msgData, compatibility ? 162 : 161);
+    }
+    AddTextPrinterParameterizedWithColor(window, 0, string, 0, 0,
+        TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 14, 0), NULL);
+    String_Delete(string);
+    ScheduleWindowCopyToVram(window);
+}
+
+const struct EvolutionOverlayApi gEvolutionOverlayApi __attribute__((section(".evolution_api"), used)) = {
+    GetMonEvolutionInternal,
+    GetStoneLevelEvolutionRequirementInternal,
+    PartyMenu_PrintEvoStoneCompatStringInternal,
+};

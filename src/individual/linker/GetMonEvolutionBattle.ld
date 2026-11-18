@@ -12,6 +12,7 @@ SECTIONS {
                 FILL (0xABCD)
 
                 __text_start = . ;
+                KEEP(*(.evolution_api))
                 *(.init)
                 *(.text)
                 *(.ctors)

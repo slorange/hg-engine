@@ -85,6 +85,7 @@ Behavior inherited from HG-Engine.
 - **Badge-gated shop items** — Regular shops unlock balls, repels, held items, Flash and Headbutt TM, and late-game gear by **badge count**.
 - **Town specialty marts** — evolution stones, trade evo held items, and type-resist berries at themed cities.
 - **Trade evolution QoL** — trade-evo **held items** (Metal Coat, Up-Grade, etc.) work when **used on the Pokémon** like stones; **Linking Cord** replaces trade for Kadabra, Machoke and similar lines.
+- **Early Stone Evolutions** — For Pokémon that evolve by level up, a matching typed stone can be used to evolve them a few levels early. Example Quilava & fire stone at lv30+
 - **Rock Smash drops** — Increased item chance and reworked loot table.
 
 ### Trainer scaling

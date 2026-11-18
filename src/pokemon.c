@@ -4,6 +4,7 @@
 
 #include "pokemon.h"
 #include "stone_level_evolution.h"
+#include "evolution_overlay.h"
 
 #include "constants/ability.h"
 #include "constants/file.h"
@@ -1165,6 +1166,59 @@ BOOL LONG_CALL CanUseItemOnMonInParty(struct Party *party, u16 itemID, s32 party
     return CanUseItemOnPokemon(mon, itemID, moveIdx, heapID);
 }
 
+// Borrow an existing evolution service, or load the variant safe for this context.
+const struct EvolutionOverlayApi *LONG_CALL OpenEvolutionOverlay(u32 *overlayId, BOOL *owned)
+{
+    const struct EvolutionOverlayApi *api;
+    *owned = FALSE;
+    if (IsOverlayLoaded(OVERLAY_GETMONEVOLUTION_BATTLE)) {
+        *overlayId = OVERLAY_GETMONEVOLUTION_BATTLE;
+        return EVOLUTION_OVERLAY_BATTLE_API;
+    }
+    if (IsOverlayLoaded(OVERLAY_GETMONEVOLUTION_SPECIFIC)) {
+        *overlayId = OVERLAY_GETMONEVOLUTION_SPECIFIC;
+        return EVOLUTION_OVERLAY_FIELD_API;
+    }
+    // Item-use code shares the field evolution overlay's address range.
+    if (IsOverlayLoaded(OVERLAY_BATTLE_EXTENSION) || IsOverlayLoaded(OVERLAY_PARTY_HANDLEUSEITEMONMON)) {
+        *overlayId = OVERLAY_GETMONEVOLUTION_BATTLE;
+        api = EVOLUTION_OVERLAY_BATTLE_API;
+    } else {
+        *overlayId = OVERLAY_GETMONEVOLUTION_SPECIFIC;
+        api = EVOLUTION_OVERLAY_FIELD_API;
+    }
+    if (!HandleLoadOverlay(*overlayId, 2)) {
+        return NULL;
+    }
+    *owned = TRUE;
+    return api;
+}
+
+void LONG_CALL CloseEvolutionOverlay(u32 overlayId, BOOL owned)
+{
+    if (owned) {
+        UnloadOverlayByID(overlayId);
+    }
+}
+
+u8 LONG_CALL GetStoneLevelEvolutionRequirement(struct PartyPokemon *mon, u16 item)
+{
+    u32 overlayId;
+    BOOL owned;
+    u8 result;
+    const struct EvolutionOverlayApi *api;
+    if (StoneLevelEvolutionItemType(item) == TYPE_NONE) {
+        return 0;
+    }
+    api = OpenEvolutionOverlay(&overlayId, &owned);
+    if (api == NULL) {
+        return 0;
+    }
+    result = api->requiredLevel(mon, item);
+    CloseEvolutionOverlay(overlayId, owned);
+    return result;
+}
+
 /**
  *  @brief get the evolution species for a pokemon.  generalized depending on context
  *         also set form depending on the evolution structure read from armips/data/evodata.s
@@ -1176,56 +1230,18 @@ BOOL LONG_CALL CanUseItemOnMonInParty(struct Party *party, u16 itemID, s32 party
  *  @param method_ret pointer to an integer to store the evolution method that was used to evolve
  *  @return the target species to evolve into
  */
-u8 LONG_CALL GetStoneLevelEvolutionRequirement(struct PartyPokemon *mon, u16 item)
-{
-    struct {
-        struct Evolution entries[MAX_EVOS_PER_POKE];
-        u16 terminator;
-    } table;
-    u16 species;
-    u32 form;
-    int i;
-    // Avoid NARC reads for unrelated item checks in the party menu.
-    if (item != ITEM_FIRE_STONE && item != ITEM_WATER_STONE && item != ITEM_LEAF_STONE &&
-        item != ITEM_THUNDER_STONE && item != ITEM_ICE_STONE &&
-        item != ITEM_METAL_COAT && item != ITEM_DUSK_STONE) {
-        return 0;
-    }
-    if (GetMonData(mon, MON_DATA_IS_EGG, NULL)) {
-        return 0;
-    }
-    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    form = GetMonData(mon, MON_DATA_FORM, NULL);
-    species = PokeOtherFormMonsNoGet(species, form);
-    ReadWholeNarcMemberByIdPair(&table, ARC_EVOLUTIONS, species);
-    for (i = 0; i < MAX_EVOS_PER_POKE; i++) {
-        u8 required = StoneLevelEvolutionRequirement(item, &table.entries[i]);
-        if (required != 0) {
-            return required;
-        }
-    }
-    return 0;
-}
-
 u16 LONG_CALL GetMonEvolution(struct Party *party, struct PartyPokemon *pokemon, u8 context, u16 usedItem, int *method_ret)
 {
-    u32 ovyId, target, offset;
-    u16 (*internalFunc)(struct Party *, struct PartyPokemon *, u8, u16, int *);
-
-    if (IsOverlayLoaded(OVERLAY_BATTLE_EXTENSION) || IsOverlayLoaded(OVERLAY_PARTY_HANDLEUSEITEMONMON)) // during battles it needs to be loaded to a separate location.  we have 2 overlays for this
-    {
-        ovyId = OVERLAY_GETMONEVOLUTION_BATTLE;
-        offset = 0x021FBE60 | 1;
-    } else {
-        ovyId = OVERLAY_GETMONEVOLUTION_SPECIFIC;
-        offset = 0x023C0400 | 1;
+    u32 overlayId;
+    BOOL owned;
+    u16 result;
+    const struct EvolutionOverlayApi *api = OpenEvolutionOverlay(&overlayId, &owned);
+    if (api == NULL) {
+        return SPECIES_NONE;
     }
-    HandleLoadOverlay(ovyId, 2);
-    internalFunc = (u16(*)(struct Party *, struct PartyPokemon *, u8, u16, int *))(offset);
-    target = internalFunc(party, pokemon, context, usedItem, method_ret);
-    UnloadOverlayByID(ovyId);
-
-    return target;
+    result = api->evolve(party, pokemon, context, usedItem, method_ret);
+    CloseEvolutionOverlay(overlayId, owned);
+    return result;
 }
 
 /**
