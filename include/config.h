@@ -303,7 +303,8 @@
 #define GYM_BADGE_COUNT_FIELD_REWARDS
 
 // OPENWORLD_FIELD_MOVES_NO_BADGE_GATE skips vanilla per-Gym badge checks when using HMs
-// from the party menu (FieldMove_Check*). Map/script gates (Flash caves, etc.) unchanged.
+// from the party menu, shared obstacle scripts, and A-button Surf shore interactions.
+// Other map/story gates (Flash caves, etc.) are unchanged.
 #define OPENWORLD_FIELD_MOVES_NO_BADGE_GATE
 
 // OPENWORLD_FLY_MAP: full Kanto scroll on Fly/town map + cross-region fly spots (flypoint flags unchanged).

@@ -626,15 +626,16 @@ Mahogany **town** rocket skip is unrelated — [Skip Mahogany Rocket arc](#skip-
 
 **Status: verified in-game Sep 2026** — Mom HM02 + party Fly without Storm Badge; Goldenrod dept mart shelves still badge-gated.
 
-**Toggle:** `OPENWORLD_FIELD_MOVES_NO_BADGE_GATE` in `include/config.h` (on by default with open-world HM work). Required for [OPENWORLD_TESTING_GRANTS](#open-world-starting-inventory-new-saves) HM02 to work from the party menu — granting the item alone is not enough; vanilla `FieldMove_CheckFly` still demands Storm Badge without this hook.
+**Toggle:** `OPENWORLD_FIELD_MOVES_NO_BADGE_GATE` in `include/config.h` (on by default with open-world HM work). Covers party-menu HM checks and direct A-button HM interactions. Required for [OPENWORLD_TESTING_GRANTS](#open-world-starting-inventory-new-saves) HM02 to work from the party menu — granting the item alone is not enough; vanilla `FieldMove_CheckFly` still demands Storm Badge without this hook.
 
 Vanilla `FieldMove_Check*` (arm9 ~`0x02067F00`) calls `PlayerProfile_TestBadgeFlag` for a **specific** Gym badge before returning `FIELD_MOVE_RESPONSE_NEED_BADGE` (2). That is independent of gym HM grants and of `FLAG_GOT_HM*`.
 
 | What | Where |
 |------|--------|
 | Hook | `src/field_move_badge.c` → `PlayerProfile_TestBadgeFlag_hook` @ arm9 `0x02028F98` |
-| Bypass | When caller LR is in `0x02067F87`–`0x0206888B` (field-move checks only), return TRUE |
-| Preserved | Mart badge shelves (`ScrCmd_MartBuy`, LR in field overlay ~`0x023Cxxxx`), TM teach helpers, script/map gates |
+| Bypass | When caller LR is in `0x02067F87`–`0x0206888B` (party field-move checks) or equals `0x021E7539` (overlay 1 shore Surf check), return TRUE |
+| Shared interaction scripts | `scripts/build/patch_field_hm_badges.py`, wired through `narcs.mk`, patches member **146**: Cut, Rock Smash, Strength, Rock Climb, Waterfall, Whirlpool. Replace each six-byte `CheckBadge` with six-byte `SetVar TRUE`, preserving offsets and all other script bytes; disabled setting leaves vanilla checks |
+| Preserved | Mart badge shelves (`ScrCmd_MartBuy`, LR in field overlay ~`0x023Cxxxx`), TM teach helpers, other script/map gates |
 
 **Vanilla per-move badge checks** (pret `field_move.c`; rebases: re-scan arm9 for `bl #0x02028F98` from `FieldMove_Check*`):
 
@@ -653,7 +654,9 @@ Flash and Headbutt have **no** `TestBadgeFlag` call in vanilla field-move checks
 
 **Test:** new save with `OPENWORLD_TESTING_GRANTS` → Mom HM02 → teach Fly → party menu Fly without Storm Badge; Goldenrod dept mart still gates shelves by badge count; Gym-granted HM (e.g. Cut as 2nd badge) usable without owning that Leader’s vanilla badge flag.
 
-**Out of scope (for now):** `FLAG_GOT_HM02`, Flash dungeon scripts, Surf map tiles, collection-based field HMs ([Future-8 § Field HMs from the full collection](DESIGN-FUTURE.md#field-hms-from-the-full-collection-deferred)).
+**Direct interaction regression checks (Nov 2026):** with the corresponding vanilla badge absent, test A-button Cut, Rock Smash, Strength, Rock Climb, Surf, Waterfall, and Whirlpool with a party member knowing the move; accept and decline prompts, check effects/animations, and compare party-menu use. Repeat without a party member knowing the move to confirm rejection. Shore Surf still checks terrain and party Surf; ordinary script badge checks remain unchanged. Offline verification: `python3 scripts/build/patch_field_hm_badges.py build/a012 --verify`; compare member 146 against vanilla to ensure only the six badge instructions differ. Emulator playtesting remains required.
+
+**Out of scope (for now):** `FLAG_GOT_HM02`, Flash dungeon scripts, Surf terrain restrictions, collection-based field HMs ([Future-8 § Field HMs from the full collection](DESIGN-FUTURE.md#field-hms-from-the-full-collection-deferred)).
 
 ### Fly map — Kanto destinations
 

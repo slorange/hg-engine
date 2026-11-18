@@ -16,6 +16,7 @@ Python helpers for hg-engine. See `.cursor/rules/agents.mdc` § **Scripts layout
 | `make.py` | `Makefile` — overlay injection |
 | `generate_ld.py` | `Makefile`, `overlays.mk` — linker scripts |
 | `msg_cat.py` | `narcs.mk` — rawtext generation |
+| `patch_field_hm_badges.py` | `narcs.mk` — shared A-button HM script badge bypass; `--verify` checks generated member 146 |
 | `gen_level_up_evo_tables.py` | `narcs.mk` → `src/field/level_up_evo_tables.c` |
 | `rebuild_json.py` | `narcs.mk` — zone_event JSON rebuild |
 | `build_learnsets.py` | `data/codetables.mk` |

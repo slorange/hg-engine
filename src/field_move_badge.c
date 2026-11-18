@@ -22,6 +22,8 @@ u8 PlayerProfile_CountBadges(const struct PlayerProfile *profile)
  * Vanilla FieldMove_Check* (arm9 ~0x02067F00) gates HM use on specific Gym badge
  * flags via PlayerProfile_TestBadgeFlag. Open-world grants HMs by total badge count,
  * so those checks must not block field use once the move is in the party.
+ * The A-button shore interaction in overlay 1 has its own Surf badge check.
+ * Shared obstacle-script checks are handled by patch_field_hm_badges.py.
  *
  * InitMartUI (overlay 12 ~0x02256D34) also calls TestBadgeFlag per item using vanilla
  * badge slot indices; remap those to total badge count for any-order Gyms.
@@ -30,12 +32,15 @@ u8 PlayerProfile_CountBadges(const struct PlayerProfile *profile)
 
 #define FIELD_MOVE_TEST_BADGE_LR_MIN 0x02067F87u
 #define FIELD_MOVE_TEST_BADGE_LR_MAX 0x0206888Bu
+// GetInteractedMetatileScript: bl TestBadgeFlag at 0x021E7534 (overlay 1).
+#define SURF_INTERACTION_TEST_BADGE_LR 0x021E7539u
 
 static BOOL FieldMoveBadgeBypassFromCaller(void)
 {
     register u32 retAddr asm("lr");
 
-    return retAddr >= FIELD_MOVE_TEST_BADGE_LR_MIN && retAddr <= FIELD_MOVE_TEST_BADGE_LR_MAX;
+    return (retAddr >= FIELD_MOVE_TEST_BADGE_LR_MIN && retAddr <= FIELD_MOVE_TEST_BADGE_LR_MAX)
+        || retAddr == SURF_INTERACTION_TEST_BADGE_LR;
 }
 
 #endif // OPENWORLD_FIELD_MOVES_NO_BADGE_GATE
