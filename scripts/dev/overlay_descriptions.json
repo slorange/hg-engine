@@ -1,0 +1,1637 @@
+{
+  "source": "Vanilla: pret/pokeheartgold main.lsf.in and src/launch_application.c; custom: local HG-Engine source and include/constants/file.h",
+  "upstream": "https://github.com/pret/pokeheartgold/blob/master/main.lsf.in",
+  "overlays": {
+    "0": {
+      "name": "Wi-Fi support",
+      "description": "Vanilla HGSS overlay: Wi-Fi support.",
+      "sources": [
+        "asm/overlay_00_thumb.s",
+        "libdwcauth.a",
+        "libdwcbase.a",
+        "libdwcac.a",
+        "libdwcgscommon.a",
+        "libdwcgsgp.a",
+        "libdwcgsgstats.a",
+        "libdwcgsgt2.a",
+        "libdwcgsnatneg.a",
+        "libdwcgsqr2.a",
+        "libdwcgsserverbrowsing.a"
+      ],
+      "symbol": "OVY_0",
+      "resolved": true
+    },
+    "1": {
+      "name": "Overworld / field engine",
+      "description": "Vanilla HGSS overlay: Overworld / field engine.",
+      "sources": [
+        "src/field/fieldmap.c",
+        "src/field/field_3d_object_task.c",
+        "src/field/field_control.c",
+        "src/field/field_sprite_manager.c",
+        "src/field/map_prop_animation.c",
+        "asm/overlay_01_021E90C0.s",
+        "asm/overlay_01_021EA6C4.s",
+        "src/field/fog.c",
+        "asm/model_attributes.s",
+        "asm/overlay_01_021EABA8.s",
+        "asm/overlay_01_021EAF00.s",
+        "asm/overlay_01_021EAFD4.s",
+        "src/field/weather_manager.c",
+        "asm/overlay_01_021EDAFC.s",
+        "src/field/scrcmd_message.c",
+        "src/field/draw_map_name.c",
+        "asm/overlay_01_021EFB38.s",
+        "asm/overlay_01_021F1348.s",
+        "asm/overlay_01_021F1AFC.s",
+        "asm/overlay_01_021F3114.s",
+        "asm/overlay_01_021F3378.s",
+        "src/field/map_prop_manager.c",
+        "src/field/signpost.c",
+        "asm/overlay_01_021F3F50.s",
+        "asm/overlay_01_021F4464.s",
+        "asm/overlay_01_021F467C.s",
+        "asm/overlay_01_021F4704.s",
+        "asm/overlay_01_021F6830.s",
+        "asm/overlay_01_021F6CFC.s",
+        "asm/overlay_01_sprite_data.s",
+        "asm/overlay_01_021F72DC.s",
+        "asm/overlay_01_021F8D80.s",
+        "asm/overlay_01_021F944C.s",
+        "asm/overlay_01_021FAC44.s",
+        "asm/overlay_01_021FAD1C.s",
+        "asm/overlay_01_021FB04C.s",
+        "asm/overlay_01_021FB368.s",
+        "asm/overlay_01_021FB4C0.s",
+        "asm/overlay_01_021FB5D4.s",
+        "asm/overlay_01_021FB878.s",
+        "asm/overlay_01_021FC05C.s",
+        "asm/overlay_01_021FC4C4.s",
+        "asm/overlay_01_data_02208BFC.s",
+        "asm/overlay_01_021FC66C.s",
+        "asm/overlay_01_021FCD2C.s",
+        "asm/overlay_01_021FCE98.s",
+        "asm/overlay_01_021FD1B8.s",
+        "asm/overlay_01_021FD41C.s",
+        "asm/overlay_01_021FDA14.s",
+        "asm/overlay_01_021FE200.s",
+        "asm/overlay_01_021FE590.s",
+        "asm/overlay_01_021FE780.s",
+        "asm/overlay_01_021FEA0C.s",
+        "asm/overlay_01_021FEC38.s",
+        "asm/overlay_01_021FED9C.s",
+        "asm/overlay_01_021FEEEC.s",
+        "asm/overlay_01_021FF464.s",
+        "asm/overlay_01_021FF6B0.s",
+        "asm/overlay_01_021FF854.s",
+        "asm/overlay_01_021FFC0C.s",
+        "src/field/overlay_01_021FFECC.c",
+        "asm/overlay_01_02200040.s",
+        "asm/overlay_01_022001E4.s",
+        "asm/overlay_01_022006A8.s",
+        "asm/overlay_01_02200858.s",
+        "src/field/scrcmd_pokemon_misc.c",
+        "src/field/scrcmd_move_tutor.c",
+        "src/field/scrcmd_moneybox.c",
+        "asm/overlay_01_022031C0.s",
+        "asm/overlay_01_02203A18.s",
+        "asm/overlay_01_02203E40.s",
+        "src/field/overlay_01_02204004.c",
+        "src/field/apricorn_tree_anim.c",
+        "src/field/rock_smash_item.c",
+        "src/field/headbutt.c",
+        "asm/overlay_01_022051EC.s",
+        "asm/overlay_01_022053EC.s"
+      ],
+      "symbol": "field",
+      "resolved": true
+    },
+    "2": {
+      "name": "Field events and encounters",
+      "description": "Vanilla HGSS overlay: Field events and encounters.",
+      "sources": [
+        "asm/overlay_02_02245B80.s",
+        "src/field/encounter_check.c",
+        "asm/overlay_02_02248728.s",
+        "src/field/legend_cutscene_camera.c",
+        "src/field/overlay_2_gear_phone.c",
+        "src/field/event_cutscene_shaymin.c",
+        "src/field/event_cutscene_celebi.c",
+        "src/field/event_cutscene_sinjoh.c",
+        "src/overlay_02_02251E74.c"
+      ],
+      "symbol": "OVY_2",
+      "resolved": true
+    },
+    "3": {
+      "name": "Field menus and facilities",
+      "description": "Vanilla HGSS overlay: Field menus and facilities.",
+      "sources": [
+        "src/overlay_03/communication_club.c",
+        "src/overlay_03/battle_regulation_menu.c",
+        "src/overlay_03/shop_menu.c",
+        "src/overlay_03/custom_safari_zone.c",
+        "src/overlay_03/overlay_03_scrcmds.c",
+        "src/overlay_03/pokeathlon_records.c"
+      ],
+      "symbol": "OVY_3",
+      "resolved": true
+    },
+    "4": {
+      "name": "Gym and map gimmicks",
+      "description": "Vanilla HGSS overlay: Gym and map gimmicks.",
+      "sources": [
+        "src/field/gymmick/violet.c",
+        "src/field/gymmick/azalea.c",
+        "src/field/gymmick/ecruteak.c",
+        "src/field/gymmick/blackthorn.c",
+        "src/field/gymmick/cianwood.c",
+        "src/field/gymmick/vermilion.c",
+        "src/field/gymmick/fuchsia.c",
+        "src/field/gymmick/viridian.c",
+        "src/field/gymmick/sinjoh.c"
+      ],
+      "symbol": "OVY_4",
+      "resolved": true
+    },
+    "5": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_05.s"
+      ],
+      "symbol": "OVY_5",
+      "resolved": false
+    },
+    "6": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_06.c"
+      ],
+      "symbol": "OVY_6",
+      "resolved": false
+    },
+    "7": {
+      "name": "Battle animations",
+      "description": "Vanilla HGSS overlay: Battle animations.",
+      "sources": [
+        "asm/overlay_07.s"
+      ],
+      "symbol": "OVY_7",
+      "resolved": true
+    },
+    "8": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_08.s"
+      ],
+      "symbol": "OVY_8",
+      "resolved": false
+    },
+    "9": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_9",
+      "resolved": false
+    },
+    "10": {
+      "name": "Trainer AI",
+      "description": "Vanilla HGSS overlay: Trainer AI.",
+      "sources": [
+        "src/battle/trainer_ai.c",
+        "asm/overlay_10_trainer_ai.s"
+      ],
+      "symbol": "OVY_10",
+      "resolved": true
+    },
+    "11": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_11",
+      "resolved": false
+    },
+    "12": {
+      "name": "Battle engine",
+      "description": "Vanilla HGSS overlay: Battle engine.",
+      "sources": [
+        "src/battle/battle_022378C0.c",
+        "asm/overlay_12_022378C0.s",
+        "src/battle/battle_system.c",
+        "src/battle/battle_command.c",
+        "asm/overlay_12_battle_command.s",
+        "src/battle/battle_controller_player.c",
+        "src/battle/overlay_12_0224E4FC.c",
+        "asm/overlay_12_02258800.s",
+        "src/battle/battle_io_command.c",
+        "asm/overlay_12_battle_controller_opponent.s",
+        "src/battle/battle_02261FD4.c",
+        "src/battle/battle_controller.c",
+        "src/battle/battle_hp_bar.c",
+        "asm/overlay_12_02265E28.s",
+        "src/battle/battle_input.c",
+        "src/battle/party_gauge.c",
+        "src/battle/battle_cursor.c",
+        "src/battle/battle_finger.c",
+        "src/battle/overlay_12_0226BEC4.c"
+      ],
+      "symbol": "OVY_12",
+      "resolved": true
+    },
+    "13": {
+      "name": "Wireless multiboot support",
+      "description": "Vanilla HGSS overlay: Wireless multiboot support.",
+      "sources": [
+        "src/overlay_13_thumb_1.c",
+        "libmb.a",
+        "libdwcutil.a"
+      ],
+      "symbol": "OVY_13",
+      "resolved": true
+    },
+    "14": {
+      "name": "PC Pok\u00e9mon storage",
+      "description": "Vanilla HGSS overlay: PC Pok\u00e9mon storage.",
+      "sources": [
+        "asm/overlay_14.s"
+      ],
+      "symbol": "OVY_14",
+      "resolved": true
+    },
+    "15": {
+      "name": "Bag menu",
+      "description": "Vanilla HGSS overlay: Bag menu.",
+      "sources": [
+        "src/application/bag/bag_app_main.c",
+        "src/application/bag/bag_app_window.c",
+        "src/application/bag/bag_app_sprite.c"
+      ],
+      "symbol": "OVY_15",
+      "resolved": true
+    },
+    "16": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_16_022014A0.c",
+        "src/overlay_16_02201948.c"
+      ],
+      "symbol": "OVY_16",
+      "resolved": false
+    },
+    "17": {
+      "name": "Berry Pots",
+      "description": "Vanilla HGSS overlay: Berry Pots.",
+      "sources": [
+        "src/berry_pots_app.c",
+        "src/berry_pots_app_tasks.c"
+      ],
+      "symbol": "OVY_17",
+      "resolved": true
+    },
+    "18": {
+      "name": "Pok\u00e9dex",
+      "description": "Vanilla HGSS overlay: Pok\u00e9dex.",
+      "sources": [
+        "src/poketool/pokefoot.c",
+        "src/application/pokedex/ov18_021E590C.c",
+        "src/application/pokedex/ov18_021E5AA0.c",
+        "src/application/pokedex/ov18_021E5C40.c",
+        "src/application/pokedex/ov18_021E8BF4.c",
+        "asm/overlay_18.s"
+      ],
+      "symbol": "OVY_18",
+      "resolved": true
+    },
+    "19": {
+      "name": "Photo viewer",
+      "description": "Vanilla HGSS overlay: Photo viewer.",
+      "sources": [
+        "src/application/view_photo.c"
+      ],
+      "symbol": "OVY_19",
+      "resolved": true
+    },
+    "20": {
+      "name": "Pok\u00e9mon size records",
+      "description": "Vanilla HGSS overlay: Pok\u00e9mon size records.",
+      "sources": [
+        "src/scrcmd_size_record.c"
+      ],
+      "symbol": "OVY_20",
+      "resolved": true
+    },
+    "21": {
+      "name": "Fossil revival",
+      "description": "Vanilla HGSS overlay: Fossil revival.",
+      "sources": [
+        "src/scrcmd_fossils.c"
+      ],
+      "symbol": "OVY_21",
+      "resolved": true
+    },
+    "22": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_22.c"
+      ],
+      "symbol": "OVY_22",
+      "resolved": false
+    },
+    "23": {
+      "name": "NPC trades",
+      "description": "Vanilla HGSS overlay: NPC trades.",
+      "sources": [
+        "src/npc_trade.c"
+      ],
+      "symbol": "npc_trade",
+      "resolved": true
+    },
+    "24": {
+      "name": "Bug-Catching Contest",
+      "description": "Vanilla HGSS overlay: Bug-Catching Contest.",
+      "sources": [
+        "src/overlay_bug_contest.c"
+      ],
+      "symbol": "bug_contest",
+      "resolved": true
+    },
+    "25": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_25.c"
+      ],
+      "symbol": "OVY_25",
+      "resolved": false
+    },
+    "26": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_26_022598C0.c",
+        "src/overlay_26_022599D0.c"
+      ],
+      "symbol": "OVY_26",
+      "resolved": false
+    },
+    "27": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_27.s"
+      ],
+      "symbol": "OVY_27",
+      "resolved": false
+    },
+    "28": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_28.s"
+      ],
+      "symbol": "OVY_28",
+      "resolved": false
+    },
+    "29": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_29.s"
+      ],
+      "symbol": "OVY_29",
+      "resolved": false
+    },
+    "30": {
+      "name": "Touch-screen save interface",
+      "description": "Vanilla HGSS overlay: Touch-screen save interface.",
+      "sources": [
+        "src/touch_save_app.c"
+      ],
+      "symbol": "touch_save_app",
+      "resolved": true
+    },
+    "31": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_31.s"
+      ],
+      "symbol": "OVY_31",
+      "resolved": false
+    },
+    "32": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_32.s"
+      ],
+      "symbol": "OVY_32",
+      "resolved": false
+    },
+    "33": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_33.s"
+      ],
+      "symbol": "OVY_33",
+      "resolved": false
+    },
+    "34": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_34.s"
+      ],
+      "symbol": "OVY_34",
+      "resolved": false
+    },
+    "35": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_35.c"
+      ],
+      "symbol": "OVY_35",
+      "resolved": false
+    },
+    "36": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_36.c"
+      ],
+      "symbol": "OVY_36",
+      "resolved": false
+    },
+    "37": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_37.s"
+      ],
+      "symbol": "OVY_37",
+      "resolved": false
+    },
+    "38": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_38_thumb.s",
+        "libdwcgsghttp.a",
+        "libdwcnd.a",
+        "libdwcnhttp.a"
+      ],
+      "symbol": "OVY_38",
+      "resolved": false
+    },
+    "39": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_39_thumb.s",
+        "libgds.a"
+      ],
+      "symbol": "OVY_39",
+      "resolved": false
+    },
+    "40": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_40.s"
+      ],
+      "symbol": "OVY_40",
+      "resolved": false
+    },
+    "41": {
+      "name": "Accessory portraits",
+      "description": "Vanilla HGSS overlay: Accessory portraits.",
+      "sources": [
+        "asm/overlay_41.s"
+      ],
+      "symbol": "OVY_41",
+      "resolved": true
+    },
+    "42": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_42_02227D30.c",
+        "src/overlay_42_02227EE0.c",
+        "src/overlay_42_02227F68.c",
+        "src/overlay_42_02233EDC.c"
+      ],
+      "symbol": "OVY_42",
+      "resolved": false
+    },
+    "43": {
+      "name": "Pal Pad",
+      "description": "Vanilla HGSS overlay: Pal Pad.",
+      "sources": [
+        "asm/overlay_43.s"
+      ],
+      "symbol": "OVY_43",
+      "resolved": true
+    },
+    "44": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_44_0222CDAC.c",
+        "src/overlay_44_02231A14.c",
+        "src/overlay_44_02232E90.c",
+        "src/overlay_44_02235340.c"
+      ],
+      "symbol": "OVY_44",
+      "resolved": false
+    },
+    "45": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_45_thumb.s",
+        "libdwcppwlobby.a"
+      ],
+      "symbol": "OVY_45",
+      "resolved": false
+    },
+    "46": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_46.s"
+      ],
+      "symbol": "OVY_46",
+      "resolved": false
+    },
+    "47": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_47.s"
+      ],
+      "symbol": "OVY_47",
+      "resolved": false
+    },
+    "48": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_48.s"
+      ],
+      "symbol": "OVY_48",
+      "resolved": false
+    },
+    "49": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_49.s"
+      ],
+      "symbol": "OVY_49",
+      "resolved": false
+    },
+    "50": {
+      "name": "Trainer Card",
+      "description": "Vanilla HGSS overlay: Trainer Card.",
+      "sources": [
+        "src/overlay_trainer_card.c"
+      ],
+      "symbol": "trainer_card",
+      "resolved": true
+    },
+    "51": {
+      "name": "Trainer Card main display",
+      "description": "Vanilla HGSS overlay: Trainer Card main display.",
+      "sources": [
+        "asm/overlay_trainer_card_main.s"
+      ],
+      "symbol": "trainer_card_main",
+      "resolved": true
+    },
+    "52": {
+      "name": "Trainer Card signature",
+      "description": "Vanilla HGSS overlay: Trainer Card signature.",
+      "sources": [
+        "asm/overlay_trainer_card_signature.s"
+      ],
+      "symbol": "trainer_card_signature",
+      "resolved": true
+    },
+    "53": {
+      "name": "Oak introduction / new game",
+      "description": "Vanilla HGSS overlay: Oak introduction / new game.",
+      "sources": [
+        "src/oaks_speech.c",
+        "src/oaks_speech_obj.c",
+        "src/oaks_speech_yesnomenu.c"
+      ],
+      "symbol": "OVY_53",
+      "resolved": true
+    },
+    "54": {
+      "name": "Options menu",
+      "description": "Vanilla HGSS overlay: Options menu.",
+      "sources": [
+        "src/options_app.c"
+      ],
+      "symbol": "options_app",
+      "resolved": true
+    },
+    "55": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_55.c"
+      ],
+      "symbol": "OVY_55",
+      "resolved": false
+    },
+    "56": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_56.s"
+      ],
+      "symbol": "OVY_56",
+      "resolved": false
+    },
+    "57": {
+      "name": "Ball Capsule / Seal editor",
+      "description": "Vanilla HGSS overlay: Ball Capsule / Seal editor.",
+      "sources": [
+        "src/application/capsule_menu/main_overlay.c",
+        "src/application/capsule_menu/placement.c",
+        "src/application/capsule_menu/graphics.c",
+        "src/application/capsule_menu/manager.c",
+        "src/application/capsule_menu/touchscreen_hitboxes.c"
+      ],
+      "symbol": "capsule_menu",
+      "resolved": true
+    },
+    "58": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_58.s"
+      ],
+      "symbol": "OVY_58",
+      "resolved": false
+    },
+    "59": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_59.s"
+      ],
+      "symbol": "OVY_59",
+      "resolved": false
+    },
+    "60": {
+      "name": "Intro movie and title screen",
+      "description": "Vanilla HGSS overlay: Intro movie and title screen.",
+      "sources": [
+        "src/title_screen.c",
+        "src/intro_movie.c",
+        "src/intro_movie_scenes_lib.c",
+        "src/intro_movie_scene_1.c",
+        "src/intro_movie_scene_2.c",
+        "src/intro_movie_scene_3.c",
+        "src/intro_movie_scene_4.c",
+        "src/intro_movie_scene_5.c"
+      ],
+      "symbol": "intro_title",
+      "resolved": true
+    },
+    "61": {
+      "name": "Starter selection",
+      "description": "Vanilla HGSS overlay: Starter selection.",
+      "sources": [
+        "src/choose_starter_app.c"
+      ],
+      "symbol": "OVY_61",
+      "resolved": true
+    },
+    "62": {
+      "name": "Microphone test",
+      "description": "Vanilla HGSS overlay: Microphone test.",
+      "sources": [
+        "src/overlay_mic_test.c"
+      ],
+      "symbol": "OVY_62",
+      "resolved": true
+    },
+    "63": {
+      "name": "Hall of Fame registration",
+      "description": "Vanilla HGSS overlay: Hall of Fame registration.",
+      "sources": [
+        "src/register_hall_of_fame.c"
+      ],
+      "symbol": "OVY_63",
+      "resolved": true
+    },
+    "64": {
+      "name": "Hall of Fame viewer",
+      "description": "Vanilla HGSS overlay: Hall of Fame viewer.",
+      "sources": [
+        "asm/overlay_64.s"
+      ],
+      "symbol": "OVY_64",
+      "resolved": true
+    },
+    "65": {
+      "name": "Wireless trade Pok\u00e9mon selection",
+      "description": "Vanilla HGSS overlay: Wireless trade Pok\u00e9mon selection.",
+      "sources": [
+        "asm/overlay_65.s"
+      ],
+      "symbol": "OVY_65",
+      "resolved": true
+    },
+    "66": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_66",
+      "resolved": false
+    },
+    "67": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_67.s"
+      ],
+      "symbol": "OVY_67",
+      "resolved": false
+    },
+    "68": {
+      "name": "Move relearner",
+      "description": "Vanilla HGSS overlay: Move relearner.",
+      "sources": [
+        "asm/overlay_68.s"
+      ],
+      "symbol": "OVY_68",
+      "resolved": true
+    },
+    "69": {
+      "name": "Geonet globe",
+      "description": "Vanilla HGSS overlay: Geonet globe.",
+      "sources": [
+        "asm/overlay_69.s"
+      ],
+      "symbol": "OVY_69",
+      "resolved": true
+    },
+    "70": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_70.s"
+      ],
+      "symbol": "OVY_70",
+      "resolved": false
+    },
+    "71": {
+      "name": "Trade animation sequence",
+      "description": "Vanilla HGSS overlay: Trade animation sequence.",
+      "sources": [
+        "asm/overlay_71.s"
+      ],
+      "symbol": "OVY_71",
+      "resolved": true
+    },
+    "72": {
+      "name": "Nintendo Wi-Fi connection",
+      "description": "Vanilla HGSS overlay: Nintendo Wi-Fi connection.",
+      "sources": [
+        "asm/overlay_72.s"
+      ],
+      "symbol": "OVY_72",
+      "resolved": true
+    },
+    "73": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_73.s"
+      ],
+      "symbol": "OVY_73",
+      "resolved": false
+    },
+    "74": {
+      "name": "Main menu",
+      "description": "Vanilla HGSS overlay: Main menu.",
+      "sources": [
+        "src/application/main_menu/main_menu.c",
+        "asm/overlay_74_thumb.s",
+        "asm/nitrocrypto.s"
+      ],
+      "symbol": "OVY_74",
+      "resolved": true
+    },
+    "75": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_75.s"
+      ],
+      "symbol": "OVY_75",
+      "resolved": false
+    },
+    "76": {
+      "name": "Credits",
+      "description": "Vanilla HGSS overlay: Credits.",
+      "sources": [
+        "src/credits/data1.c",
+        "src/credits/credits.c",
+        "src/credits/data2.c"
+      ],
+      "symbol": "credits",
+      "resolved": true
+    },
+    "77": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_77",
+      "resolved": false
+    },
+    "78": {
+      "name": "Pok\u00e9dex certificates",
+      "description": "Vanilla HGSS overlay: Pok\u00e9dex certificates.",
+      "sources": [
+        "src/certificates_app.c"
+      ],
+      "symbol": "certificates_app",
+      "resolved": true
+    },
+    "79": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_79",
+      "resolved": false
+    },
+    "80": {
+      "name": "Battle Frontier scripting",
+      "description": "Vanilla HGSS overlay: Battle Frontier scripting.",
+      "sources": [
+        "asm/overlay_80_02229EE0.s",
+        "asm/frontier_system.s",
+        "src/frontier/frontier_script_context.c",
+        "asm/overlay_80_0222ACA0.s",
+        "asm/overlay_80_0222AEF8.s",
+        "asm/overlay_80_0222BDF4.s",
+        "asm/overlay_80_0222F608.s",
+        "asm/overlay_80_0222FD08.s",
+        "asm/overlay_80_02230B8C.s",
+        "asm/overlay_80_022310C4.s",
+        "asm/overlay_80_02231BF8.s",
+        "asm/overlay_80_022324C4.s",
+        "src/frontier/frontier_cmd_arcade.c",
+        "asm/overlay_80_022340E8.s",
+        "asm/overlay_80_02235390.s",
+        "asm/overlay_80_02235438.s",
+        "asm/overlay_80_022357B4.s",
+        "asm/overlay_80_02235900.s",
+        "asm/overlay_80_02235FC8.s",
+        "asm/overlay_80_02236450.s",
+        "asm/overlay_80_02236B78.s",
+        "asm/overlay_80_022372D8.s",
+        "asm/overlay_80_02237A70.s",
+        "asm/overlay_80_02238034.s",
+        "asm/overlay_80_022384D8.s",
+        "asm/frontier_map.s",
+        "asm/overlay_80_02239960.s",
+        "asm/overlay_80_02239AF8.s",
+        "asm/overlay_80_02239BF0.s",
+        "asm/overlay_80_02239D74.s",
+        "asm/overlay_80_0223A00C.s",
+        "asm/overlay_80_0223AC24.s"
+      ],
+      "symbol": "OVY_80",
+      "resolved": true
+    },
+    "81": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_81.s"
+      ],
+      "symbol": "OVY_81",
+      "resolved": false
+    },
+    "82": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_82.s"
+      ],
+      "symbol": "OVY_82",
+      "resolved": false
+    },
+    "83": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_83.s"
+      ],
+      "symbol": "OVY_83",
+      "resolved": false
+    },
+    "84": {
+      "name": "Battle Arcade board",
+      "description": "Vanilla HGSS overlay: Battle Arcade board.",
+      "sources": [
+        "src/battle_arcade_game_board.c",
+        "asm/battle_arcade_game_board_data.s"
+      ],
+      "symbol": "OVY_84",
+      "resolved": true
+    },
+    "85": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_85.s"
+      ],
+      "symbol": "OVY_85",
+      "resolved": false
+    },
+    "86": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_86.s"
+      ],
+      "symbol": "OVY_86",
+      "resolved": false
+    },
+    "87": {
+      "name": "Scratch-Off Cards",
+      "description": "Vanilla HGSS overlay: Scratch-Off Cards.",
+      "sources": [
+        "asm/overlay_87.s"
+      ],
+      "symbol": "OVY_87",
+      "resolved": true
+    },
+    "88": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_88.s"
+      ],
+      "symbol": "OVY_88",
+      "resolved": false
+    },
+    "89": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_89.s"
+      ],
+      "symbol": "OVY_89",
+      "resolved": false
+    },
+    "90": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_90.s"
+      ],
+      "symbol": "OVY_90",
+      "resolved": false
+    },
+    "91": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_91.s"
+      ],
+      "symbol": "OVY_91",
+      "resolved": false
+    },
+    "92": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_92.s"
+      ],
+      "symbol": "OVY_92",
+      "resolved": false
+    },
+    "93": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_93_thumb_1.s",
+        "asm/overlay_93_arm.s",
+        "asm/overlay_93_thumb_2.s"
+      ],
+      "symbol": "OVY_93",
+      "resolved": false
+    },
+    "94": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_94.c"
+      ],
+      "symbol": "OVY_94",
+      "resolved": false
+    },
+    "95": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_95.s"
+      ],
+      "symbol": "OVY_95",
+      "resolved": false
+    },
+    "96": {
+      "name": "Pok\u00e9athlon course",
+      "description": "Vanilla HGSS overlay: Pok\u00e9athlon course.",
+      "sources": [
+        "src/pokeathlon/pokeathlon_course.c",
+        "asm/overlay_96.s",
+        "src/pokeathlon/pokeathlon_data.c"
+      ],
+      "symbol": "OVY_96",
+      "resolved": true
+    },
+    "97": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_97.s"
+      ],
+      "symbol": "OVY_97",
+      "resolved": false
+    },
+    "98": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_98.s"
+      ],
+      "symbol": "OVY_98",
+      "resolved": false
+    },
+    "99": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_99.s"
+      ],
+      "symbol": "OVY_99",
+      "resolved": false
+    },
+    "100": {
+      "name": "Pok\u00e9gear core",
+      "description": "Vanilla HGSS overlay: Pok\u00e9gear core.",
+      "sources": [
+        "src/application/pokegear/main/overlay_100_021E5900.c",
+        "src/application/pokegear/main/pokegear_main.c",
+        "src/application/pokegear/main/overlay_100_021E6914.c",
+        "src/application/pokegear/main/pokegear_cursor.c"
+      ],
+      "symbol": "pokegear",
+      "resolved": true
+    },
+    "101": {
+      "name": "Pok\u00e9gear apps / Fly map",
+      "description": "Vanilla HGSS overlay: Pok\u00e9gear apps / Fly map.",
+      "sources": [
+        "src/application/pokegear/map/pokegear_map.c",
+        "src/application/pokegear/map/overlay_101_021F79B4.c",
+        "src/application/pokegear/map/overlay_101_021E7FF4.c",
+        "src/application/pokegear/map/overlay_101_021E9270.c",
+        "src/application/pokegear/map/overlay_101_021EB568.c",
+        "src/application/pokegear/map/overlay_101_021ED498.c",
+        "src/application/pokegear/map/fly_map.c",
+        "src/application/pokegear/map/overlay_101_021EDCE0.c",
+        "src/application/pokegear/configure/pokegear_configure.c",
+        "src/application/pokegear/configure/overlay_101_021EED44.c",
+        "src/application/pokegear/configure/overlay_101_021EF1D8.c",
+        "src/application/pokegear/configure/overlay_101_021EF6D0.c",
+        "src/application/pokegear/phone/pokegear_phone.c",
+        "src/application/pokegear/phone/overlay_101_021EFD20.c",
+        "src/application/pokegear/phone/overlay_101_021F017C.c",
+        "src/application/pokegear/phone/overlay_101_021F0880.c",
+        "src/application/pokegear/phone/overlay_101_021F0F48.c",
+        "src/application/pokegear/phone/overlay_101_021F1D74.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_mother.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_prof_elm.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_generic.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_prof_oak.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_kurt.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_bike_shop.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_blackbelt_kenji.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_bill.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_daycare_man.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_daycare_lady.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_buena.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_childhood_friend.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_gym_leader.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_baoba.c",
+        "src/application/pokegear/phone/scripts/phone_scripts_juggler_irwin.c",
+        "src/application/pokegear/phone/extra_ethan_lyra_data.c",
+        "src/application/pokegear/radio/pokegear_radio.c",
+        "src/application/pokegear/radio/overlay_101_021F49F8.c",
+        "src/application/pokegear/radio/overlay_101_021F4F34.c",
+        "src/application/pokegear/radio/overlay_101_021F57B8.c",
+        "src/application/pokegear/radio/shows/pokemon_music.c",
+        "src/application/pokegear/radio/shows/poke_flute.c",
+        "src/application/pokegear/radio/shows/unown.c",
+        "src/application/pokegear/radio/shows/team_rocket.c",
+        "src/application/pokegear/radio/shows/serial_radio_drama.c",
+        "src/application/pokegear/radio/shows/commercials.c",
+        "src/application/pokegear/radio/shows/pokemon_search_party.c",
+        "src/application/pokegear/radio/shows/buenas_password.c",
+        "src/application/pokegear/radio/shows/that_town_these_people.c",
+        "src/application/pokegear/radio/shows/trainer_profiles.c",
+        "src/application/pokegear/radio/shows/pokemon_talk.c",
+        "src/application/pokegear/radio/shows/mahogany_signal.c",
+        "src/application/pokegear/phone/phone_script_defs.c",
+        "src/application/pokegear/phone/phone_generic_headers.c"
+      ],
+      "symbol": "pokegear_app",
+      "resolved": true
+    },
+    "102": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_102.s"
+      ],
+      "symbol": "OVY_102",
+      "resolved": false
+    },
+    "103": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_103.s"
+      ],
+      "symbol": "OVY_103",
+      "resolved": false
+    },
+    "104": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_104.s"
+      ],
+      "symbol": "OVY_104",
+      "resolved": false
+    },
+    "105": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_105.s"
+      ],
+      "symbol": "OVY_105",
+      "resolved": false
+    },
+    "106": {
+      "name": "Legendary Pok\u00e9mon cinematic",
+      "description": "Vanilla HGSS overlay: Legendary Pok\u00e9mon cinematic.",
+      "sources": [
+        "asm/overlay_106.s"
+      ],
+      "symbol": "OVY_106",
+      "resolved": true
+    },
+    "107": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_107",
+      "resolved": false
+    },
+    "108": {
+      "name": "Safari Zone area customization",
+      "description": "Vanilla HGSS overlay: Safari Zone area customization.",
+      "sources": [
+        "asm/overlay_108.s",
+        "asm/overlay_108_021E8850.s"
+      ],
+      "symbol": "OVY_108",
+      "resolved": true
+    },
+    "109": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_109.s"
+      ],
+      "symbol": "OVY_109",
+      "resolved": false
+    },
+    "110": {
+      "name": "Ruins of Alph puzzles",
+      "description": "Vanilla HGSS overlay: Ruins of Alph puzzles.",
+      "sources": [
+        "src/alph_puzzle.c"
+      ],
+      "symbol": "OVY_110",
+      "resolved": true
+    },
+    "111": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_111.s"
+      ],
+      "symbol": "OVY_111",
+      "resolved": false
+    },
+    "112": {
+      "name": "Pok\u00e9walker",
+      "description": "Vanilla HGSS overlay: Pok\u00e9walker.",
+      "sources": [
+        "asm/overlay_112.s"
+      ],
+      "symbol": "OVY_112",
+      "resolved": true
+    },
+    "113": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_113.s"
+      ],
+      "symbol": "OVY_113",
+      "resolved": false
+    },
+    "114": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_114.s"
+      ],
+      "symbol": "OVY_114",
+      "resolved": false
+    },
+    "115": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_115.s"
+      ],
+      "symbol": "OVY_115",
+      "resolved": false
+    },
+    "116": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_116.s"
+      ],
+      "symbol": "OVY_116",
+      "resolved": false
+    },
+    "117": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_117.s"
+      ],
+      "symbol": "OVY_117",
+      "resolved": false
+    },
+    "118": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_118.s"
+      ],
+      "symbol": "OVY_118",
+      "resolved": false
+    },
+    "119": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_119.s"
+      ],
+      "symbol": "OVY_119",
+      "resolved": false
+    },
+    "120": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "asm/overlay_120.s"
+      ],
+      "symbol": "OVY_120",
+      "resolved": false
+    },
+    "121": {
+      "name": "Rankings viewer",
+      "description": "Vanilla HGSS overlay: Rankings viewer.",
+      "sources": [
+        "src/application/view_rankings.c"
+      ],
+      "symbol": "view_rankings_app",
+      "resolved": true
+    },
+    "122": {
+      "name": "Voltorb Flip",
+      "description": "Vanilla HGSS overlay: Voltorb Flip.",
+      "sources": [
+        "src/voltorb_flip/voltorb_flip.c",
+        "src/voltorb_flip/voltorb_flip_tasks.c",
+        "src/voltorb_flip/voltorb_flip_game.c",
+        "src/voltorb_flip/voltorb_flip_input.c"
+      ],
+      "symbol": "voltorb_flip",
+      "resolved": true
+    },
+    "123": {
+      "name": "DS protection checks",
+      "description": "Vanilla HGSS overlay: DS protection checks.",
+      "sources": [
+        "libdsprot.a"
+      ],
+      "symbol": "ds_protect",
+      "resolved": true
+    },
+    "124": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [
+        "src/overlay_124.c"
+      ],
+      "symbol": "OVY_124",
+      "resolved": false
+    },
+    "125": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_125",
+      "resolved": false
+    },
+    "126": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_126",
+      "resolved": false
+    },
+    "127": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_127",
+      "resolved": false
+    },
+    "128": {
+      "name": "Purpose unresolved",
+      "description": "The upstream decompilation still uses a numbered overlay name; its gameplay purpose has not been verified here.",
+      "sources": [],
+      "symbol": "OVY_128",
+      "resolved": false
+    },
+    "129": {
+      "name": "Resident extension",
+      "description": "Always-resident HG-Engine hooks, shared helpers and custom gameplay code.",
+      "sources": [
+        "include/constants/file.h",
+        "src/"
+      ],
+      "symbol": "OVERLAY_ARM9_EXTENSION",
+      "resolved": true
+    },
+    "130": {
+      "name": "Battle extension",
+      "description": "Custom battle engine logic loaded with vanilla battle overlay 12.",
+      "sources": [
+        "include/constants/file.h",
+        "src/battle/"
+      ],
+      "symbol": "OVERLAY_BATTLE_EXTENSION",
+      "resolved": true
+    },
+    "131": {
+      "name": "Field extension",
+      "description": "Overworld extension, encounter and evolution data, ecology generation and Apricorn crafting.",
+      "sources": [
+        "include/constants/file.h",
+        "src/field/"
+      ],
+      "symbol": "OVERLAY_FIELD_EXTENSION",
+      "resolved": true
+    },
+    "132": {
+      "name": "Pok\u00e9dex extension",
+      "description": "HG-Engine extensions for the Pok\u00e9dex.",
+      "sources": [
+        "include/constants/file.h",
+        "src/pokedex/"
+      ],
+      "symbol": "OVERLAY_POKEDEX_EXTENSION",
+      "resolved": true
+    },
+    "133": {
+      "name": "Field evolution service",
+      "description": "Evolution target resolution, early-item requirements and compatibility labels in field contexts.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_GETMONEVOLUTION_SPECIFIC",
+      "resolved": true
+    },
+    "134": {
+      "name": "Battle evolution service",
+      "description": "Evolution service variant for battle and overlapping-menu contexts.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_GETMONEVOLUTION_BATTLE",
+      "resolved": true
+    },
+    "135": {
+      "name": "Move / defender ability checks",
+      "description": "Checks move interactions with the defender\u2019s abilities.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_MOVEHITDEFENDERABILITYCHECK_SPECIFIC",
+      "resolved": true
+    },
+    "136": {
+      "name": "Switch-in ability checks",
+      "description": "Processes ability effects when Pok\u00e9mon enter battle.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_SWITCHINABILITYCHECK_SPECIFIC",
+      "resolved": true
+    },
+    "137": {
+      "name": "Battle stat-change command",
+      "description": "Handles battle script command 33 for stat changes.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_BTL_SCR_CMD_33_STATBUFFCHANGE",
+      "resolved": true
+    },
+    "138": {
+      "name": "Damage calculation",
+      "description": "Calculates move damage with stats, power, abilities and item modifiers.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_CALCBASEDAMAGE",
+      "resolved": true
+    },
+    "139": {
+      "name": "Battle form-change checks",
+      "description": "Checks and schedules Pok\u00e9mon form changes during battle.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_BATTLEFORMCHANGECHECK",
+      "resolved": true
+    },
+    "140": {
+      "name": "Defender item-effect checks",
+      "description": "Checks the defender\u2019s held-item effects after an attack.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_CHECKDEFENDERITEMEFFECTONHIT",
+      "resolved": true
+    },
+    "141": {
+      "name": "End-of-turn effects",
+      "description": "Processes weather, residual damage, healing and expiring effects.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_SERVERFIELDCONDITIONCHECK",
+      "resolved": true
+    },
+    "142": {
+      "name": "Before-move battle controller",
+      "description": "Coordinates the battle controller before a move executes.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_BATTLECONTROLLER_BEFOREMOVE",
+      "resolved": true
+    },
+    "143": {
+      "name": "Battle message buffering",
+      "description": "Builds and buffers battle message parameters.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_BATTLESYSTEM_BUFFERMESSAGE",
+      "resolved": true
+    },
+    "144": {
+      "name": "Move-end battle controller",
+      "description": "Coordinates battle processing at the end of a move.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_BATTLECONTROLLER_MOVEEND",
+      "resolved": true
+    },
+    "145": {
+      "name": "HP calculation",
+      "description": "Battle HP change calculation and processing.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_SERVERHPCALC",
+      "resolved": true
+    },
+    "146": {
+      "name": "Before-action processing",
+      "description": "Battle server checks before an action.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_SERVERBEFOREACT",
+      "resolved": true
+    },
+    "147": {
+      "name": "Post-move effects",
+      "description": "Processes effects after a move executes.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_SERVERDOPOSTMOVEEFFECTS",
+      "resolved": true
+    },
+    "148": {
+      "name": "Capture calculation",
+      "description": "Calculates Pok\u00e9 Ball shake and capture results.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_CALCULATEBALLSHAKES",
+      "resolved": true
+    },
+    "149": {
+      "name": "Party item use",
+      "description": "Applies items to Pok\u00e9mon from the party interface.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_PARTY_HANDLEUSEITEMONMON",
+      "resolved": true
+    },
+    "150": {
+      "name": "Inherited moves",
+      "description": "Builds inherited moves for breeding.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_INHERITMOVES",
+      "resolved": true
+    },
+    "151": {
+      "name": "Trade Pok\u00e9mon creation",
+      "description": "Creates the received Pok\u00e9mon for a trade.",
+      "sources": [
+        "include/constants/file.h",
+        "src/individual/"
+      ],
+      "symbol": "OVERLAY_CREATETRADEMON",
+      "resolved": true
+    }
+  }
+}

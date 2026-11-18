@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HGSS overlay memory explorer</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7f9;color:#17212d;font:14px system-ui,sans-serif}main{max-width:1600px;margin:auto;padding:28px}h1{font-size:25px;margin:0 0 8px}p{color:#556170;line-height:1.5;margin:8px 0}button,input,select{font:inherit;padding:8px 10px;border:1px solid #cbd2da;border-radius:5px;background:white;color:inherit}button{cursor:pointer}button:hover{background:#eaf0f6}label{display:inline-flex;align-items:center;gap:7px}.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:15px 0}.address{width:128px;font-family:monospace}#search{width:190px}.legend{display:flex;gap:20px;flex-wrap:wrap;margin:18px 0 12px;font-size:13px}.swatch{display:inline-block;width:22px;height:10px;margin-right:6px;background:#42698c}.bss{background:#ccd9e5}.resident{background:#8763a5}#chart{background:white;border:1px solid #d6dce3;border-radius:6px;overflow:hidden}.axis,.row{display:grid;grid-template-columns:255px minmax(300px,1fr) 250px;align-items:center}.axis{background:#eef1f5;padding:12px 14px;font-size:12px}.row{padding:0 14px;height:38px;border-top:1px solid #edf0f3;font-size:12px}.row:hover{background:#f1f6fa}.name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:12px}.plot{height:100%;position:relative;border-left:1px solid #d9e0e7;border-right:1px solid #d9e0e7}.bar{position:absolute;top:10px;height:18px;min-width:2px;background:#42698c;cursor:pointer;border-radius:2px}.bar.bss{background:#ccd9e5}.bar.resident{background:#8763a5}.grid{position:absolute;top:0;height:100%;border-left:1px solid #eef1f5;pointer-events:none}.tick{position:absolute;white-space:nowrap;transform:translateX(-50%);font:11px monospace;top:0}.range{padding-left:16px;font:11px monospace;white-space:nowrap}.footer{font-size:12px;margin-top:14px}.summary{font-weight:600}#detail{padding:14px 0;min-height:52px;line-height:1.6;font-family:monospace;font-size:12px}#error{color:#a62b2b}input[type=file]{max-width:290px}#frame{overflow-x:auto}#chart{min-width:850px}@media(max-width:800px){main{padding:16px}.axis,.row{grid-template-columns:135px minmax(300px,1fr) 235px}}
+</style>
+<main>
+<h1>HGSS overlay memory explorer</h1>
+<p>Actual loaded RAM ranges from the ROM’s overlay table. Overlays can share addresses because they run at different times; overlap alone does not indicate a conflict.</p>
+<div class="controls"><label>ROM <input id="file" type="file" accept=".nds"></label><span id="source"></span></div>
+<div class="controls">
+<button data-preset="high">Custom overlay region</button><button data-preset="129">Around overlay 129</button><button data-preset="all">All overlays</button><button data-preset="vanilla">Vanilla application region</button>
+</div>
+<div class="controls">
+<label>From <input class="address" id="lo" value="0x023C0000"></label><label>To <input class="address" id="hi" value="0x023E0000"></label><button id="apply">Apply range</button>
+<button id="in">Zoom in</button><button id="out">Zoom out</button><button id="left">← Pan</button><button id="right">Pan →</button>
+</div>
+<div class="controls"><label>Filter <input id="search" placeholder="Name or IDs: 129,130"></label><label>Order <select id="sort"><option value="id">Overlay ID</option><option value="address">Start address</option><option value="size">Largest first</option></select></label><button id="download">Export CSV</button></div>
+<div id="error" role="alert"></div>
+<div class="legend"><span><i class="swatch"></i>Initialized code/data</span><span><i class="swatch bss"></i>BSS (zero-initialized RAM)</span><span><i class="swatch resident"></i>Overlay 129 code/data</span></div>
+<p class="summary" id="summary"></p>
+<div id="frame"><div id="chart"></div></div>
+<div id="detail">Click a bar for its complete memory range.</div>
+<p class="footer">X axis: ARM9 memory address (hexadecimal). Y axis: overlay ID. All ends are exclusive; used end = start + code/data bytes + BSS bytes. Bars are clipped to the selected address window. No linker capacity, heap use, or simultaneous-loading assumptions are shown. Tiny ranges have a two-pixel minimum for visibility.</p>
+<p class="footer">Names describe this HGSS/HG-Engine project. Unverified vanilla purposes are explicitly marked unresolved; click a label for source-module details. Everything runs locally in this page. Loading a ROM reads only its overlay table; no files are uploaded.</p>
+</main>
+<script>
+const snapshot = __OVERLAY_DATA__;
+let data=snapshot.rows,source=snapshot.source,low=0x023c0000,high=0x023e0000;
+const $=id=>document.getElementById(id),hex=n=>'0x'+n.toString(16).toUpperCase().padStart(8,'0');
+const metadata=snapshot.metadata.overlays;
+const labels=Object.fromEntries(Object.entries(metadata).map(([id,m])=>[id,m.name]));
+function filtered(){
+ const q=$('search').value.trim();let ranges=[];
+ const numeric=q&&/^[0-9,\s-]+$/.test(q);
+ if(numeric){for(const part of q.split(',')){let m=part.trim().match(/^(\d+)(?:-(\d+))?$/);if(!m)throw Error('Use IDs or ranges, for example 1,12,129-151.');let a=+m[1],b=m[2]?+m[2]:a;if(b<a)throw Error('ID range ends must be greater than starts.');ranges.push([a,b]);}}
+ let rows=data.filter(r=>r.start<high&&r.end>low&&(!q||(numeric?ranges.some(([a,b])=>r.id>=a&&r.id<=b):JSON.stringify(metadata[r.id]||{}).toLowerCase().includes(q.toLowerCase()))));
+ const mode=$('sort').value;rows.sort((a,b)=>mode==='size'?(b.end-b.start)-(a.end-a.start)||a.id-b.id:mode==='address'?a.start-b.start||a.id-b.id:a.id-b.id);return rows;
+}
+function detail(r){$('detail').textContent=`Overlay ${r.id} ${labels[r.id]||''} | Start ${hex(r.start)} | Code/data end ${hex(r.start+r.size)} | Used end ${hex(r.end)} | Code/data ${r.size.toLocaleString()} B | BSS ${r.bss.toLocaleString()} B | Total ${(r.size+r.bss).toLocaleString()} B. ${(metadata[r.id]||{}).description||''} Source: ${((metadata[r.id]||{}).sources||[]).join(', ')}`;}
+function draw(){
+ try{
+  const rows=filtered();$('error').textContent='';$('lo').value=hex(low);$('hi').value=hex(high);$('source').textContent=source;
+  $('summary').textContent=`${rows.length} of ${data.length} overlays intersect this window · ${hex(low)}–${hex(high)} · ${((high-low)/1024).toFixed(1)} KiB wide`;
+  const chart=$('chart');chart.replaceChildren();const axis=document.createElement('div');axis.className='axis';axis.innerHTML='<span>Overlay ID</span><div style="height:16px;position:relative" id="ticks"></div><span style="padding-left:16px">Start → used end · total bytes</span>';chart.append(axis);
+  for(let i=0;i<=4;i++){const t=document.createElement('span');t.className='tick';t.style.left=(i*25)+'%';if(i===0)t.style.transform='none';if(i===4)t.style.transform='translateX(-100%)';t.textContent=hex(Math.round(low+(high-low)*i/4));$('ticks').append(t);}
+  for(const r of rows){
+   const row=document.createElement('div');row.className='row';const name=document.createElement('span');name.className='name';name.textContent=r.id+(labels[r.id]?' · '+labels[r.id]:'');name.title=(metadata[r.id]||{}).description||'';name.style.cursor='pointer';name.onclick=()=>detail(r);row.append(name);
+   const plot=document.createElement('div');plot.className='plot';for(let i=1;i<4;i++){const grid=document.createElement('i');grid.className='grid';grid.style.left=(i*25)+'%';plot.append(grid);}
+   function bar(a,b,cls){a=Math.max(a,low);b=Math.min(b,high);if(b<=a)return;const el=document.createElement('div');el.className='bar '+cls;el.style.left=((a-low)/(high-low)*100)+'%';el.style.width=((b-a)/(high-low)*100)+'%';el.title=`Overlay ${r.id} · ${labels[r.id]||''}: ${hex(r.start)}–${hex(r.end)}\nCode/data: ${r.size} B; BSS: ${r.bss} B; total: ${r.size+r.bss} B`;el.onclick=()=>detail(r);plot.append(el);}
+   bar(r.start,r.start+r.size,r.id===129?'resident':'');bar(r.start+r.size,r.end,'bss');row.append(plot);
+   const range=document.createElement('span');range.className='range';range.textContent=`${hex(r.start)} → ${hex(r.end)} · ${(r.size+r.bss).toLocaleString()} B`;row.append(range);chart.append(row);
+  }
+ }catch(e){$('error').textContent=e.message;}
+}
+function setRange(a,b){if(!Number.isFinite(a)||!Number.isFinite(b)||a<0x02000000||b>0x02800000||b<=a){$('error').textContent='Enter an increasing hexadecimal range within 0x02000000–0x02800000.';return;}low=Math.floor(a);high=Math.ceil(b);draw();}
+$('apply').onclick=()=>setRange(Number($('lo').value),Number($('hi').value));
+for(const id of ['lo','hi'])$(id).onkeydown=e=>{if(e.key==='Enter')$('apply').click();};
+for(const id of ['search','sort'])$(id).addEventListener(id==='search'?'input':'change',draw);
+document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{const presets={high:[0x023c0000,0x023e0000],'129':[0x023d2000,0x023e0000],all:[Math.min(...data.map(r=>r.start)),Math.max(...data.map(r=>r.end))],vanilla:[0x021e0000,0x02280000]};$('search').value='';setRange(...presets[b.dataset.preset]);});
+$('in').onclick=()=>{let mid=(low+high)/2,w=(high-low)/4;setRange(mid-w,mid+w);};
+$('out').onclick=()=>{let mid=(low+high)/2,w=high-low;setRange(Math.max(0x02000000,mid-w),Math.min(0x02800000,mid+w));};
+function pan(sign){let w=high-low,step=Math.round(w/4)*sign,a=Math.max(0x02000000,Math.min(0x02800000-w,low+step));setRange(a,a+w);}
+$('left').onclick=()=>pan(-1);$('right').onclick=()=>pan(1);
+$('file').onchange=async e=>{try{
+ const f=e.target.files[0];if(!f)return;const v=new DataView(await f.arrayBuffer());if(v.byteLength<0x160)throw Error('File is too small to be an NDS ROM.');const off=v.getUint32(0x50,true),size=v.getUint32(0x54,true);
+ if(!size||size%32||off<0x160||off+size>v.byteLength)throw Error('Invalid ARM9 overlay table.');let rows=[];
+ for(let p=off;p<off+size;p+=32){const id=v.getUint32(p,true),start=v.getUint32(p+4,true),sz=v.getUint32(p+8,true),bss=v.getUint32(p+12,true);if(start<0x02000000||start+sz+bss>0x02800000)throw Error('Unexpected overlay memory range.');rows.push({id,start,size:sz,bss,end:start+sz+bss});}
+ data=rows;source=f.name+' · loaded locally';$('detail').textContent='Click a bar for its complete memory range.';draw();
+ }catch(err){$('error').textContent=err.message;}};
+$('download').onclick=()=>{try{const rows=filtered();const csv='overlay_id,name,description,start,code_data_end,used_end,code_data_bytes,bss_bytes,total_bytes\r\n'+rows.map(r=>[r.id,labels[r.id]||'',(metadata[r.id]||{}).description||'',hex(r.start),hex(r.start+r.size),hex(r.end),r.size,r.bss,r.size+r.bss].map(v=>'\"'+String(v).replaceAll('\"','\"\"')+'\"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));const a=document.createElement('a');a.href=url;a.download='overlay-memory-ranges.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){$('error').textContent=e.message;}};
+draw();
+</script>
+</html>
