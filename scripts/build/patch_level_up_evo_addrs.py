@@ -56,6 +56,13 @@ def main():
             print(f"Skip level-up table patch: missing {path}", file=sys.stderr)
             return
 
+    craft_addr = nm_address(args.field_elf, "ApricornCraft_FieldRun")
+    craft_slot = nm_address(args.overlay_elf, "ApricornCraftFieldAddr")
+    if not 0x023C8000 <= (craft_addr & ~1) < 0x023D8000:
+        raise SystemExit("Apricorn crafting must stay below overlay 129")
+    patch_overlay_bin(args.overlay_bin, craft_slot, craft_addr | 1)
+    print(f"Patched ApricornCraftFieldAddr = 0x{craft_addr | 1:08X}")
+
     level_table_addr = nm_address(args.field_elf, LEVEL_UP_TABLE_SYMBOL)
     level_var_vma = nm_address(args.overlay_elf, LEVEL_UP_ADDR_SYMBOL)
     patch_overlay_bin(args.overlay_bin, level_var_vma, level_table_addr)

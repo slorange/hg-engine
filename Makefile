@@ -263,7 +263,7 @@ $(BTX):
 TOOLS += $(BTX)
 
 ####################### Build #######################
-$(BUILD)/rom_gen.ld:$(LINK) $(OUTPUT) rom.ld
+$(BUILD)/rom_gen.ld:$(LINK) rom.ld
 	cp rom.ld $(BUILD)/rom_gen.ld
 	$(PYTHON) scripts/build/generate_ld.py $(BUILD)/rom_gen.ld $(LINK)
 
