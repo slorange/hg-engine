@@ -275,7 +275,7 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 | Service | Description | Status |
 | ------- | ----------- | ------ |
 | **Abra fast travel** | Pay a fixed fee to travel to previously visited towns and cities. | Planned |
-| **Move Relearner** | Relearn moves using Heart Scales, without returning to Blackthorn. | Planned |
+| **Move Relearner** | Relearn moves for $300 per successfully learned move, without returning to Blackthorn. | Implemented |
 | **Rest / pass time** | Advance the clock to morning, day, or night. | Planned |
 | **Apricorn crafting** | Convert Apricorns into specialty Poké Balls using Kurt’s service ([Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance)), without returning to Azalea. | Planned |
 | **Move Tutor** | Make special move tutoring available from any Center. | Maybe |

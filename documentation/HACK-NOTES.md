@@ -2234,6 +2234,16 @@ The second hook, ARM9 **0x0203BB20** (`MapHeader_GetSpawnIdForDeathWarp`), uses 
 
 Validation: Docker `make test.nds -j24`, then `.venv/bin/python scripts/dev/verify_center_hub.py` inside Docker; run `python scripts/dev/verify_r32_outdoor_rod_guru.py` for the fisherman. Routing host tests: `gcc -w -DCENTER_HUB_HOST_TEST -Iinclude src/center_hub.c scripts/dev/test_center_hub.c -o build/test_center_hub && build/test_center_hub` inside Docker. In-game: enter from two different cities, exit to each original door, save inside/restart/exit, visit the basement and return, and verify Indigo's entrance remains normal.
 
+### Hub Move Relearner
+
+The Move Relearner stands at local **(4, 15)** in Route 32 1F (zone_event **163**, object **4**, sprite **332**, scriptId **5**). `scripts/build/patch_center_relearner.py` runs after the fisherman relocation and appends slot **4** to script member **233**, preserving the original bytecode and relative branches. Dialogue is appended at messages **17–24** in bank **381**. The Blackthorn service retains its existing behavior.
+
+`armips/scr_seq/scr_seq_center_relearner.s` uses the existing party picker, eligibility command **466**, relearner application **467**, and result command **469**. Cost is **$300**, checked before opening the party picker and deducted only when the relearner returns success (**0**). Declining, cancelling either screen, selecting an Egg, having no eligible moves, or lacking money never charges the player. Existing expanded-learnset support in `armips/asm/levelup.s` remains in use.
+
+After Docker `make test.nds -j24`, run `python scripts/dev/verify_center_relearner.py` to check event/script preservation and exercise the compiled bytecode's success/cancellation/payment paths. In-game testing still needs to verify party and move-selection screens, the taught move, and the money balance. Leave and re-enter the Center when loading an existing save inside it to refresh NPCs.
+
+**Party-selection freeze:** the first hub script called `CloseMsg` again after returning from the party picker without creating another message window. Native `ScrCmd_CloseMsg` at **0x02041168** unconditionally clears/removes the window; it does not guard against a second close. Match the original Blackthorn sequence: print **message 24** after the eligibility check, then close it and fade to the move-learning screen. The bytecode verifier now tracks message-window state and rejects the old sequence before rebuilding. The existing ARM learnset patch also has a duplicate-filter issue observed in an isolated probe; that is separate from this window-lifecycle fix and was not changed here.
+
 ## Fishing Rod guru NPCs
 
 **Design:** [Wilds-4](DESIGN-WILDS.md#wilds-4-fishing-rod-progression).
@@ -2289,7 +2299,7 @@ Validation: Docker `make test.nds -j24`, then `.venv/bin/python scripts/dev/veri
 
 **Route 24 / 25 seam:** guru @ world **(1320, 65)** — duplicate object + scr_seq append on **both** **025**/**215**/**362** and **026**/**216**/**363** (see inventory table).
 
-**Route 32:** for Future-6, the guru now stands outside at world **(466, 419)** beside the Center door **(468, 419)**. The build patch removes interior objects 4/5, appends outdoor script 11 while preserving the original route bytecode and relative branches, and uses outdoor text bank 380. Interior script member 233 stays vanilla. Verify after building with `python scripts/dev/verify_r32_outdoor_rod_guru.py`; check placement and conversation in-game.
+**Route 32:** for Future-6, the guru now stands outside at world **(466, 419)** beside the Center door **(468, 419)**. The build patch removes interior objects 4/5, appends outdoor script 11 while preserving the original route bytecode and relative branches, and uses outdoor text bank 380. The hub relearner subsequently occupies interior object 4 with a new script; the original scripts in member 233 remain intact. Verify after building with `python scripts/dev/verify_r32_outdoor_rod_guru.py`; check placement and conversation in-game.
 
 **Gym-area story skip (Radio Tower / Elm phone coord):** vanilla **coord script 2** at world **(272, 239)** (west of the gym) when **`VAR_UNK_4078`** is 0 — not the rival hide flag (**470**). Mom intro sets **4078 → 1** (`openworld_story_skip_flags.inc`); **`tools/patch_scr_seq_olivine_gym_story.py`** NOPs scr_seq **911** slot **2** entry; **`tools/patch_zone_event_olivine_gym_story.py`** removes the coord from **074**.
 

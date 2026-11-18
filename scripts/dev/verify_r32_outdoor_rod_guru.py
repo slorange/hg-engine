@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from patch_zone_event_r32pc_rod_guru import parse_zone_event, pack_object
 from rod_guru_patch_checks import validate_rod_guru_body
 from patch_r32_outdoor_rod_guru import OBJECT_ID, SCRIPT_ID, X, Z
+from patch_center_relearner import relearner_object
 
 
 def main():
@@ -20,7 +21,7 @@ def main():
         assert current[0] == vanilla[0], f"{name}: background events changed"
         assert current[2] == vanilla[2], f"{name}: door warps changed"
         if member == 163:
-            assert current[1] == [o for o in vanilla[1] if struct.unpack_from("<H", o)[0] not in (4, 5)]
+            assert current[1] == [o for o in vanilla[1] if struct.unpack_from("<H", o)[0] not in (4, 5)] + [relearner_object()]
             assert current[3] == vanilla[3]
         else:
             assert current[1] == [o for o in vanilla[1] if struct.unpack_from("<H", o)[0] != 1] + [pack_object(OBJECT_ID, SCRIPT_ID, 0, X, Z)]
@@ -39,7 +40,6 @@ def main():
     start = 44 + struct.unpack_from("<i", current, 40)[0]
     assert start == len(vanilla) + 4
     validate_rod_guru_body(current[start:], "Route 32 outdoor guru")
-    assert (ROOT / "build/a012/2_233").read_bytes() == (ROOT / "build/a012_vanilla/2_233").read_bytes()
     messages = (ROOT / "data/text/380.txt").read_text(encoding="utf-8").splitlines()
     assert len(messages) == 25
     assert messages[20:] == (ROOT / "data/text/381.txt").read_text(encoding="utf-8").splitlines()[12:17]
