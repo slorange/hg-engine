@@ -14,9 +14,9 @@
 | [Wilds-4. Fishing Rod Progression](#wilds-4-fishing-rod-progression) | IMPLEMENTED |
 | [Wilds-5. Pokémon Generations / Content Scope](#wilds-5-pokémon-generations--content-scope) | DECIDED (release scope) |
 | [Wilds-6. Per-save wild ecology shuffle](#wilds-6-per-save-wild-ecology-shuffle) | IMPLEMENTED* |
-| Expanded Pokédex / generations | Moved — [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) |
 
-Wilds 1 and Wilds 6 are implemented with the exception of Safari Zone.
+
+\* Wilds 1 and Wilds 6 are implemented with the exception of Safari Zone.
 
 **Encounter pipeline (wild grass/cave/etc.):** [Wilds-6](#wilds-6-per-save-wild-ecology-shuffle) species (where hooked) → [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps) area cap → [Wilds-2](#wilds-2-wild-pokémon-level-range) rolled level → [Wilds-3](#wilds-3-encounter-stage-evolution--devolution) species stage. **Trainer battles** use the same stage rules after their level is set ([Battle-2 § Trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)).
 
@@ -159,16 +159,7 @@ For wild pokemon, a distinction is made for item evolutions based on whether thi
 
 ## Fixed move-known thresholds
 
-Minor adjustments made to the learnset to adjust evolution levels:
-- Aipom → Ambipom: Double Hit at **28**; 
-- Lickitung → Lickilicky: Rollout at **30**.
-- Stantler → Wyrdeer: Psyshield Bash at **31**.
-- Tangela → Tangrowth: AncientPower at **32**; 
-- Girafarig → Farigiraf: Twin Beam at **32**; 
-- Dunsparce → Dudunsparce: Hyper Drill at **32**.
-- Yanma → Yanmega: AncientPower at **33**; 
-- Primeape → Annihilape: Rage Fist at **35**.
-- Piloswine → Mamoswine: AncientPower at **36** (Also Swinub → Piloswine at **22**)
+The move and level list is in [Data-3](DESIGN-DATA.md#data-3-move-known-evolution-thresholds).
 
 ## Special Cases
 
@@ -178,31 +169,21 @@ Where a pokemon can have multiple evolutions and the requirements are met, one i
 
 # Wilds-4. Fishing Rod Progression
 
-**Status: IMPLEMENTED (Oct 2026)** — Shared rod script + **ten** guru sites; table below.
+**Status: IMPLEMENTED**
 
-Rod tiers advance by **catching Water-type Pokémon**, not badges or visit order — a separate track from [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) HMs. Every shipped guru uses the same progression; the player can talk to any of them for the next rod.
+**All Fishing Gurus** are able to give **any rod** provided the player meets the requirements.
+
+**Guru locations** — Route 44, Olivine City, Route 34, Route 32, Route 24, Viridian City, Vermilion City, Fuchsia City, Route 12
+
+Rod tiers advance by **catching Water-type Pokémon**, not badges or visit order. Every shipped guru uses the same progression; the player can talk to any of them for the next rod.
 
 | Rod | Requirement |
 |-----|-------------|
 | **Old** | Free on first guru interaction |
-| **Good** | **5** distinct evolutionary families with at least one **caught** member that is Water-type (primary or secondary) |
+| **Good** | **5** distinct water type evolutionary families |
 | **Super** | **15** such families |
 
 Count **families**, not species (Poliwag + Poliwrath = 1). Use Pokédex caught flags so released or traded Pokémon still count. Branching lines stay one family.
-
-**Guru network** — interchangeable **new** fishermen (sprite 347, no Yes/No before grant). Any shipped guru can hand out the next tier per [Wilds-4](#wilds-4-fishing-rod-progression) counts.
-
-| Region | Location | Notes |
-|--------|----------|--------|
-| North East Johto | Route 44 | world (568, 183) |
-| North West Johto | Olivine City | world (273, 248) |
-| Central Johto | Route 34 (Day-Care) | world (358, 409) |
-| South Johto | Route 32 Pokémon Center | Interior local (4, 15) (classic brother spot) |
-| North Kanto | Route 24 / 25 border | world (1320, 65) — **duplicate** on events **025** + **026** (map seam) |
-| West Kanto | Viridian City | world (1023, 264) |
-| Mid Kanto | Vermilion City | world (1298, 304) |
-| South Kanto | Fuchsia City | world (1230, 430) |
-| East Kanto | Route 12 / Silence Bridge | world (1429, 319) |
 
 ---
 

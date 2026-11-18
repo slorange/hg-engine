@@ -14,6 +14,7 @@
 | [DESIGN-WILDS.md](DESIGN-WILDS.md) | `Wilds-*` | Ecology seed, wild levels, fishing, content scope |
 | [DESIGN-BATTLES.md](DESIGN-BATTLES.md) | `Battle-*` | Fair trainer fights, badge caps, Gyms, EXP |
 | [DESIGN-STORY.md](DESIGN-STORY.md) | `Story-*` | Intro (Story-1/2), script policy (Story-3) |
+| [DESIGN-DATA.md](DESIGN-DATA.md) | `Data-*` | Shop inventories, TM and prize pools, evolution reference lists |
 | [DESIGN-FUTURE.md](DESIGN-FUTURE.md) | `Future-*` | Deferred addons |
 | [CHANGELOG.md](../CHANGELOG.md) | — | Shipped behavior vs vanilla (player-facing; no doc links) |
 | [TODO.md](TODO.md) | — | **Release blockers** — known bugs, vanilla cleanup, Gym gates, intro/home gaps (not Future scope) |

@@ -2245,6 +2245,18 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 | Route 25 | `2_026` | `2_216` | 363 | `r25_rod_guru` (mirror — same tile as R24) |
 | Route 32 PC 1F | `2_163` | `2_233` | 381 | `r32pc_rod_guru` (**local** coords) |
 
+**Guru coordinates:** Outdoor coordinates are world `(x, z)`; Route 32 Pokémon Center uses interior local coordinates.
+
+- Route 44: world **(568, 183)**.
+- Olivine City: world **(273, 248)**.
+- Route 34 (Day-Care): world **(358, 409)**.
+- Route 32 Pokémon Center: local **(4, 15)** (classic Fishing Brother spot).
+- Route 24 / 25 border: world **(1320, 65)**; duplicate on zone_event **025** and **026** at the map seam.
+- Viridian City: world **(1023, 264)**.
+- Vermilion City: world **(1298, 304)**.
+- Fuchsia City: world **(1230, 430)**.
+- Route 12: world **(1429, 319)**.
+
 **Matrix seam rule:** If a guru vanishes when crossing a route/city header boundary, duplicate the **same world `(x, z)`** on **both** adjacent `eventsBank` members and append the guru script to **both** `scriptsBank` members (different msg banks). Documented example: Route 24/25 below.
 
 **Progression:** `FISHING_ROD_GOOD_FAMILIES` (default **5**) and `FISHING_ROD_SUPER_FAMILIES` (default **15**) in `include/config.h` / `armips/include/config.s`. Super Rod ownership is `hasitem(ITEM_SUPER_ROD)` — no save flag.

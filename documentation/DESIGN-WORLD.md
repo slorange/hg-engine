@@ -58,17 +58,17 @@ These include:
 
 **Status: IMPLEMENTED** 
 
-**Route 42** Blackthorn ↔ Mahogany water gaps.
+**Route 42** Ecruteak ↔ Mahogany water skip.
 
-**Route 40 ↔ Cianwood** — fishermen on the Olivine-side Route 40 beach and Cianwood east shore; **$200** paid warp each way; static Lapras companion sprites; Route 40 Surf gate removed.
+**Route 40 (Olivine) ↔ Cianwood** — Route 40 Surf gate removed.
 
-**Route 31 ↔ Route 45 (Dark Cave)** — hikers + static Quagsire companions outside both cave entrances; **$200** paid warp each way.
+**Route 31 ↔ Route 45 (Dark Cave)**
 
-**Route 46 → Route 45 (mountain lift)** — hiker + static Rhydon at the south end of Route 46; **$200** one-way paid warp to north Route 45 near Blackthorn.
+**Route 46 → Route 45 (mountain lift)**
 
-**Blackthorn ↔ Route 44 (Ice Path bypass)** — hikers + static Piloswine companions on Blackthorn outdoors and Route 44 bridge area; **$200** paid warp each way (no Ice Path map edits).
+**Blackthorn ↔ Route 44 (Ice Path bypass)**
 
-**Kanto coastal mesh** — fishermen at Pallet Town south shore, Cinnabar Island beach, Route 20 (Seafoam cave mouth), and Route 19 (south of Fuchsia); **$200** with a **3-destination menu** to any of the other stops (Pallet Town / Cinnabar Island / Seafoam Island / Fuchsia City).
+**Pallet Town, Cinnabar Island, Seafoam Islands, and Fuchsia** with a 3-destination menu to any of the other stops.
 
 ## SS Aqua (Olivine ↔ Vermilion)
 
@@ -154,32 +154,13 @@ Different TMs have different renewable sources.
 
 ## Common TMs
 
-Available from shops — see [World-6](DESIGN-WORLD.md#world-6-shops) (major hubs: Goldenrod, Celadon). **implemented**
+Available from shops — see [Data-5. Department stores](DESIGN-DATA.md#goldenrod--celadon-department-stores).
 
 ## Game Corner TMs
 
-Coin prizes at the department-store Game Corners **implemented**:
+Coin prizes at the department-store Game Corners
 
-| Location | TM pool |
-| -------- | ------- |
-| **Goldenrod Game Corner** | TM43, TM44, TM46, TM64, TM83, TM90 |
-| **Celadon Game Corner** | TM10, TM41, TM49, TM58, TM67, TM82 |
-
-**Held items** (implemented with TMs above):
-
-| Location | Items |
-| -------- | ----- |
-| **Goldenrod Game Corner** | Bright Powder, Quick Claw, Wide Lens, Metronome |
-| **Celadon Game Corner** | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
-
-### Pokémon prizes
-
-Renewable coin prizes at the same clerks.
-
-| Location | Pokémon |
-| -------- | ------- |
-| **Goldenrod Game Corner** | Rotom, Wobbuffet, Smeargle |
-| **Celadon Game Corner** | Porygon, Eevee, Castform |
+See [Data-1. Game Corner prize pools](DESIGN-DATA.md#data-1-game-corner-prize-pools).
 
 ### Coin income (not implemented)
 
@@ -189,34 +170,10 @@ Prize menus are wired; **earning Coins is still vanilla** (**Voltorb Flip** on t
 
 ## Gym TMs
 
-**Implemented**
-
-Each Gym Leader has a **curated TM pool** (table below). Every TM has its own **minimum badge count**.
+Each Gym Leader has a **curated TM pool**. Every TM has its own **minimum badge count**. See [Data-2. Gym Leader TM pools](DESIGN-DATA.md#data-2-gym-leader-tm-pools).
 
 After the player **defeats** that Leader (first clear or **rematch**), they **choose one TM** from that Leader's pool among entries whose badge requirement is **≤ badges earned** (including the badge just awarded). Same choice rules on rematch — renewable TM source ([Battle-3](DESIGN-BATTLES.md#rematches)).
 
-Gym TM picks are intentionally **unlimited** over rematches
-
-### Leader TM pools
-
-| Leader | TM pool |
-| ------ | ------- |
-| **Falkner** | TM40, TM51, TM88 |
-| **Bugsy** | TM62, TM81, TM89 |
-| **Whitney** | TM15, TM27, TM42, TM45, TM68 |
-| **Morty** | TM30, TM56, TM65, TM66, TM79 |
-| **Chuck** | TM01, TM08, TM31, TM52, TM60 |
-| **Jasmine** | TM23, TM47, TM74, TM91 |
-| **Pryce** | TM07, TM13, TM14, TM72 |
-| **Clair** | TM02, TM59 |
-| **Brock** | TM26, TM37, TM39, TM69, TM71, TM80 |
-| **Misty** | TM03, TM18, TM55 |
-| **Lt. Surge** | TM24, TM25, TM34, TM57, TM73 |
-| **Erika** | TM09, TM19, TM22, TM53, TM86 |
-| **Janine** | TM06, TM36, TM84 |
-| **Sabrina** | TM04, TM29, TM48, TM77, TM85 |
-| **Blaine** | TM11, TM35, TM38, TM50, TM61 |
-| **Blue** | TM20, TM32, TM75, TM87, TM92 |
 
 ---
 
@@ -258,14 +215,7 @@ Evolutions that normally require **trade while holding an item** evolve when the
 
 ## Evolution changes from vanilla HGSS
 
-Alongside the item-use rules above, the following families have additional methods or changed evolution timing:
-
-- **Feebas → Milotic:** **Prism Scale** can be used directly.
-- **Swinub → Piloswine:** level **22**, reduced from 33.
-- **Eevee’s added item options:** Leaf Stone → Leafeon; Ice Stone → Glaceon; Dawn or Sun Stone → Espeon; Dusk or Moon Stone → Umbreon; Shiny Stone → Sylveon.
-- **Eevee’s location options:** level up in **Ilex Forest or Viridian Forest** for Leafeon, **Ice Path B3F or Seafoam Islands B4F** for Glaceon, or **Route 10** for Jolteon.
-- **Route 10 (outside Power Plant):** leveling up there evolves Magneton → Magnezone, Nosepass → Probopass, and Eevee → Jolteon. **Thunder Stone** also works anywhere for all three.
-- **Nosepass → Probopass:** **Metal Coat** also works.
+Additional methods and changed evolution timing are listed in [Data-4](DESIGN-DATA.md#data-4-evolution-changes).
 
 ---
 
@@ -292,42 +242,15 @@ Marts follow [Battle-1](DESIGN-BATTLES.md#recovery) (full restore after every ba
 
 ### Badge-gated shelf (most shops)
 
-Poké / Great / Ultra / Net / Repeat / Timer Balls; Repels; Escape Rope; Poké Doll; Sitrus & Lum Berries; **Flash TM**; Cleanse Tag; held battle items through Life Orb — each row gated by **minimum badge count** (0–12).
+See [Data-5 — Badge-gated shelf](DESIGN-DATA.md#badge-gated-shelf-most-shops).
 
 ### Goldenrod & Celadon department stores
 
-| Floor | Stock |
-| ----- | ----- |
-| **2F (upper)** | **Goldenrod:** Poké Balls, Repels, Escape Rope, Doll, Cheri → Persim berries — **Celadon:** same berry aisle as vanilla-style upper 2F |
-| **2F (lower)** | **Goldenrod:** **Linking Cord**, Chilan Berry, Silk Scarf, Grip Claw, Sticky Barb, Shed Shell — **Celadon:** Poké Balls, Repels, Escape Rope, Doll |
-| **TM floor** | **Celadon 3F:** TM12, 21, 28, 76, 78 — **Goldenrod 5F:** TM16, 17, 33, 54, 63 |
-| **Battle items** | **Celadon 5F left / Goldenrod 3F:** Power Bracer–Weight + Macho Brace (replaces X items) |
-| **Vitamins** | Protein–HP Up + **Rare Candy**, **PP Up**, **PP Max** |
-| **Celadon 4F** | **Linking Cord**, Sun & Leaf Stones, Rindo Berry, Miracle Seed, Grip Claw, Sticky Barb, Shed Shell |
-| **Goldenrod herbs** | Pomeg, Kelpsy, Qualot, Hondew, Grepa, Tamato Berries (replaces powders/roots) |
+See [Data-5 — Department stores](DESIGN-DATA.md#goldenrod--celadon-department-stores).
 
 ### Town / route specialty clerks
 
-Themed Evolution items, held items, resist berries:
-
-| Location | Items (summary) |
-| -------- | ----------------- |
-| Azalea | King's Rock, Silver Powder, Tanga Berry |
-| Violet | Razor Fang, Coba Berry |
-| Ecruteak | Fire Stone, Charcoal, Occa Berry, Magmarizer, Flame Orb |
-| Olivine | Secret Medicine, Metal Coat, Babiri Berry |
-| Cianwood pharmacy clerk | Poké Ball, Dawn Stone, Black Belt, Chople Berry |
-| Vermilion / Safari | Thunder Stone, Electirizer, Magnet, Wacan Berry |
-| Cerulean | Water Stone, DeepSea Tooth/Scale, Mystic Water, Passho Berry |
-| Lavender | Dusk Stone, Reaper Cloth, Black Glasses, Spell Tag, Kasib, Colbur Berries |
-| Saffron | Up-Grade, Dubious Disc, Twisted Spoon, Payapa Berry |
-| Fuchsia | Shiny Stone, Poison Barb, Kebia Berry, Toxic Orb, Black Sludge |
-| Pewter | Black Augurite, Hard Stone, Charti Berry |
-| Viridian | Peat Block, Protector, Soft Sand, Shuca Berry |
-| Blackthorn / Battle Frontier | Dragon Scale, Dragon Fang, Haban Berry |
-| Mt. Moon Square | Moon Stone |
-| Mahogany | Poké Ball, Ice Stone, Never-Melt Ice, Yache Berry, Razor Claw |
-| Indigo Plateau | Ultra & Timer Balls, Max Repel, Lum Berry, Leftovers, Shell Bell, Focus Sash, Choice Band / Specs / Scarf, Life Orb |
+See [Data-5 — Specialty clerks](DESIGN-DATA.md#town--route-specialty-clerks).
 
 ---
 
@@ -450,7 +373,5 @@ Does not apply to:
 - Bug Catching Contest timer, Calendar date, Daily rollovers
 
 **Still open:** deliberate time advance — Pokémon Center rest in [Future-6](DESIGN-FUTURE.md#future-6-shared-pokémon-center-hub), portable camping in [Future-9](DESIGN-FUTURE.md#future-9-time-advancement); virtual calendar for [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
-
-**Implementation recipe:** [HACK-NOTES — Accelerated game clock](HACK-NOTES.md#accelerated-game-clock).
 
 ---
