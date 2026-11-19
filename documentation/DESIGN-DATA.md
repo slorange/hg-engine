@@ -95,11 +95,11 @@ Poké / Great / Ultra / Net / Repeat / Timer Balls; Repels; Escape Rope; Poké D
 | Floor | Stock |
 | ----- | ----- |
 | **2F (upper)** | **Goldenrod:** Poké Balls, Repels, Escape Rope, Doll, Cheri → Persim berries — **Celadon:** same berry aisle as vanilla-style upper 2F |
-| **2F (lower)** | **Goldenrod:** **Linking Cord**, Chilan Berry, Silk Scarf, Grip Claw, Sticky Barb, Shed Shell — **Celadon:** Poké Balls, Repels, Escape Rope, Doll |
+| **2F (lower)** | **Goldenrod:** **Linking Cord**, Chilan Berry, Silk Scarf — **Celadon:** Poké Balls, Repels, Escape Rope, Doll |
 | **TM floor** | **Celadon 3F:** TM12, 21, 28, 76, 78 — **Goldenrod 5F:** TM16, 17, 33, 54, 63 |
 | **Battle items** | **Celadon 5F left / Goldenrod 3F:** Power Bracer–Weight + Macho Brace (replaces X items) |
 | **Vitamins** | Protein–HP Up + **Rare Candy**, **PP Up**, **PP Max** |
-| **Celadon 4F** | **Linking Cord**, Sun & Leaf Stones, Rindo Berry, Miracle Seed, Grip Claw, Sticky Barb, Shed Shell |
+| **Celadon 4F** | **Linking Cord**, Sun & Leaf Stones, Rindo Berry, Miracle Seed |
 | **Goldenrod herbs** | Pomeg, Kelpsy, Qualot, Hondew, Grepa, Tamato Berries (replaces powders/roots) |
 
 ## Town / route specialty clerks

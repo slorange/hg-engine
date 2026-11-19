@@ -118,7 +118,7 @@ void BugContest_AssignPrize(BugContest *contest)
         ITEM_NUGGET, ITEM_BIG_PEARL, ITEM_RARE_CANDY, ITEM_PP_UP,
     };
     static const u16 consolation[] = {
-        ITEM_RARE_BONE, ITEM_BIG_MUSHROOM, ITEM_STARDUST,
+        ITEM_GRIP_CLAW, ITEM_STICKY_BARB, ITEM_SHED_SHELL,
     };
     const u16 *pool;
     u8 count;

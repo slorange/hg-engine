@@ -335,7 +335,7 @@ Curated prize lists aligned with the matrix (not the ground/hidden random pool, 
 - **First:** Ability Patch, Gold Bottle Cap, or Ability Capsule.
 - **Second:** Star Piece, Bottle Cap, or PP Max.
 - **Third:** Nugget, Big Pearl, Rare Candy, or PP Up.
-- **Consolation:** Rare Bone, Big Mushroom, or Stardust.
+- **Consolation** — Grip Claw, Sticky Barb, or Shed Shell.
 
 **Pokéathlon:** Exchange or prize menus stock items from the rows/columns where they are marked ✓.
 
