@@ -1,4 +1,5 @@
 #include "config.h"
+#include "constants/ability.h"
 #include "constants/generated/ecology_compat.h"
 #include "constants/species.h"
 #include "encounter.h"
@@ -12,6 +13,11 @@
 #endif
 
 extern u32 space_for_setmondata;
+
+void ApplyWildDistanceLevelCapWithLeadAbility(struct PartyPokemon *pp, u8 ability);
+#ifdef IMPLEMENT_ECOLOGY_GENERATION
+u16 EcologyApplySpeciesWithLeadAbility(u16 vanillaSpecies, u8 method, u8 ability);
+#endif
 
 static u8 WildEncountTypeToEcologyMethod(u32 encounterType, u32 rodType)
 {
@@ -37,18 +43,19 @@ static u8 WildEncountTypeToEcologyMethod(u32 encounterType, u32 rodType)
     }
 }
 
-static u16 WildEncounterApplySpecies(struct PartyPokemon *pp, u16 vanillaTableSpecies, u8 ecologyMethod, BOOL useExplicitMethod)
+static u16 WildEncounterApplySpecies(struct PartyPokemon *pp, u16 vanillaTableSpecies, u8 ecologyMethod, BOOL useExplicitMethod, u8 ability)
 {
     u16 species;
 
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
     if (useExplicitMethod) {
-        species = EcologyApplySpeciesOverrideForMethod(vanillaTableSpecies, ecologyMethod);
+        species = EcologyApplySpeciesWithLeadAbility(vanillaTableSpecies, ecologyMethod, ability);
     } else {
         species = EcologyApplyGrassSpeciesOverride(vanillaTableSpecies);
     }
 #else
     (void)ecologyMethod;
+    (void)ability;
     (void)useExplicitMethod;
     species = vanillaTableSpecies;
 #endif
@@ -85,15 +92,58 @@ static void WildEncounterApplyPlayerOtId(struct PartyPokemon *pp)
     SetMonData(pp, MON_DATA_OTID, &otId);
 }
 
-static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpecies, u8 ecologyMethod, BOOL useExplicitMethod)
+static void ApplyLeadPersonality(struct PartyPokemon *pp, struct PartyPokemon *lead, u8 ability, u32 ivs)
+{
+    u16 species = GetMonData(pp, MON_DATA_SPECIES, NULL);
+    s32 nature = -1;
+    s32 gender = -1;
+    u32 personality;
+    u32 form;
+    u32 heldItem;
+
+    if (ability == ABILITY_SYNCHRONIZE && gf_rand() % 2 == 0) {
+        nature = GetMonNature(lead);
+    }
+    if (ability == ABILITY_CUTE_CHARM) {
+        u32 ratio = PokePersonalParaGet(species, PERSONAL_GENDER_RATIO);
+        u32 leadGender = GetMonData(lead, MON_DATA_GENDER, NULL);
+
+        if (ratio > 0 && ratio < 254 && leadGender <= POKEMON_GENDER_FEMALE && gf_rand() % 3 != 0) {
+            gender = leadGender == POKEMON_GENDER_FEMALE ? POKEMON_GENDER_MALE : POKEMON_GENDER_FEMALE;
+        }
+    }
+    if (nature < 0 && gender < 0) {
+        return;
+    }
+
+    // Build with the new PID so the encrypted data and calculated stats agree.
+    do {
+        personality = gf_rand() | (gf_rand() << 16);
+    } while ((nature >= 0 && GetNatureFromPersonality(personality) != nature)
+          || (gender >= 0 && PokeSexGetMonsNo(species, personality) != gender));
+
+    form = GetMonData(pp, MON_DATA_FORM, NULL);
+    heldItem = GetMonData(pp, MON_DATA_HELD_ITEM, NULL);
+    PokeParaSet(pp, species, GetMonData(pp, MON_DATA_LEVEL, NULL), ivs, TRUE, personality, 0, 0);
+    SetMonData(pp, MON_DATA_FORM, &form);
+    SetMonData(pp, MON_DATA_HELD_ITEM, &heldItem);
+    UpdatePassiveForms(pp);
+    RecalcPartyPokemonStats(pp);
+}
+
+static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpecies, u8 ecologyMethod,
+                                  BOOL useExplicitMethod, struct PartyPokemon *lead, u8 ability, u32 ivs)
 {
     if (pp == NULL) {
         return vanillaTableSpecies;
     }
 
-    WildEncounterApplySpecies(pp, vanillaTableSpecies, ecologyMethod, useExplicitMethod);
+    WildEncounterApplySpecies(pp, vanillaTableSpecies, ecologyMethod, useExplicitMethod, ability);
     UpdatePassiveForms(pp);
-    ApplyWildDistanceLevelCapToMon(pp);
+    ApplyWildDistanceLevelCapWithLeadAbility(pp, ability);
+    if (lead != NULL) {
+        ApplyLeadPersonality(pp, lead, ability, ivs);
+    }
     WildEncounterApplyPlayerOtId(pp);
     ResetPartyPokemonAbility(pp);
     ClearMonMoves(pp);
@@ -104,16 +154,18 @@ static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpeci
 
 u16 WildEncounterFinalize(struct PartyPokemon *pp, u16 vanillaTableSpecies)
 {
-    return WildEncounterFinishMon(pp, vanillaTableSpecies, ECOLOGY_METHOD_LAND, FALSE);
+    return WildEncounterFinishMon(pp, vanillaTableSpecies, ECOLOGY_METHOD_LAND, FALSE, NULL, 0, 0);
 }
 
-u16 WildEncounterFinalizeForEncount(
-    struct PartyPokemon *pp,
-    u16 vanillaTableSpecies,
-    u32 encounterType,
-    u32 rodType)
+u16 WildEncounterFinalizeWithLead(struct PartyPokemon *pp, u16 vanillaTableSpecies, u32 encounterType,
+                                  u32 rodType, struct PartyPokemon *lead, u8 ability, u32 ivs)
 {
     u8 method = WildEncountTypeToEcologyMethod(encounterType, rodType);
 
-    return WildEncounterFinishMon(pp, vanillaTableSpecies, method, TRUE);
+    return WildEncounterFinishMon(pp, vanillaTableSpecies, method, TRUE, lead, ability, ivs);
+}
+
+u16 WildEncounterFinalizeForEncount(struct PartyPokemon *pp, u16 vanillaTableSpecies, u32 encounterType, u32 rodType)
+{
+    return WildEncounterFinalizeWithLead(pp, vanillaTableSpecies, encounterType, rodType, NULL, 0, 0);
 }

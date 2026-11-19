@@ -2,6 +2,8 @@
 
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
 
+#include "constants/ability.h"
+#include "constants/battle_constants.h"
 #include "constants/encounter_tables.h"
 #include "constants/generated/ecology_compat.h"
 #include "ecology/ecology_compat_access.h"
@@ -55,7 +57,7 @@ static u8 EcologyWildParamToTimeBit(TimeOfDayWildParam param)
     }
 }
 
-u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
+static u16 RollEcologySpecies(u8 encBank, u8 method, u8 ability)
 {
     s8 groupId;
     u8 capacity;
@@ -64,6 +66,9 @@ u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
     u8 periodBit;
     u8 eligible[ECOLOGY_GEN_MAX_SLOTS_PER_BUCKET];
     u8 eligibleCount;
+    u8 favored[ECOLOGY_GEN_MAX_SLOTS_PER_BUCKET];
+    u8 favoredCount = 0;
+    u8 favoredType = TYPE_NORMAL;
     u8 pickIndex;
     u16 familyId;
     u16 species;
@@ -113,6 +118,12 @@ u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
     periodBit = EcologyWildParamToTimeBit(GF_RTC_GetTimeOfDayWildParam());
     eligibleCount = 0;
 
+    if (ability == ABILITY_STATIC || ability == ABILITY_MAGNET_PULL) {
+        if (gf_rand() % 2 == 0) {
+            favoredType = ability == ABILITY_STATIC ? TYPE_ELECTRIC : TYPE_STEEL;
+        }
+    }
+
     for (i = 0; i < capacity; i++) {
         u16 slotIndex = (u16)(base + i);
         u16 slotFamily;
@@ -136,6 +147,13 @@ u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
         }
 
         eligible[eligibleCount++] = i;
+        if (favoredType != TYPE_NORMAL) {
+            species = ECO_FAMILY_INFO(slotFamily).baseSpecies;
+            if (species != 0 && (PokePersonalParaGet(species, PERSONAL_TYPE_1) == favoredType
+                              || PokePersonalParaGet(species, PERSONAL_TYPE_2) == favoredType)) {
+                favored[favoredCount++] = i;
+            }
+        }
     }
 
     if (eligibleCount == 0) {
@@ -143,8 +161,9 @@ u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
     }
 
     // Uniform selection among slots eligible at the current time, including the park.
-    pickIndex = gf_rand() % eligibleCount;
-    familyId = eco->familyIds[(u16)(base + eligible[pickIndex])];
+    pickIndex = favoredCount != 0 ? favored[gf_rand() % favoredCount]
+                                  : eligible[gf_rand() % eligibleCount];
+    familyId = eco->familyIds[(u16)(base + pickIndex)];
     species = ECO_FAMILY_INFO(familyId).baseSpecies;
     if (species == 0) {
         return 0;
@@ -153,7 +172,12 @@ u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
     return species;
 }
 
-u16 EcologyApplySpeciesOverrideForMethod(u16 vanillaSpecies, u8 ecologyMethod)
+u16 EcologyRollSpeciesForEncounterBank(u8 encBank, u8 method)
+{
+    return RollEcologySpecies(encBank, method, 0);
+}
+
+u16 EcologyApplySpeciesWithLeadAbility(u16 vanillaSpecies, u8 ecologyMethod, u8 ability)
 {
     u16 ecologySpecies;
     u16 mapId;
@@ -165,12 +189,17 @@ u16 EcologyApplySpeciesOverrideForMethod(u16 vanillaSpecies, u8 ecologyMethod)
     if (!EncounterResolveMapId(&mapId)) {
         return vanillaSpecies;
     }
-    ecologySpecies = EcologyRollSpeciesForEncounterBank(MapHeader_GetWildEncounterBank(mapId), ecologyMethod);
+    ecologySpecies = RollEcologySpecies(MapHeader_GetWildEncounterBank(mapId), ecologyMethod, ability);
     if (ecologySpecies != 0) {
         return ecologySpecies;
     }
 
     return vanillaSpecies;
+}
+
+u16 EcologyApplySpeciesOverrideForMethod(u16 vanillaSpecies, u8 ecologyMethod)
+{
+    return EcologyApplySpeciesWithLeadAbility(vanillaSpecies, ecologyMethod, 0);
 }
 
 u16 EcologyApplyGrassSpeciesOverride(u16 vanillaSpecies)

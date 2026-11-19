@@ -1,4 +1,5 @@
 #include "config.h"
+#include "constants/ability.h"
 #include "constants/encounter_tables.h"
 #include "constants/generated/wild_level_caps.h"
 #include "debug.h"
@@ -188,7 +189,7 @@ static u8 RollWildLevelUniform(u8 lo, u8 hi)
     return lo + (u8)(gf_rand() % span);
 }
 
-static u8 RollWildLevelAdultBand(u8 cap)
+static u8 RollWildLevelAdultBand(u8 cap, BOOL favorHighLevel)
 {
     u8 adultLo;
 
@@ -203,10 +204,10 @@ static u8 RollWildLevelAdultBand(u8 cap)
         adultLo = cap;
     }
 
-    return RollWildLevelUniform(adultLo, cap);
+    return favorHighLevel ? cap : RollWildLevelUniform(adultLo, cap);
 }
 
-u8 RollWildLevel(u8 cap, BOOL *babyRoll)
+static u8 RollWildLevelWithBias(u8 cap, BOOL *babyRoll, BOOL favorHighLevel)
 {
     *babyRoll = FALSE;
     if (cap <= WILD_ENCOUNTER_LEVEL_MIN) {
@@ -214,15 +215,21 @@ u8 RollWildLevel(u8 cap, BOOL *babyRoll)
     }
 
     if (cap < WILD_LEVEL_BABY_SPLIT_MIN_CAP) {
-        return RollWildLevelAdultBand(cap);
+        return RollWildLevelAdultBand(cap, favorHighLevel);
     }
 
     if ((gf_rand() % 100) < WILD_LEVEL_BABY_ROLL_PERCENT) {
         *babyRoll = TRUE;
-        return RollWildLevelUniform(WILD_ENCOUNTER_LEVEL_MIN, WILD_LEVEL_BABY_MAX);
+        return favorHighLevel ? WILD_LEVEL_BABY_MAX
+                              : RollWildLevelUniform(WILD_ENCOUNTER_LEVEL_MIN, WILD_LEVEL_BABY_MAX);
     }
 
-    return RollWildLevelAdultBand(cap);
+    return RollWildLevelAdultBand(cap, favorHighLevel);
+}
+
+u8 RollWildLevel(u8 cap, BOOL *babyRoll)
+{
+    return RollWildLevelWithBias(cap, babyRoll, FALSE);
 }
 
 #ifdef DEBUG_WILD_LEVEL_CAP_LEVELS
@@ -249,7 +256,7 @@ static u8 DiagnosticWildLevel(u8 failReason, u8 cap)
 }
 #endif
 
-static u8 ChooseWildLevel(u8 failReason, u8 cap, u8 encBank, u8 usedCachedCap, u16 mapId, BOOL *babyRoll)
+static u8 ChooseWildLevel(u8 failReason, u8 cap, u8 encBank, u8 usedCachedCap, u16 mapId, BOOL *babyRoll, BOOL favorHighLevel)
 {
     *babyRoll = FALSE;
 #ifdef DEBUG_WILD_LEVEL_CAP_LEVELS
@@ -266,7 +273,7 @@ static u8 ChooseWildLevel(u8 failReason, u8 cap, u8 encBank, u8 usedCachedCap, u
     if (failReason != WLC_FAIL_NONE) {
         return WILD_LEVEL_CAP_MIN;
     }
-    return RollWildLevel(cap, babyRoll);
+    return RollWildLevelWithBias(cap, babyRoll, favorHighLevel);
 #endif
 }
 
@@ -352,7 +359,7 @@ static u8 GetWildLevelCapForCurrentMap(u8 *usedCachedCap, u8 *failReason, u8 *en
 }
 
 // Called from modify_species_encounter_data (normal wilds only — not _rare / roamers).
-void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
+void ApplyWildDistanceLevelCapWithLeadAbility(struct PartyPokemon *pp, u8 ability)
 {
     u8 cap;
     u8 level;
@@ -386,7 +393,10 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
         }
     }
 #else
-    level = ChooseWildLevel(failReason, cap, encBank, usedCachedCap, sWildLevelCapDebug.mapId, &babyRoll);
+    BOOL favorHighLevel = (ability == ABILITY_PRESSURE || ability == ABILITY_HUSTLE
+                          || ability == ABILITY_VITAL_SPIRIT) && gf_rand() % 2 == 0;
+    level = ChooseWildLevel(failReason, cap, encBank, usedCachedCap,
+                            sWildLevelCapDebug.mapId, &babyRoll, favorHighLevel);
 #endif
     // Stage adjust needs field-overlay rodata; skip safely if build-time patch missing.
     ApplyWildEncounterLevelAndStage(pp, level, babyRoll);
@@ -412,4 +422,9 @@ void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
 #ifdef IMPLEMENT_WILD_BERRY_HOLD
     TryApplyWildEncounterHeldItem(pp);
 #endif
+}
+
+void ApplyWildDistanceLevelCapToMon(struct PartyPokemon *pp)
+{
+    ApplyWildDistanceLevelCapWithLeadAbility(pp, 0);
 }

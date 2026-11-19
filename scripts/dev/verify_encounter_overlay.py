@@ -7,7 +7,7 @@ import sys
 import ndspy.rom
 import ndspy.narc
 from verify_abra_travel_arm import Machine, ROOT, REGS, FS, PROFILE
-from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_PC, UC_ARM_REG_LR, UC_ARM_REG_CPSR
+from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_PC, UC_ARM_REG_LR, UC_ARM_REG_CPSR, UC_ARM_REG_SP
 
 sys.path.insert(0, str(ROOT / 'scripts/build'))
 from gen_overlay_imports import symbols
@@ -35,13 +35,20 @@ class EncounterMachine(Machine):
         super().__init__()
         self.rom, self.loaded, self.fail_load = rom, False, False
         self.events, self.mons, self.added, self.random = [], {}, [], 12345
-        self.fail_mon = self.repel = False
+        self.fail_mon = False
         self.checked = set()
+        self.repel_checks, self.iv_args, self.species_writes = [], [], []
+        self.favored_species = self.favored_type = 0
+        self.forced_random = []
         self.bank = 23  # National Park, shared normal/contest roster.
         self.uc.mem_write(rom.arm9RamAddress, bytes(rom.arm9))
         for ident in (129,131):
             entry = struct.unpack_from('<8I',rom.arm9OverlayTable,ident*32)
             self.uc.mem_write(entry[1], bytes(rom.files[entry[6]]))
+        field = rom.loadArm9Overlays({2})[2]
+        helper = self.symbols['BugContest_DoesRepelSuppress'] & ~1
+        offset = helper - field.ramAddress
+        self.uc.mem_write(helper, bytes(field.data[offset:offset+0x14]))
         self.entry = struct.unpack_from('<8I',rom.arm9OverlayTable,152*32)
         self.payload = bytes(rom.files[self.entry[6]])
         self.worker = symbols(ROOT / 'build/encounter_linked.o')
@@ -56,6 +63,11 @@ class EncounterMachine(Machine):
             bank_offset = struct.unpack_from('<H',blob,off_groups+group*6)[0]
             self.banks.append(blob[off_banks+bank_offset])
         self.base_species = struct.unpack_from('<H',blob,off_family)[0]
+        self.second_species = struct.unpack_from('<H',blob,off_family+8)[0]
+        group = next(g for g in range(groups) if blob[off_slots+g*7] >= 2)
+        bank_offset = struct.unpack_from('<H',blob,off_groups+group*6)[0]
+        self.type_test_bank = blob[off_banks+bank_offset]
+        self.type_test_slot = sum(blob[off_slots:off_slots+group*7]) + 1
         self.uc.mem_write(BLOB,blob)
         assert self.call('EcologyCompatBindBlob',BLOB) == 1
         slots = int(re.search(r'#define ECOLOGY_GEN_TOTAL_SLOTS (\d+)',(ROOT/'include/constants/generated/ecology_compat.h').read_text()).group(1))
@@ -94,7 +106,7 @@ class EncounterMachine(Machine):
             uc.mem_write(SERVICE,bytes([0xDE])*len(self.payload))
         elif at('gf_rand'):
             self.random = (self.random*1103515245+12345)&0xFFFFFFFF
-            result = self.random>>16
+            result = self.forced_random.pop(0) if self.forced_random else self.random >> 16
         elif at('SaveBlock2_get'):
             result = 0x03030000
         elif at('EcologySaveGetMutable'):
@@ -117,8 +129,10 @@ class EncounterMachine(Machine):
             if not self.fail_mon:
                 result=MON;self.mons[MON]={};uc.mem_write(MON,bytes(1024))
         elif at('PokeParaSet'):
+            self.iv_args.append(r3)
+            personality = self.r32(uc.reg_read(UC_ARM_REG_SP) + 4)
             self.mons[r0]={F['MON_DATA_SPECIES']:r1,F['MON_DATA_LEVEL']:r2,
-                           F['MON_DATA_FORM']:0,F['MON_DATA_PERSONALITY']:123456,F['MON_DATA_STATUS']:0}
+                           F['MON_DATA_FORM']:0,F['MON_DATA_PERSONALITY']:personality,F['MON_DATA_STATUS']:0}
         elif at('GetMonData'):
             result=self.mons.setdefault(r0,{}).get(r1,0)
         elif at('SetMonData'):
@@ -126,6 +140,8 @@ class EncounterMachine(Machine):
                     F['MON_DATA_LEVEL']:1,F['MON_DATA_GENDER']:1}
             value=int.from_bytes(bytes(uc.mem_read(r2,widths.get(r1,4))),'little') if r2 else 0
             self.mons.setdefault(r0,{})[r1]=value
+            if r1 == F['MON_DATA_SPECIES']:
+                self.species_writes.append(value)
         elif at('GrabSexFromSpeciesAndForm'):
             result=0
         elif at('PokeLevelExpGet'):
@@ -135,7 +151,17 @@ class EncounterMachine(Machine):
         elif at('InitBoxMonMoveset'):
             self.events.append('moves')
         elif at('BugContest_DoesRepelSuppress'):
-            result=self.repel
+            self.repel_checks.append((r0, r1))
+            return  # Execute the packed overlay 2 helper.
+        elif at('GetMonNature'):
+            result = 7
+        elif at('GetNatureFromPersonality'):
+            result = r0 % 25
+        elif at('PokePersonalParaGet'):
+            result = 127 if self.favored_type == 0 else (
+                self.favored_type if r0 == self.favored_species else 0)
+        elif at('PokeSexGetMonsNo'):
+            result = int((r1 & 255) < 127)
         elif at('PokeParty_Add'):
             self.added.append((r0,r1));result=1
         elif at('sys_FreeMemoryEz') and r0==MON:
@@ -191,23 +217,89 @@ def main():
         assert 'moves' in m.events and not m.loaded
     # Both seven-argument entry points must preserve battler/setup stack args.
     lead=0x030E0000
+    enc_state = lead + 256
     m.uc.mem_write(lead,bytes([0xA5])*256)
     for fn in ('SetEncountData_Ecology','BugContest_GenerateEcologyEncounter'):
         m.events.clear();m.added.clear();m.bank=m.banks[0]
         if fn=='SetEncountData_Ecology':
             args=(lead,0,0,0,0,3,SETUP)
         else:
-            args=(FS,lead,0,0,0,3,SETUP)
+            args=(FS,lead,0,enc_state,0,3,SETUP)
         assert m.call(fn,*args)==1 and m.added==[(PARTY,MON)]
         assert m.events.count('load')==m.events.count('unload')==1 and not m.loaded
         assert bytes(m.uc.mem_read(lead,256))==bytes([0xA5])*256
-    m.repel=True;m.added.clear()
-    assert m.call('BugContest_GenerateEcologyEncounter',FS,lead,0,0,0,3,SETUP)==0
+    args = (lead, 0, enc_state, 0, 0, 3, SETUP)
+    m.bank = m.banks[0]
+    m.added.clear()
+    m.w32(enc_state + 4, 1)
+    m.w32(enc_state + 12, 100)
+    m.forced_random = [0] * 50
+    assert m.call('SetEncountData_Ecology', *args) == 0
+    assert m.repel_checks[-1] == (m.mons[MON][F['MON_DATA_LEVEL']], enc_state)
+    assert m.iv_args[-1] == 32 and not m.added and not m.loaded
+    assert m.events[-2:] == ['free mon', 'unload']
+
+    m.w32(enc_state + 12, m.mons[MON][F['MON_DATA_LEVEL']])
+    m.forced_random = [0] * 50
+    assert m.call('SetEncountData_Ecology', *args) == 1 and m.added == [(PARTY, MON)]
+    m.added.clear()
+    m.w32(enc_state + 4, 0)
+    m.mons[lead] = {F['MON_DATA_ABILITY']: 22, F['MON_DATA_LEVEL']: 100}  # Intimidate
+    m.forced_random = [0] * 50
+    assert m.call('SetEncountData_Ecology', *args) == 0 and not m.added
+    m.w32(enc_state + 8, 1)  # Sweet Scent skips ability suppression.
+    assert m.call('SetEncountData_Ecology', *args) == 1 and m.added == [(PARTY, MON)]
+    m.w32(enc_state + 8, 0)
+
+    m.mons[lead][F['MON_DATA_ABILITY']] = 46  # Pressure
+    m.forced_random = [0] * 50
+    assert m.call('SetEncountData_Ecology', *args) == 1
+    level = m.mons[MON][F['MON_DATA_LEVEL']]
+    m.mons[lead][F['MON_DATA_ABILITY']] = 0
+    m.forced_random = [0] * 50
+    assert m.call('SetEncountData_Ecology', *args) == 1
+    assert level > m.mons[MON][F['MON_DATA_LEVEL']]
+    m.forced_random.clear()
+
+    for ability in (28, 56):  # Synchronize and Cute Charm
+        m.mons[lead][F['MON_DATA_ABILITY']] = ability
+        for _ in range(30):
+            previous = len(m.iv_args)
+            assert m.call('SetEncountData_Ecology', *args) == 1
+            if len(m.iv_args) == previous + 2:
+                personality = m.mons[MON][F['MON_DATA_PERSONALITY']]
+                assert (personality % 25 == 7 if ability == 28 else (personality & 255) < 127)
+                break
+        else:
+            raise AssertionError(f'lead personality effect did not trigger for ability {ability}')
+
+    m.bank = m.type_test_bank
+    m.uc.mem_write(ECO + 16 + m.type_test_slot, b'\x01')
+    m.favored_species = m.second_species
+    for ability, favored_type in ((9, 13), (42, 8)):  # Static and Magnet Pull
+        m.mons[lead][F['MON_DATA_ABILITY']] = ability
+        m.favored_type = favored_type
+        m.forced_random = [0] * 50
+        m.species_writes.clear()
+        assert m.call('SetEncountData_Ecology', *args) == 1
+        assert m.species_writes[0] == m.second_species
+
+        m.favored_species = 0
+        m.forced_random = [0] * 50
+        m.species_writes.clear()
+        assert m.call('SetEncountData_Ecology', *args) == 1
+        assert m.species_writes[0] == m.base_species
+        m.favored_species = m.second_species
+
+    m.w32(enc_state + 4, 1)
+    m.w32(enc_state + 12, 100)
+    m.added.clear()
+    assert m.call('BugContest_GenerateEcologyEncounter',FS,lead,0,enc_state,0,3,SETUP)==0
     assert not m.added and not m.loaded
-    m.repel=False;m.fail_mon=True
+    m.fail_mon=True
     assert m.call('SetEncountData_Ecology',lead,0,0,0,0,3,SETUP)==0 and not m.loaded
     assert {'GetMonData','SetMonData','EcologyGenBuildSlotLayout','EcologySaveIsValid','UpdatePassiveForms'}<=m.checked
-    print(f'OK: packed overlay 152 ({len(m.payload)} bytes); typed imports; real level rolls and finalization for land/surf/three rods/rock smash/headbutt; seven-argument generation ABI, lead preservation, contest Repel and allocation failure, ownership and unload-before-return')
+    print(f'OK: packed overlay 152 ({len(m.payload)} bytes); typed imports; real level rolls and finalization for land/surf/three rods/rock smash/headbutt; seven-argument generation ABI, lead preservation, regular and contest Repel, random IV creation, lead suppression, personality effects, level bias and type bias, allocation failure, ownership and unload-before-return')
 
 
 if __name__=='__main__':

@@ -304,7 +304,7 @@ The matrix below is the target for **where** each item category may appear. **Be
 <col style="width:11%">
 </colgroup>
 <thead>
-<tr><th>Item category</th><th><a href="#world-6-shops">Shops</a><br><em>Implemented</em></th><th>Ground / Hidden</th><th>Bug Contest</th><th>Pokéathlon</th><th>Battle Frontier</th><th>Pokédex rewards</th><th><a href="#world-4-tms">Game Corner</a><br><em>Implemented</em></th></tr>
+<tr><th>Item category</th><th><a href="#world-6-shops">Shops</a></th><th>Ground / Hidden</th><th>Bug Contest</th><th>Pokéathlon</th><th>Battle Frontier</th><th>Pokédex rewards</th><th><a href="#world-4-tms">Game Corner</a></th></tr>
 </thead>
 <tbody>
 <tr><td><strong>Treasures</strong> (sellables)</td><td>—</td><td>✓</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
@@ -322,6 +322,10 @@ The matrix below is the target for **where** each item category may appear. **Be
 <tr><td><strong>Apricorns</strong></td><td>—</td><td>—</td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
 </tbody>
 </table>
+
+Shops, Bug Catching Contest, and Game Corner are Implemented. Ground/Hidden items, Pokéathlon, Battle Frontier, and Pokédex Rewards are not.
+
+Additional consideration is needed for Pickup ability.
 
 ## Ground and hidden items
 
