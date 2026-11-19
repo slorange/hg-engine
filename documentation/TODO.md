@@ -32,6 +32,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | What to test |
 | ---- | ------ | ------------ |
 | **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
+| **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#ground-and-hidden-items) | Playtest a visible ball and hidden spot, then revisit after collecting. Check that a full Bag or Apricorn Box leaves the spot available and that a retry gives the same bundle. Verify Apricorn Box counts and pickup text, and spot-check the randomized Ice Path pickup and fixed Mt. Moon Moon Stone. |
 
 ---
 
@@ -51,7 +52,6 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |
 | **Dark Cave & Rock Tunnel (Flash)** | [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) | Entrance message until Flash (1 badge). |
-| **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels) | Replace static per-spot item lists with random generation from the curated rare-item list |
 
 ---
 

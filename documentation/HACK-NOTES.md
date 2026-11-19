@@ -26,6 +26,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Topic | Section |
 | ----- | ------- |
 | **Agents: pack `test.nds`** | [Building `test.nds` (agents)](#building-testnds-agents) |
+| Ground and hidden items | [Randomized field pickups](#randomized-field-pickups) |
 | Mom dialogue discovery | [Why the Mom line was hard to find](#why-the-mom-line-was-hard-to-find) |
 | Text / msgenc | [How text editing works](#how-text-editing-works) |
 | Important msg banks | [Known `data/text` banks](#known-datatext-banks-tracked--important) |
@@ -1785,6 +1786,8 @@ Expansion implementation: `src/linker.ld`, `src/battle/linker.ld`, `src/field/li
 
 **Next time 129 approaches capacity:** consider trimming unused functionality from battle overlay **130**, then extending 129 downward again into the recovered contiguous space. This successfully expanded 129 by **8 KiB** without repeatedly moving individual services into other overlays. Prefer evaluating this layout option before another round of service relocation. Battle currently has only **712 bytes** of growth margin, so further reclamation requires reducing its actual compiled size first; preserve deliberate battle headroom and check field 131 against the same new boundary. Audit all overlay/BSS ranges and other memory users again, update linkers, trainer-AI prefix origin, patchers and verification constants, regenerate all imports/hooks, rebuild the ROM and repeat the automated and in-game checks. Do not merely increase 129's length over live code.
 
+**Pickup reward tables:** The last built `src/field_pickups.c` object contains **592 bytes** of read-only reward data in resident overlay **129**. Consider moving the tables to field overlay **131** if more resident space is needed. Verify that 131 is loaded whenever the pickup command reads the tables, then measure the net saving after relinking.
+
 **Battle cleanup candidates:** Wandering Heart does not intend to use Mega Evolution, Dynamax, Z-Moves or Terastallization. Audit these systems and associated UI/support code for removal before the next repartition; the full savings have not been measured. An isolated compile probe disabling Mega Evolution and Primal Reversion reduced `src/battle/mega.c` from **1,296 to 224 bytes**, a **1,072-byte** object-level saving before linker alignment and wider cleanup. Those options remain enabled in production; the probe did not remove any feature. In contrast, removing Mega-specific cry handling from resident `src/pokemon.c` saved only **20 bytes**, and disabling the two options alone saved nothing there. General alternate-form mapping/reversion supports ordinary forms and must not be removed as if it were Mega-only. Reducing 130 creates potential resident capacity only after the memory boundary is explicitly moved again.
 
 Overlay gaps are not proof of free RAM. The broad **0x02280000–0x023C0000** gap is absent from the overlay table, but dynamic heap allocations and other memory users are not shown there; the current heap-3 size at ARM9 **0x020F62BC** is **0x110000 bytes**. Its precise runtime bounds have not been traced. Above 129, **0x023E0000** is also the SDK's initial ARM9 main-arena upper bound; absence of overlays between there and **0x02400000** does not establish reclaimable space. Heap/system/ARM7 reservations need a separate audit before using either apparent gap.
@@ -2221,6 +2224,14 @@ Embedded **`struct EcologyWorldSave`** in **`SAVE_MISC_DATA`** (`include/save.h`
 See also [`scripts/README.md`](../scripts/README.md) ecology bullets.
 
 ---
+
+## Randomized field pickups
+
+See [World-8 § Ground and hidden items](DESIGN-WORLD.md#ground-and-hidden-items) for the pool and bundle rules. Edit weights and item tables in [`src/field_pickups.c`](../src/field_pickups.c). The picker derives a stable reward from the 32-bit trainer ID and existing collection flag. Spawns that share a flag also share a reward.
+
+[`patch_field_pickups.py`](../scripts/build/patch_field_pickups.py) runs at the end of the script NARC build. It redirects the capacity and grant commands in members **141** (ground balls), **145** (hidden items), and **938** (Lake of Rage's three local pickups) to new script command **8**. Original item initializers, flag writes, and success and failure branches stay in place. The capacity check selects the reward and the grant uses the same item and count. Apricorn rewards write to the Apricorn Box's color count with a 99-per-color limit.
+
+Mt. Moon's recurring Moon Stone stays in the original script in member **010**. [`count_field_items.py`](../scripts/dev/count_field_items.py) inventories original item definitions and coordinates, which serve as the baseline for locating pickup spots in a randomized build.
 
 ## World placement (DSPRE)
 

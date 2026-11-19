@@ -65,7 +65,6 @@ u16 ApricornCraft_Exchange(BAG_DATA *bag, u8 *box, u32 *money, BOOL commit,
 
 #ifndef APRICORN_CRAFT_HOST_TEST
 #include "save.h"
-extern u8 *LONG_CALL ApricornCraft_GetBox(void *saveData);
 
 u16 ApricornCraft_FieldRun(void *saveData, BOOL commit, u16 *total, u16 *feeHundreds)
 {

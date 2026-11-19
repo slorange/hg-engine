@@ -4,6 +4,7 @@
 #include "../include/game_clock.h"
 #include "../include/constants/file.h"
 #include "../include/ecology/ecology_script.h"
+#include "../include/field_pickups.h"
 #include "../include/fishing_rod.h"
 #include "../include/repel.h"
 #include "../include/roamer.h"
@@ -19,6 +20,7 @@
 #define SCRIPT_NEW_CMD_APRICORN_CRAFT         5
 #define SCRIPT_NEW_CMD_ABRA_TRAVEL            6
 #define SCRIPT_NEW_CMD_CENTER_REST            7
+#define SCRIPT_NEW_CMD_FIELD_PICKUP           8
 #define SCRIPT_NEW_CMD_MAX 256
 
 BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
@@ -27,6 +29,9 @@ BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
     u16 UNUSED arg0 = ScriptReadHalfword(ctx);
 
     switch (sw) {
+    case SCRIPT_NEW_CMD_FIELD_PICKUP:
+        FieldPickup_Run(ctx, arg0);
+        break;
     case SCRIPT_NEW_CMD_CENTER_REST:
 #ifdef IMPLEMENT_ACCELERATED_GAME_CLOCK
         SetScriptVar(0x800C, GameClock_RestUntilHour(GetScriptVar(arg0)));

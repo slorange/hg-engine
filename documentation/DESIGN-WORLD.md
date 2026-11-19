@@ -290,7 +290,7 @@ Mom intro grants **Berry Pots** and **5× each** basic berry **Cheri through Per
 
 **Status: PARTIALLY IMPLEMENTED** — not every row or channel in this section is required for **initial release**; ship channels independently as scope allows.
 
-The matrix below is the target for **where** each item category may appear. **Berries** follow [World-7](#world-7-berry-economy). **Apricorn Balls** and tree harvest are [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance); this table covers **Apricorns** as items from minigames and milestones.
+The matrix below is the target for **where** each item category may appear. **Berries** follow [World-7](#world-7-berry-economy). **Apricorn Ball** rebalancing and tree harvest are [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance).
 
 <table>
 <colgroup>
@@ -317,19 +317,24 @@ The matrix below is the target for **where** each item category may appear. **Be
 <tr><td><strong>Bottle Caps</strong></td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
 <tr><td><strong>Mints</strong></td><td>—</td><td>✓</td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
 <tr><td><strong>Ability Capsules / Patches</strong></td><td>—</td><td>✓</td><td>✓</td><td>—</td><td>✓</td><td>✓</td><td>—</td></tr>
+<tr><td><strong>Shop and Apricorn Balls</strong></td><td>Shop balls</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
 <tr><td><strong>Master Balls</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓</td><td>✓</td><td>—</td></tr>
 <tr><td><strong>Pokémon</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✓</td></tr>
-<tr><td><strong>Apricorns</strong></td><td>—</td><td>—</td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+<tr><td><strong>Apricorns</strong></td><td>—</td><td>✓</td><td>—</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
 </tbody>
 </table>
 
-Shops, Bug Catching Contest, and Game Corner are Implemented. Ground/Hidden items, Pokéathlon, Battle Frontier, and Pokédex Rewards are not.
+Shops, Bug Catching Contest, Game Corner, and randomized ground and hidden items are implemented. Pokéathlon, Battle Frontier, and Pokédex rewards are planned.
 
 Additional consideration is needed for Pickup ability.
 
 ## Ground and hidden items
 
-Replace vanilla static per-spot ground and hidden items with rolls from the curated **rare-item list** above.
+Ground and hidden pickups roll a category, then a reward within that category. The category weights are **20% Treasures**, **15% Evolution items**, **10% Held items**, **10% TMs**, **10% Balls**, **15% Apricorns**, and **20% Pokémon upgrades**. Pokémon upgrades include Rare Candy, PP Up and PP Max, vitamins, Bottle Caps, Mints, Ability Capsule, and Ability Patch. Treasures are the vanilla ones, plus Heart Scale. Berries and field utility items are disabled. If enabled, the Berry pool uses the 45 berries mentioned in World-7.
+
+Ultra Balls come in bundles of **3–5** and specialty Balls in bundles of **2–3**. Apricorns go directly into the Apricorn Box in bundles of **3–5** of one color. Each spot's reward is stable within a save and the spot is collected only after the full reward fits.
+
+Evolution items are Fire, Thunder, Water, Leaf, Ice, and Dusk Stones, plus Metal Coat. The held-item pool contains one standard booster for each of the 18 types, including Fairy Feather. TM01 through TM92 are eligible. The Ball pool contains Ultra, Net, Repeat, Timer, Fast, Level, Heavy, Love, Friend, Dream, Quick, and Dusk Balls.
 
 ## Bug-Catching Contest, Pokéathlon, and Battle Frontier
 
@@ -351,7 +356,7 @@ Curated prize lists aligned with the matrix (not the ground/hidden random pool, 
 
 ## Mints, Bottle Caps, Ability Capsules and Patches
 
-**Status: USE CODE ONLY** — Mints, Ability Capsules, and Ability Patches work if the player has one. Nothing in the world gives them out yet. Bottle Caps have icons and text, and no effect. Acquisition stays the matrix above: one-time ground and hidden finds, plus effort-gated renewable postgame sources where that row is marked.
+**Status: PARTIALLY IMPLEMENTED** — Mints, Ability Capsules, and Ability Patches can appear in ground and hidden pickups. Bottle Caps can also appear there and are currently sellable items without a training effect. Effort-gated renewable postgame sources follow the matrix above.
 
 **Mints.** Using one stores that nature and consumes the Mint. The summary screen shows the new nature. Stat calculation still uses the personality nature, so battles do too.
 
