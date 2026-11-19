@@ -9,6 +9,7 @@ sys.path.insert(0, str(ROOT / "scripts/build"))
 from patch_center_relearner import relearner_object
 from patch_center_apricorn import craft_objects
 from patch_center_abra import abra_objects
+from patch_center_researchers import researcher_objects
 from center_service_checks import body as slot_body, table
 from patch_zone_event_r32pc_rod_guru import parse_zone_event
 
@@ -94,7 +95,9 @@ def main():
     fd, starts = table(current)
     shift = fd - 16
     assert current[fd:len(vanilla) + shift] == vanilla[16:], "original code changed"
-    for slot in range(4):
+    # Nurse slot zero is intentionally replaced by the rest service.
+    assert slot_body(current, 0) == (ROOT / "build/center_rest.bin").read_bytes()
+    for slot in range(1, 4):
         assert struct.unpack_from("<i", current, slot * 4)[0] == struct.unpack_from("<i", vanilla, slot * 4)[0] + shift
     assert starts[4] == len(vanilla) + shift
     body = slot_body(current, 4)
@@ -107,9 +110,9 @@ def main():
     assert simulate(body, money=299)[:3] == (299, 0, [])
     original = parse_zone_event((ROOT / "build/a032_vanilla/2_163").read_bytes())
     events = parse_zone_event((ROOT / "build/a032/2_163").read_bytes())
-    assert events[1] == craft_objects([o for o in original[1] if struct.unpack_from("<H", o)[0] not in (4, 5)] + [relearner_object()]) + abra_objects()
+    assert events[1] == researcher_objects(craft_objects([o for o in original[1] if struct.unpack_from("<H", o)[0] not in (4, 5)] + [relearner_object()]) + abra_objects())
     assert (events[0], events[2], events[3]) == (original[0], original[2], original[3])
-    assert len((ROOT / "data/text/381.txt").read_text(encoding="utf-8").splitlines()) == 38
+    assert len((ROOT / "data/text/381.txt").read_text(encoding="utf-8").splitlines()) == 49
     print("OK: Center relearner NPC; message-window lifecycle; original scripts/warps preserved; $300 only on success; exact funds, insufficient funds, refusal, party/move cancellation, Egg and no-moves paths")
 
 

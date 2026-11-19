@@ -372,7 +372,9 @@ Applies to:
 Does not apply to: 
 - Bug Catching Contest timer, Calendar date, Daily rollovers
 
-**Still open:** deliberate time advance — Pokémon Center rest in [World-10](DESIGN-WORLD.md#world-10-shared-pokémon-center-hub), portable camping in [Future-9](DESIGN-FUTURE.md#future-9-time-advancement); virtual calendar for [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
+**Pokémon Center rest:** Nurse Joy can advance the time of day for the current session ([World-10](DESIGN-WORLD.md#world-10-shared-pokémon-center-hub)). Restarting the game restores the real-clock-based schedule; the calendar date stays unchanged.
+
+**Still open:** portable camping in [Future-9](DESIGN-FUTURE.md#future-9-time-advancement); virtual calendar for [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
 
 ---
 
@@ -388,9 +390,9 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 
 | Service | Description | Status |
 | ------- | ----------- | ------ |
-| **Abra fast travel** | Pay $400 to choose a visited destination on the travel map, then Teleport to its usual Fly landing spot. Cancelling is free. | Implemented |
-| **Move Relearner** | Relearn moves for $300 per successfully learned move, without returning to Blackthorn. | Implemented |
-| **Rest / pass time** | Advance the clock to morning, day, or night. | Planned |
+| **Abra fast travel** | Pay $400 to choose a visited destination on the travel map, then Teleport to its usual Fly landing spot. | Implemented |
+| **Move Relearner** | Relearn moves for $300 per successfully learned move. | Implemented |
+| **Rest / pass time** | Nurse Joy offers free rest until morning (4:00 AM), daytime (10:00 AM), or night (8:00 PM), replacing her healing interaction. The time shift lasts for the current session and resets on a fresh game start; the calendar date stays unchanged. | Implemented |
 | **Apricorn crafting** | Instantly exchange all carried Apricorns for their usual specialty balls, one per Apricorn, for $100 per ten Apricorns rounded up. Expanded recipes follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance). | Implemented |
 | **Move Tutor** | Make special move tutoring available from any Center. | Maybe |
 | **Specialty Trader** | Exchange items or currencies for selected rewards. Inventory and pricing TBD. | Maybe |

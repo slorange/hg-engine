@@ -36,3 +36,14 @@ No problem. Come back whenever\nyou’d like to travel!
 Hold on tight!\nAbra, use Teleport!
 We can’t make that trip right now.\nPlease try again.
 Abra: Aabra...
+Would you like to rest awhile?\nWe can prepare a room for you.
+Until morning (4:00 AM)
+Until daytime (10:00 AM)
+Until night (8:00 PM)
+Cancel
+I hope you had a good rest!\nTake care on your travels.
+Come back whenever you\nneed a rest!
+We can’t prepare a room right now.\nPlease try again in a moment.
+Planned content: Rewards for\nUnown collection
+Planned content: Rewards for\nArceus Plate collection
+Planned content: Rewards for\nPokédex completion

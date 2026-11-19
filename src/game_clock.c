@@ -3,6 +3,7 @@
 #ifdef IMPLEMENT_ACCELERATED_GAME_CLOCK
 
 #include "rtc.h"
+#include "game_clock.h"
 #include "types.h"
 
 struct GFRtcWork {
@@ -21,6 +22,10 @@ struct GFRtcWork {
 extern struct GFRtcWork sRTCWork;
 
 #define GAME_CLOCK_RTC_WORK (&sRTCWork)
+
+// Resident RAM, initialized to zero by loading overlay 129 on a fresh boot.
+// Never copied to a normal game save. Emulator save states naturally retain RAM.
+static u32 sGameClockOffsetSeconds;
 
 static const struct RTCTime *GameClock_GetTimeView(const struct GFRtcWork *work)
 {
@@ -69,6 +74,7 @@ static void GameClock_PhaseToTimeOfDay(u32 phaseSec, struct RTCTime *time)
     if (gameSecInDay >= 86400u) {
         gameSecInDay = 86399u;
     }
+    gameSecInDay = (gameSecInDay + sGameClockOffsetSeconds) % 86400u;
     time->hour = gameSecInDay / 3600u;
     time->minute = (gameSecInDay % 3600u) / 60u;
     time->second = gameSecInDay % 60u;
@@ -102,6 +108,19 @@ static s32 GameClock_GetTimeOfDaySecView(struct GFRtcWork *work)
 
     GameClock_FillScaledDateTime(&scratch, &time, work);
     return GameClock_SecFromTime(&time);
+}
+
+BOOL GameClock_RestUntilHour(u32 hour)
+{
+    struct GFRtcWork *work = GAME_CLOCK_RTC_WORK;
+    u32 current, delta;
+    if (hour >= 24 || work->frozenTimeState == 3
+        || work->getDateTimeSuccess == 0 || work->getDateTimeLock != 0)
+        return FALSE;
+    current = GameClock_GetTimeOfDaySecView(work);
+    delta = (hour * 3600u + 86400u - current) % 86400u;
+    sGameClockOffsetSeconds = (sGameClockOffsetSeconds + delta) % 86400u;
+    return TRUE;
 }
 
 void LONG_CALL GF_RTC_CopyTime_hook(struct RTCTime *time)

@@ -28,7 +28,7 @@ Behavior inherited from HG-Engine.
 - **Shortened Professor Oak intro** dialogue.
 - **Starting city** — choose from **18 cities** at the start of the game.
 - **Starter selection** — choose three starters, **one per type**, from Gen 1–4 at the start of the game.
-- After starter selection, the player receives — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Apricorn Box, Berry Pots, 5 of each basic berry, 5 Poké Balls, Pokégear.
+- After starter selection, the player receives — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Bicycle, Apricorn Box, Berry Pots, 5 of each basic berry, 5 Poké Balls, Pokégear.
 - **National Pokédex** — unlocked from the start
 
 ### Travel & world access
@@ -44,6 +44,12 @@ Behavior inherited from HG-Engine.
 - **Route 32** — badge gate south toward Violet removed.
 - **Cut trees removed** — Ilex Forest and Route 35.
 - **Snorlax removed** — Outside Vermilion
+
+### Pokémon Centers
+- **Move relearner** — available in the shared Center for **$300 per move**
+- **Apricorn crafting** — exchange all carried Apricorns for their corresponding Poké Balls immediately. The fee is **$100 per 10 Apricorns, rounded up** across the whole batch.
+- **Abra transportation** — a Psychic and Abra offer travel to visited destinations in **either Johto or Kanto** for **$400**, without needing Fly.
+- **Time Skip** — Nurse Joy gives options to reset until Morning, Day, or Night
 
 ### Wild encounters
 
