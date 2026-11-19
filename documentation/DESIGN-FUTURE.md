@@ -34,7 +34,7 @@ Apricorn harvesting, crafting, and a two-tier ball roster (shop vs Apricorn). Tr
 Apricorns go directly into the Bag and become a renewable crafting resource tied to the accelerated game clock.
 
 - trees refresh approximately once per in-game day;
-- each tree yields approximately **3–5 Apricorns**.
+- each successful harvest yields **3–5 Apricorns**.
 
 With the ~30-minute day target, this is a faster renewable economy than vanilla HGSS. Exact quantities and refresh timing remain subject to balance testing.
 
@@ -97,7 +97,7 @@ Intended to avoid: *"Buy 99 Quick Balls and throw one at everything."*
 
 ## Apricorn balls
 
-New Apricorn colours may be introduced. Colours signal ball identity rather than vanilla Apricorn associations. **Grey** and **Purple** are intentionally new — a signal to HGSS veterans that the system changed. Shipping new colours needs separate investigation (items, harvest, art) — see [Technical investigation](#technical-investigation).
+Colours signal ball identity rather than vanilla Apricorn associations. **Grey** and **Purple** are intentionally new — a signal to HGSS veterans that the system changed. Both colours can be harvested on Route 37. The table lists the Center’s recipes and the proposed capture effects.
 
 <table>
 <colgroup>
@@ -141,13 +141,13 @@ Before implementation:
 
 **More trees (existing colours):** **Confirmed** — Apricorn trees are **not** baked into map terrain or collision art; they are **field objects added after the map loads** (same class as other overworld interactables). Adding trees should not require [Future-4](#future-4-map-editing--world-connectivity-wishlist)-style geometry edits, though **placing objects and wiring harvest scripts** across routes is still non-trivial.
 
-**New Apricorn colours:** item IDs, pick/harvest flow, Kurt or replacement crafting, ball data, UI strings, and **overworld art we do not have** (trees, Apricorn icons, ball graphics).
+**New Apricorn colours:** Route 37 has purple and grey trees in place of its red and black trees. Both new colours go into the Bag. The Pokémon Center crafter uses the eight recipes above. White Apricorns remain in the Bag. The ball-effect rebalance is still pending.
 
 **Refresh economy** ties to [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) and per-tree save state (yield, regrowth timers).
 
 ## Open design questions
 
-- Exact Apricorn yield and refresh rate.
+- Exact Apricorn tree refresh rate.
 - Exact Apricorn crafting mechanism and locations.
 - Fast Ball Speed curve; Heavy Ball weight thresholds; Level Ball formula; Dusk Ball depth mapping.
 - Whether any removed shop balls return in a revised roster.

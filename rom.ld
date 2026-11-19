@@ -413,6 +413,7 @@ BagView_New = 0x02077878 | 1;
 BagView_SetItem = 0x020778BC | 1;
 Sav2_Bag_get = 0x0207879C | 1;
 FieldSystem_ApricornTree_HasFruit = 0x02055708 | 1;
+FieldSystem_ApricornTree_IsRipe = 0x02055780 | 1;
 FieldSystem_ApricornTree_GetApricorn = 0x020557C0 | 1;
 
 FreeOverlayAllocation = 0x02006F58 | 1;

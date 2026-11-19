@@ -14,21 +14,29 @@ extern u32 LONG_CALL Craft_Divide(u32, u32) asm("__aeabi_uidiv");
 #define Craft_Divide(n, d) ((n) / (d))
 #endif
 
-// Same colour order and mapping as Kurt / ApricornBox_GetKurtBall.
-static const u16 sCraftBalls[7] = {
-    ITEM_LEVEL_BALL, ITEM_MOON_BALL, ITEM_LURE_BALL, ITEM_FRIEND_BALL,
-    ITEM_LOVE_BALL, ITEM_FAST_BALL, ITEM_HEAVY_BALL,
+static const struct {
+    u16 apricorn;
+    u16 ball;
+} sCraftRecipes[] = {
+    { ITEM_RED_APRICORN,    ITEM_FAST_BALL },
+    { ITEM_YELLOW_APRICORN, ITEM_LEVEL_BALL },
+    { ITEM_BLUE_APRICORN,   ITEM_QUICK_BALL },
+    { ITEM_GREEN_APRICORN,  ITEM_FRIEND_BALL },
+    { ITEM_PINK_APRICORN,   ITEM_LOVE_BALL },
+    { ITEM_BLACK_APRICORN,  ITEM_DUSK_BALL },
+    { ITEM_PURPLE_APRICORN, ITEM_DREAM_BALL },
+    { ITEM_GREY_APRICORN,   ITEM_HEAVY_BALL },
 };
 
 u16 ApricornCraft_Exchange(BAG_DATA *bag, u32 *money, BOOL commit,
                           u16 *total, u16 *feeHundreds)
 {
-    u16 inBag[7];
+    u16 inBag[NELEMS(sCraftRecipes)];
     unsigned i;
     BAG_DATA *trial;
     *total = 0;
-    for (i = 0; i < 7; i++) {
-        inBag[i] = Craft_GetQuantity(bag, ITEM_RED_APRICORN + i, HEAPID_DEFAULT);
+    for (i = 0; i < NELEMS(sCraftRecipes); i++) {
+        inBag[i] = Craft_GetQuantity(bag, sCraftRecipes[i].apricorn, HEAPID_DEFAULT);
         *total += inBag[i];
     }
     *feeHundreds = Craft_Divide(*total + 9, 10);
@@ -41,10 +49,10 @@ u16 ApricornCraft_Exchange(BAG_DATA *bag, u32 *money, BOOL commit,
         return APRICORN_CRAFT_UNAVAILABLE;
     Craft_Copy(trial, bag, sizeof(*trial));
     // Simulate the entire exchange first: no partial rewards or lost payment.
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < NELEMS(sCraftRecipes); i++) {
         u16 quantity = inBag[i];
-        if (quantity && (!Bag_TakeItem(trial, ITEM_RED_APRICORN + i, quantity, HEAPID_DEFAULT)
-                         || !Bag_AddItem(trial, sCraftBalls[i], quantity, HEAPID_DEFAULT))) {
+        if (quantity && (!Bag_TakeItem(trial, sCraftRecipes[i].apricorn, quantity, HEAPID_DEFAULT)
+                         || !Bag_AddItem(trial, sCraftRecipes[i].ball, quantity, HEAPID_DEFAULT))) {
             sys_FreeMemoryEz(trial);
             return APRICORN_CRAFT_NO_SPACE;
         }

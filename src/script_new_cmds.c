@@ -1,5 +1,6 @@
 #include "../include/config.h"
 #include "../include/apricorn_craft.h"
+#include "../include/apricorn_tree.h"
 #include "../include/abra_travel.h"
 #include "../include/game_clock.h"
 #include "../include/constants/file.h"
@@ -39,9 +40,14 @@ static void CheckApricornHarvest(FieldSystem *field)
 
     int colour = FieldSystem_ApricornTree_GetApricorn(field, *tree);
     u16 item = ITEM_RED_APRICORN + colour;
-    *GetVarPointer(field, 0x8000) = colour;
+    if (colour == APRICORN_TYPE_PURPLE - 1)
+        item = ITEM_PURPLE_APRICORN;
+    else if (colour == APRICORN_TYPE_GREY - 1)
+        item = ITEM_GREY_APRICORN;
     *GetVarPointer(field, 0x8004) = item;
-    *result = Bag_HasSpaceForItem(Sav2_Bag_get(field->savedata), item, 1, HEAPID_WORLD) ? 1 : 2;
+    u16 quantity = 3 + gf_rand() % 3;
+    *GetVarPointer(field, 0x8005) = quantity;
+    *result = Bag_HasSpaceForItem(Sav2_Bag_get(field->savedata), item, quantity, HEAPID_WORLD) ? 1 : 2;
 }
 
 BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)

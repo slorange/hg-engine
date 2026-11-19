@@ -72,8 +72,9 @@ static const u16 sWildApricornHoldPool[] = {
     ITEM_BLUE_APRICORN,
     ITEM_GREEN_APRICORN,
     ITEM_PINK_APRICORN,
-    ITEM_WHITE_APRICORN,
     ITEM_BLACK_APRICORN,
+    ITEM_PURPLE_APRICORN,
+    ITEM_GREY_APRICORN,
 };
 
 /*
@@ -82,7 +83,7 @@ static const u16 sWildApricornHoldPool[] = {
  * Compound Eyes (lead): 0 / 70 → 70% common, 30% rare, 0% nothing.
  *
  * If that roll is still empty: 50% chance of a fallback hold (100% with Compound Eyes).
- * The fallback hold is 50% a World-7 berry and 50% one of the seven Apricorns.
+ * The fallback hold is 50% a World-7 berry and 50% one of the eight craftable Apricorn colours.
  */
 static const u8 sWildHeldItemOdds[2][2] = {
     { 20, 85 },

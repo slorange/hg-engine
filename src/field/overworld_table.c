@@ -1,4 +1,5 @@
 #include "types.h"
+#include "apricorn_tree.h"
 
 #include "constants/file.h"
 #include "constants/pokemon.h"
@@ -309,6 +310,10 @@ struct OVERWORLD_TAG gOWTagToFileNum[] = // skip down a bit to see the parts tha
         { .tag = 425, .gfx = 210, .callback_params = 0x45A5 },
         { .tag = 426, .gfx = 211, .callback_params = 0x49A5 },
         { .tag = 427, .gfx = 212, .callback_params = 0x0000 },
+        { .tag = APRICORN_TAG_PURPLE_TREE, .gfx = 1858, .callback_params = 0x5647 },
+        { .tag = APRICORN_TAG_GREY_TREE, .gfx = 1859, .callback_params = 0x5647 },
+        { .tag = APRICORN_TAG_PURPLE_FRUIT, .gfx = 1860, .callback_params = 0x5826 },
+        { .tag = APRICORN_TAG_GREY_FRUIT, .gfx = 1861, .callback_params = 0x5826 },
 
         // npc mons
 

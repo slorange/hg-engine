@@ -174536,4 +174536,20 @@ const ITEMDATA __data[] =
     },
 },
 
+[ITEM_PURPLE_APRICORN] = {
+    ITEM_PRICE(200),
+    .naturalGiftType = 31,
+    .prevent_toss = TRUE,
+    .fieldPocket = POCKET_ITEMS,
+    .battlePocket = BATTLE_POCKET_NONE,
+},
+
+[ITEM_GREY_APRICORN] = {
+    ITEM_PRICE(200),
+    .naturalGiftType = 31,
+    .prevent_toss = TRUE,
+    .fieldPocket = POCKET_ITEMS,
+    .battlePocket = BATTLE_POCKET_NONE,
+},
+
 };

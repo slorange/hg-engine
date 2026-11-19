@@ -282,7 +282,7 @@ Mom intro grants **Berry Pots** and **5× each** basic berry **Cheri through Per
 
 ## Wild Pokémon holds
 
-**Implemented:** In addition to the table above, every supported berry can be a wild Pokémon's **held-item**, and so can the seven Apricorn colours. After the normal species held-item table roll (buffed to **65%** common / **15%** rare / **20%** nothing; **Compound Eyes** lead **70%** / **30%** / **0%**), wilds with no item get a **50%** chance (**100%** with Compound Eyes) of a fallback hold. That hold is **50%** a uniform random berry from the **45** supported berries and **50%** a uniform random Apricorn.
+**Implemented:** In addition to the table above, every supported berry can be a wild Pokémon's **held-item**, and so can the eight craftable Apricorn colours. After the normal species held-item table roll (buffed to **65%** common / **15%** rare / **20%** nothing; **Compound Eyes** lead **70%** / **30%** / **0%**), wilds with no item get a **50%** chance (**100%** with Compound Eyes) of a fallback hold. That hold is **50%** a uniform random berry from the **45** supported berries and **50%** a uniform random Apricorn.
 
 ---
 
@@ -402,7 +402,7 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 | **Abra fast travel** | Pay $400 to choose a visited destination on the travel map, then Teleport to its usual Fly landing spot. | Implemented |
 | **Move Relearner** | Relearn moves for $300 per successfully learned move. | Implemented |
 | **Rest / pass time** | Nurse Joy offers free rest until morning (4:00 AM), daytime (10:00 AM), or night (8:00 PM), replacing her healing interaction. The time shift lasts for the current session and resets on a fresh game start; the calendar date stays unchanged. | Implemented |
-| **Apricorn crafting** | Instantly exchange all Apricorns in the Bag for their usual specialty balls, one per Apricorn, for $100 per ten Apricorns rounded up. Expanded recipes follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance). | Implemented |
+| **Apricorn crafting** | Instantly exchange eligible Apricorns in the Bag for specialty balls, one per Apricorn, for $100 per ten Apricorns rounded up. The eight recipes follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance). | Implemented |
 | **Move Tutor** | Make special move tutoring available from any Center. | Maybe |
 | **Specialty Trader** | Exchange items or currencies for selected rewards. Inventory and pricing TBD. | Maybe |
 | **Researchers** | Register Arceus Plates and claim plate and Pokédex rewards ([Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society)). | Planned |

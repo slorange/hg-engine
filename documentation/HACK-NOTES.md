@@ -1342,7 +1342,9 @@ After **Copy\*** + **`GF_RTC_TimeToSec`**, these still use **other** paths. Acce
 
 **Design:** [Future-1 — Apricorn economy](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) (renewable harvest, new colours such as purple/grey, distributed crafting TBD). Trees are **field objects** placed at map load, not map terrain — placement is zone_event + scr_seq, not Future-4 geometry edits.
 
-The shared tree script (member **150**, standard script **2800**, text bank **23**) uses custom command **208/subcommand 9** to get the colour and check Bag capacity before the shake animation consumes the fruit. It then uses the ordinary Bag grant. Mom and the Route 30 man no longer give the Box. Route 30 member **227** skips the old gift cutscene, and member **228** retains the indoor NPC as a colour tip. Kurt points new players to the Pokémon Center crafter.
+The shared tree script (member **150**, standard script **2800**, text bank **23**) uses custom command **208/subcommand 9** to get the colour, roll **3–5** Apricorns in **0x8005**, and check space for the full bundle before the shake animation consumes the fruit. It then uses the ordinary Bag grant. Mom and the Route 30 man no longer give the Box. Route 30 member **227** skips the old gift cutscene, and member **228** retains the indoor NPC as a colour tip. Kurt points new players to the Pokémon Center crafter.
+
+Route 37 keeps its three existing tree objects in zone_event **38**. The ARM9 tree colour table at **0x020F6784** sets slots **13** and **15** to purple (**8**) and grey (**9**), with blue in slot **14**. The native tree and fruit lookups use the repointed tag tables in `src/apricorn_tree.c`. Tree tags **428–429** and fruit tags **430–431** use graphics **1858–1861**. Source files in `data/graphics/overworlds/appended/` pack after all follower graphics, and the build checks their sorted indexes. The two Bag items are **2685–2686**. Run `python scripts/dev/verify_apricorn_overlay.py` after packing to check colour selection, harvest capacity, and the archive indexes.
 
 ### Verified gotcha: do not use `03xx` filenames in `data/graphics/overworlds/`
 
@@ -1363,7 +1365,7 @@ So **`0300.png` is not a “free” custom slot** — gfx **300** is **Venusaur*
 
 | Layer | Vanilla reference | New colour (e.g. purple) |
 | ----- | ----------------- | ------------------------ |
-| Field tree gfx | Tags **262–269** → gfx **251–258**; sources **`0251.png`–`0258.png`** + matching **`.json`** + **`*_pl.pal`** | Pick an **unused gfx index below 297**, name sources **`0NNN.png`** with **`NNN` = that gfx index** (same layout as **`0257.png`** / **`0257.json`** for a 3-frame coloured tree). Register **tag → gfx** in `overworld_table.c` (apricorn trees use callback **`0x5647`** like existing bonguri rows). |
+| Field tree gfx | Tags **262–269** → gfx **251–258**; sources **`0251.png`–`0258.png`** + matching **`.json`** + **`*_pl.pal`** | Append the new art after the follower entries. Register **tag → gfx** in `overworld_table.c` (tree callback **`0x5647`**, fruit callback **`0x5826`**). Add the new tags to the tree and fruit tables. |
 | Bag icon | `data/graphics/item/red_apricorn.png` etc. | New PNG + `data/graphics/itemgra.mk` row + item id in `include/constants/item.h` + msg banks (`222`, `830`, `831`–`833`, …). |
 | Map placement | `obj_*_bonguri` in zone_event | New objects + harvest scr_seq; save tree state in `APRICORN_TREE` (`include/save.h`). |
 
@@ -2325,7 +2327,7 @@ Relocation crash fix: the first packed version entered an imported Thumb Bag hel
 
 The remaining vanilla gift giver in Route 32 1F (zone_event **163**, object **6**, local **(13, 17)**, facing left with movement **16** and initial direction **2**) now uses scriptId **6**, replacing the vanilla Lure Ball gift even on saves that already claimed it. `scripts/build/patch_center_apricorn.py` runs after the relearner patch, appends script slot **5** in member **233**, and preserves all original code and warp indices. The crafter moved 12 tiles right and one up from (1,18) to block the basement stair approach; the basement is reserved as his implied work area. Messages **25–31** are appended to bank **381**.
 
-`src/field/apricorn_craft.c` (overlay 131) counts the seven Apricorn stacks in the Bag. It exchanges everything immediately at **one ball per Apricorn**, using Kurt's mapping: red → Level, yellow → Moon, blue → Lure, green → Friend, pink → Love, white → Fast, black → Heavy. The fee is **100 × ceil(total / 10)** across all colours combined, with no fee for zero Apricorns. The confirmation quote prints fee hundreds followed by `00`, avoiding 16-bit script-var truncation for large fees.
+`src/field/apricorn_craft.c` (overlay 131) counts the eight craftable Apricorn stacks in the Bag. It exchanges them immediately at **one ball per Apricorn** using the Future-1 recipes. White Apricorns stay in the Bag. The fee is **100 × ceil(total / 10)** across all colours combined, with no fee for zero Apricorns. The confirmation quote prints fee hundreds followed by `00`, avoiding 16-bit script-var truncation for large fees.
 
 Custom command **208/subcommand 5** takes mode **0** to quote or **1** to recheck and commit. It outputs total in **0x8000**, fee hundreds in **0x8001**, and status in **0x800C** (0 success, 1 empty, 2 insufficient money, 3 insufficient ball space, 4 temporary allocation failure). It simulates every removal/addition on a temporary Bag copy, checks the 999-per-ball stack limit, and only then commits the Bag and deducts money. The standard purchase sound plays only after a successful commit. No new save fields are needed.
 

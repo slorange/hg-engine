@@ -75,7 +75,9 @@ static const PickupEntry sUtility[] = {
 };
 
 static const PickupEntry sApricorns[] = {
-    RANGE(ITEM_RED_APRICORN, ITEM_BLACK_APRICORN, 1, 3, 5),
+    RANGE(ITEM_RED_APRICORN, ITEM_PINK_APRICORN, 5, 3, 5),
+    BUNDLE(ITEM_BLACK_APRICORN, 1, 3, 5),
+    RANGE(ITEM_PURPLE_APRICORN, ITEM_GREY_APRICORN, 2, 3, 5),
 };
 
 static const PickupEntry sUpgrades[] = {

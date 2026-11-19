@@ -66,7 +66,7 @@ int main(void) {
         assert(money == 10000 && equal(&bag, &before, sizeof(bag)));
         assert(ApricornCraft_Exchange(&bag, &money, TRUE, &total, &units) == APRICORN_CRAFT_OK);
         assert(money == 10000 - units * 100 && !Bag_GetQuantity(&bag, ITEM_RED_APRICORN, 0));
-        assert(balls(&bag, ITEM_LEVEL_BALL) == amounts[j]);
+        assert(balls(&bag, ITEM_FAST_BALL) == amounts[j]);
     }
 
     // Mixed colours and exact funds.
@@ -78,7 +78,7 @@ int main(void) {
     assert(total == 11 && units == 2 && money == 0);
     assert(!Bag_GetQuantity(&bag, ITEM_RED_APRICORN, 0));
     assert(!Bag_GetQuantity(&bag, ITEM_YELLOW_APRICORN, 0));
-    assert(balls(&bag, ITEM_LEVEL_BALL) == 10 && balls(&bag, ITEM_MOON_BALL) == 1);
+    assert(balls(&bag, ITEM_FAST_BALL) == 10 && balls(&bag, ITEM_LEVEL_BALL) == 1);
     assert(ApricornCraft_Exchange(&bag, &money, TRUE, &total, &units) == APRICORN_CRAFT_EMPTY);
 
     // Insufficient funds and a stack overflow after one colour was already simulated.
@@ -89,7 +89,7 @@ int main(void) {
     before = bag;
     assert(ApricornCraft_Exchange(&bag, &money, TRUE, &total, &units) == APRICORN_CRAFT_NO_MONEY);
     assert(money == 199 && equal(&bag, &before, sizeof(bag)));
-    bag.balls[0] = (ITEM_SLOT){ITEM_MOON_BALL, 999};
+    bag.balls[0] = (ITEM_SLOT){ITEM_LEVEL_BALL, 999};
     before = bag;
     money = 1000;
     assert(ApricornCraft_Exchange(&bag, &money, TRUE, &total, &units) == APRICORN_CRAFT_NO_SPACE);
@@ -102,18 +102,29 @@ int main(void) {
     assert(ApricornCraft_Exchange(&bag, &money, TRUE, &total, &units) == APRICORN_CRAFT_NO_SPACE);
     assert(money == 1000 && equal(&bag, &before, sizeof(bag)));
 
-    // All seven mappings and a fee greater than 65535 dollars.
+    // All eight mappings and a fee greater than 65535 dollars.
     clear(&bag, sizeof(bag));
-    const unsigned expected[] = {493, 498, 494, 497, 496, 492, 495};
-    for (unsigned i = 0; i < 7; i++)
-        bag.items[i] = (ITEM_SLOT){ITEM_RED_APRICORN + i, 999};
+    const u16 inputs[] = {
+        ITEM_RED_APRICORN, ITEM_YELLOW_APRICORN, ITEM_BLUE_APRICORN, ITEM_GREEN_APRICORN,
+        ITEM_PINK_APRICORN, ITEM_BLACK_APRICORN, ITEM_PURPLE_APRICORN, ITEM_GREY_APRICORN,
+    };
+    const u16 expected[] = {
+        ITEM_FAST_BALL, ITEM_LEVEL_BALL, ITEM_QUICK_BALL, ITEM_FRIEND_BALL,
+        ITEM_LOVE_BALL, ITEM_DUSK_BALL, ITEM_DREAM_BALL, ITEM_HEAVY_BALL,
+    };
+    bag.items[8] = (ITEM_SLOT){ITEM_WHITE_APRICORN, 100};
+    for (unsigned i = 0; i < NELEMS(inputs); i++)
+        bag.items[i] = (ITEM_SLOT){inputs[i], 999};
     money = 100000;
     assert(ApricornCraft_Exchange(&bag, &money, TRUE, &total, &units) == APRICORN_CRAFT_OK);
-    assert(total == 6993 && units == 700 && money == 30000);
-    for (unsigned i = 0; i < 7; i++) {
-        assert(!Bag_GetQuantity(&bag, ITEM_RED_APRICORN + i, 0));
+    assert(total == 7992 && units == 800 && money == 20000);
+    for (unsigned i = 0; i < NELEMS(inputs); i++) {
+        assert(!Bag_GetQuantity(&bag, inputs[i], 0));
         assert(balls(&bag, expected[i]) == 999);
     }
+    assert(Bag_GetQuantity(&bag, ITEM_WHITE_APRICORN, 0) == 100);
+    assert(ApricornCraft_Exchange(&bag, &money, TRUE, &total, &units) == APRICORN_CRAFT_EMPTY);
+    assert(total == 0 && units == 0 && money == 20000);
     assert(!allocated);
     puts("OK: Bag-only crafting, fee rounding, all colour mappings, quote safety, exact and insufficient funds, full pocket, stack overflow, and atomic rollback");
     return 0;

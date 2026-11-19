@@ -589,6 +589,7 @@ arm9 PartyMenu_ItemUseFunc_ReuseItem_hook 0208138C 3
 
 arm9 BufferItemNameWithIndefArticle 0200C100 3
 arm9 BufferItemNamePlural 0200C134 3
+arm9 ApricornTree_HasFruit 02055708 2
 arm9 GetItemDescIntoString 02077D64 3
 arm9 ItemToMachineMoveIndex 0207804C 1
 arm9 ItemToMachineMove 02078000 1

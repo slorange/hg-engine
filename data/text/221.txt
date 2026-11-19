@@ -1,1 +1,2 @@
-Custom item description
+A purple Apricorn picked from a tree.
+A grey Apricorn picked from a tree.

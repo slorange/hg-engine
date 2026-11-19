@@ -8,7 +8,7 @@
 #include "../include/script.h"
 #include "../include/types.h"
 
-#define GFX_ITEM_DUMMY_ID  ((MAX_TOTAL_ITEM_NUM) * 2 + 2)
+#define GFX_ITEM_DUMMY_ID  ((MAX_TOTAL_ITEM_NUM + 1) * 2 + 2)
 #define GFX_ITEM_RETURN_ID ((MAX_TOTAL_ITEM_NUM + 1) * 2 + 4)
 #define NEW_ITEM_GFX       (797)
 
@@ -447,7 +447,7 @@ u16 GetItemIndex(u16 item, u16 type)
         if (item == ITEM_DUMMY_ID || item == ITEM_RETURN_ID) {
             break;
         }
-        if (item > MAX_TOTAL_ITEM_NUM) {
+        if (item > MAX_BASE_ITEM_NUM) {
             ret = 0;
         } else {
             ret = ItemDataIndex[item].agb_id;
@@ -492,7 +492,7 @@ void *LONG_CALL ItemDataTableLoad(int heapID)
 {
     int max;
 
-    max = GetItemIndex(MAX_TOTAL_ITEM_NUM, ITEM_GET_DATA);
+    max = GetItemIndex(MAX_TOTAL_ITEM_NUM, ITEM_GET_DATA) + 1;
 
     return AllocAndReadFromNarcMemberByIdPair(ARC_ITEM_DATA, 0, heapID, 0, sizeof(ITEMDATA) * max); // 800757Ch
 }

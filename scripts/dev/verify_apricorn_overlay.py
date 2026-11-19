@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Check packed field service placement and execute its resident dispatcher."""
 import struct
+import ndspy.narc
 import ndspy.rom
-from verify_abra_travel_arm import Machine, ROOT, REGS, PROFILE, CTX, FS
-from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_PC, UC_ARM_REG_LR, UC_ARM_REG_CPSR
+from verify_abra_travel_arm import Machine, ROOT, REGS, PROFILE, CTX, FS, STOP
+from unicorn import UC_HOOK_CODE
+from unicorn.arm_const import UC_ARM_REG_R0, UC_ARM_REG_R5, UC_ARM_REG_PC, UC_ARM_REG_LR, UC_ARM_REG_CPSR
+
+TREE_TAGS = (262, *range(263, 270), 428, 429)
+FRUIT_TAGS = (270, *range(270, 277), 430, 431)
+APRICORN_ITEMS = (*range(485, 492), 2685, 2686)
 
 
 class CraftMachine(Machine):
@@ -33,10 +39,12 @@ class CraftMachine(Machine):
 class HarvestMachine(CraftMachine):
     OBJECT_PTR, OBJECT, SCRIPT, VARS = (0x030C0000, 0x030C0100, 0x030C0200, 0x030C0300)
 
-    def __init__(self, rom, colour, room):
+    def __init__(self, rom, colour, room, ripe=True, roll=0):
         super().__init__(rom, True)
-        self.colour, self.room = colour, room
+        self.colour, self.room, self.ripe = colour, room, ripe
         self.capacity_checks = []
+        self.roll = roll
+        self.roll_calls = 0
         self.w32(self.OBJECT_PTR, self.OBJECT)
         self.w32(CTX + 8, self.SCRIPT)
         self.uc.mem_write(self.SCRIPT, bytes((9, 0, 0)))
@@ -47,16 +55,23 @@ class HarvestMachine(CraftMachine):
             assert args[:2] == [FS, 10]
             result = self.OBJECT_PTR
         elif addr == (self.symbols['GetVarPointer'] & ~1):
-            assert args[0] == FS and args[1] in (0x8000, 0x8004, 0x800C)
+            assert args[0] == FS and args[1] in (0x8004, 0x8005, 0x800C)
             result = self.VARS + (args[1] - 0x8000) * 4
-        elif addr == (self.symbols['FieldSystem_ApricornTree_HasFruit'] & ~1):
+        elif addr == (self.symbols['MapObject_GetGfxID'] & ~1):
+            assert args[0] == self.OBJECT
+            result = TREE_TAGS[self.colour + 1] if self.colour is not None else TREE_TAGS[0]
+        elif addr == (self.symbols['FieldSystem_ApricornTree_IsRipe'] & ~1):
             assert args[:2] == [FS, self.OBJECT]
-            result = self.colour is not None
+            assert self.colour is not None
+            result = self.ripe
         elif addr == (self.symbols['FieldSystem_ApricornTree_GetApricorn'] & ~1):
             assert args[:2] == [FS, self.OBJECT] and self.colour is not None
             result = self.colour
         elif addr == (self.symbols['Sav2_Bag_get'] & ~1):
             result = TransactionMachine.BAG
+        elif addr == (self.symbols['gf_rand'] & ~1):
+            self.roll_calls += 1
+            result = self.roll
         elif addr == (self.symbols['Bag_HasSpaceForItem'] & ~1):
             assert args[0] == TransactionMachine.BAG
             self.capacity_checks.append(tuple(args[1:]))
@@ -146,20 +161,79 @@ def main():
         assert {'Bag_GetQuantity','__aeabi_uidiv'} <= m.checked
         if funds >= 300:
             assert {'memcpy','Bag_TakeItem','Bag_AddItem'} <= m.checked
-            assert len(m.added) == 1 and m.added[0][1] == 27
-    for colour in (None, *range(7)):
+            assert m.added == [(492, 27)]
+    for colour in (None, *range(len(APRICORN_ITEMS))):
         for room in (False, True):
-            m = HarvestMachine(rom, colour, room)
+            roll = (colour or 0) + 1
+            m = HarvestMachine(rom, colour, room, roll=roll)
             assert m.call('Script_RunNewCmd', CTX) == 0
             assert m.r32(m.VARS + 0xC * 4) == (0 if colour is None else 1 if room else 2)
             if colour is None:
-                assert not m.capacity_checks
+                assert not m.capacity_checks and not m.roll_calls
             else:
-                assert m.capacity_checks == [(485 + colour, 1, 11)]
-                assert m.r32(m.VARS) == colour
-                assert m.r32(m.VARS + 4 * 4) == 485 + colour
-    print('OK: packed tree preflight, empty trees, and Bag capacity for all seven colours')
+                item = APRICORN_ITEMS[colour]
+                quantity = 3 + roll % 3
+                assert m.roll_calls == 1 and m.capacity_checks == [(item, quantity, 11)]
+                assert m.r32(m.VARS + 5 * 4) == quantity
+                assert m.r32(m.VARS + 4 * 4) == item
+    for colour in (7, 8):
+        m = HarvestMachine(rom, colour, True, ripe=False)
+        assert m.call('Script_RunNewCmd', CTX) == 0
+        assert m.r32(m.VARS + 0xC * 4) == 0 and not m.capacity_checks
+    verify_route37_colours(rom)
+    print('OK: packed tree preflight, ripe and empty trees, and Bag capacity for all nine colours')
     print(f'OK: packed field transaction quote/commit/failures, Thumb helper calls, dispatcher loaded/unloaded/null guards, no overlap; overlay 129 {root[2]} bytes, {0xA000-root[2]} free')
+
+
+def verify_route37_colours(rom):
+    m = CraftMachine(rom, True)
+    assert bytes(m.uc.mem_read(0x020F6791, 3)) == bytes((8, 3, 9))
+    for colour, tag in enumerate(TREE_TAGS[1:], 1):
+        assert m.call(0x020640A4, colour, 1) == tag
+        assert m.call(0x020640A4, colour, 0) == TREE_TAGS[0]
+
+    _, base, _, _, _, _, file_id, _ = struct.unpack_from('<8I', rom.arm9OverlayTable, 32)
+    ov1 = rom.files[file_id]
+    m.uc.mem_write(base, bytes(ov1))
+    assert m.r32(0x02204AA0) == m.symbols['gApricornFruitTags']
+    spawned = []
+
+    def capture_fruit_spawn(uc, addr, size, unused):
+        spawned.append(tuple(uc.reg_read(reg) for reg in REGS))
+        uc.reg_write(UC_ARM_REG_PC, STOP)
+
+    m.uc.hook_add(UC_HOOK_CODE, capture_fruit_spawn, begin=0x02204AAC, end=0x02204AAC)
+    m.uc.reg_write(UC_ARM_REG_R5, FS)
+    m.w32(FS + 0x3C, 0x0300E000)
+    for colour, tag in enumerate(FRUIT_TAGS[1:], 1):
+        m.call(0x022049D0, colour, 0, 0, 0, 202, 401)
+        assert spawned[-1] == (0x0300E000, tag, 401, 202)
+
+    _, field_base, _, _, _, _, field_file, _ = struct.unpack_from('<8I', rom.arm9OverlayTable, 131*32)
+    table_offset = m.r32(0x021FA280) - field_base
+    field_data = rom.files[field_file]
+    assert 0 <= table_offset < len(field_data)
+    table = {}
+    for offset in range(table_offset, len(field_data) - 5, 6):
+        tag, index, callback = struct.unpack_from('<3H', field_data, offset)
+        if tag == 0xFFFF:
+            break
+        table[tag] = (index, callback)
+    overworlds = ndspy.narc.NARC(rom.getFileByName('a/0/8/1')).files
+    for tag, index in ((428, 1858), (429, 1859), (430, 1860), (431, 1861)):
+        assert table[tag] == (index, 0x5647 if tag <= 429 else 0x5826)
+        assert overworlds[index] == (ROOT / f'build/pokemonow/4_{index}.btx0').read_bytes()
+    for source in (ROOT / 'build/pokemonow').glob('3_*.btx0'):
+        follower = int(source.stem.removeprefix('3_'))
+        assert overworlds[297 + follower] == source.read_bytes()
+
+    item_data = ndspy.narc.NARC(rom.getFileByName('a/0/1/7')).files
+    item_gfx = ndspy.narc.NARC(rom.getFileByName('a/0/1/8')).files
+    for item in APRICORN_ITEMS[-2:]:
+        assert item_data[item] == item_data[APRICORN_ITEMS[0]]
+        assert item_gfx[2 * item + 2] == (ROOT / f'build/a018/{item + 2}-00.NCGR').read_bytes()
+        assert item_gfx[2 * item + 3] == (ROOT / f'build/a018/{item + 2}-01.NCLR').read_bytes()
+    print('OK: Route 37 tree slots, fruit animation sprite selection, Bag data/icons, and follower NARC indexes')
 
 
 if __name__ == '__main__':

@@ -22,12 +22,13 @@ _tree:
     anim_apricorn_tree VAR_SPECIAL_RESULT
     compare VAR_SPECIAL_RESULT, 0
     goto_if_eq _empty
-    giveitem VAR_SPECIAL_x8004, 1, VAR_SPECIAL_RESULT
+    giveitem VAR_SPECIAL_x8004, VAR_SPECIAL_x8005, VAR_SPECIAL_RESULT
     compare VAR_SPECIAL_RESULT, 0
     goto_if_eq _full
     add_special_game_stat 1 // SCORE_EVENT_APRICORN_HARVESTED
     buffer_players_name 0
-    buffer_apricorn_name 1, VAR_SPECIAL_x8000
+    buffer_item_name_plural 1, VAR_SPECIAL_x8004
+    TextNumber 2, VAR_SPECIAL_x8005
     play_fanfare SEQ_ME_ITEM
     npc_msg 1
     wait_fanfare

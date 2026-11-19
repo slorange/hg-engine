@@ -1,4 +1,4 @@
 It’s an Apricorn Tree!\r
-{STRVAR_1 3, 0, 0} put the {STRVAR_1 8, 1, 0}\nin the Bag!
+{STRVAR_1 3, 0, 0} put {STRVAR_1 52, 2, 0} {STRVAR_1 8, 1, 0}\nin the Bag!
 There are no Apricorns...
-There’s no room in your Bag\nfor the Apricorn.
+There’s no room in your Bag\nfor all the Apricorns.
