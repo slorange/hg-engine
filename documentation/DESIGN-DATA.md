@@ -73,7 +73,7 @@ Minor adjustments made to the learnset to adjust evolution levels:
 
 # Data-4. Evolution changes
 
-Alongside the [item-use rules](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones), the following families have additional methods or changed evolution timing:
+Alongside the [item-use rules](DESIGN-ITEMS.md#items-3-evolution-methods-trade--stones), the following families have additional methods or changed evolution timing:
 
 - **Feebas → Milotic:** **Prism Scale** can be used directly.
 - **Swinub → Piloswine:** level **22**, reduced from 33.
@@ -88,7 +88,7 @@ Alongside the [item-use rules](DESIGN-WORLD.md#world-5-evolution-methods-trade--
 
 ## Badge-gated shelf (most shops)
 
-Poké / Great / Ultra / Net / Repeat / Timer Balls; Repels; Escape Rope; Poké Doll; Sitrus & Lum Berries; **Flash TM**; Cleanse Tag; held battle items through Life Orb — each row gated by **minimum badge count** (0–12).
+Poké / Great / Ultra / Net / Repeat / Timer Balls; Repels; Escape Rope; Poké Doll; Sitrus & Lum Berries; **Flash and Headbutt TMs**; Cleanse Tag; held battle items through Life Orb — each row gated by **minimum badge count** (0–12).
 
 ## Goldenrod & Celadon department stores
 

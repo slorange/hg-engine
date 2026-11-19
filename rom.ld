@@ -806,6 +806,7 @@ _GetNpcTradeName = 0x02259C1C | 1;
 MonSetTrainerMemo = 0x0208F260 | 1;
 MapHeader_GetWildEncounterBank = 0x0203B344 | 1;
 MapHeader_GetMapSec = 0x0203B36C | 1;
+MapHeader_IsOutdoors = 0x0203B5AC | 1;
 ChooseStarter_LaunchApp = 0x0203F808 | 1;
 sub_0203E30C = 0x0203E30C | 1;
 FieldSystem_ApplicationIsRunning = 0x020505A0 | 1;

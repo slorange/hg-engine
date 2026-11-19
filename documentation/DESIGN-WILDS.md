@@ -131,7 +131,7 @@ After the level is rolled, [Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evo
 
 # Wilds-3. Encounter Stage (Evolution & Devolution)
 
-**Status: IMPLEMENTED** — wild encounters resolve their stage after the [Wilds-2](DESIGN-WILDS.md#level-distribution) level roll; trainer teams resolve it after [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) assigns level. Player-owned Pokémon use their actual evolution methods ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
+**Status: IMPLEMENTED** — wild encounters resolve their stage after the [Wilds-2](DESIGN-WILDS.md#level-distribution) level roll; trainer teams resolve it after [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) assigns level. Player-owned Pokémon use their actual evolution methods ([Items-3](DESIGN-ITEMS.md#items-3-evolution-methods-trade--stones)).
 
 For both wild and trainer mons, we need to handle the cases where a first stage pokemon is now high level, and a late stage pokemon is now low level.
 
@@ -195,7 +195,7 @@ Count **families**, not species (Poliwag + Poliwrath = 1). Use Pokédex caught f
 
 Every included family must have an acquisition source.
 
-Evolution methods and item acquisition: [World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones).
+Evolution methods and item acquisition: [Items-3](DESIGN-ITEMS.md#items-3-evolution-methods-trade--stones).
 
 ---
 
@@ -226,7 +226,7 @@ Both modes use the park's [distance cap](#wilds-1-starting-city-distance-based-w
 
 Contest score is the sum of the stats, including maximum HP, not current HP. The contest is available **every day**, with **one entry per day**. The time limit is **four in-game hours**, using the existing accelerated clock (roughly 5 minutes).
 
-See [World-8. Item acquisition channels](#world-8-item-acquisition-channels) for reward details
+See [Items-1. Item acquisition channels](DESIGN-ITEMS.md#items-1-item-acquisition-channels) for reward details
 
 ## Persistence and seed
 

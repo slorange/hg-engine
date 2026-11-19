@@ -9,7 +9,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 
 | Section |
 | ------- |
-| [Future-1. Apricorn economy & Poké Ball rebalance](#future-1-apricorn-economy--poké-ball-rebalance) |
 | [Future-2. Full Moon system](#future-2-full-moon-system) |
 | [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
 | [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
@@ -22,135 +21,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
 | [Priority](#priority) |
-
----
-
-# Future-1. Apricorn economy & Poké Ball rebalance
-
-Apricorn harvesting, crafting, and a two-tier ball roster (shop vs Apricorn). Tree refresh assumes [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) (accelerated in-game clock / virtual calendar when implemented).
-
-## Apricorn economy
-
-Apricorns go directly into the Bag and become a renewable crafting resource tied to the accelerated game clock.
-
-- trees refresh approximately once per in-game day;
-- each successful harvest yields **3–5 Apricorns**.
-
-With the ~30-minute day target, this is a faster renewable economy than vanilla HGSS. Exact quantities and refresh timing remain subject to balance testing.
-
-The player should not need to repeatedly return to Azalea Town merely to craft Apricorn Balls. **Pokémon Center crafting** in the shared hub is the preferred direction ([World-10](DESIGN-WORLD.md#world-10-shared-pokémon-center-hub)); a distributed crafting system remains a fallback if the hub is not used.
-
-### More Apricorn trees
-
-We would like **additional Apricorn trees** across Johto and Kanto so harvesting is not tied to vanilla placement alone. Trees are **field objects placed when the map loads**, not part of map geometry — see [Technical investigation](#technical-investigation) for remaining authoring and save-state work.
-
-## Ball design philosophy
-
-**Shop balls** — readily available, generally weaker or reliable bonuses; useful without one infinitely purchasable ball dominating every capture.
-
-**Apricorn balls** — renewable but resource-limited, with stronger specialized bonuses.
-
-Intended to avoid: *"Buy 99 Quick Balls and throw one at everything."*
-
-## Shop balls
-
-<!-- HTML table: pipe tables cannot set column width; colgroup gives a wider effect column in IDE preview -->
-<table>
-<colgroup>
-<col style="width:16%">
-<col style="width:10%">
-<col style="width:74%">
-</colgroup>
-<thead>
-<tr><th>Ball</th><th align="right">Maximum</th><th>Effect</th></tr>
-</thead>
-<tbody>
-<tr><td>Poké Ball</td><td align="right">1×</td><td>Standard</td></tr>
-<tr><td>Great Ball</td><td align="right">1.5×</td><td>Standard</td></tr>
-<tr><td>Ultra Ball</td><td align="right">2×</td><td>Standard</td></tr>
-<tr><td>Timer Ball</td><td align="right">4×</td><td>Increasing bonus during long battles</td></tr>
-<tr><td>Repeat Ball</td><td align="right">3×</td><td>Bonus against previously caught species</td></tr>
-<tr><td>Net Ball</td><td align="right">3×</td><td>Bonus against Water or Bug Pokémon</td></tr>
-</tbody>
-</table>
-
-
-## Balls removed from the roster
-
-<table>
-<colgroup>
-<col style="width:22%">
-<col style="width:78%">
-</colgroup>
-<thead>
-<tr><th>Ball</th><th>Why dropped</th></tr>
-</thead>
-<tbody>
-<tr><td>Heal Ball</td><td>Unnecessary — newly caught Pokémon are auto-healed (<a href="DESIGN-BATTLES.md#recovery">Battle-1</a>).</td></tr>
-<tr><td>Luxury Ball</td><td>Role absorbed by redesigned Friend Ball.</td></tr>
-<tr><td>Nest Ball</td><td>Overlaps Level Ball conceptually.</td></tr>
-<tr><td>Dive Ball</td><td>Water-capture overlap with Net ball.</td></tr>
-<tr><td>Lure Ball</td><td>Water-capture overlap with Net ball.</td></tr>
-</tbody>
-</table>
-
-
-## Apricorn balls
-
-Colours signal ball identity rather than vanilla Apricorn associations. **Grey** and **Purple** are intentionally new — a signal to HGSS veterans that the system changed. Both colours can be harvested on Route 37. The table lists the Center’s recipes and the proposed capture effects.
-
-<table>
-<colgroup>
-<col style="width:10%">
-<col style="width:14%">
-<col style="width:12%">
-<col style="width:64%">
-</colgroup>
-<thead>
-<tr><th>Apricorn</th><th>Ball</th><th align="right">Maximum</th><th>Proposed effect</th></tr>
-</thead>
-<tbody>
-<tr><td>🔴 Red</td><td>Fast Ball</td><td align="right">5× / 10× beasts</td><td>~1–5× by base Speed; <strong>10×</strong> vs Johto roaming beasts (Raikou, Entei, Suicune where implemented). Speed/weight curves TBD.</td></tr>
-<tr><td>🩶 Grey</td><td>Heavy Ball</td><td align="right">5×</td><td>~1–5× by weight. Thresholds TBD.</td></tr>
-<tr><td>🩷 Pink</td><td>Love Ball</td><td align="right">8×</td><td>3× opposite gender; 8× opposite gender + compatible Egg Group.</td></tr>
-<tr><td>🟢 Green</td><td>Friend Ball</td><td align="right">8×</td><td>8× vs families with a friendship evolution (whole family qualifies); caught mon starts at <strong>200</strong> friendship.</td></tr>
-<tr><td>🟡 Yellow</td><td>Level Ball</td><td align="right">8×</td><td>Scales with player's level advantage (vanilla concept, possibly smoother curve). Formula TBD.</td></tr>
-<tr><td>🟣 Purple</td><td>Dream Ball</td><td align="right">4×</td><td>Sleeping target (lower cap because Sleep is already strong).</td></tr>
-<tr><td>🔵 Blue</td><td>Quick Ball</td><td align="right">5×</td><td>First turn only.</td></tr>
-<tr><td>⚫ Black</td><td>Dusk Ball</td><td align="right">~7×</td><td>~4× at night; in caves, scales with depth (~4× shallow → ~7× deepest). Floor mapping TBD.</td></tr>
-</tbody>
-</table>
-
-## Other ball ideas
-
-- **Precision Ball** — increased catch rate when the target has exactly **1 HP** remaining.
-- **Weather Ball** — increased catch rate during active weather (rain, sun, hail, sandstorm).
-- **Pokédex Ball** — catch rate scales with **Pokédex completion percentage**.
-- **Reversal Ball** — catch multiplier rises as the species' **base catch rate** falls (rarer species easier to catch).
-
-## Technical investigation
-
-Before implementation:
-
-- inventory/data representation;
-- crafting UI and locations;
-- tree objects and refresh logic;
-- custom Ball formulas in hg-engine;
-- cave-depth detection for Dusk Ball;
-- compatibility with existing item data and shops.
-
-**More trees (existing colours):** **Confirmed** — Apricorn trees are **not** baked into map terrain or collision art; they are **field objects added after the map loads** (same class as other overworld interactables). Adding trees should not require [Future-4](#future-4-map-editing--world-connectivity-wishlist)-style geometry edits, though **placing objects and wiring harvest scripts** across routes is still non-trivial.
-
-**New Apricorn colours:** Route 37 has purple and grey trees in place of its red and black trees. Both new colours go into the Bag. The Pokémon Center crafter uses the eight recipes above. White Apricorns remain in the Bag. The ball-effect rebalance is still pending.
-
-**Refresh economy** ties to [World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle) and per-tree save state (yield, regrowth timers).
-
-## Open design questions
-
-- Exact Apricorn tree refresh rate.
-- Exact Apricorn crafting mechanism and locations.
-- Fast Ball Speed curve; Heavy Ball weight thresholds; Level Ball formula; Dusk Ball depth mapping.
-- Whether any removed shop balls return in a revised roster.
 
 ---
 
@@ -380,7 +250,7 @@ An eligible species **anywhere in the collection** (party or box) can perform an
 The player should be able to deliberately advance time rather than waiting.
 
 ### Resting at Pokémon Centers / hotels
-Allows controlled advancement of time. **Pokémon Center rest menus** live in the shared hub ([World-10](DESIGN-WORLD.md#world-10-shared-pokémon-center-hub)); hotels and other inns may share the same rest rules where they exist in the world.
+Allows controlled advancement of time. **Pokémon Center rest menus** live in the shared hub ([World-5](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub)); hotels and other inns may share the same rest rules where they exist in the world.
 
 ### Portable resting
 A tent, sleeping bag, camping system, or similar mechanic can potentially allow resting outside 
@@ -390,7 +260,7 @@ towns. Exact implementation TBD.
 
 # Future-10. Living trainers & interactions
 
-**Not required for initial release.** Initial release: static vanilla trainers with [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) scaling. Renewable TMs via [World-4](DESIGN-WORLD.md#world-4-tms) / [World-6](DESIGN-WORLD.md#world-6-shops), not trainer buy/sell economy.
+**Not required for initial release.** Initial release: static vanilla trainers with [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) scaling. Renewable TMs via [Items-2](DESIGN-ITEMS.md#items-2-tms) / [Items-4](DESIGN-ITEMS.md#items-4-shops), not trainer buy/sell economy.
 
 ## Living trainers
 
@@ -436,7 +306,7 @@ Some trainers request trades or buy/sell items (sink for duplicates; source for 
 
 ### TMs
 
-Some trainers provide renewable access to otherwise rare TMs ([World-4](DESIGN-WORLD.md#world-4-tms)) — alternative to putting everything in static marts.
+Some trainers provide renewable access to otherwise rare TMs ([Items-2](DESIGN-ITEMS.md#items-2-tms)) — alternative to putting everything in static marts.
 
 ### Gym advice / other quests
 
@@ -455,7 +325,7 @@ Map-level trainer generation, movement, and placement — distinct from [Battle-
 
 # Future-11. Pokémon Research Society
 
-A shared research organization with representatives in every Pokémon Center. The representative is a service in the shared hub ([World-10](DESIGN-WORLD.md#world-10-shared-pokémon-center-hub)), so the player can register finds and claim rewards from any Center.
+A shared research organization with representatives in every Pokémon Center. The representative is a service in the shared hub ([World-5](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub)), so the player can register finds and claim rewards from any Center.
 
 The society handles two related collection systems: **Arceus Plate** research and **Pokédex** completion rewards.
 
@@ -504,11 +374,11 @@ Tiers **5** and **6** are location reports. The researcher describes newly detec
 
 The last two plates are reserved for postgame areas, potentially **Cerulean Cave** and **Mt. Silver**.
 
-**Wobbuffet** (tier 2) and **Eevee** (tier 3) are also Game Corner prizes ([World-4](DESIGN-WORLD.md#pokémon-prizes)).
+**Wobbuffet** (tier 2) and **Eevee** (tier 3) are also Game Corner prizes ([Items-2](DESIGN-WORLD.md#pokémon-prizes)).
 
 ## Pokédex research
 
-The same organization could also manage Pokédex completion rewards ([World-8](DESIGN-WORLD.md#pokédex-milestone-rewards)).
+The same organization could also manage Pokédex completion rewards ([Items-1](DESIGN-ITEMS.md#pokédex-milestone-rewards)).
 
 Milestones grant items, or location information for other legendary and mythical Pokémon.
 
@@ -541,7 +411,7 @@ Scaling is linear from 0 unique forms registered to 28.
 | **Hidden Power (all Pokémon)** | **60** BP, fixed base power (not IV-dependent) | **100** BP, same fixed-power rule |
 | **Catch rate (Unown)** | **255** | **3** |
 
-- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-11](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed ([World-8](DESIGN-WORLD.md#world-8-item-acquisition-channels)).
+- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-11](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed ([Items-1](DESIGN-ITEMS.md#items-1-item-acquisition-channels)).
 - **Ability (Unown only):** custom ability — all **damaging** moves deal **+33%**; Unown is **typeless** (no weaknesses, resistances, or STAB).
 - **Wild held item:** **50%** chance to hold **TM10 (Hidden Power)**.
 
@@ -612,7 +482,7 @@ Each location’s **theme word** lists the **unique letter forms** that can appe
 Ideas that do not have their own `Future-*` section yet.
 
 - **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
-- **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
+- **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([Items-2 § Coin income](DESIGN-ITEMS.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
 - **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
 - **Evolution levels** — review evolution levels. Ponyta → Rapidash at level 40 is tragic
@@ -644,11 +514,11 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | — |
-| [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | — |
+| [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | — |
 | [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
 | [Future-9](#future-9-time-advancement) Time advancement | 4 | 1 | 1 | 1 | 3 | 1 | — |
 | [Future-11](#future-11-pokémon-research-society) Pokémon Research Society | 3 | 2 | 3 | 3 | 2 | 2 | — |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
-| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | Moon Ball  wants [Future-1](#future-1-apricorn-economy--poké-ball-rebalance) |
+| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | Moon Ball  wants [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) |

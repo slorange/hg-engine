@@ -40,7 +40,7 @@ After every battle (wild, trainer, flee, or catch):
 
 **Bag items** cannot be used during trainer battles. No X items, or healing items. The rule applies to **both** sides. **Held items** including berries remain legal.
 
-Because recovery is automatic, and items cannot be used in battle, there is no more use for Potions, Antidotes, X-items, etc. Shop stock shifts toward held items and berries ([World-6](DESIGN-WORLD.md#world-6-shops)).
+Because recovery is automatic, and items cannot be used in battle, there is no more use for Potions, Antidotes, X-items, etc. Shop stock shifts toward held items and berries ([Items-4](DESIGN-ITEMS.md#items-4-shops)).
 
 ## Equal Party sizes
 
@@ -115,7 +115,7 @@ After a Leader battle:
 
 1. **Badge**
 2. **HM** — field ability for this badge count when that row grants a new unlock ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves))
-3. **TM** — player picks one from that Leader's pool they qualify for by badge count ([World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms))
+3. **TM** — player picks one from that Leader's pool they qualify for by badge count ([Items-2 § Gym TMs](DESIGN-ITEMS.md#gym-tms))
 4. **Wild Pokemon Hint** ([Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties))
 
 ## Rematches

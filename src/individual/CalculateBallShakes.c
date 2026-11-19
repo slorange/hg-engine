@@ -8,6 +8,7 @@
 #include "constants/file.h"
 #include "constants/hold_item_effects.h"
 #include "constants/item.h"
+#include "constants/maps.h"
 #include "constants/move_effects.h"
 #include "constants/moves.h"
 #include "constants/species.h"
@@ -47,6 +48,149 @@ u16 MoonBallSpecies[] = {
 
 };
 
+extern BOOL LONG_CALL EncounterResolveMapId(u16 *mapIdOut);
+extern BOOL LONG_CALL MapHeader_IsOutdoors(u32 mapId);
+
+static u32 HeavyBallRatio(s32 weight)
+{
+    if (weight < 100) return UQ412__0_5;
+    if (weight < 250) return UQ412__1_0;
+    if (weight < 500) return 2 * UQ412__1_0;
+    if (weight < 1000) return 3 * UQ412__1_0;
+    if (weight < 2000) return 4 * UQ412__1_0;
+    if (weight < 4000) return 6 * UQ412__1_0;
+    return 8 * UQ412__1_0;
+}
+
+static u32 FastBallRatio(u16 species, u32 speed)
+{
+    if (species == SPECIES_RAIKOU || species == SPECIES_ENTEI || species == SPECIES_SUICUNE)
+        return 10 * UQ412__1_0;
+    if (speed < 40) return UQ412__0_5;
+    if (speed < 60) return UQ412__1_0;
+    if (speed < 80) return 2 * UQ412__1_0;
+    if (speed < 100) return 3 * UQ412__1_0;
+    if (speed < 120) return 4 * UQ412__1_0;
+    return 5 * UQ412__1_0;
+}
+
+static u32 DuskBallRatio(u16 mapId, u32 timeOfDay)
+{
+    // Use the last digit of each map code, with 0 representing floor 10.
+    // The outdoor Ruins of Alph header has no floor suffix and counts as floor 1.
+    switch (mapId) {
+    case MAP_D24:
+    case MAP_D01R0101:
+    case MAP_D03R0101:
+    case MAP_D05R0101:
+    case MAP_D11R0101:
+    case MAP_D24R0101:
+    case MAP_D24R0201:
+    case MAP_D24R0211:
+    case MAP_D25R0101:
+    case MAP_D26R0101:
+    case MAP_D38R0101:
+    case MAP_D39R0101:
+    case MAP_D40R0101:
+    case MAP_D41R0101:
+    case MAP_D42R0101:
+    case MAP_D43R0101:
+    case MAP_D44R0101:
+    case MAP_D45R0101:
+    case MAP_D48R0101:
+    case MAP_D50R0101:
+    case MAP_D51R0201:
+    case MAP_D52R0101:
+        return 5 * UQ412__1_0;
+    case MAP_D02R0102:
+    case MAP_D03R0102:
+    case MAP_D03R0103:
+    case MAP_D05R0102:
+    case MAP_D11R0102:
+    case MAP_D11R0103:
+    case MAP_D24R0102:
+    case MAP_D24R0202:
+    case MAP_D24R0203:
+    case MAP_D24R0212:
+    case MAP_D24R0213:
+    case MAP_D25R0102:
+    case MAP_D25R0103:
+    case MAP_D26R0102:
+    case MAP_D26R0103:
+    case MAP_D38R0102:
+    case MAP_D38R0103:
+    case MAP_D39R0102:
+    case MAP_D39R0103:
+    case MAP_D40R0102:
+    case MAP_D42R0102:
+    case MAP_D43R0102:
+    case MAP_D43R0103:
+    case MAP_D44R0102:
+    case MAP_D45R0102:
+    case MAP_D52R0102:
+    case MAP_D52R0103:
+        return 6 * UQ412__1_0;
+    case MAP_D11R0104:
+    case MAP_D11R0105:
+    case MAP_D11R0106:
+    case MAP_D11R0107:
+    case MAP_D24R0204:
+    case MAP_D24R0205:
+    case MAP_D24R0206:
+    case MAP_D24R0207:
+    case MAP_D24R0208:
+    case MAP_D24R0209:
+    case MAP_D24R0210:
+    case MAP_D24R0214:
+    case MAP_D24R0215:
+    case MAP_D24R0216:
+    case MAP_D24R0217:
+    case MAP_D24R0218:
+    case MAP_D38R0104:
+    case MAP_D39R0104:
+    case MAP_D40R0104:
+    case MAP_D40R0106:
+    case MAP_D40R0107:
+    case MAP_D41R0104:
+    case MAP_D41R0105:
+    case MAP_D41R0106:
+    case MAP_D41R0107:
+        return 7 * UQ412__1_0;
+    default:
+        if (mapId < MAP_ID_MAX && (timeOfDay == 3 || timeOfDay == 4) && MapHeader_IsOutdoors(mapId))
+            return 4 * UQ412__1_0;
+        return UQ412__1_0;
+    }
+}
+
+static BOOL IsBreedableEggGroup(u32 group)
+{
+    return group != EGG_GROUP_NONE && group != EGG_GROUP_DITTO && group != EGG_GROUP_UNDISCOVERED;
+}
+
+static BOOL ShareBreedableEggGroup(u16 attackerSpecies, u16 defenderSpecies)
+{
+    u32 attacker1 = PokePersonalParaGet(attackerSpecies, PERSONAL_EGG_GROUP_1);
+    u32 attacker2 = PokePersonalParaGet(attackerSpecies, PERSONAL_EGG_GROUP_2);
+    u32 defender1 = PokePersonalParaGet(defenderSpecies, PERSONAL_EGG_GROUP_1);
+    u32 defender2 = PokePersonalParaGet(defenderSpecies, PERSONAL_EGG_GROUP_2);
+    return (IsBreedableEggGroup(attacker1) && (attacker1 == defender1 || attacker1 == defender2))
+        || (IsBreedableEggGroup(attacker2) && (attacker2 == defender1 || attacker2 == defender2));
+}
+
+static BOOL IsFriendshipEvolutionFamily(u16 species)
+{
+    static const u16 speciesInFamilies[] = {
+#include "../../build/friend_ball_families.inc"
+    };
+
+    for (unsigned i = 0; i < NELEMS(speciesInFamilies); i++) {
+        if (speciesInFamilies[i] == species)
+            return TRUE;
+    }
+    return FALSE;
+}
+
 /**
  *  @brief calculate the amount of times a ball shakes
  *
@@ -57,7 +201,7 @@ u16 MoonBallSpecies[] = {
 u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, struct BattleStruct *sp)
 {
     u32 i, speciesCatchRate, ballCaptureRatio, criticalCapture = FALSE;
-    u32 heavyBallMod = 0, modifiedCatchRate = 0;
+    u32 modifiedCatchRate = 0;
     u64 a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, captureValueCoeffcient = 0, badgePenalty = UQ412__1_0, statusModifier = 0, criticalCatchModifier = 0, speciesInDex = 0, criticalCatchRate = 0, shakeChecks = 4, shakeChance = 0;
     int badges, missingBadges;
     BOOL isCriticalCatch = FALSE;
@@ -67,7 +211,6 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
         return 4;
     }
 
-    // location does not need to be adjusted because speciesCatchRate is not used until heavyBallMod is
     if (sp->item_work == ITEM_SAFARI_BALL) {
         speciesCatchRate = PokePersonalParaGet(sp->battlemon[sp->defence_client].species, PERSONAL_CATCH_RATE);
         speciesCatchRate = speciesCatchRate * gSafariBallRateTable[sp->safari_get_count][0] / gSafariBallRateTable[sp->safari_get_count][1];
@@ -101,11 +244,7 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
 #endif
     case ITEM_NET_BALL:
         if (HasType(sp, sp->defence_client, TYPE_WATER) || HasType(sp, sp->defence_client, TYPE_BUG)) {
-#if NET_BALL_GENERATION < 8
             ballCaptureRatio = 0x3000;
-#else
-            ballCaptureRatio = 0x3800;
-#endif
         }
         break;
     case ITEM_DIVE_BALL:
@@ -128,11 +267,7 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
         break;
     case ITEM_REPEAT_BALL:
         if (Battle_CheckIfHasCaughtMon(bw, sp->battlemon[sp->defence_client].species)) {
-#if REPEAT_BALL_GENERATION < 8
             ballCaptureRatio = 0x3000;
-#else
-            ballCaptureRatio = 0x3800;
-#endif
         }
         break;
     case ITEM_TIMER_BALL:
@@ -151,15 +286,12 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
     // case ITEM_PREMIER_BALL:
     //
     //     break;
-    case ITEM_DUSK_BALL:
-        if (Battle_GetTimeOfDay(bw) == 3 || Battle_GetTimeOfDay(bw) == 4 || BattleWorkGroundIDGet(bw) == 5) {
-#if DUSK_BALL_GENERATION < 7
-            ballCaptureRatio = 0x3800;
-#else
-            ballCaptureRatio = 0x3000;
-#endif
-        }
+    case ITEM_DUSK_BALL: {
+        u16 mapId = MAP_ID_MAX;
+        if (EncounterResolveMapId(&mapId))
+            ballCaptureRatio = DuskBallRatio(mapId, Battle_GetTimeOfDay(bw));
         break;
+    }
     // case ITEM_HEAL_BALL:
     //
     //     break;
@@ -175,21 +307,24 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
     // case ITEM_CHERISH_BALL:
     //
     //     break;
-    case ITEM_FAST_BALL:
-        if (PokePersonalParaGet(sp->battlemon[sp->defence_client].species, PERSONAL_BASE_SPEED) >= 100) {
-            ballCaptureRatio = 0x4000;
-        }
+    case ITEM_FAST_BALL: {
+        u16 species = sp->battlemon[sp->defence_client].species;
+        u16 formSpecies = GetSpeciesBasedOnForm(species, sp->battlemon[sp->defence_client].form_no);
+        ballCaptureRatio = FastBallRatio(species, PokePersonalParaGet(formSpecies, PERSONAL_BASE_SPEED));
         break;
+    }
     case ITEM_LEVEL_BALL: {
         u32 defLevel = sp->battlemon[sp->defence_client].level;
         u32 atkLevel = sp->battlemon[sp->attack_client].level;
 
-        if (atkLevel >= 4 * defLevel) {
-            ballCaptureRatio = 0x8000;
-        } else if (atkLevel >= 2 * defLevel) {
-            ballCaptureRatio = 0x4000;
-        } else if (atkLevel > defLevel) { // yes the pattern apparently doesn't hold
-            ballCaptureRatio = 0x2000;
+        if (defLevel >= atkLevel) {
+            ballCaptureRatio = UQ412__1_0;
+        } else if (4 * defLevel <= atkLevel) {
+            ballCaptureRatio = 8 * UQ412__1_0;
+        } else if (2 * defLevel <= atkLevel) {
+            ballCaptureRatio = 4 * UQ412__1_0 + 8 * UQ412__1_0 * (atkLevel - 2 * defLevel) / atkLevel;
+        } else {
+            ballCaptureRatio = UQ412__1_0 + 6 * UQ412__1_0 * (atkLevel - defLevel) / atkLevel;
         }
     } break;
     case ITEM_LURE_BALL: {
@@ -212,30 +347,23 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
 #endif
     } break;
     case ITEM_HEAVY_BALL:
-        if (GetPokemonWeight(bw, sp, -1, sp->defence_client) < 999) {
-            heavyBallMod = -20;
-        } else if (GetPokemonWeight(bw, sp, -1, sp->defence_client) < 1999) {
-            heavyBallMod = 0;
-        } else if (GetPokemonWeight(bw, sp, -1, sp->defence_client) < 2999) {
-            heavyBallMod = 20;
-        } else {
-            heavyBallMod = 30;
-        }
+        ballCaptureRatio = HeavyBallRatio(GetPokemonWeight(bw, sp, -1, sp->defence_client));
         break;
     case ITEM_LOVE_BALL: {
-        u32 gender1 = BattlePokemonParamGet(sp, sp->attack_client, BATTLE_MON_DATA_SEX, NULL);
-        u32 gender2 = BattlePokemonParamGet(sp, sp->defence_client, BATTLE_MON_DATA_SEX, NULL);
+        u32 attackerSex = BattlePokemonParamGet(sp, sp->attack_client, BATTLE_MON_DATA_SEX, NULL);
+        u32 defenderSex = BattlePokemonParamGet(sp, sp->defence_client, BATTLE_MON_DATA_SEX, NULL);
 
-        if (sp->battlemon[sp->attack_client].species == sp->battlemon[sp->defence_client].species
-            && gender1 != gender2
-            && gender1 != POKEMON_GENDER_UNKNOWN
-            && gender2 != POKEMON_GENDER_UNKNOWN) {
-            ballCaptureRatio = 0x8000;
+        if (attackerSex != defenderSex && attackerSex != POKEMON_GENDER_UNKNOWN && defenderSex != POKEMON_GENDER_UNKNOWN) {
+            u16 attacker = GetSpeciesBasedOnForm(sp->battlemon[sp->attack_client].species, sp->battlemon[sp->attack_client].form_no);
+            u16 defender = GetSpeciesBasedOnForm(sp->battlemon[sp->defence_client].species, sp->battlemon[sp->defence_client].form_no);
+            ballCaptureRatio = (ShareBreedableEggGroup(attacker, defender) ? 8 : 3) * UQ412__1_0;
         }
-    } break;
-    // case ITEM_FRIEND_BALL: // assume that this and the heal ball are handled elsewhere
-    //                        // Friend ball is handled at the end of the function, no clue for heal ball
-    //     break;
+        break;
+    }
+    case ITEM_FRIEND_BALL:
+        if (IsFriendshipEvolutionFamily(sp->battlemon[sp->defence_client].species))
+            ballCaptureRatio = 8 * UQ412__1_0;
+        break;
     case ITEM_MOON_BALL:
         for (i = 0; i < NELEMS(MoonBallSpecies); i++) // yes, this is how game freak coded it in heart gold/soul silver
         {
@@ -285,7 +413,6 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
     debug_printf("hp: %d\n", sp->battlemon[sp->defence_client].hp);
     debug_printf("level: %d\n", sp->battlemon[sp->defence_client].level);
     debug_printf("captureRate: %d\n", speciesCatchRate);
-    debug_printf("heavyBallMod: %d\n", heavyBallMod);
     debug_printf("ballCaptureRatio: %d\n\n", ballCaptureRatio);
 #endif
 
@@ -329,7 +456,7 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
 #endif
 
     // https://xcancel.com/Sibuna_Switch/status/1551411751803043840
-    c = (speciesCatchRate + heavyBallMod) * b;
+    c = speciesCatchRate * b;
 #ifdef DEBUG_CAPTURE_RATE_PERCENTAGES
     debug_printf("c: %d\n\n", c);
 #endif
@@ -580,15 +707,6 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
             }
         }
 
-        if (sp->item_work == ITEM_FRIEND_BALL && i == shakeChecks) // if amount of succeeded captures is the same as necessary for the type of capture
-        {
-#if FRIEND_BALL_GENERATION < 8
-            u32 friendship = 200;
-#else
-            u32 friendship = 150;
-#endif
-            SetMonData(Battle_GetClientPartyMon(bw, sp->defence_client, 0), MON_DATA_FRIENDSHIP, &friendship);
-        }
 #ifdef IMPLEMENT_CRITICAL_CAPTURE
         if (criticalCapture) { // succeeded the one chance it had
             i = i | CRITICAL_CAPTURE_MASK;
@@ -600,8 +718,11 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
     debug_printf("\nEnding ball business\n=================\n");
 #endif
 
-    if (sp->item_work == ITEM_FRIEND_BALL && (i & ~CRITICAL_CAPTURE_MASK) >= 4) // this code still necessary for the case that IMPLEMENT_CRITICAL_CAPTURE isn't defined
-    {
+    if (sp->item_work == ITEM_FRIEND_BALL
+#ifndef GUARANTEE_CAPTURES
+        && (i & ~CRITICAL_CAPTURE_MASK) >= shakeChecks
+#endif
+    ) {
         u32 friendship = 200;
         SetMonData(Battle_GetClientPartyMon(bw, sp->defence_client, 0), MON_DATA_FRIENDSHIP, &friendship);
     }

@@ -47,8 +47,8 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42](#route-42-reference-verified), [Route 40 / Cianwood](#route-40--cianwood-reference-verified), [Route 31 / Route 45](#route-31--route-45-dark-cave-reference) |
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
 | Story NPC removal | [Removing / skipping story NPCs](#removing--skipping-story-npcs-reusable-recipe) |
-| Accelerated game clock ([World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle)) | [30-minute days (48× RTC)](#accelerated-game-clock) |
-| Apricorn trees / new OW gfx | [Apricorn & custom overworld graphics (Future-1)](#apricorn--custom-overworld-graphics-future-1) |
+| Accelerated game clock ([World-4](DESIGN-WORLD.md#world-4-accelerated-daynight-cycle)) | [30-minute days (48× RTC)](#accelerated-game-clock) |
+| Apricorn trees / new OW gfx | [Apricorn & custom overworld graphics (Items-6)](#apricorn--custom-overworld-graphics-items-6) |
 | Mom intro / start city | [Open-world starting inventory](#open-world-starting-inventory-new-saves) → [Starter menu](#starter-selection--not-choose_starter), [Home warps](#home--bidirectional-door--interior-swap) |
 | Story flag sweep (dev) | [Story flag range sweep (dev)](#story-flag-range-sweep-dev) |
 | HGSS story flags (pret) | [HGSS-STORY-FLAGS.md](HGSS-STORY-FLAGS.md) — index **100–399**; add Wandering Heart notes as we map skips |
@@ -237,7 +237,7 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 
 **Was:** Inside **Saffron City’s Poké Mart**, the **second teller** (specialty clerk — Up-Grade, Dubious Disc, Twisted Spoon, Payapa Berry) was **gone**. The main clerk still opens the badge-tier **`ScrCmd_MartBuy`** list.
 
-**Design:** [World-6 § Shops](DESIGN-WORLD.md#world-6-shops) — Saffron specialty line matches **`sSaffronMart[]`** in **`src/field/mart.c`**.
+**Design:** [Items-4 § Shops](DESIGN-ITEMS.md#items-4-shops) — Saffron specialty line matches **`sSaffronMart[]`** in **`src/field/mart.c`**.
 
 **IDs (retail HGSS naming):**
 
@@ -742,7 +742,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 ### Pewter Gym — Brock + Gym TM choice pool (prototype)
 
-**Status (Nov 2026):** **Verified in-game** — first win (badge, level cap, HM row, badge-gated TM menu, farewell) **and** rematch (offer / decline / battle / TM pick). Brock = first Kanto leader on the shared HM/level-cap flow **and** the [World-4 § Gym TMs](DESIGN-WORLD.md#gym-tms) choice-menu template (Misty = second). Template for rolling the TM choice out to the other leaders.
+**Status (Nov 2026):** **Verified in-game** — first win (badge, level cap, HM row, badge-gated TM menu, farewell) **and** rematch (offer / decline / battle / TM pick). Brock = first Kanto leader on the shared HM/level-cap flow **and** the [Items-2 § Gym TMs](DESIGN-ITEMS.md#gym-tms) choice-menu template (Misty = second). Template for rolling the TM choice out to the other leaders.
 
 **Map IDs:** `MAP_T03GYM0101` (473) → scr_seq **752**, level scripts **525**, msg bank **462**, zone_event **426**. Brock = zone **obj 1** (sprite 373), **script 1 = slot 0**. Level scripts **525** = `02 04 00 …` → on-transition **script 4 = slot 3** (leave vanilla).
 
@@ -1280,7 +1280,7 @@ Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TA
 
 ## Accelerated game clock
 
-**Design:** [World-9 — Accelerated day/night cycle](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle). **Toggle:** `IMPLEMENT_ACCELERATED_GAME_CLOCK` in `include/config.h` (constants **`GAME_CLOCK_GAME_SECONDS_PER_REAL_SECOND`** = **48**, **`GAME_CLOCK_REAL_SECONDS_PER_GAME_DAY`** = **1800**). Comment out the master define to disable hooks and revert to vanilla RTC.
+**Design:** [World-4 — Accelerated day/night cycle](DESIGN-WORLD.md#world-4-accelerated-daynight-cycle). **Toggle:** `IMPLEMENT_ACCELERATED_GAME_CLOCK` in `include/config.h` (constants **`GAME_CLOCK_GAME_SECONDS_PER_REAL_SECOND`** = **48**, **`GAME_CLOCK_REAL_SECONDS_PER_GAME_DAY`** = **1800**). Comment out the master define to disable hooks and revert to vanilla RTC.
 
 **After any `hooks` change:** `make clean && make test.nds -j24` — stale **`00 48 00 47`** stubs in `base/arm9.bin` if you skip clean.
 
@@ -1319,7 +1319,7 @@ Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TA
 
 ### Still open
 
-[Remaining RTC surfaces](#remaining-rtc-surfaces) — calendar, daily rollover, berry pots, manual rest ([World-9](DESIGN-WORLD.md#world-9-accelerated-daynight-cycle)).
+[Remaining RTC surfaces](#remaining-rtc-surfaces) — calendar, daily rollover, berry pots, manual rest ([World-4](DESIGN-WORLD.md#world-4-accelerated-daynight-cycle)).
 
 ### Remaining RTC surfaces
 
@@ -1338,13 +1338,23 @@ After **Copy\*** + **`GF_RTC_TimeToSec`**, these still use **other** paths. Acce
 
 ---
 
-## Apricorn & custom overworld graphics (Future-1)
+## Apricorn & custom overworld graphics (Items-6)
 
-**Design:** [Future-1 — Apricorn economy](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance) (renewable harvest, new colours such as purple/grey, distributed crafting TBD). Trees are **field objects** placed at map load, not map terrain — placement is zone_event + scr_seq, not Future-4 geometry edits.
+**Design:** [Items-6 — Apricorn economy](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) (renewable harvest, new colours such as purple/grey, distributed crafting TBD). Trees are **field objects** placed at map load, not map terrain — placement is zone_event + scr_seq, not Future-4 geometry edits.
 
 The shared tree script (member **150**, standard script **2800**, text bank **23**) uses custom command **208/subcommand 9** to get the colour, roll **3–5** Apricorns in **0x8005**, and check space for the full bundle before the shake animation consumes the fruit. It then uses the ordinary Bag grant. Mom and the Route 30 man no longer give the Box. Route 30 member **227** skips the old gift cutscene, and member **228** retains the indoor NPC as a colour tip. Kurt points new players to the Pokémon Center crafter.
 
 Route 37 keeps its three existing tree objects in zone_event **38**. The ARM9 tree colour table at **0x020F6784** sets slots **13** and **15** to purple (**8**) and grey (**9**), with blue in slot **14**. The native tree and fruit lookups use the repointed tag tables in `src/apricorn_tree.c`. Tree tags **428–429** and fruit tags **430–431** use graphics **1858–1861**. Source files in `data/graphics/overworlds/appended/` pack after all follower graphics, and the build checks their sorted indexes. The two Bag items are **2685–2686**. Run `python scripts/dev/verify_apricorn_overlay.py` after packing to check colour selection, harvest capacity, and the archive indexes.
+
+### Items-6 capture effects
+
+`src/individual/CalculateBallShakes.c` sets the ball multipliers. Heavy reads effective weight in hectograms through `GetPokemonWeight`. Fast reads the target form’s base Speed and gives the three Johto beasts 10× by species. Net and Repeat use 3×. Love uses 3× for opposite genders and 8× when the two forms share a breedable Egg Group. `scripts/build/gen_friend_ball_families.py` follows evolution links in both directions and folds regional forms into their base species. Friend uses the generated family list for the 8× bonus and sets friendship to 200 on a successful catch.
+
+Dusk uses the encounter map ID. Its explicit map list covers the 53 cave-background headers and the Ruins of Alph. The final digit of the map code determines the draft floor tier, with 0 treated as floor 10 and the Ruins surface treated as floor 1. Maps outside the list can get 4× at night only if `MapHeader_IsOutdoors` classifies them as outdoors.
+
+Level Ball uses the ratio `r = wild level / active Pokémon level`. The multiplier is `7 − 6r` from equal level to half level and `12 − 16r` from half level to quarter level, with 1× and 8× caps at the outer ends. Each segment computes the increment from its lower multiplier anchor in Q4.12 using integer division.
+
+Dream Ball’s capture bonus is 4× for sleep or Comatose. Its Bag icon is wired independently of the throw and capture graphics. The overlay 7 graphics lookup at **0x0223251C** accepts IDs **1–24** and **1000–1027**. Dream Ball item **576** falls through to graphics index **3**, the regular Poké Ball. The Dream Ball battle art and lookup entry still need verification and integration.
 
 ### Verified gotcha: do not use `03xx` filenames in `data/graphics/overworlds/`
 
@@ -1653,7 +1663,7 @@ Vanilla **`InitMartUI`** drops **`ITEM_POKE_BALL` (4)** from buy lists while Gre
 
 **Toggle:** `#define MART_EXPANSION` in `include/config.h` (on in this fork).
 
-**Design:** [World-6](DESIGN-WORLD.md#world-6-shops) (player-facing summary in [CHANGELOG.md](../CHANGELOG.md) § Shops).
+**Design:** [Items-4](DESIGN-ITEMS.md#items-4-shops) (player-facing summary in [CHANGELOG.md](../CHANGELOG.md) § Shops).
 
 ### Two clerk models
 
@@ -1687,7 +1697,7 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 ## Trade-item evolution (use on Pokémon)
 
-**Design:** [World-5 § Trade evolutions — with held item](DESIGN-WORLD.md#with-a-held-item) — use the held item **on** the Pokémon (like a stone), no trade required.
+**Design:** [Items-3 § Trade evolutions — with held item](DESIGN-ITEMS.md#with-a-held-item) — use the held item **on** the Pokémon (like a stone), no trade required.
 
 **Status:** verified in-game Sep 2026.
 
@@ -1707,13 +1717,13 @@ Vanilla **`InitMartUI`** still hides **`ITEM_POKE_BALL`** until **`FLAG_UNK_09A`
 
 **Verify in-game:** buy Metal Coat (Olivine) → use on Scyther → Scizor; Up-Grade (Saffron) on Porygon → Porygon2. Wrong species should show “no effect” like stones.
 
-**Not covered:** `EVO_TRADE_SPECIFIC_MON` (Shelmet/Karrablast). Plain trade lines use **Linking Cord** ([World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones)).
+**Not covered:** `EVO_TRADE_SPECIFIC_MON` (Shelmet/Karrablast). Plain trade lines use **Linking Cord** ([Items-3](DESIGN-ITEMS.md#items-3-evolution-methods-trade--stones)).
 
 ---
 
 ## Game Corner TM prizes
 
-**Design:** [World-4 § Game Corner TMs](DESIGN-WORLD.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
+**Design:** [Items-2 § Game Corner TMs](DESIGN-ITEMS.md#game-corner-tms) — renewable coin-purchased TMs at both Game Corners.
 
 International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlGameCornerPrizeMap` table from pret’s `scrcmd_dppl_prizes.c`). Each prize block embeds an item id and a coin cost. Submenus: **6 TMs + Cancel**, **4 held items + Cancel**, **3 Pokémon + Cancel**.
 
@@ -1741,7 +1751,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 | Goldenrod | Bright Powder, Quick Claw, Wide Lens, Metronome |
 | Celadon | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
 
-**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut until [World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented) ships; restore tiered costs when coin income is decided.
+**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut until [Items-2 § Coin income](DESIGN-ITEMS.md#coin-income-not-implemented) ships; restore tiered costs when coin income is decided.
 
 ### Files
 
@@ -1765,7 +1775,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 
 **Guard against recurrence:** a matching numeric value alone does not prove an offset is an item, price, or species operand. `validate_pokemon_flow` checks both complete vanilla party-space gates, both GiveMon commands (opcode, species variable, level, remaining arguments), and the four protected Goldenrod jumps. The patcher and build verifier both call it. Verification passed on the rebuilt scripts; the user confirmed the playable fix and level change. Existing saves work; reload the rebuilt `test.nds` in DeSmuME.
 
-**Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [World-4 § Coin income](DESIGN-WORLD.md#coin-income-not-implemented).
+**Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [Items-2 § Coin income](DESIGN-ITEMS.md#coin-income-not-implemented).
 
 **Changing TMs later:** edit replacement tables in `patch_scr_seq_game_corner.py`, update menu strings in the text banks (keep `{CURSOR_X …}` padding if renaming), rebuild.
 
@@ -2230,7 +2240,7 @@ See also [`scripts/README.md`](../scripts/README.md) ecology bullets.
 
 ## Randomized field pickups
 
-See [World-8 § Ground and hidden items](DESIGN-WORLD.md#ground-and-hidden-items) for the pool and bundle rules. Edit weights and item tables in [`src/field_pickups.c`](../src/field_pickups.c). The picker derives a stable reward from the 32-bit trainer ID and existing collection flag. Spawns that share a flag also share a reward.
+See [Items-1 § Ground and hidden items](DESIGN-ITEMS.md#ground-and-hidden-items) for the pool and bundle rules. Edit weights and item tables in [`src/field_pickups.c`](../src/field_pickups.c). The picker derives a stable reward from the 32-bit trainer ID and existing collection flag. Spawns that share a flag also share a reward.
 
 [`patch_field_pickups.py`](../scripts/build/patch_field_pickups.py) runs at the end of the script NARC build. It redirects the capacity and grant commands in members **141** (ground balls), **145** (hidden items), and **938** (Lake of Rage's three local pickups) to new script command **8**. Original item initializers, flag writes, and success and failure branches stay in place. The capacity check selects the reward and the grant uses the same item and count. Apricorn rewards use the same Bag capacity check and grant as other rewards.
 
@@ -2275,7 +2285,7 @@ python3 scripts/dev/find_msg_text.py "Olivine City" --bank 604
 
 ---
 
-## Shared Pokémon Center hub (World-10)
+## Shared Pokémon Center hub (World-5)
 
 `SHARED_POKEMON_CENTER` in `include/config.h` routes the 24 ordinary Centers into Route 32 1F (`MAP_R32PC0101`, header 169), preserving its basement (170) and nurse/PC services. **Indigo Plateau is excluded**: its outdoor entrance, League lobby, scripts, and Elite Four access retain their existing behavior. No exterior warp tables are rewritten.
 
@@ -2327,7 +2337,7 @@ Relocation crash fix: the first packed version entered an imported Thumb Bag hel
 
 The remaining vanilla gift giver in Route 32 1F (zone_event **163**, object **6**, local **(13, 17)**, facing left with movement **16** and initial direction **2**) now uses scriptId **6**, replacing the vanilla Lure Ball gift even on saves that already claimed it. `scripts/build/patch_center_apricorn.py` runs after the relearner patch, appends script slot **5** in member **233**, and preserves all original code and warp indices. The crafter moved 12 tiles right and one up from (1,18) to block the basement stair approach; the basement is reserved as his implied work area. Messages **25–31** are appended to bank **381**.
 
-`src/field/apricorn_craft.c` (overlay 131) counts the eight craftable Apricorn stacks in the Bag. It exchanges them immediately at **one ball per Apricorn** using the Future-1 recipes. White Apricorns stay in the Bag. The fee is **100 × ceil(total / 10)** across all colours combined, with no fee for zero Apricorns. The confirmation quote prints fee hundreds followed by `00`, avoiding 16-bit script-var truncation for large fees.
+`src/field/apricorn_craft.c` (overlay 131) counts the eight craftable Apricorn stacks in the Bag. It exchanges them immediately at **one ball per Apricorn** using the Items-6 recipes. White Apricorns stay in the Bag. The fee is **100 × ceil(total / 10)** across all colours combined, with no fee for zero Apricorns. The confirmation quote prints fee hundreds followed by `00`, avoiding 16-bit script-var truncation for large fees.
 
 Custom command **208/subcommand 5** takes mode **0** to quote or **1** to recheck and commit. It outputs total in **0x8000**, fee hundreds in **0x8001**, and status in **0x800C** (0 success, 1 empty, 2 insufficient money, 3 insufficient ball space, 4 temporary allocation failure). It simulates every removal/addition on a temporary Bag copy, checks the 999-per-ball stack limit, and only then commits the Bag and deducts money. The standard purchase sound plays only after a successful commit. No new save fields are needed.
 
@@ -2402,7 +2412,7 @@ After Docker `make test.nds -j24`, run `python scripts/dev/verify_center_relearn
 
 **Route 24 / 25 seam:** guru @ world **(1320, 65)** — duplicate object + scr_seq append on **both** **025**/**215**/**362** and **026**/**216**/**363** (see inventory table).
 
-**Route 32:** for World-10, the guru now stands outside at world **(466, 419)** beside the Center door **(468, 419)**. The build patch removes interior objects 4/5, appends outdoor script 11 while preserving the original route bytecode and relative branches, and uses outdoor text bank 380. The hub relearner subsequently occupies interior object 4 with a new script; the original scripts in member 233 remain intact. Verify after building with `python scripts/dev/verify_r32_outdoor_rod_guru.py`; check placement and conversation in-game.
+**Route 32:** for World-5, the guru now stands outside at world **(466, 419)** beside the Center door **(468, 419)**. The build patch removes interior objects 4/5, appends outdoor script 11 while preserving the original route bytecode and relative branches, and uses outdoor text bank 380. The hub relearner subsequently occupies interior object 4 with a new script; the original scripts in member 233 remain intact. Verify after building with `python scripts/dev/verify_r32_outdoor_rod_guru.py`; check placement and conversation in-game.
 
 **Gym-area story skip (Radio Tower / Elm phone coord):** vanilla **coord script 2** at world **(272, 239)** (west of the gym) when **`VAR_UNK_4078`** is 0 — not the rival hide flag (**470**). Mom intro sets **4078 → 1** (`openworld_story_skip_flags.inc`); **`tools/patch_scr_seq_olivine_gym_story.py`** NOPs scr_seq **911** slot **2** entry; **`tools/patch_zone_event_olivine_gym_story.py`** removes the coord from **074**.
 
@@ -2414,7 +2424,7 @@ After Docker `make test.nds -j24`, run `python scripts/dev/verify_center_relearn
 
 `GetStoneLevelEvolutionRequirement` in `src/pokemon.c` dispatches to the evolution overlay, whose internal reader reads the full evolution NARC record, including its trailing terminator, for the shared threshold. `PartyMenu_PrintEvoStoneCompatString` replaces ARM9 `0x0207DC20` via `hooks`; its original caller remains in place. The resident hook forwards to the evolution overlay for rendering; the renderer calls its local requirement reader directly, avoiding nested overlay loads. Below-level compatible Pokémon display `LVnn` in the existing compatibility window. Native ABLE/UNABLE strings and palette are retained. The hook address and call signature were checked against ARM9 disassembly and pret’s `party_context_menu.c`.
 
-Verification: Docker/Linux `python3 scripts/dev/verify_stone_level_evolution.py` compiles the actual requirement reader, item-resolution branch, and menu-label function against the current evolution data. Tests cover all seven items, target types, hybrid rounded thresholds, immediate targets, native stone methods, wrong types/items, final forms, move-known exclusions, eggs, and LV35/ABLE/UNABLE output. In-game menu rendering and evolution animation still require playtesting. Design: [World-5](DESIGN-WORLD.md#world-5-evolution-methods-trade--stones).
+Verification: Docker/Linux `python3 scripts/dev/verify_stone_level_evolution.py` compiles the actual requirement reader, item-resolution branch, and menu-label function against the current evolution data. Tests cover all seven items, target types, hybrid rounded thresholds, immediate targets, native stone methods, wrong types/items, final forms, move-known exclusions, eggs, and LV35/ABLE/UNABLE output. In-game menu rendering and evolution animation still require playtesting. Design: [Items-3](DESIGN-ITEMS.md#items-3-evolution-methods-trade--stones).
 
 
 ## Eevee supplementary player evolution methods

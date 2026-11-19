@@ -86,4 +86,10 @@ endef
 
 ifneq (1,$(NOSCAN))
 $(foreach overlay, $(INDIVIDUAL_OVERLAYS), $(eval $(call INDIVIDUAL_OVERLAY_DEFINE,$(overlay))))
+
+$(BUILD)/individual/CalculateBallShakes.o: $(BUILD)/friend_ball_families.inc
+
+$(BUILD)/friend_ball_families.inc: scripts/build/gen_friend_ball_families.py scripts/build/gen_level_up_evo_tables.py data/Evolutions.c data/FormToSpeciesMapping.c
+	@mkdir -p $(@D)
+	$(PYTHON) scripts/build/gen_friend_ball_families.py $@
 endif
