@@ -6,6 +6,7 @@
 .include "armips/include/soundeffects.s"
 .include "armips/include/vars.s"
 
+.equ ITEM_BIKE, 450
 .equ ITEM_SS_TICKET, 456
 .equ ITEM_PASS, 480
 .equ ITEM_APRICORN_BOX, 468
@@ -197,6 +198,7 @@ _mom_begin:
     giveitem_no_check ITEM_APRICORN_BOX, 1
     setflag FLAG_GOT_APRICORN_BOX
     giveitem_no_check ITEM_BERRY_POTS, 1
+    giveitem_no_check ITEM_BIKE, 1
     // Basic berries (Cheri–Persim): silent — no per-item received text
     giveitem ITEM_CHERI_BERRY, 5, VAR_SPECIAL_RESULT
     giveitem ITEM_CHESTO_BERRY, 5, VAR_SPECIAL_RESULT

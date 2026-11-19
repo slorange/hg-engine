@@ -18,7 +18,10 @@ def craft_objects(objects):
         if struct.unpack_from("<H", obj)[0] == 6:
             obj = bytearray(obj)
             struct.pack_into("<H", obj, 8, 0)  # Always visible, including old saves.
-            struct.pack_into("<H", obj, 10, 6) # New scriptId; keep position/sprite.
+            struct.pack_into("<H", obj, 10, 6) # Crafting script; keep original sprite.
+            struct.pack_into("<H", obj, 4, 16) # Native stationary face-left behavior.
+            struct.pack_into("<H", obj, 12, 2) # Initial facing: left.
+            struct.pack_into("<HH", obj, 24, 13, 17) # Block approach to basement stairs.
             obj = bytes(obj)
             found = True
         result.append(obj)
