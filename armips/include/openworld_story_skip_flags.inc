@@ -2,7 +2,7 @@
 // documentation/DESIGN-STORY.md Story-3 / documentation/TODO.md (Vanilla cleanup). Mahogany rocket *flags* live here; Mahogany map OnLoad only
 // runs hide_person when open-world starting items are on (see scr_seq_t28_005_onload.s).
 
-// Cherrygrove guide / Route 30 (Apricorn Box + shoes from Mom)
+// Cherrygrove guide / Route 30 (shoes from Mom)
     setflag FLAG_HIDE_CHERRYGROVE_GUIDE_GENT
     setflag FLAG_HIDE_ROUTE_30_YOUNGSTER_JOEY
     setflag FLAG_HIDE_ROUTE_30_APRICORN_MAN

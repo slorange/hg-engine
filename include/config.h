@@ -289,7 +289,7 @@
 // uncomment the line out to get this functionality
 #define SKIP_TUTORIAL_INFO
 
-// OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS: Mom intro grants (Pass, Ticket, Apricorn Box, …) plus
+// OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS: Mom intro grants (Pass, Ticket, Berry Pots, …) plus
 // openworld_story_skip_flags.inc on new saves; gates start-city / train / Mahogany OnLoad patchers.
 #define OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS
 

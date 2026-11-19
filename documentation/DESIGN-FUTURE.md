@@ -31,7 +31,7 @@ Apricorn harvesting, crafting, and a two-tier ball roster (shop vs Apricorn). Tr
 
 ## Apricorn economy
 
-Apricorns become a renewable crafting resource tied to the accelerated game clock.
+Apricorns go directly into the Bag and become a renewable crafting resource tied to the accelerated game clock.
 
 - trees refresh approximately once per in-game day;
 - each tree yields approximately **3–5 Apricorns**.

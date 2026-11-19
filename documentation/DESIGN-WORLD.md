@@ -332,7 +332,7 @@ Additional consideration is needed for Pickup ability.
 
 Ground and hidden pickups roll a category, then a reward within that category. The category weights are **20% Treasures**, **15% Evolution items**, **10% Held items**, **10% TMs**, **10% Balls**, **15% Apricorns**, and **20% Pokémon upgrades**. Pokémon upgrades include Rare Candy, PP Up and PP Max, vitamins, Bottle Caps, Mints, Ability Capsule, and Ability Patch. Treasures are the vanilla ones, plus Heart Scale. Berries and field utility items are disabled. If enabled, the Berry pool uses the 45 berries mentioned in World-7.
 
-Ultra Balls come in bundles of **3–5** and specialty Balls in bundles of **2–3**. Apricorns go directly into the Apricorn Box in bundles of **3–5** of one color. Each spot's reward is stable within a save and the spot is collected only after the full reward fits.
+Ultra Balls come in bundles of **3–5** and specialty Balls in bundles of **2–3**. Apricorns go directly into the Bag in bundles of **3–5** of one color. Each spot's reward is stable within a save and the spot is collected only after the full reward fits.
 
 Evolution items are Fire, Thunder, Water, Leaf, Ice, and Dusk Stones, plus Metal Coat. The held-item pool contains one standard booster for each of the 18 types, including Fairy Feather. TM01 through TM92 are eligible. The Ball pool contains Ultra, Net, Repeat, Timer, Fast, Level, Heavy, Love, Friend, Dream, Quick, and Dusk Balls.
 
@@ -402,7 +402,7 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 | **Abra fast travel** | Pay $400 to choose a visited destination on the travel map, then Teleport to its usual Fly landing spot. | Implemented |
 | **Move Relearner** | Relearn moves for $300 per successfully learned move. | Implemented |
 | **Rest / pass time** | Nurse Joy offers free rest until morning (4:00 AM), daytime (10:00 AM), or night (8:00 PM), replacing her healing interaction. The time shift lasts for the current session and resets on a fresh game start; the calendar date stays unchanged. | Implemented |
-| **Apricorn crafting** | Instantly exchange all carried Apricorns for their usual specialty balls, one per Apricorn, for $100 per ten Apricorns rounded up. Expanded recipes follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance). | Implemented |
+| **Apricorn crafting** | Instantly exchange all Apricorns in the Bag for their usual specialty balls, one per Apricorn, for $100 per ten Apricorns rounded up. Expanded recipes follow [Future-1](DESIGN-FUTURE.md#future-1-apricorn-economy--poké-ball-rebalance). | Implemented |
 | **Move Tutor** | Make special move tutoring available from any Center. | Maybe |
 | **Specialty Trader** | Exchange items or currencies for selected rewards. Inventory and pricing TBD. | Maybe |
 | **Researchers** | Register Arceus Plates and claim plate and Pokédex rewards ([Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society)). | Planned |

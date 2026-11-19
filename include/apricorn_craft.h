@@ -10,8 +10,7 @@ enum ApricornCraftStatus {
     APRICORN_CRAFT_UNAVAILABLE,
 };
 
-u16 ApricornCraft_Exchange(BAG_DATA *bag, u8 *box, u32 *money, BOOL commit,
+u16 ApricornCraft_Exchange(BAG_DATA *bag, u32 *money, BOOL commit,
                           u16 *total, u16 *feeHundreds);
 u16 ApricornCraft_Run(void *saveData, BOOL commit, u16 *total, u16 *feeHundreds);
-u8 *LONG_CALL ApricornCraft_GetBox(void *saveData);
 #endif

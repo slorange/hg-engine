@@ -3,6 +3,7 @@
 #include "../include/abra_travel.h"
 #include "../include/game_clock.h"
 #include "../include/constants/file.h"
+#include "../include/constants/item.h"
 #include "../include/ecology/ecology_script.h"
 #include "../include/field_pickups.h"
 #include "../include/fishing_rod.h"
@@ -21,7 +22,27 @@
 #define SCRIPT_NEW_CMD_ABRA_TRAVEL            6
 #define SCRIPT_NEW_CMD_CENTER_REST            7
 #define SCRIPT_NEW_CMD_FIELD_PICKUP           8
+#define SCRIPT_NEW_CMD_APRICORN_TREE          9
 #define SCRIPT_NEW_CMD_MAX 256
+
+extern BOOL LONG_CALL FieldSystem_ApricornTree_HasFruit(FieldSystem *, LocalMapObject *);
+extern int LONG_CALL FieldSystem_ApricornTree_GetApricorn(FieldSystem *, LocalMapObject *);
+
+static void CheckApricornHarvest(FieldSystem *field)
+{
+    LocalMapObject **tree = FieldSysGetAttrAddr(field, SCRIPTENV_LAST_TALKED);
+    u16 *result = GetVarPointer(field, 0x800C);
+    // 0 = empty, 1 = ready, 2 = Bag full. The animation marks the tree picked.
+    *result = 0;
+    if (tree == NULL || !FieldSystem_ApricornTree_HasFruit(field, *tree))
+        return;
+
+    int colour = FieldSystem_ApricornTree_GetApricorn(field, *tree);
+    u16 item = ITEM_RED_APRICORN + colour;
+    *GetVarPointer(field, 0x8000) = colour;
+    *GetVarPointer(field, 0x8004) = item;
+    *result = Bag_HasSpaceForItem(Sav2_Bag_get(field->savedata), item, 1, HEAPID_WORLD) ? 1 : 2;
+}
 
 BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
 {
@@ -29,6 +50,9 @@ BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
     u16 UNUSED arg0 = ScriptReadHalfword(ctx);
 
     switch (sw) {
+    case SCRIPT_NEW_CMD_APRICORN_TREE:
+        CheckApricornHarvest(ctx->fsys);
+        break;
     case SCRIPT_NEW_CMD_FIELD_PICKUP:
         FieldPickup_Run(ctx, arg0);
         break;

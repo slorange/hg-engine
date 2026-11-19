@@ -1,6 +1,6 @@
 #include "field_pickups.h"
 
-#include "apricorn_craft.h"
+#include "bag.h"
 #include "constants/file.h"
 #include "constants/item.h"
 #include "map_events_internal.h"
@@ -152,14 +152,6 @@ void FieldPickup_Run(SCRIPTCONTEXT *ctx, u16 action)
         }
         if (flag != 0)
             PickReward(Sav2_PlayerData_GetProfileAddr(save)->id, flag, item, quantity);
-    }
-
-    if (*item >= ITEM_RED_APRICORN && *item <= ITEM_BLACK_APRICORN) {
-        u8 *count = &ApricornCraft_GetBox(save)[*item - ITEM_RED_APRICORN];
-        *result = *count + *quantity <= 99;
-        if (*result && action == FIELD_PICKUP_GRANT)
-            *count += *quantity;
-        return;
     }
 
     BAG_DATA *bag = Sav2_Bag_get(save);

@@ -116,6 +116,7 @@ Removals or script skips for obsolete vanilla content. Prefer disabling a branch
 | SquirtBottle / Floria flower-shop chain | Route 36 Sudowoodo removed | Remove or flavour-only Goldenrod SquirtBottle girl |
 | Sudowoodo encounter scripts (Route 36) | Tree hidden via Mom intro flag | Optional: relocate encounter elsewhere later |
 | Stale badge-gate scripts (R32, R36, Mahogany, …) | Replaced by open travel | Scan coord triggers / talk scripts |
+| Kurt’s house entry cutscene (Azalea Town) | Thanks the player for helping against Team Rocket after the Slowpoke Well story is skipped | Remove the entry cutscene and its Pokégear number offer. Keep Kurt’s regular retired-crafter dialogue. |
 
 ### Superseded HM and progression teaching
 

@@ -9,7 +9,6 @@
 .equ ITEM_BIKE, 450
 .equ ITEM_SS_TICKET, 456
 .equ ITEM_PASS, 480
-.equ ITEM_APRICORN_BOX, 468
 .equ ITEM_BERRY_POTS, 470
 .equ ITEM_CHERI_BERRY, 149
 .equ ITEM_CHESTO_BERRY, 150
@@ -195,8 +194,6 @@ _mom_begin:
     // Key items last (each uses std_give_item_verbose — waits for A)
     giveitem_no_check ITEM_SS_TICKET, 1
     giveitem_no_check ITEM_PASS, 1
-    giveitem_no_check ITEM_APRICORN_BOX, 1
-    setflag FLAG_GOT_APRICORN_BOX
     giveitem_no_check ITEM_BERRY_POTS, 1
     giveitem_no_check ITEM_BIKE, 1
     // Basic berries (Cheri–Persim): silent — no per-item received text

@@ -1,0 +1,4 @@
+It’s an Apricorn Tree!\r
+{STRVAR_1 3, 0, 0} put the {STRVAR_1 8, 1, 0}\nin the Bag!
+There are no Apricorns...
+There’s no room in your Bag\nfor the Apricorn.
