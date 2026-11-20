@@ -15,7 +15,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-5. Gym Leader Ecology Hints](#future-5-gym-leader-ecology-hints) |
 | [Future-7. Generated trainer & Gym parties](#future-7-generated-trainer--gym-parties) |
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
-| [Future-9. Time advancement](#future-9-time-advancement) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Pokémon Research Society](#future-11-pokémon-research-society) |
 | [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
@@ -135,14 +134,10 @@ The player picks from a curated list of families for that Gym. The Leader names 
 
 ### Randomize species
 
-Replace party species with **random eligible species** from the available dex ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)), then apply the same stage rules as release scaling ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release)) so the chosen form fits the level band.
-
-## Trainer party size vs badge count
-
-Scaling **how many** Pokémon appear on trainer teams by badges (e.g. a late-game Falkner with four birds instead of two) means **generating** new species per slot, not only re-leveling vanilla parties. Same dependency as species randomization above — **deferred** with Future-7. Release keeps **vanilla authored party sizes** ([Battle-1 § Equal Party sizes](DESIGN-BATTLES.md#equal-party-sizes)).
+Replace party species with **random eligible species** from the available dex ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)), then apply the same stage rules as release scaling ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release)) so the chosen form fits the level band. Scale party size by badge count as well.
 
 ## Gym rosters
-Gyms (both trainers and leaders) are **monotype by default**, with exceptions:
+Gyms (both trainers and leaders) are **monotype by default**, with a few exceptions:
 
 | Leader | Gym type(s) for hints / filters | Roster notes |
 |--------|--------------------------------|--------------|
@@ -156,16 +151,19 @@ Gyms (both trainers and leaders) are **monotype by default**, with exceptions:
 
 All other Leaders use their vanilla Gym type only.
 
-## TMs and Held Items
-Once a trainer's team is generated, we also give the trainer some TMs randomly, and teach them to their team where appropriate. TM list will need to be curated so no useless TMs are taught. Number and Quality of TMs should increase as Badge count increases. Gym trainers should have more of that Gym's type of TMs. Gym Leaders should get an additional boost of Number and Quality of TMs.
-
-## IVs, EVs, and Nature
-
-Scale trainer **EVs** with badges. **Gym Leaders** have higher **IVs** than ordinary trainers. **Nature** agrees with the EV spread and whether the set is physical or special.
-
 ## Trainer class
 
-Class biases the species pool and how finished the set is. A late-game Youngster and a late-game Ace Trainer can share a badge count and still differ.
+Class biases the species pool and typing as well. Some classes will have a hardcoded pool rather than a type.
+
+## TMs and Moves
+Once a trainer's team is generated, we also give the trainer some TMs randomly, and teach them to their team where appropriate. TM list will need to be curated so no useless TMs are taught. Number and Quality of TMs should increase as Badge count increases. Gym trainers should have more of that Gym's type of TMs. Gym Leaders should get an additional boost of Number and Quality of TMs.
+
+Then each Pokemon gets a moveset using their learnset, and available tms, again with filters on bad moves. Coverage is a consideration. As is attack and special attack stat for physical/special moves.
+
+## IVs, EVs, Nature, Held item
+
+Scale trainer **EVs** with badges. **Gym Leaders** have higher **IVs** than ordinary trainers. **Nature** agrees with the EV spread and whether the set is physical or special.
+Use the held items based on their badge count unlock.
 
 ## Abilities
 
@@ -180,15 +178,6 @@ Class biases the species pool and how finished the set is. A late-game Youngster
 **Set synergy.** Swift Swim + Drizzle, Guts + Flame Orb, Choice Band − Swords Dance.
 
 **Further considerations:** PP, form, gender, friendship, ball, shiny.
-
-## Technical investigation
-
-- random species for generated teams;
-- monotype generation with curated exceptions.
-- tms and held items
-- badge-scaled EVs, higher Gym Leader IVs, and natures matched to the spread
-- trainer-class bias for species and set quality
-- hidden-ability rates, ability-tier odds, and set synergy
 
 ---
 
@@ -244,19 +233,6 @@ An eligible species **anywhere in the collection** (party or box) can perform an
 
 
 
-
-# Future-9. Time advancement
-
-The player should be able to deliberately advance time rather than waiting.
-
-### Resting at Pokémon Centers / hotels
-Allows controlled advancement of time. **Pokémon Center rest menus** live in the shared hub ([World-5](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub)); hotels and other inns may share the same rest rules where they exist in the world.
-
-### Portable resting
-A tent, sleeping bag, camping system, or similar mechanic can potentially allow resting outside 
-towns. Exact implementation TBD.
-
----
 
 # Future-10. Living trainers & interactions
 
@@ -481,6 +457,7 @@ Each location’s **theme word** lists the **unique letter forms** that can appe
 
 Ideas that do not have their own `Future-*` section yet.
 
+- **Portable resting** — consider a tent, sleeping bag, or camping system that lets players rest outside towns to advance time.
 - **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
 - **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([Items-2 § Coin income](DESIGN-ITEMS.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
@@ -514,11 +491,9 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Future-7](#future-7-generated-trainer--gym-parties) |
 | [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | — |
-| [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) Apricorn economy | 7 | 3 | 4 | 3 | 2 | 4 | — |
 | [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
-| [Future-9](#future-9-time-advancement) Time advancement | 4 | 1 | 1 | 1 | 3 | 1 | — |
 | [Future-11](#future-11-pokémon-research-society) Pokémon Research Society | 3 | 2 | 3 | 3 | 2 | 2 | — |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
 | [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | Moon Ball  wants [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) |

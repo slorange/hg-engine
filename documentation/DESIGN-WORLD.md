@@ -134,7 +134,7 @@ Does not apply to:
 
 **Pokémon Center rest:** Nurse Joy can advance the time of day for the current session ([World-5](#world-5-shared-pokémon-center-hub)). Restarting the game restores the real-clock-based schedule; the calendar date stays unchanged.
 
-**Still open:** portable camping in [Future-9](DESIGN-FUTURE.md#future-9-time-advancement); virtual calendar for [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
+**Still open:** portable camping in [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes); virtual calendar for [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
 
 ---
 

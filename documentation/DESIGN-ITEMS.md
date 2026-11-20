@@ -249,11 +249,10 @@ Mom intro grants **Berry Pots** and **5× each** basic berry **Cheri through Per
 
 Apricorns go directly into the Bag and become a renewable crafting resource tied to the accelerated game clock.
 
-- trees refresh approximately once per in-game day;
-- each successful harvest yields **3–5 Apricorns**.
-- Planned additional Apricorn trees throughout Kanto and Johto
-
-With the ~30-minute day target, this is a faster renewable economy than vanilla HGSS.
+- trees refresh once per in-game day;
+- each successful harvest yields **3–5 Apricorns**;
+- 29 additional Apricorn trees grow near the original locations across Kanto and Johto, bringing the total to 60.
+- colors are randomized per save file
 
 The player does not need to repeatedly return to Azalea Town merely to craft Apricorn Balls. There is a new NPC in the Pokémon Center that will craft Apricorn Balls for a small fee.
 
@@ -288,8 +287,8 @@ Colours signal ball identity rather than vanilla Apricorn associations. **Grey**
 <tr><td>🩶 Grey</td><td>Heavy Ball</td><td align="right">8×</td><td>Effective weight under 10 / 10–24.9 / 25–49.9 / 50–99.9 / 100–199.9 / 200–399.9 / 400+ kg gives 0.5× / 1× / 2× / 3× / 4× / 6× / 8×.</td></tr>
 <tr><td>🩷 Pink</td><td>Love Ball</td><td align="right">8×</td><td>3× opposite gender; 8× opposite gender + compatible Egg Group.</td></tr>
 <tr><td>🟢 Green</td><td>Friend Ball</td><td align="right">8×</td><td>8× vs families with a friendship evolution (whole family qualifies); caught mon starts at <strong>200</strong> friendship.</td></tr>
-<tr><td>🟡 Yellow</td><td>Level Ball</td><td align="right">8×</td><td>2× when the active Pokémon is higher level, 4× at twice the wild level, and 8× at four times the wild level. With a linear rate between these points.</td></tr>
-<tr><td>🟣 Purple</td><td>Dream Ball</td><td align="right">4×</td><td>Sleeping targets.</td></tr>
+<tr><td>🟡 Yellow</td><td>Level Ball</td><td align="right">8×</td><td>1× at equal level or above, 4× when the wild Pokémon is half the active Pokémon’s level, and 8× at one quarter or below. The multiplier rises linearly between each pair of points.</td></tr>
+<tr><td>🟣 Purple</td><td>Dream Ball</td><td align="right">4×</td><td>Sleeping targets or targets with Comatose.</td></tr>
 <tr><td>🔵 Blue</td><td>Quick Ball</td><td align="right">5×</td><td>First turn only.</td></tr>
 <tr><td>⚫ Black</td><td>Dusk Ball</td><td align="right">7×</td><td>4× outdoors at night. Caves use 5× on floor 1, 6× on floors 2–3, and 7× on floors 4+ at any hour.</td></tr>
 </tbody>

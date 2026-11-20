@@ -32,6 +32,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Item | Design | What to test |
 | ---- | ------ | ------------ |
 | **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
+| **Poké Ball catch rates** | [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) | Test all eight crafted balls plus Net and Repeat. Cover Fast and Heavy bracket boundaries, Fast’s legendary beast bonus, Level’s anchors and intermediate ratios, Dusk’s cave floors and outdoor day/night rates, Love’s gender and Egg Group cases, Friend’s family bonus and 200 friendship, Dream’s sleep and Comatose cases, Quick’s first and later turns, Net’s Water and Bug targets, and Repeat’s caught and uncaught species. Include non-qualifying controls. |
 | **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#ground-and-hidden-items) | Playtest a visible ball and hidden spot, then revisit after collecting. Check that a full Bag or Apricorn Box leaves the spot available and that a retry gives the same bundle. Verify Apricorn Box counts and pickup text, and spot-check the randomized Ice Path pickup and fixed Mt. Moon Moon Stone. |
 
 ---

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Check packed field service placement and execute its resident dispatcher."""
 import struct
+from collections import Counter
+import re
 import ndspy.narc
 import ndspy.rom
 from verify_abra_travel_arm import Machine, ROOT, REGS, PROFILE, CTX, FS, STOP
@@ -180,14 +182,51 @@ def main():
         m = HarvestMachine(rom, colour, True, ripe=False)
         assert m.call('Script_RunNewCmd', CTX) == 0
         assert m.r32(m.VARS + 0xC * 4) == 0 and not m.capacity_checks
-    verify_route37_colours(rom)
+    verify_tree_colours(rom)
     print('OK: packed tree preflight, ripe and empty trees, and Bag capacity for all nine colours')
     print(f'OK: packed field transaction quote/commit/failures, Thumb helper calls, dispatcher loaded/unloaded/null guards, no overlap; overlay 129 {root[2]} bytes, {0xA000-root[2]} free')
 
 
-def verify_route37_colours(rom):
+def verify_tree_colours(rom):
+    count = int(re.search(r'^#define NUM_APRICORN_TREE (\d+)', (ROOT / 'include/save.h').read_text(), re.M)[1])
+    slots = []
+    for member in ndspy.narc.NARC(rom.getFileByName('a/0/3/2')).files:
+        if len(member) < 8:
+            continue
+        object_offset = 4 + 20 * struct.unpack_from('<I', member)[0]
+        object_count = struct.unpack_from('<I', member, object_offset)[0]
+        for i in range(object_count):
+            obj = struct.unpack_from('<14HI', member, object_offset + 4 + 32 * i)
+            if obj[5] == 2800:
+                slots.append(obj[7])
+    assert sorted(slots) == list(range(count)), slots
+
     m = CraftMachine(rom, True)
-    assert bytes(m.uc.mem_read(0x020F6791, 3)) == bytes((8, 3, 9))
+    for addr, name in ((0x020557A0, 'ApricornTree_GetType'), (0x020557C0, 'ApricornTree_GetApricorn')):
+        assert struct.unpack_from('<I', rom.arm9, addr - 0x02000000 + 4)[0] == m.symbols[name] | 1
+
+    tree = HarvestMachine.OBJECT
+    layouts = {}
+    extra_colours = set()
+    for seed in (0, 1, 0x12345678, 0xFFFF0001, 0):
+        m.w32(PROFILE + 0x10, seed)
+        layout = []
+        for slot in range(count):
+            m.w32(tree + 0x38, slot)  # LocalMapObject param0
+            colour = m.call(0x020557A0, FS, tree)
+            assert m.call(0x020557C0, FS, tree) == colour - 1
+            layout.append(colour)
+        layout = tuple(layout)
+        frequencies = Counter(layout)
+        assert frequencies.keys() == {1, 2, 3, 4, 5, 7, 8, 9}
+        low, extra = divmod(count, len(frequencies))
+        assert sorted(frequencies.values()) == [low] * (8 - extra) + [low + 1] * extra
+        extra_colours.add(tuple(sorted(colour for colour, total in frequencies.items() if total > low)))
+        assert layout == layouts.setdefault(seed, layout)
+    assert len(set(layouts.values())) == len(layouts)
+    assert not count % 8 or len(extra_colours) > 1
+    print(f'OK: {count} packed tree slots, balanced per-save colours, and matching harvest lookups')
+
     for colour, tag in enumerate(TREE_TAGS[1:], 1):
         assert m.call(0x020640A4, colour, 1) == tag
         assert m.call(0x020640A4, colour, 0) == TREE_TAGS[0]
@@ -233,7 +272,7 @@ def verify_route37_colours(rom):
         assert item_data[item] == item_data[APRICORN_ITEMS[0]]
         assert item_gfx[2 * item + 2] == (ROOT / f'build/a018/{item + 2}-00.NCGR').read_bytes()
         assert item_gfx[2 * item + 3] == (ROOT / f'build/a018/{item + 2}-01.NCLR').read_bytes()
-    print('OK: Route 37 tree slots, fruit animation sprite selection, Bag data/icons, and follower NARC indexes')
+    print('OK: tree and fruit sprite selection, Bag data/icons, and follower NARC indexes')
 
 
 if __name__ == '__main__':

@@ -580,5 +580,3 @@ arm9 020649B4 64 E2 0F 02
 
 # Route 37 tree slots 13 and 15 (red and black). Slot 14 stays blue.
 #include "include/apricorn_tree.h"
-arm9 020F6791 APRICORN_TYPE_PURPLE
-arm9 020F6793 APRICORN_TYPE_GREY

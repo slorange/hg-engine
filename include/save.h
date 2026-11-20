@@ -90,7 +90,7 @@ typedef struct BerryPot {
 #define NUM_OF_STORED_MONS         4
 
 #define MAX_APRICORN_TREE 128
-#define NUM_APRICORN_TREE 31
+#define NUM_APRICORN_TREE 60
 
 #define MAX_BERRY_POT 4
 

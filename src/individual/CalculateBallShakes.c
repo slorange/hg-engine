@@ -77,9 +77,7 @@ static u32 FastBallRatio(u16 species, u32 speed)
 static u32 DuskBallRatio(u16 mapId, u32 timeOfDay)
 {
     // Use the last digit of each map code, with 0 representing floor 10.
-    // The outdoor Ruins of Alph header has no floor suffix and counts as floor 1.
     switch (mapId) {
-    case MAP_D24:
     case MAP_D01R0101:
     case MAP_D03R0101:
     case MAP_D05R0101:
