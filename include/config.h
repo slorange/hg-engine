@@ -164,6 +164,9 @@
 // (level-up chains + synthetic trade/stone edges); requires TRAINER_LEVEL_SCALING
 #define TRAINER_SPECIES_STAGE_ADJUST
 
+// Generate opponent species from the Wandering Heart dex. Requires trainer scaling and stage adjustment.
+#define TRAINER_RANDOM_SPECIES
+
 // TRAINER_GYM_LEADER_CAP_LEVEL sets every Gym Leader party mon to the badge level cap exactly
 // requires TRAINER_LEVEL_SCALING; ordinary trainers still use the [cap-4, cap] band
 #define TRAINER_GYM_LEADER_CAP_LEVEL

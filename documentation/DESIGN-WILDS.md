@@ -18,7 +18,7 @@
 
 \* Wilds 1 and Wilds 6 are implemented with the exception of Safari Zone.
 
-**Encounter pipeline (wild grass/cave/etc.):** [Wilds-6](#wilds-6-per-save-wild-ecology-shuffle) species (where hooked) → [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps) area cap → [Wilds-2](#wilds-2-wild-pokémon-level-range) rolled level → [Wilds-3](#wilds-3-encounter-stage-evolution--devolution) species stage. **Trainer battles** use the same stage rules after their level is set ([Battle-2 § Trainer scaling](DESIGN-BATTLES.md#trainer-scaling-release)).
+**Encounter pipeline (wild grass/cave/etc.):** [Wilds-6](#wilds-6-per-save-wild-ecology-shuffle) species (where hooked) → [Wilds-1](#wilds-1-starting-city-distance-based-wild-level-caps) area cap → [Wilds-2](#wilds-2-wild-pokémon-level-range) rolled level → [Wilds-3](#wilds-3-encounter-stage-evolution--devolution) species stage. **Trainer battles** use the same stage rules after their level is set ([Battle-2 § Trainer scaling](DESIGN-BATTLES.md#trainer-scaling)).
 
 ---
 
@@ -131,7 +131,7 @@ After the level is rolled, [Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evo
 
 # Wilds-3. Encounter Stage (Evolution & Devolution)
 
-**Status: IMPLEMENTED** — wild encounters resolve their stage after the [Wilds-2](DESIGN-WILDS.md#level-distribution) level roll; trainer teams resolve it after [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) assigns level. Player-owned Pokémon use their actual evolution methods ([Items-3](DESIGN-ITEMS.md#items-3-evolution-methods-trade--stones)).
+**Status: IMPLEMENTED** — wild encounters resolve their stage after the [Wilds-2](DESIGN-WILDS.md#level-distribution) level roll; trainer teams resolve it after [Battle-2](DESIGN-BATTLES.md#trainer-scaling) assigns level. Player-owned Pokémon use their actual evolution methods ([Items-3](DESIGN-ITEMS.md#items-3-evolution-methods-trade--stones)).
 
 For both wild and trainer mons, we need to handle the cases where a first stage pokemon is now high level, and a late stage pokemon is now low level.
 

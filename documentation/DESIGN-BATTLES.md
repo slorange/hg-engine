@@ -14,7 +14,7 @@
 | [Battle-2. Badge Level Caps](#battle-2-badge-level-caps) | IMPLEMENTED |
 | [Battle-3. Gyms](#battle-3-gyms) | IMPLEMENTED |
 | [Battle-4. Experience](#battle-4-experience) | IMPLEMENTED |
-| Generated trainer & Gym parties | Moved — [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) |
+| [Battle-5. Generated trainer & Gym parties](#battle-5-generated-trainer--gym-parties) | IMPLEMENTED |
 | Dynamic battle rosters & universal PC | Moved — [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc) |
 
 ---
@@ -76,7 +76,7 @@ Ordinary trainers: uniform random level in **`[cap − 4, cap]`**. Gym Leaders: 
 
 ## Trainer scaling
 
-After trainer Pokémon levels are set from the [cap ladder](#cap-ladder), evolution stage and moves are adjusted to match — same rules as wild encounters ([Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution)). Release uses **vanilla trainer species** at scaled levels ([Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) replaces species later).
+After trainer Pokémon levels are set from the [cap ladder](#cap-ladder), evolution stage and moves are adjusted to match — same rules as wild encounters ([Wilds-3](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution)). Eligible battles draw teams under [Battle-5](#battle-5-generated-trainer--gym-parties).
 
 ## Rare Candies
 
@@ -116,7 +116,7 @@ After a Leader battle:
 1. **Badge**
 2. **HM** — field ability for this badge count when that row grants a new unlock ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves))
 3. **TM** — player picks one from that Leader's pool they qualify for by badge count ([Items-2 § Gym TMs](DESIGN-ITEMS.md#gym-tms))
-4. **Wild Pokemon Hint** ([Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties))
+4. **Wild Pokémon Hint** ([Future-5](DESIGN-FUTURE.md#future-5-gym-leader-ecology-hints))
 
 ## Rematches
 
@@ -137,3 +137,67 @@ The same non-fainted party members receive that KO’s EVs, including Pokémon a
 Combined with level caps, increased EXP should naturally push players to raise more Pokémon instead of just a permanent six.
 
 Will change with the dynamic rosters of [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc)
+
+---
+
+# Battle-5. Generated trainer & Gym parties
+
+**Status: IMPLEMENTED**
+
+Generate opposing trainer parties, including Gym Leaders and their rematches. Link, Battle Frontier, tutorial, ally, and custom parties with additional scripted fields keep their authored teams. Use the battle-start badge count and the [trainer level rules](#trainer-scaling).
+
+## Species and party size
+
+Roll each slot from the eligible [dex scope](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope) and apply the shared [level-based evolution rules](DESIGN-WILDS.md#wilds-3-encounter-stage-evolution--devolution). Legendary and Mythical Pokémon, plus Unown and Smeargle are excluded. Each generated trainer party can contain each final species at most once. Different species from the same family can appear together.
+
+| Badges | One opposing trainer | Each of two opposing trainers |
+| ------ | -------------------- | ----------------------------- |
+| 0 | 3 | 2 |
+| 1 | 4 | 2 |
+| 2 | 5 | 3 |
+| 3+ | 6 | 3 |
+
+A single trainer in a Double Battle uses the full party size. Two opposing trainers each get half the full size, rounded up.
+
+## Type filters
+
+Gyms use their Gym type to filter generated parties. See [Data-6 § Gym and League roster filters](DESIGN-DATA.md#gym-and-league-roster-filters) for the type pools and family exceptions. The Type filter(s) apply to both the gym leader and trainers, but the exceptions only apply to the gym leader. 
+
+There is also a mapping from trainer classes to type. Eg: Bug Catcher -> Bug. See [Data-6 § Trainer class type pools](DESIGN-DATA.md#trainer-class-type-pools) for the class mapping. Gym membership takes precedence over ordinary trainer class.
+
+## TMs, HMs, and generated movesets
+
+Generate the team first. Use the badge count at battle start for move unlocks. Give the trainer every HM unlocked by that badge count under [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves). Draw a random supply of TM01–TM92 (except TM10 Hidden Power) from the TMs unlocked by that badge count. Trainers get **five TM rolls per badge**, so a trainer with no badges gets no TM rolls. Each draw is independent and may yield another copy of the same TM. Use the earliest badge unlock among shops, Game Corner prizes, and Gym Leader rewards. Map item pickups do not qualify as unlock sources. A qualifying source with no badge gate counts as a zero-badge unlock.
+
+Clear each Pokémon's moveset. Build its complete candidate pool from its level-up learnset through its generated level, compatible TMs in the trainer's supply, and compatible unlocked HMs. Exclude egg moves, tutor moves, unimplemented moves, and anything on the trainer move blacklist. Each move can occupy at most one slot. Build the sets from the last party slot to the first so the ace gets first choice of the TM supply. Consume one copy when a Pokémon learns a move that requires a TM. Level-up and HM sources do not spend a TM copy.
+
+**Damaging move score** = **effective power × accuracy ÷ 100**. Use 100% accuracy for moves that ignore accuracy checks. Multiply the damage score by **1.5** if the move matches either of the Pokémon’s types. See [Data-6 § Trainer damaging moves](DESIGN-DATA.md#trainer-damaging-moves) for additional scoring modifiers.
+
+Status moves are separated by tier. See [Data-6 § Trainer status move tiers](DESIGN-DATA.md#trainer-status-move-tiers) for all assignments. Group status moves by function and allow at most one move from each group. See [Data-6 § Trainer status move categories](DESIGN-DATA.md#trainer-status-move-categories) for the full grouping.
+
+1. Pick the highest-scoring damaging move first, including damaging utility moves. If no damage move is available, use the highest-tier status move.
+2. For each remaining slot, use RNG to choose between damage and status. For damage, take the highest-scoring remaining attack of a type the set does not already use. For status, take the highest-tier remaining move from an unused status group. If only one category has a valid candidate, use it. Break ties randomly. Stop at four moves or when no candidates remain.
+
+
+
+If selection yields zero moves, use up to four level-up moves available at the Pokémon’s current level. The fallback can use moves such as Splash and spends no TMs.
+
+## EVs, IVs, nature, and ability
+
+Ordinary trainers get **51 EVs per badge** and Gym Leaders get **102 EVs per badge**, with a total cap of **510**. Distribute the total as evenly as possible across all six stats. Ordinary trainers max out at **10 badges**, and Gym Leaders max out at **5**.
+
+Roll all six **IVs** independently for every generated Pokémon. Then spend a team-wide budget to raise the lowest remaining imperfect IV to **31**, breaking ties randomly. Ordinary trainers get their first upgrade at **8 badges**, then gain one per badge up to **9** at badge 16. Gym Leaders start with **2** and gain one per badge, reaching **18** at badge 16.
+
+For now, nature comes from the rolled personality value. That value also selects between the species’ regular ability slots when it has two. Generated trainers use regular abilities.
+
+## Held items
+
+See [Data-6 § Trainer held-item unlocks](DESIGN-DATA.md#trainer-held-item-unlocks) for the badge gates.
+
+Species gear covers Pikachu (Light Ball), Cubone and Marowak (Thick Club), Farfetch’d (Leek), Ditto (Quick Powder and Metal Powder), and Clamperl (Deep Sea Tooth and Deep Sea Scale).
+
+After building the moveset, give each generated Pokémon one item uniformly at random from its eligible pool. Teammates can roll the same item. Type boosters require a damaging move of the matching type. Resist berries cover a type weakness, with Chilan also eligible against neutral Normal damage. Muscle Band and Liechi require a physical attack. Wise Glasses and Petaya require a special attack. Metronome, Expert Belt, Scope Lens, Razor Claw, King’s Rock, Razor Fang, Shell Bell, and Life Orb require at least one damaging move.
+
+Leave player progression items, field utility items, evolution-only items, Berry Juice, EV and friendship berries, and Leppa, Jaboca, Rowap, Ganlon, Apicot, Custap, Micle, and Enigma Berries out of generated trainer sets.
+
+See [Future-7](DESIGN-FUTURE.md#future-7-trainer-party-improvements) for the next tuning pass.

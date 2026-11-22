@@ -20,6 +20,7 @@ from patch_scr_seq_game_corner import (  # noqa: E402
     validate_patches,
     validate_species_patches,
     validate_pokemon_flow,
+    validate_tm_menu,
 )
 
 
@@ -31,6 +32,7 @@ def check(path: Path, patches, cost_patches, species_patches, label: str) -> boo
         validate_cost_patches(data, cost_patches, label)
         validate_species_patches(data, species_patches, label)
         validate_pokemon_flow(data, int(path.name.split("_")[1]))
+        validate_tm_menu(data, int(path.name.split("_")[1]))
     except ValueError as exc:
         print(f"  FAIL: {exc}")
         return False

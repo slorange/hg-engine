@@ -3,6 +3,7 @@
 #include "types.h"
 
 #include "constants/ability.h"
+#include "constants/battle_constants.h"
 #include "constants/file.h"
 #include "constants/game.h"
 #include "constants/hold_item_effects.h"
@@ -63,6 +64,9 @@ void randomize(int arr[], int n)
 }
 
 extern u32 gLastPokemonLevelForMoneyCalc;
+
+void BuildGeneratedTrainerMovesets(struct PartyPokemon **party, const int *order, int count, u8 badgeCount);
+void SetGeneratedTrainerHeldItem(struct PartyPokemon *mon, u8 badgeCount);
 
 #ifdef TRAINER_LEVEL_SCALING
 
@@ -133,6 +137,408 @@ static u8 TrainerEncounterStageContext(u8 trainerClass)
 
 #include "encounter_species_stage.h"
 
+#ifdef TRAINER_RANDOM_SPECIES
+static void SetGeneratedTrainerEVs(struct PartyPokemon *mon, u8 badgeCount, BOOL gymLeader)
+{
+    const int statCount = MON_DATA_SPDEF_EV - MON_DATA_HP_EV + 1;
+    int total = (gymLeader ? 102 : 51) * badgeCount;
+    if (total > 510) {
+        total = 510;
+    }
+
+    for (int stat = 0; stat < statCount; stat++) {
+        u8 ev = total / statCount + (stat < total % statCount);
+        SetMonData(mon, MON_DATA_HP_EV + stat, &ev);
+    }
+}
+
+static void UpgradeGeneratedTrainerIVs(struct PartyPokemon **party, int count, u8 badgeCount, BOOL gymLeader)
+{
+    enum { statCount = MON_DATA_SPDEF_IV - MON_DATA_HP_IV + 1 };
+    int upgrades = gymLeader ? 2 + badgeCount : (int)badgeCount - 7;
+    if (upgrades <= 0) {
+        return;
+    }
+    if (upgrades > 18) {
+        upgrades = 18;
+    }
+
+    struct {
+        u8 slot;
+        u8 iv;
+    } eligible[6 * statCount];
+    int remaining = 0;
+    for (int i = 0; i < count; i++) {
+        for (int stat = 0; stat < statCount; stat++) {
+            u8 iv = GetMonData(party[i], MON_DATA_HP_IV + stat, NULL);
+            if (iv < 31) {
+                eligible[remaining].slot = i * statCount + stat;
+                eligible[remaining++].iv = iv;
+            }
+        }
+    }
+
+    // Pick the lowest remaining IV, breaking ties randomly.
+    for (int i = 0; i < upgrades && remaining > 0; i++) {
+        int pick = 0;
+        int ties = 1;
+        for (int j = 1; j < remaining; j++) {
+            if (eligible[j].iv < eligible[pick].iv) {
+                pick = j;
+                ties = 1;
+            } else if (eligible[j].iv == eligible[pick].iv && gf_rand() % ++ties == 0) {
+                pick = j;
+            }
+        }
+        int slot = eligible[pick].slot;
+        u8 perfectIV = 31;
+        SetMonData(party[slot / statCount], MON_DATA_HP_IV + slot % statCount, &perfectIV);
+        eligible[pick] = eligible[--remaining];
+    }
+}
+
+static const u16 sExtraTrainerSpecies[] = {
+    SPECIES_LARVESTA, SPECIES_VOLCARONA, SPECIES_SYLVEON, SPECIES_KLEAVOR,
+    SPECIES_WYRDEER, SPECIES_URSALUNA, SPECIES_ANNIHILAPE, SPECIES_FARIGIRAF,
+    SPECIES_DUDUNSPARCE,
+};
+
+static BOOL IsRandomTrainerSpeciesEligible(u16 species)
+{
+    if ((species >= SPECIES_ARTICUNO && species <= SPECIES_MOLTRES)
+        || (species >= SPECIES_MEWTWO && species <= SPECIES_MEW)
+        || (species >= SPECIES_RAIKOU && species <= SPECIES_SUICUNE)
+        || (species >= SPECIES_LUGIA && species <= SPECIES_CELEBI)
+        || (species >= SPECIES_REGIROCK && species <= SPECIES_DEOXYS)
+        || (species >= SPECIES_UXIE && species <= SPECIES_ARCEUS)
+        || species == SPECIES_UNOWN || species == SPECIES_SMEARGLE) {
+        return FALSE;
+    }
+
+    if (species >= SPECIES_BULBASAUR && species <= SPECIES_ARCEUS) {
+        return TRUE;
+    }
+    for (int i = 0; i < NELEMS(sExtraTrainerSpecies); i++) {
+        if (species == sExtraTrainerSpecies[i]) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+// Gym subordinate IDs are taken from the Gym events and trainer battle scripts.
+static u8 GetTrainerGymClass(int trainerId, u8 trainerClass)
+{
+    switch (trainerId) {
+    case 29:
+    case 50:
+        return TRAINERCLASS_LEADER_FALKNER;
+    case 10:
+    case 67:
+    case 68:
+    case 69:
+        return TRAINERCLASS_LEADER_BUGSY;
+    case 5:
+    case 22:
+    case 70:
+    case 71:
+        return TRAINERCLASS_LEADER_WHITNEY;
+    case 46:
+    case 89:
+    case 493:
+    case 494:
+        return TRAINERCLASS_LEADER_MORTY;
+    case 480:
+    case 481:
+    case 482:
+    case 483:
+    case 484:
+        return TRAINERCLASS_LEADER_PRYCE;
+    case 156:
+    case 157:
+    case 159:
+    case 251:
+        return TRAINERCLASS_LEADER_CHUCK;
+    case 110:
+    case 111:
+    case 112:
+    case 117:
+    case 119:
+        return TRAINERCLASS_LEADER_CLAIR;
+    case 308:
+    case 685:
+        return TRAINERCLASS_LEADER_BROCK;
+    case 297:
+    case 298:
+    case 676:
+    case 677:
+    case 678:
+        return TRAINERCLASS_LEADER_MISTY;
+    case 232:
+    case 337:
+    case 396:
+        return TRAINERCLASS_LEADER_LT_SURGE;
+    case 326:
+    case 336:
+    case 346:
+    case 356:
+        return TRAINERCLASS_LEADER_ERIKA;
+    case 83:
+    case 84:
+    case 136:
+    case 183:
+        return TRAINERCLASS_LEADER_JANINE;
+    case 230:
+    case 368:
+    case 369:
+    case 415:
+        return TRAINERCLASS_LEADER_SABRINA;
+    case 681:
+    case 682:
+    case 683:
+    case 684:
+        return TRAINERCLASS_LEADER_BLUE;
+    default:
+        return trainerClass;
+    }
+}
+
+static u32 GetTrainerTypeMask(u8 trainerClass)
+{
+    switch (trainerClass) {
+    case TRAINERCLASS_LEADER_FALKNER:
+        return (1u << TYPE_FLYING);
+    case TRAINERCLASS_LEADER_BUGSY:
+        return (1u << TYPE_BUG);
+    case TRAINERCLASS_LEADER_WHITNEY:
+        return (1u << TYPE_NORMAL) | (1u << TYPE_FAIRY);
+    case TRAINERCLASS_LEADER_MORTY:
+        return (1u << TYPE_GHOST) | (1u << TYPE_DARK);
+    case TRAINERCLASS_LEADER_PRYCE:
+        return (1u << TYPE_ICE);
+    case TRAINERCLASS_LEADER_JASMINE:
+        return (1u << TYPE_STEEL);
+    case TRAINERCLASS_LEADER_CHUCK:
+        return (1u << TYPE_FIGHTING);
+    case TRAINERCLASS_LEADER_CLAIR:
+        return (1u << TYPE_DRAGON) | (1u << TYPE_WATER);
+    case TRAINERCLASS_LEADER_BROCK:
+        return (1u << TYPE_ROCK) | (1u << TYPE_GROUND);
+    case TRAINERCLASS_LEADER_MISTY:
+        return (1u << TYPE_WATER);
+    case TRAINERCLASS_LEADER_LT_SURGE:
+        return (1u << TYPE_ELECTRIC);
+    case TRAINERCLASS_LEADER_ERIKA:
+        return (1u << TYPE_GRASS);
+    case TRAINERCLASS_LEADER_JANINE:
+        return (1u << TYPE_POISON);
+    case TRAINERCLASS_LEADER_SABRINA:
+        return (1u << TYPE_PSYCHIC);
+    case TRAINERCLASS_LEADER_BLAINE:
+        return (1u << TYPE_FIRE);
+    case TRAINERCLASS_BUG_CATCHER:
+        return (1u << TYPE_BUG);
+    case TRAINERCLASS_GUITARIST:
+        return (1u << TYPE_ELECTRIC);
+    case TRAINERCLASS_BLACK_BELT:
+        return (1u << TYPE_FIGHTING);
+    case TRAINERCLASS_FIREBREATHER:
+        return (1u << TYPE_FIRE);
+    case TRAINERCLASS_BIRD_KEEPER_GS:
+    case TRAINERCLASS_BIRD_KEEPER:
+        return (1u << TYPE_FLYING);
+    case TRAINERCLASS_MEDIUM:
+        return (1u << TYPE_GHOST);
+    case TRAINERCLASS_BOARDER:
+    case TRAINERCLASS_SKIER:
+        return (1u << TYPE_ICE);
+    case TRAINERCLASS_BURGLAR:
+    case TRAINERCLASS_TEAM_ROCKET:
+    case TRAINERCLASS_TEAM_ROCKET_F:
+    case TRAINERCLASS_ROCKET_BOSS:
+    case TRAINERCLASS_EXECUTIVE_ARIANA:
+    case TRAINERCLASS_EXECUTIVE_ARCHER:
+    case TRAINERCLASS_EXECUTIVE_PETREL:
+    case TRAINERCLASS_EXECUTIVE_PROTON:
+        return (1u << TYPE_FIRE) | (1u << TYPE_POISON) | (1u << TYPE_DARK);
+    case TRAINERCLASS_BIKER:
+        return (1u << TYPE_POISON) | (1u << TYPE_STEEL);
+    case TRAINERCLASS_JUGGLER:
+    case TRAINERCLASS_PSYCHIC_M:
+    case TRAINERCLASS_PSYCHIC_F:
+        return (1u << TYPE_PSYCHIC);
+    case TRAINERCLASS_SAGE:
+        return (1u << TYPE_PSYCHIC) | (1u << TYPE_GHOST);
+    case TRAINERCLASS_HIKER:
+        return (1u << TYPE_ROCK) | (1u << TYPE_GROUND);
+    case TRAINERCLASS_FISHERMAN:
+    case TRAINERCLASS_SWIMMER_M:
+    case TRAINERCLASS_SWIMMER_F:
+        return (1u << TYPE_WATER);
+    case TRAINERCLASS_SAILOR:
+        return (1u << TYPE_WATER) | (1u << TYPE_FIGHTING);
+    case TRAINERCLASS_ELITE_FOUR_WILL:
+        return (1u << TYPE_PSYCHIC);
+    case TRAINERCLASS_ELITE_FOUR_KOGA:
+        return (1u << TYPE_POISON);
+    case TRAINERCLASS_ELITE_FOUR_BRUNO:
+        return (1u << TYPE_FIGHTING);
+    case TRAINERCLASS_ELITE_FOUR_KAREN:
+        return (1u << TYPE_DARK);
+    case TRAINERCLASS_CHAMPION:
+        return (1u << TYPE_DRAGON) | (1u << TYPE_FLYING);
+    case TRAINERCLASS_BEAUTY:
+        return (1u << TYPE_FAIRY) | (1u << TYPE_GRASS);
+    case TRAINERCLASS_LASS:
+        return (1u << TYPE_NORMAL) | (1u << TYPE_FAIRY);
+    case TRAINERCLASS_SCIENTIST_GS:
+    case TRAINERCLASS_SCIENTIST:
+    case TRAINERCLASS_SUPER_NERD:
+        return (1u << TYPE_ELECTRIC) | (1u << TYPE_STEEL);
+    default:
+        return 0;
+    }
+}
+
+static BOOL IsTrainerFamilyException(u16 species, u8 trainerClass)
+{
+    switch (species) {
+    case SPECIES_VOLTORB:
+    case SPECIES_ELECTRODE:
+        return trainerClass == TRAINERCLASS_JUGGLER;
+    case SPECIES_VULPIX:
+    case SPECIES_NINETALES:
+        return trainerClass == TRAINERCLASS_LEADER_BROCK;
+    case SPECIES_MAREEP:
+    case SPECIES_FLAAFFY:
+    case SPECIES_AMPHAROS:
+        return trainerClass == TRAINERCLASS_LEADER_JASMINE;
+    case SPECIES_TOGEPI:
+    case SPECIES_TOGETIC:
+    case SPECIES_TOGEKISS:
+        return trainerClass == TRAINERCLASS_LEADER_MISTY;
+    case SPECIES_RHYHORN:
+    case SPECIES_RHYDON:
+    case SPECIES_RHYPERIOR:
+        return trainerClass == TRAINERCLASS_LEADER_BLAINE;
+    case SPECIES_SEEL:
+    case SPECIES_DEWGONG:
+        return trainerClass == TRAINERCLASS_LEADER_PRYCE;
+    case SPECIES_VENONAT:
+    case SPECIES_VENOMOTH:
+        return trainerClass == TRAINERCLASS_LEADER_SABRINA;
+    case SPECIES_ODDISH:
+    case SPECIES_GLOOM:
+    case SPECIES_VILEPLUME:
+    case SPECIES_BELLOSSOM:
+    case SPECIES_GASTLY:
+    case SPECIES_HAUNTER:
+    case SPECIES_GENGAR:
+        return trainerClass == TRAINERCLASS_ELITE_FOUR_KAREN;
+    case SPECIES_PINECO:
+    case SPECIES_FORRETRESS:
+        return trainerClass == TRAINERCLASS_ELITE_FOUR_KOGA;
+    case SPECIES_ONIX:
+    case SPECIES_STEELIX:
+        return trainerClass == TRAINERCLASS_ELITE_FOUR_BRUNO;
+    default:
+        return FALSE;
+    }
+}
+
+static BOOL IsTrainerTypeMatch(u16 species, u32 typeMask, u8 exceptionClass)
+{
+    if (typeMask == 0 || IsTrainerFamilyException(species, exceptionClass)) {
+        return TRUE;
+    }
+
+    u32 type1 = PokePersonalParaGet(species, PERSONAL_TYPE_1);
+    u32 type2 = PokePersonalParaGet(species, PERSONAL_TYPE_2);
+    return (typeMask & ((1u << type1) | (1u << type2))) != 0;
+}
+
+static u16 GetTrainerSpeciesAtIndex(u16 index, u8 level, u32 branchRoll, u8 stageContext, u8 exceptionClass)
+{
+    const u16 dexSize = SPECIES_ARCEUS - SPECIES_BULBASAUR + 1;
+    u16 species = index < dexSize ? SPECIES_BULBASAUR + index : sExtraTrainerSpecies[index - dexSize];
+    if (!IsRandomTrainerSpeciesEligible(species)) {
+        return SPECIES_NONE;
+    }
+    // Misty's signature line can start at Togepi, which ordinary trainers skip.
+    BOOL allowBabies = exceptionClass == TRAINERCLASS_LEADER_MISTY
+        && IsTrainerFamilyException(species, exceptionClass);
+    species = AdjustEncounterSpeciesForLevel(species, level, branchRoll, stageContext, allowBabies);
+    return IsRandomTrainerSpeciesEligible(species) ? species : SPECIES_NONE;
+}
+
+static BOOL IsUnusedTrainerSpecies(u16 species, const u16 *usedSpecies, int usedCount)
+{
+    if (species == SPECIES_NONE) {
+        return FALSE;
+    }
+    for (int i = 0; i < usedCount; i++) {
+        if (species == usedSpecies[i]) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+static u16 PickRandomTrainerSpecies(u8 level, u32 branchRoll, u8 stageContext, u32 typeMask, u8 exceptionClass,
+    const u16 *usedSpecies, int usedCount)
+{
+    if (exceptionClass == TRAINERCLASS_KIMONO_GIRL) {
+        static const u16 eeveeFamily[] = {
+            SPECIES_EEVEE, SPECIES_VAPOREON, SPECIES_JOLTEON, SPECIES_FLAREON, SPECIES_ESPEON,
+            SPECIES_UMBREON, SPECIES_LEAFEON, SPECIES_GLACEON, SPECIES_SYLVEON,
+        };
+        u16 available[NELEMS(eeveeFamily)];
+        int count = 0;
+        for (u32 i = 0; i < NELEMS(eeveeFamily); i++) {
+            u16 species = eeveeFamily[i];
+            if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount)) {
+                available[count++] = species;
+            }
+        }
+        return count ? available[branchRoll % count] : SPECIES_NONE;
+    }
+
+    const u16 poolSize = SPECIES_ARCEUS - SPECIES_BULBASAUR + 1 + NELEMS(sExtraTrainerSpecies);
+    u16 fallback = SPECIES_NONE;
+
+    for (int attempt = 0; attempt < 32; attempt++) {
+        u16 species = GetTrainerSpeciesAtIndex(gf_rand() % poolSize, level, branchRoll, stageContext, exceptionClass);
+        if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount)) {
+            if (IsTrainerTypeMatch(species, typeMask, exceptionClass)) {
+                return species;
+            }
+            if (fallback == SPECIES_NONE) {
+                fallback = species;
+            }
+        }
+    }
+
+    // Sparse type pools still get a matching species if one exists at this level.
+    u16 start = gf_rand() % poolSize;
+    for (u16 i = 0; i < poolSize; i++) {
+        u16 index = start + i;
+        if (index >= poolSize) {
+            index -= poolSize;
+        }
+        u16 species = GetTrainerSpeciesAtIndex(index, level, branchRoll, stageContext, exceptionClass);
+        if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount)) {
+            if (IsTrainerTypeMatch(species, typeMask, exceptionClass)) {
+                return species;
+            }
+            if (fallback == SPECIES_NONE) {
+                fallback = species;
+            }
+        }
+    }
+    return fallback;
+}
+#endif // TRAINER_RANDOM_SPECIES
+
 #endif // TRAINER_SPECIES_STAGE_ADJUST
 
 #endif // TRAINER_LEVEL_SCALING
@@ -146,29 +552,27 @@ static u8 TrainerEncounterStageContext(u8 trainerClass)
  */
 void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 {
-    u8 *buf;
+    u8 *buf = NULL;
     int i, j;
-    u32 rnd_tmp, rnd, seed_tmp;
+    u32 rnd_tmp = 136, rnd, seed_tmp;
     u8 pow;
 
     seed_tmp = gf_get_seed();
 
     PokeParty_Init(bp->poke_party[num], 6);
 
-    buf = (u8 *)sys_AllocMemory(heapID, sizeof(struct FULL_TRAINER_MON_DATA_STRUCTURE) * 6);
-
-    TT_TrainerPokeDataGet(bp->trainer_id[num], buf);
-
-    if (TT_TrainerTypeSexGet(bp->trainer_data[num].tr_type) == 1) // if trainer is female
-    {
-        rnd_tmp = 120;
-    } else {
-        rnd_tmp = 136;
-    }
-
     u8 pokecount = bp->trainer_data[num].poke_count;
     u8 randomorder_flag = pokecount & TRAINER_DATA_RANDOM_PARTY_ORDER;
     pokecount &= 0x7f;
+
+#if defined(TRAINER_RANDOM_SPECIES) && defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
+    u8 generatedBadgeCount = 0;
+    u16 generatedSpecies[6];
+    BOOL generateSpecies = (num == BATTLER_ENEMY || num == BATTLER_ENEMY2)
+        && (bp->fight_type & BATTLE_TYPE_TRAINER)
+        && !(bp->fight_type & (BATTLE_TYPE_LINK | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_TUTORIAL))
+        && !(bp->trainer_data[num].data_type & TRAINER_DATA_TYPE_ADDITIONAL_FLAGS);
+#endif
 
     // goal:  get rid of massive switch statement with each individual byte.  make the trainer type a bitfield
     u32 id;
@@ -179,9 +583,61 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
     u8 ivnums[6];
     u8 evnums[6];
     u8 ppcounts[4];
-    u16 *nickname = sys_AllocMemory(heapID, 11 * sizeof(u16));
+    u16 *nickname = NULL;
     u8 form_no = 0, abilityslot = 0, nature = 0, ballseal = 0, shinylock = 0, status = 0;
     u32 additionalflags = 0;
+
+#ifdef TRAINER_LEVEL_SCALING
+    u8 trainerLevelCap;
+    u8 trainerLevelFloor;
+    BOOL gymLeaderUsesCap;
+    {
+        void *saveData = SaveBlock2_get();
+        struct PlayerProfile *profile = saveData != NULL ? Sav2_PlayerData_GetProfileAddr(saveData) : NULL;
+        u8 badgeCount = profile != NULL ? PlayerProfile_CountBadges(profile) : 0;
+
+#if defined(TRAINER_RANDOM_SPECIES) && defined(TRAINER_SPECIES_STAGE_ADJUST)
+        if (generateSpecies) {
+            generatedBadgeCount = badgeCount;
+            pokecount = 3 + (badgeCount < 3 ? badgeCount : 3);
+            if (bp->trainer_id[BATTLER_ENEMY] != 0 && bp->trainer_id[BATTLER_ENEMY2] != 0) {
+                pokecount = (pokecount + 1) / 2;
+            }
+            bp->trainer_data[num].poke_count = pokecount | randomorder_flag;
+
+            u32 playerId = profile != NULL ? profile->id : 0;
+            gf_srand(playerId ^ ((u32)bp->trainer_id[num] * 0x9E3779B9u) ^ ((u32)badgeCount * 0x85EBCA6Bu));
+        }
+#endif
+        trainerLevelCap = GetPlayerLevelCapForBadges(badgeCount);
+        trainerLevelFloor = trainerLevelCap - 4;
+#if defined(TRAINER_GYM_LEADER_CAP_LEVEL)
+        gymLeaderUsesCap = IsGymLeaderTrainerClass(bp->trainer_data[num].tr_type);
+#else
+        gymLeaderUsesCap = FALSE;
+#endif
+    }
+#endif
+
+#if defined(TRAINER_RANDOM_SPECIES) && defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
+    if (!generateSpecies)
+#endif
+    {
+        buf = (u8 *)sys_AllocMemory(heapID, sizeof(struct FULL_TRAINER_MON_DATA_STRUCTURE) * 6);
+        TT_TrainerPokeDataGet(bp->trainer_id[num], buf);
+        nickname = sys_AllocMemory(heapID, 11 * sizeof(u16));
+        if (TT_TrainerTypeSexGet(bp->trainer_data[num].tr_type) == 1) {
+            rnd_tmp = 120;
+        }
+    }
+
+#if defined(TRAINER_RANDOM_SPECIES) && defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
+    u8 trainerClass = bp->trainer_data[num].tr_type;
+    u8 profileClass = GetTrainerGymClass(bp->trainer_id[num], trainerClass);
+    u32 typeMask = GetTrainerTypeMask(profileClass);
+    // Gym subordinates borrow the type filter but none of the class exceptions.
+    u8 exceptionClass = profileClass == trainerClass ? trainerClass : 0;
+#endif
 
     int partyOrder[pokecount];
     if (randomorder_flag) {
@@ -209,26 +665,42 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
     struct PartyPokemon *mons[pokecount];
 
-#ifdef TRAINER_LEVEL_SCALING
-    u8 trainerLevelCap;
-    u8 trainerLevelFloor;
-    BOOL gymLeaderUsesCap;
-    {
-        void *saveData = SaveBlock2_get();
-        struct PlayerProfile *profile = saveData != NULL ? Sav2_PlayerData_GetProfileAddr(saveData) : NULL;
-        u8 badgeCount = profile != NULL ? PlayerProfile_CountBadges(profile) : 0;
-
-        trainerLevelCap = GetPlayerLevelCapForBadges(badgeCount);
-        trainerLevelFloor = trainerLevelCap - 4;
-#if defined(TRAINER_GYM_LEADER_CAP_LEVEL)
-        gymLeaderUsesCap = IsGymLeaderTrainerClass(bp->trainer_data[num].tr_type);
-#else
-        gymLeaderUsesCap = FALSE;
-#endif
-    }
-#endif
-
     for (i = 0; i < pokecount; i++) {
+#if defined(TRAINER_RANDOM_SPECIES) && defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
+        if (generateSpecies) {
+            level = gymLeaderUsesCap ? trainerLevelCap : PickTrainerLevelInBand(trainerLevelFloor, trainerLevelCap);
+            encounterBranchRoll = gf_rand();
+            encounterBranchRoll |= (u32)gf_rand() << 16;
+            gLastPokemonLevelForMoneyCalc = level;
+            species = PickRandomTrainerSpecies((u8)level, encounterBranchRoll,
+                TrainerEncounterStageContext(trainerClass), typeMask, exceptionClass, generatedSpecies, i);
+            if (species == SPECIES_NONE) {
+                // Retain the relative party order of the slots that were built.
+                int count = 0;
+                for (int slot = 0; slot < pokecount; slot++) {
+                    if (partyOrder[slot] < i) {
+                        partyOrder[count++] = partyOrder[slot];
+                    }
+                }
+                pokecount = count;
+                bp->trainer_data[num].poke_count = pokecount | randomorder_flag;
+                break;
+            }
+            generatedSpecies[i] = species;
+            mons[i] = AllocMonZeroed(heapID);
+            rnd = gf_rand();
+            rnd |= (u32)gf_rand() << 16;
+            // PokeParaSet rolls all six IVs when the IV argument exceeds 31.
+            PokeParaSet(mons[i], species, level, 32, 1, rnd, 2, 0);
+            ApplyEncounterGenderAfterStageAdjust(mons[i]);
+            ResetPartyPokemonAbility(mons[i]);
+            ChangeToBattleForm(mons[i]);
+            SetGeneratedTrainerEVs(mons[i], generatedBadgeCount, IsGymLeaderTrainerClass(trainerClass));
+            RecalcPartyPokemonStats(mons[i]);
+            continue;
+        }
+#endif
+
         mons[i] = AllocMonZeroed(heapID);
         // ivs field
         pow = buf[offset];
@@ -517,13 +989,26 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         TrainerMonHandleFrustration(mons[i]);
     }
 
+#if defined(TRAINER_RANDOM_SPECIES) && defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
+    if (generateSpecies) {
+        BuildGeneratedTrainerMovesets(mons, partyOrder, pokecount, generatedBadgeCount);
+        UpgradeGeneratedTrainerIVs(mons, pokecount, generatedBadgeCount, IsGymLeaderTrainerClass(trainerClass));
+        for (i = 0; i < pokecount; i++) {
+            TrainerMonHandleFrustration(mons[i]);
+            SetGeneratedTrainerHeldItem(mons[i], generatedBadgeCount);
+        }
+    }
+#endif
+
     for (i = 0; i < pokecount; i++) {
         PokeParty_Add(bp->poke_party[num], mons[partyOrder[i]]);
         sys_FreeMemoryEz(mons[i]);
     }
 
-    sys_FreeMemoryEz(buf);
-    sys_FreeMemoryEz(nickname);
+    if (buf != NULL) {
+        sys_FreeMemoryEz(buf);
+        sys_FreeMemoryEz(nickname);
+    }
 
     gf_srand(seed_tmp);
 

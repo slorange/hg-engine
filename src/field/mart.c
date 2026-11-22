@@ -45,7 +45,6 @@ const struct BadgeMartItems sBadgeMart[] = {
     { ITEM_BIG_ROOT, 6 },
     { ITEM_EXPERT_BELT, 7 },
     { ITEM_LIGHT_CLAY, 7 },
-    { ITEM_METRONOME, 8 },
     { ITEM_LEFTOVERS, 9 },
     { ITEM_SHELL_BELL, 10 },
     { ITEM_FOCUS_SASH, 10 },
@@ -62,7 +61,7 @@ u16 sCherrygroveCityMart[] = {
 };
 
 u16 sVioletCityMart[] = {
-    ITEM_RAZOR_FANG, ITEM_COBA_BERRY, 0xFFFF
+    ITEM_RAZOR_FANG, ITEM_SHARP_BEAK, ITEM_COBA_BERRY, 0xFFFF
 };
 
 u16 sAzaleaCityMart[] = {
@@ -74,7 +73,7 @@ u16 sGoldenrodDepartmentUpper2F[] = {
 };
 
 u16 sGoldenrodDepartmentLower2F[] = {
-    ITEM_LINKING_CORD, ITEM_CHILAN_BERRY, ITEM_SILK_SCARF, 0xFFFF
+    ITEM_LINKING_CORD, ITEM_CHILAN_BERRY, ITEM_SILK_SCARF, ITEM_ROSELI_BERRY, ITEM_FAIRY_FEATHER, 0xFFFF
 };
 
 u16 sGoldenrodDepartment3F[] = {

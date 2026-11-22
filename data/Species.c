@@ -2482,7 +2482,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_ABSORB_BULB,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -2539,7 +2539,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_ABSORB_BULB,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -2596,7 +2596,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_ABSORB_BULB,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -5845,7 +5845,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_PSYCHIC_SEED,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -10405,7 +10405,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_ABSORB_BULB,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -17758,7 +17758,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_CELL_BATTERY,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -17815,7 +17815,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_CELL_BATTERY,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -17985,7 +17985,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
                 .speed = 0,
             },
             .wildHeldItems = {
-                .common = ITEM_ABSORB_BULB,
+                .common = ITEM_NONE,
                 .rare = ITEM_POISON_BARB,
             },
             .genderRatio = 127,
@@ -20607,7 +20607,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
                 .speed = 0,
             },
             .wildHeldItems = {
-                .common = ITEM_SNOWBALL,
+                .common = ITEM_NONE,
                 .rare = ITEM_BABIRI_BERRY,
             },
             .genderRatio = 127,
@@ -23229,7 +23229,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
                 .speed = 0,
             },
             .wildHeldItems = {
-                .common = ITEM_ABSORB_BULB,
+                .common = ITEM_NONE,
                 .rare = ITEM_POISON_BARB,
             },
             .genderRatio = 127,
@@ -24313,7 +24313,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_AIR_BALLOON,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 30,
@@ -34003,7 +34003,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_ABSORB_BULB,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -34060,7 +34060,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_ABSORB_BULB,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 20,
@@ -34117,7 +34117,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_ABSORB_BULB,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 254,
             .hatchCycles = 20,
@@ -34174,7 +34174,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_ABSORB_BULB,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 254,
             .hatchCycles = 20,
@@ -44890,7 +44890,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_CELL_BATTERY,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 15,
@@ -64498,7 +64498,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_SNOWBALL,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 191,
             .hatchCycles = 20,
@@ -64840,7 +64840,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_CELL_BATTERY,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 15,
@@ -64897,7 +64897,7 @@ const SpeciesDataEntry sSpeciesData[MAX_SPECIES_INCLUDING_FORMS + 1] = {
             },
             .wildHeldItems = {
                 .common = ITEM_NONE,
-                .rare = ITEM_CELL_BATTERY,
+                .rare = ITEM_NONE,
             },
             .genderRatio = 127,
             .hatchCycles = 15,

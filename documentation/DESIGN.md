@@ -13,7 +13,7 @@
 | [DESIGN-WORLD.md](DESIGN-WORLD.md) | `World-*` | Open-world principles, travel, gating, HMs, accelerated time, shared Pokémon Center services |
 | [DESIGN-ITEMS.md](DESIGN-ITEMS.md) | `Items-*` | Item acquisition, TMs, evolution, shops, berries, Apricorns, Poké Balls |
 | [DESIGN-WILDS.md](DESIGN-WILDS.md) | `Wilds-*` | Ecology seed, wild levels, fishing, content scope |
-| [DESIGN-BATTLES.md](DESIGN-BATTLES.md) | `Battle-*` | Fair trainer fights, badge caps, Gyms, EXP |
+| [DESIGN-BATTLES.md](DESIGN-BATTLES.md) | `Battle-*` | Fair trainer fights, badge caps, Gyms, EXP, generated trainer parties |
 | [DESIGN-STORY.md](DESIGN-STORY.md) | `Story-*` | Intro (Story-1/2), script policy (Story-3) |
 | [DESIGN-DATA.md](DESIGN-DATA.md) | `Data-*` | Shop inventories, TM and prize pools, evolution reference lists |
 | [DESIGN-FUTURE.md](DESIGN-FUTURE.md) | `Future-*` | Deferred addons |

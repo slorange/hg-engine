@@ -6,7 +6,7 @@ Goldenrod scr_seq member 910 (T25SP0101):
   Items: Bright Powder, Quick Claw, Wide Lens, Metronome
 
 Celadon scr_seq member 804 (T07R0501 dept 5F):
-  TMs: TM58, TM41, TM10, TM49, TM67, TM82
+  TMs: TM58, TM41, TM49, TM67, TM82
   Items: Focus Band, Zoom Lens, Scope Lens, Luck Incense
 
 Each changed prize is patched at fixed offsets from vanilla HeartGold scr_seq extract.
@@ -65,6 +65,11 @@ GOLDENROD_PATCHES: list[ItemPatch] = [
 ]
 
 CELADON_MEMBER = 804
+CELADON_TM10_MENU_OFFSET = 408
+CELADON_TM10_MENU_ENTRY = struct.pack("<4H", 751, 25, 255, 2)
+# Jump over the eight-byte menu_item_add, preserving the other prize IDs and branch offsets.
+CELADON_TM10_MENU_SKIP = struct.pack("<HiH", 22, 2, 0)
+
 CELADON_PATCHES: list[ItemPatch] = [
     (797, tm_item(32), tm_item(41)),
     (2482, tm_item(32), tm_item(41)),
@@ -200,6 +205,13 @@ def validate_pokemon_flow(data: bytes, member: int) -> None:
                 raise ValueError(f"2_{member}: modified prize branch at {offset}")
 
 
+def validate_tm_menu(data: bytes, member: int) -> None:
+    if member == CELADON_MEMBER:
+        offset = CELADON_TM10_MENU_OFFSET
+        if not data.startswith(CELADON_TM10_MENU_SKIP, offset):
+            raise ValueError(f"2_{member}: TM10 menu entry was not skipped")
+
+
 def read_u16(data: bytes, offset: int) -> int:
     return struct.unpack_from("<H", data, offset)[0]
 
@@ -281,6 +293,11 @@ def patch_file(path: Path, member: int) -> None:
     apply_patches(data, patches)
     apply_cost_patches(data, cost_patches)
     apply_species_patches(data, species_patches)
+    if member == CELADON_MEMBER:
+        offset = CELADON_TM10_MENU_OFFSET
+        if not data.startswith(CELADON_TM10_MENU_ENTRY, offset):
+            raise ValueError(f"2_{member}: expected vanilla TM10 menu entry")
+        data[offset:offset + len(CELADON_TM10_MENU_ENTRY)] = CELADON_TM10_MENU_SKIP
     level_offset = GIVE_MON_OFFSETS[member] + 4
     if read_u16(data, level_offset) != 15:
         raise ValueError(f"2_{member}: expected vanilla prize level 15")
@@ -289,12 +306,13 @@ def patch_file(path: Path, member: int) -> None:
     validate_cost_patches(bytes(data), cost_patches, f"2_{member}")
     validate_species_patches(bytes(data), species_patches, f"2_{member}")
     validate_pokemon_flow(bytes(data), member)
+    validate_tm_menu(data, member)
 
     if len(data) != vanilla_size:
         raise ValueError(f"2_{member} size changed {vanilla_size} -> {len(data)}")
 
     path.write_bytes(data)
-    writes = len(patches) + len(cost_patches) + len(species_patches) + 1
+    writes = len(patches) + len(cost_patches) + len(species_patches) + 1 + (member == CELADON_MEMBER)
     print(
         f"patched Game Corner prizes in {path} ({len(data)} bytes, "
         f"{writes} offset writes)"

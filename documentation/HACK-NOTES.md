@@ -43,6 +43,7 @@ Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG /
 | Gym TM choice (Brock) | [Pewter Gym — Brock + Gym TM choice pool](#pewter-gym--brock--gym-tm-choice-pool-prototype) |
 | Interim EXP | [Full party EXP share (interim)](#full-party-exp-share-interim) |
 | Trainer scaling | [Trainer level scaling](#trainer-level-scaling) |
+| Generated trainer parties | [Generated trainer parties](#generated-trainer-parties-battle-5) |
 | Player level cap | [Player badge level cap & Rare Candies](#player-badge-level-cap--rare-candies) |
 | Paid ferries | [Paid ferry / local bypass NPCs](#paid-ferry--local-bypass-npcs-reusable-recipe) → [Route 42](#route-42-reference-verified), [Route 40 / Cianwood](#route-40--cianwood-reference-verified), [Route 31 / Route 45](#route-31--route-45-dark-cave-reference) |
 | Mahogany Rocket | [Skip Mahogany Rocket arc](#skip-mahogany-rocket-arc--post-clear-town-on-load) |
@@ -769,7 +770,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Badge gating (shipped for Brock):** `count_badges VAR_SPECIAL_x8000` before `menu_init`; ungated TMs added first, then gated TMs in **ascending** requirement order, each preceded by `compare VAR_SPECIAL_x8000, BADGES_TMxx` / `goto_if_lt _menu_show` (one early exit skips all higher tiers). Menu **values stay fixed per TM** (not display position), so the `switch` table is unchanged. Brock: Sandstorm / Rock Tomb / Rock Polish **0**, Rock Slide **4**, Stone Edge **8**, Earthquake **12** (count includes the badge just won). Every pool needs at least one **0**-badge entry or the menu could be empty.
 
-**Rematch (shipped for Brock):** badge owned + TM flag set → msg **16** offer + `yesno` (0 = yes, 1 = no). No → vanilla msg **5**. Yes → msg **17** → `trainer_battle 720` (vanilla phone-rematch team, 6 mons — **roster differs from the first fight**, expected; interim until [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties) generated Gym parties replace it; Gym Leader cap scaling sets levels to the **current** cap) → loss `white_out`; win → msg **18** → `clearflag FLAG_GOT_TM80_FROM_BROCK` (so a bag-full reward is retried instead of re-offering a battle) → same `_tm_grant` menu (gated by **current** badges). No badge, HM, level-cap or shop lines on rematch. Every TM grant (first win or rematch) ends with a **per-leader farewell** (msg **19**, personality line inviting a rematch). Script entry checks `FLAG_GOT_TM80_FROM_BROCK` **before** `CheckBadge` (jumps straight to the rematch offer) — added while the badge-test hook bug was live; harmless redundancy now.
+**Rematch (shipped for Brock):** badge owned + TM flag set → msg **16** offer + `yesno` (0 = yes, 1 = no). No → vanilla msg **5**. Yes → msg **17** → `trainer_battle 720` (vanilla phone-rematch entry, filled by [Battle-5 party generation](#generated-trainer-parties-battle-5) at the **current** Gym Leader cap) → loss `white_out`; win → msg **18** → `clearflag FLAG_GOT_TM80_FROM_BROCK` (so a bag-full reward is retried instead of re-offering a battle) → same `_tm_grant` menu (gated by **current** badges). No badge, HM, level-cap or shop lines on rematch. Every TM grant (first win or rematch) ends with a **per-leader farewell** (msg **19**, personality line inviting a rematch). Script entry checks `FLAG_GOT_TM80_FROM_BROCK` **before** `CheckBadge` (jumps straight to the rematch offer) — added while the badge-test hook bug was live; harmless redundancy now.
 
 **Per-leader text to author when rolling out:** TM labels, rematch offer, rematch accept, rematch win, farewell (4 custom lines + labels). Check `data/Trainers.c` for a vanilla rematch trainer id (same `TRAINERCLASS_LEADER_*`, higher index — e.g. Brock 253 / 720).
 
@@ -901,9 +902,9 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 ## Trainer level scaling
 
-**Status:** level band and **species** stage adjust verified in-game (Sep 2026) — e.g. authored Alakazam → Abra/Kadabra at low caps; Gym Leader cap enabled. **Moves at scaled level:** fixed ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)). Gym trainer band + type filter still open ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release), [Battle-3](DESIGN-BATTLES.md#battle-3-gyms)).
+**Status:** level band and **species** stage adjust verified in-game (Sep 2026) — e.g. authored Alakazam → Abra/Kadabra at low caps; Gym Leader cap enabled. **Moves at scaled level:** fixed ([KB-16](#kb-16--encounter-moves-not-rebuilt-after-specieslevel-change)). Gym trainers use the ordinary level band and the Gym type filters in [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties).
 
-**Design:** [Battle-2](DESIGN-BATTLES.md#cap-ladder) — badge count → cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Generated parties / dynamic battles: [Future-7](DESIGN-FUTURE.md#future-7-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc).
+**Design:** [Battle-2](DESIGN-BATTLES.md#cap-ladder) — badge count → cap `10 + 4×badges` (max **80** at 16 badges). Ordinary trainers: uniform random level in **`[cap−4, cap]`**. Gym Leaders: **every slot at cap exactly**. Trainers never exceed **80** (Champion uncap does not apply to NPCs). Generated parties / dynamic battles: [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties), [Future-8](DESIGN-FUTURE.md#future-8-dynamic-battle-rosters--universal-pc).
 
 | Feature | Toggle | Where |
 |---------|--------|--------|
@@ -913,6 +914,76 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 | Gym Leader cap | `TRAINER_GYM_LEADER_CAP_LEVEL` | Same — `IsGymLeaderTrainerClass()` for all 16 Johto/Kanto Leaders; requires level scaling |
 
 **Dependencies:** moves and stage adjust require `TRAINER_LEVEL_SCALING`; Gym Leader cap requires level scaling.
+
+---
+
+## Generated trainer parties (Battle-5)
+
+**Phase 1:** `TRAINER_RANDOM_SPECIES` in `include/config.h` enables generated species in `MakeTrainerPokemonParty()` for ordinary opposing trainer parties, including Gym Leaders and rematches. Link, Frontier, tutorial, ally, and custom parties with additional scripted fields use the authored path. The generator uses the current badge level rules and level-up moves for the rolled species.
+
+**Eligibility:** Use the [Wilds-5 dex scope](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope), excluding Legendary and Mythical Pokémon (including Phione), Unown, and temporarily Smeargle. Shedinja, Ditto, Wynaut, and Wobbuffet are eligible. Check eligibility before and after applying the shared level-based evolution rules. Each slot skips final species already selected for that trainer, including when several starting species resolve to the same final stage. The species rolls are seeded from the save's trainer ID, opponent trainer ID, and badge count. The battle builder restores the incoming RNG seed on exit.
+
+**Phase 2:** Generated parties use the badge count at battle start: 3 / 4 / 5 / 6 slots at 0 / 1 / 2 / 3+ badges. With two opposing trainers, each gets half that count rounded up (2 / 2 / 3 / 3). A single trainer in a double battle gets the full count. Every generated slot rolls random IVs and starts with no held item. Authored parties retain their own party sizes, IVs, and held items.
+
+**Phase 3:** Gym membership takes precedence over the trainer's ordinary class. Gym Leaders and Leader rematches resolve by class. Gym subordinates resolve by trainer ID from the built zone events and local battle scripts. Match either type on the eligible Pokémon after stage adjustment. Multi-type filters have no slot quotas. When the type pool has no unused species at the rolled level and evolution seed, fall back to the unrestricted eligible pool for an unused species.
+
+**Gym subordinate IDs:** Falkner 29, 50 · Bugsy 10, 67–69 · Whitney 5, 22, 70, 71 · Morty 46, 89, 493, 494 · Chuck 156, 157, 159, 251 · Pryce 480–484 · Clair 110–112, 117, 119 · Brock 308, 685 · Misty 297, 298, 676–678 · Lt. Surge 232, 337, 396 · Erika 326, 336, 346, 356 · Janine 83, 84, 136, 183 · Sabrina 230, 368, 369, 415 · Blue 681–684. Jasmine and Blaine have no subordinate battles.
+
+**Class filters:** `GetTrainerTypeMask()` in `src/field/enemy_party.c` holds the mapping. Unmapped classes and Blue use All. Juggler accepts Psychic and the Voltorb line outside Gym overrides. Clair's Gym uses Dragon/Water and Champion Lance uses Dragon/Flying for now.
+
+**Phase 4:** Family exceptions expand the eligible pool for the named opponent and their rematches. They use the ordinary level-based stage selector, and Gym subordinates inherit only the Gym type filter. Brock allows Vulpix, Jasmine allows Mareep, Misty allows Togepi, Blaine allows Rhyhorn, Pryce allows Seel, and Sabrina allows Venonat. Karen allows Oddish (including Bellossom) and Gastly, Koga allows Pineco, and Bruno allows Onix. Juggler's Voltorb exception uses the same family check. Misty can roll Togepi itself at low levels even though ordinary trainer stage adjustment skips babies.
+
+**Phase 5:** Kimono Girls roll exclusively from Eevee and all eight of its evolutions at any level, without duplicates. Their party size and levels still follow the ordinary badge rules. Other curated class pools are deferred.
+
+### Rollout
+
+1. Generate random eligible species for opponent parties across the game.
+2. Scale party size to 3, 4, 5, and 6 Pokémon at 0, 1, 2, and 3+ badges, respectively.
+3. Add simple trainer and Gym type filters, with an unrestricted option. Check the type of the final level-adjusted species.
+4. Add Gym Leader exceptions, such as Misty's Togepi line.
+5. Curate species lists for trainer classes that need more than a type filter.
+6. Curate moves and give each trainer a TM pool. Build legal movesets from the Pokémon's level-up learnset and compatible TMs.
+7. Improve movesets using STAB, coverage, and physical or special stat fit.
+8. Add badge-scaled EVs, IVs, natures, and held-item selection.
+
+### Phase 6 move blacklist
+
+Open the [Trainer Move Catalog](../scripts/dev/trainer_move_catalog.html) and select **Review status moves** to see the current candidates for tiering.
+
+Exclude these moves from generated trainer movesets, including level-up candidates and machine or tutor candidates. Keep species learnsets as they are. Sketch is excluded from ordinary generated sets. The separate Smeargle moveset remains a future task.
+
+- After You, Follow Me, Helping Hand, Rage Powder, Quash, Wide Guard, Heal Pulse, Teleport, Splash, Sketch, Grudge, Spite, Embargo, Sweet Scent, Roar, Whirlwind, Block, Mean Look, Perish Song, Healing Wish, Lunar Dance, Memento, Parting Shot, Recycle, Switcheroo, Trick, Snatch, Magic Coat, Imprison, Quick Guard, Guard Split, Power Split, Guard Swap, Power Swap, Psych Up, Mimic, Kinesis, Laser Focus, Mist, Misty Terrain.
+- One-hit KO moves — Fissure, Guillotine, Horn Drill, and Sheer Cold.
+- Belch, Dream Eater, Snore, and Sleep Talk are blacklisted in the normal candidate pool. TM82 can roll in trainer inventories. Sleep Talk is deferred until the synergy pass.
+
+### Phase 6 status move tiers
+
+- **S tier** — Belly Drum, Cotton Guard, Dragon Dance, Glare, Leech Seed, Milk Drink, Minimize, Nasty Plot, Quiver Dance, Recover, Roost, Shell Smash, Slack Off, Soft-Boiled, Spore, Strength Sap, Spiky Shield, Swords Dance, Tail Glow.
+- **S-tier utility attacks** — Nuzzle (Paralysis), Fake Out (no shared group), and Stone Axe (Entry hazards). Treat these as status picks during moveset selection. These can also compete for the first slot using their damage scores.
+- **Self-KO status picks** — Explosion (A tier) and Self-Destruct (B tier) share a group and have zero damage score.
+- **A tier** — Acid Armor, Agility, Amnesia, Autotomize, Bulk Up, Calm Mind, Charm, Coil, Confuse Ray, Cosmic Power, Curse, Detect, Disable, Double Team, Eerie Impulse, Encore, Fake Tears, Feather Dance, Hone Claws, Iron Defense, Light Screen, Lovely Kiss, Moonlight, Morning Sun, Reflect, Rock Polish, Sleep Powder, Stun Spore, Synthesis, Take Heart, Taunt, Thunder Wave, Toxic, Will-O-Wisp, Wish, Yawn.
+- **B tier** — Aqua Ring, Aromatherapy, Aurora Veil, Baby-Doll Eyes, Baton Pass, Captivate, Cotton Spore, Defend Order, Defog, Destiny Bond, Electric Terrain, Endure, Focus Energy, Gastro Acid, Grassy Terrain, Gravity, Hail, Haze, Heal Bell, Hypnosis, Ingrain, Life Dew, Magnet Rise, Metal Sound, Noble Roar, Poison Gas, Poison Powder, Protect, Rain Dance, Rest, Safeguard, Sandstorm, Scary Face, Screech, Snowscape, Spikes, Stealth Rock, Sticky Web, Stockpile, String Shot, Substitute, Sunny Day, Sweet Kiss, Tailwind, Teeter Dance, Tickle, Torment, Toxic Spikes, Toxic Thread, Trick Room, Venom Drench, Work Up.
+- **C tier** — Acupressure, Attract, Charge, Conversion, Conversion 2, Copycat, Dark Void, Defense Curl, Entrainment, Flash, Flatter, Growth, Growl, Harden, Heart Swap, Howl, Leer, Lock-On, Metronome, Mind Reader, Pain Split, Play Nice, Power Trick, Psycho Shift, Role Play, Sand Attack, Simple Beam, Sing, Skill Swap, Smokescreen, Soak, Supersonic, Swagger, Swallow, Tail Whip, Tearful Look, Transform, Withdraw, Worry Seed.
+
+### Phase 6 moveset test tool
+
+If the generator selects zero moves, the Pokémon gets up to four moves from its level-up learnset at its current level, including moves normally banned from generated sets. This fallback spends no TMs. The tester marks these picks as **Level-up fallback**.
+
+**First pass:** `src/field/trainer_moves.c` rebuilds generated opponent sets from level-up moves, badge-unlocked HMs, and five TM rolls per badge. It spends TM copies from the ace backward, uses one attacking move per type and one status move per assigned group, and chooses later slot categories randomly. All generated opponents use the same TM roll rules. Untiered status moves are skipped. Gym reward and shop gates are mirrored in the trainer TM unlock table.
+
+**Offline tester:** [Trainer Moveset Tester](../scripts/dev/trainer_moveset_viewer.html) embeds the ROM’s moveset, EV, IV upgrade, and held-item rules compiled to WebAssembly, along with the packed move, level-up, and machine compatibility data from the build. It runs ten trials by default on one sample or a manually entered party, with a shared starting TM inventory and a different seed for each trial. Each build shows its held item, per-stat EVs, and IVs before and after upgrades. Select Gym Leader to apply the leader EV and IV budgets. Inputs are final base-form species and levels, and random samples use tester seeds. Rebuild the snapshot with `scripts/dev/build_trainer_moveset_viewer.py` after changing the rules or packed tables.
+
+By default, pick a random badge count and eligible Pokémon, derive a trainer level from that badge tier, and roll one TM inventory. Print the case seed, badge count, species, form, level, typing, unlocked HMs, and TM inventory with copy counts. Print the full legal move pool with each move's sources, damage score or status tier, and status groups. Run selection ten times on that fixed case with different selection seeds, restoring the starting TM inventory each time. Show each resulting set, why each move was chosen, and which TM copies it consumed.
+
+Support replay by seed, overrides for badge count, species, level, and TM inventory, and a batch mode that checks many randomly sampled cases. Include a full-party mode to exercise TM depletion and ace priority across multiple Pokémon. Assert that generated moves have legal sources, TM copies are never overspent, each attacking type and status group appears at most once, and the first move is damaging when a legal attack is available. Print the seed and complete input on failure so an unusual case can be replayed on its own.
+
+**Trainer EVs:** Generated opponents get 51 EVs per badge at battle start, or 102 per badge for Gym Leaders. Cap at 510 and distribute across all six stats, with at most one EV difference. Apply before recalculating stats.
+
+**Trainer IVs:** Generated Pokémon keep their six natural IV rolls. After move selection, ordinary trainers get one upgrade at badge 8 and one more per badge through 16. Gym Leaders get two plus badge count, capped at 18. Upgrade the lowest remaining imperfect IV on the team to 31 each time, breaking ties with the existing trainer RNG. Apply before the final stat recalculation. The upgrades require no held item.
+
+**Trainer held items:** `src/field/trainer_items.c` rolls one eligible item per generated Pokémon after moves and IV upgrades. Use battle-start badge count and the trainer RNG. Type boosters look at the generated attacks, resist berries use the shared battle type chart, and species gear checks the holder's species. Authored parties do not use this selector.
+
+See [Future-7](DESIGN-FUTURE.md#future-7-trainer-party-improvements) for the trainer party backlog.
 
 ---
 
@@ -1748,7 +1819,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 | Corner | TMs (menu order) |
 | ------ | ---------------- |
 | Goldenrod | TM43 Secret Power, TM64 Explosion, TM44 Rest, TM46 Thief, TM90 Substitute, TM83 Natural Gift |
-| Celadon | TM58 Endure, TM41 Torment, TM10 Hidden Power, TM49 Snatch, TM67 Recycle, TM82 Sleep Talk |
+| Celadon | TM58 Endure, TM41 Torment, TM49 Snatch, TM67 Recycle, TM82 Sleep Talk |
 
 | Corner | Held items (menu order) |
 | ------ | ----------------------- |

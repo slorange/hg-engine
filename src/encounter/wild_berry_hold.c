@@ -64,6 +64,7 @@ static const u16 sWildBerryHoldPool[] = {
     ITEM_CUSTAP_BERRY,
     ITEM_JABOCA_BERRY,
     ITEM_ROWAP_BERRY,
+    ITEM_ROSELI_BERRY,
 };
 
 static const u16 sWildApricornHoldPool[] = {

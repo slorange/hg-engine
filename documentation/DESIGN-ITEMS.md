@@ -214,11 +214,11 @@ See [Data-5 — Specialty clerks](DESIGN-DATA.md#town--route-specialty-clerks).
 
 **Status: IMPLEMENTED**
 
-Berries stay a meaningful **held-item** layer: the player cannot use Bag items in trainer battles ([Battle-1](DESIGN-BATTLES.md#items)), so automatic berry effects remain one of the main in-battle effects. Growth via **Berry Pots** is unchanged in role.
+Berries stay a meaningful **held-item** layer: the player cannot use Bag items in trainer battles ([Battle-1](DESIGN-BATTLES.md#items)), so automatic berry effects remain one of the main in-battle effects. Growth via Berry Pots is unchanged in role.
 
 **Berries are restored after battle, along with all held items**
 
-**Scope:** **45** Gen IV berries, all obtainable in-game — no Pokéwalker courses, events, Pal Park, or multiplayer.
+**Scope:** **45** Gen IV berries + Roseli
 
 **Removed (19):** Figy-family weak-heal berries; Poffin / contest berries — little use beyond Natural Gift.
 
@@ -233,12 +233,12 @@ Mom intro grants **Berry Pots** and **5× each** basic berry **Cheri through Per
 | Basic (Cheri–Persim) | Status cure, Leppa PP, Oran HP | Starter pack; Goldenrod & Celadon dept **2F upper** (partial medicine replacement) | Implemented |
 | Lum + Sitrus | Full status / 25% max HP | Badge-scaled regular marts (4 and 6 badges) | Implemented |
 | EV / friendship (Pomeg–Tamato) | −EVs, +friendship | Goldenrod Underground medicine seller (beside Haircut Brothers) | Implemented |
-| Type-resistance (Occa–Chilan) | Super-effective hit reduction | Themed **local specialty shops** ([Items-4 § Town clerks](#town--route-specialty-clerks) — e.g. Wacan at Vermilion, Passho at Cerulean). Mom’s vanilla resist-berry purchasing **unchanged for now**. | Implemented |
+| Type-resistance (Occa–Chilan) & Roseli | Super-effective hit reduction | Themed **local specialty shops** ([Items-4 § Town clerks](#town--route-specialty-clerks) — e.g. Wacan at Vermilion, Passho at Cerulean). Mom’s vanilla resist-berry purchasing **unchanged for now**. | Implemented |
 | Rare battle (Liechi–Rowap) | Pinch boosts, Enigma heal, Custap priority, Jaboca / Rowap counter | **Shard traders** in **Violet City** and **Fuchsia City** | Implemented |
 
 ## Wild Pokémon holds
 
-**Implemented:** In addition to the table above, every supported berry can be a wild Pokémon's **held-item**, and so can the eight craftable Apricorn colours. After the normal species held-item table roll (buffed to **65%** common / **15%** rare / **20%** nothing; **Compound Eyes** lead **70%** / **30%** / **0%**), wilds with no item get a **50%** chance (**100%** with Compound Eyes) of a fallback hold. That hold is **50%** a uniform random berry from the **45** supported berries and **50%** a uniform random Apricorn.
+**Implemented:** Wild Pokémon can hold any of the **46** fallback berries or any of the eight craftable Apricorn colours. The species held-item roll is **65%** common, **15%** rare, and **20%** nothing. With **Compound Eyes** in the lead, it is **70%** common and **30%** rare. Wild Pokémon that end up with no item get a **50%** chance (**100%** with Compound Eyes) of a fallback hold. That hold is **50%** a uniformly random berry and **50%** a uniformly random Apricorn.
 
 ---
 

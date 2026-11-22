@@ -13,7 +13,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
 | [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
 | [Future-5. Gym Leader Ecology Hints](#future-5-gym-leader-ecology-hints) |
-| [Future-7. Generated trainer & Gym parties](#future-7-generated-trainer--gym-parties) |
+| [Future-7. Trainer party improvements](#future-7-trainer-party-improvements) |
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Pokémon Research Society](#future-11-pokémon-research-society) |
@@ -130,54 +130,46 @@ The player picks from a curated list of families for that Gym. The Leader names 
 
 ---
 
-# Future-7. Generated trainer & Gym parties
+# Future-7. Trainer party improvements
 
-### Randomize species
+Build on [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties).
 
-Replace party species with **random eligible species** from the available dex ([Wilds-5](DESIGN-WILDS.md#wilds-5-pokémon-generations--content-scope)), then apply the same stage rules as release scaling ([Battle-2](DESIGN-BATTLES.md#trainer-scaling-release)) so the chosen form fits the level band. Scale party size by badge count as well.
+## Roster curation
 
-## Gym rosters
-Gyms (both trainers and leaders) are **monotype by default**, with a few exceptions:
+- Create a usable Sketched moveset for Smeargle before adding it to the eligible pool.
+- Curate narrower species lists for Lance and Clair, and consider curated lists for other trainer classes as needed.
+- Mitigate shared team weaknesses. Distinguish 2× and 4× weaknesses so Brock doesn't end up with 4× Grass weaknesses.
 
-| Leader | Gym type(s) for hints / filters | Roster notes |
-|--------|--------------------------------|--------------|
-| Whitney | **Normal** + **Fairy** | |
-| Morty | **Ghost** + **Dark** | |
-| Brock | **Rock** / **Ground** | Vulpix line |
-| Blue | **Flexible** | No Specialty |
-| Jasmine | Steel | Ampharos line |
-| Misty | Water | Togepi line |
-| Blaine | Fire | Rhydon line |
+## Moveset and stat tuning
 
-All other Leaders use their vanilla Gym type only.
+- Go through [Data-6 § Trainer damaging moves](DESIGN-DATA.md#trainer-damaging-moves) and set modifiers where needed.
+- Score physical and special moves using the Pokémon’s offensive stats and evaluate actual matchup coverage. Evaluate Body Press using Defense.
+- Compare damage and status when filling later slots. Proposed status scores are **S = 150, A = 100, B = 60, C = 30**. Revisit damage-plus-utility scoring after playtesting the current bonuses.
+- Review special move scores against what the battle AI can use. Check HP-dependent and retaliatory damage for Super Fang, Endeavor, Final Gambit, Counter, Mirror Coat, Metal Burst, and Comeuppance. Review variable power for Crush Grip, Electro Ball, Flail, Reversal, Fling, Frustration, Natural Gift, Present, Return, and Spit Up. Review conditional damage and usage costs for Assurance, Avalanche, Brine, Facade, Fury Cutter, Hex, Payback, Power Trip, Revenge, Stored Power, Venoshock, and Weather Ball. Consider Fling, Natural Gift, Beltch.
+- Choose natures that fit the physical or special set and EV spread. Consider more focused Gym Leader EV spreads at higher badge counts.
+- Rank abilities into tiers and use those tiers to tune selection odds. Proposed hidden ability rates are **20% for ordinary trainers** and **30% for Gym trainers**. The earlier proposal also specified **10% in the wild**.
+- Consider whether to tune PP, form, gender, friendship, ball, and shininess.
 
-## Trainer class
+## Held-item scoring and conditions
 
-Class biases the species pool and typing as well. Some classes will have a hardcoded pool rather than a type.
+Give each held item a score and explicit eligibility conditions. Keep badge gates as minimum unlocks and evaluate every unlocked item that fits the Pokémon. Use the score to favor stronger or better-fitting items. An early unlock can remain a strong choice when it suits the species, moveset, ability, or role. Decide score values, how much randomness to retain, and how to resolve ties during the tuning pass.
 
-## TMs and Moves
-Once a trainer's team is generated, we also give the trainer some TMs randomly, and teach them to their team where appropriate. TM list will need to be curated so no useless TMs are taught. Number and Quality of TMs should increase as Badge count increases. Gym trainers should have more of that Gym's type of TMs. Gym Leaders should get an additional boost of Number and Quality of TMs.
+Defer Power Herb, White Herb, Flame Orb, Toxic Orb, Black Sludge, Big Root, Light Clay, weather rocks, Grip Claw, Iron Ball, Lagging Tail, Shed Shell, Lansat Berry, Wide Lens, Zoom Lens, and Choice items until the synergy pass.
 
-Then each Pokemon gets a moveset using their learnset, and available tms, again with filters on bad moves. Coverage is a consideration. As is attack and special attack stat for physical/special moves.
+## Synergy
 
-## IVs, EVs, Nature, Held item
-
-Scale trainer **EVs** with badges. **Gym Leaders** have higher **IVs** than ordinary trainers. **Nature** agrees with the EV spread and whether the set is physical or special.
-Use the held items based on their badge count unlock.
-
-## Abilities
-
-| Who | Hidden Ability |
-| --- | -------------- |
-| Wild Pokémon | **10%** |
-| Ordinary trainers | **20%** |
-| Gym trainers | **30%** |
-
-**Ability tiers.** Rank abilities into tiers, then use those tiers to set the odds for trainer and Gym Leader Pokémon.
-
-**Set synergy.** Swift Swim + Drizzle, Guts + Flame Orb, Choice Band − Swords Dance.
-
-**Further considerations:** PP, form, gender, friendship, ball, shiny.
+- Evaluate combinations such as Swift Swim with Drizzle, Guts with Flame Orb, and recoil attacks with Rock Head or Magic Guard. Avoid combinations such as Choice Band with Swords Dance.
+- Pair Sleep Talk with Rest and Dream Eater with a sleep-inducing move when the AI can use the combination.
+- Allow distinct entry hazards together, favor complementary hazards, and consider placing hazard setters in the lead.
+- Pair Sleep Talk with Rest and Dream Eater with a sleep-inducing move when the AI can use the combination. Keep both moves excluded from normal selection until the pairing rules are in place.
+- Revisit Protect and Substitute once the selector can recognize sets that benefit from them. Both start at B tier because their value depends on the rest of the set.
+- Score recoil attacks for the holder’s actual ability. Account for Rock Head or Magic Guard where the ability prevents the relevant recoil. Also revisit damage scoring for Technician with eligible low-power moves, Skill Link with variable-hit moves, and Contrary with moves that normally lower the user’s stats.
+- Evaluate weather across the team, such as a Drizzle setter supporting a teammate with Swift Swim. Evaluate weather rocks alongside the setter and the teammates that benefit from that weather.
+- Evaluate status orbs alongside the abilities and moves that can take advantage of them, such as Flame Orb with Guts. Consider Sticky Barb with Trick or Switcheroo only after checking whether the trainer AI can use the swap.
+- Score Choice items against the full moveset. Avoid combinations that interfere with the set’s purpose, such as Choice Band with Swords Dance.
+- Give Power Herb and White Herb explicit conditions tied to the moves that benefit from them. Review Wide Lens and Zoom Lens against the set’s actual accuracy needs and check whether the AI can take advantage of Zoom Lens.
+- Revisit Acrobatics once moves and items can be chosen together. Its current score assumes a held item, so any bonus should depend on whether the set is expected to use it without one.
+- Check each proposed combination against battle AI move selection and usage. Keep speculative bonuses deferred until the AI can actually use the interaction.
 
 ---
 
@@ -195,6 +187,8 @@ Whenever the player may send out or switch, they may select:
 2. an unused Pokémon from their entire collection.
 
 The first time a unique Pokémon enters, it **permanently consumes one roster slot**. After the agreed number of unique Pokémon have entered, **the roster is locked**. Fainted Pokémon continue to occupy slots. The opponent follows the same rules.
+
+- Consider allowing each side to commit at most one Pokémon of a given species per battle. Once a species is committed, a second individual of that species would be ineligible for the rest of the battle.
 
 ## Counter-picking and information
 
@@ -236,7 +230,7 @@ An eligible species **anywhere in the collection** (party or box) can perform an
 
 # Future-10. Living trainers & interactions
 
-**Not required for initial release.** Initial release: static vanilla trainers with [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) scaling. Renewable TMs via [Items-2](DESIGN-ITEMS.md#items-2-tms) / [Items-4](DESIGN-ITEMS.md#items-4-shops), not trainer buy/sell economy.
+**Deferred.** [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties) generates parties for the existing trainer encounters. Renewable TMs come from the sources in [Items-2](DESIGN-ITEMS.md#items-2-tms) and [Items-4](DESIGN-ITEMS.md#items-4-shops).
 
 ## Living trainers
 
@@ -274,7 +268,7 @@ A trainer may ask for a species location. If the player has encountered the requ
 
 ### Encounter information
 
-Trainers may tell the player where undiscovered species can be found (ecology data). **Gym Leaders:** structured first-clear hint — [Future-7](#future-7-generated-trainer--gym-parties).
+Trainers may tell the player where undiscovered species can be found (ecology data). **Gym Leaders:** structured first-clear hint — [Future-5](#future-5-gym-leader-ecology-hints).
 
 ### Pokémon trades / item trading
 
@@ -290,7 +284,7 @@ Information about nearby undefeated Gyms or scaled teams; additional lightweight
 
 ## Field population (living trainers)
 
-Map-level trainer generation, movement, and placement — distinct from [Battle-2](DESIGN-BATTLES.md#trainer-scaling-release) battle-start scaling; location-weighted distributions and non-battle interactions.
+Investigate map-level trainer generation, movement, placement, location-weighted distributions, and non-battle interactions. Existing trainers receive their levels at battle start under [Battle-2](DESIGN-BATTLES.md#trainer-scaling).
 
 ## Technical investigation
 
@@ -488,9 +482,9 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 
 | Item | Score | Vision | Excitement | Difficulty | Uniqueness | Presence | Depends on |
 | ---- | :---: | :----: | :--------: | :--------: | :--------: | :------: | ---------- |
-| [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | [Future-7](#future-7-generated-trainer--gym-parties) |
-| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Future-7](#future-7-generated-trainer--gym-parties) |
-| [Future-7](#future-7-generated-trainer--gym-parties) Generated parties | 9 | 4 | 4 | 2 | 1 | 4 | — |
+| [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties) |
+| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties) |
+| [Future-7](#future-7-trainer-party-improvements) Trainer party improvements | 9 | 4 | 4 | 2 | 1 | 4 | — |
 | [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
