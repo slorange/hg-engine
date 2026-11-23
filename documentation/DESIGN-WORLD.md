@@ -14,6 +14,7 @@
 | [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | IMPLEMENTED |
 | [World-4. Accelerated day/night cycle](#world-4-accelerated-daynight-cycle) | IMPLEMENTED |
 | [World-5. Shared Pokémon Center Hub](#world-5-shared-pokémon-center-hub) | IMPLEMENTED |
+| [World-6. Unown collection quest](#world-6-unown-collection-quest) | IMPLEMENTED |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
 
 ---
@@ -162,3 +163,85 @@ Other services may be added as future systems develop. Keep location-specific sh
 Outdoor Pokémon Center entrances lead to a shared interior, tracking the originating Center so the exit returns to the correct outdoor door. The return destination persists when the player saves and restarts inside the Center. Indigo Plateau remains separate, preserving its unique layout and League access.
 
 Individual Centers’ NPCs do not carry over into the shared interior. The actual Pokemon Center used is the Route 32 one, and all vanilla npcs have been removed.
+
+---
+
+# World-6. Unown collection quest
+
+Collect all **28 Unown forms** across Johto and Kanto on a fresh run. Each **unique form caught** and registered in the Pokédex **permanently** improves **all Unown** and increases **Hidden Power's base power for every Pokémon**. Wild encounters provide all 28 forms.
+
+## Progression
+
+Unown's base stats and Hidden Power's base power scale linearly from 0 unique forms caught to 28.
+
+| Track | At 0 forms | At 28 forms |
+| ----- | ---------- | ----------- |
+| **BST** (HP / Atk / Def / Sp. Atk / Sp. Def / Speed) | 66 / 44 / 44 / 66 / 44 / 44 (**308** total) | 150 / 100 / 100 / 150 / 100 / 100 (**700** total) |
+| **Hidden Power (all Pokémon)** | **60** BP (not IV-dependent) | **100** BP |
+
+Unown's base catch rate falls geometrically from **255** on the first new form to **3** on the 28th. With `n` unique forms already caught, the base catch rate is `round(255 × (3 / 255)^(min(n, 27) / 27))`. Each new form divides the unrounded rate by about **1.18**. Integer rounding can give adjacent stages the same rate. Duplicate catches leave the rate unchanged, and the rate stays at **3** after completion.
+
+- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-11](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed.
+- **Typelessness (Unown only):** Unown has no type weaknesses, resistances, immunities, or STAB, even when its ability is suppressed.
+- **Ability (Unown only):** **Runic Power** multiplies ordinary move damage by **1.33×**. Ability suppression disables the damage bonus. Fixed-damage moves keep their stated damage.
+- **EV yield:** **1 HP** and **1 Sp. Atk**.
+- **Wild held item:** Wild Unown have a **50%** chance to hold **TM10 (Hidden Power)**. TM10 can also appear among randomized field pickups.
+
+## Moveset
+
+| Level | Moves |
+| ----- | ----- |
+| 1 | Ancient Power, Ominous Wind, Silver Wind, Hidden Power |
+| 15 | Teleport |
+| 30 | Safeguard |
+| 45 | Recover |
+| 60 | Perish Song |
+
+The level up set is meant to make it harder to catch Unown as the level increases. Unown cannot learn any TMs. 
+
+## Encounter locations
+
+Each location’s **theme word** lists the **unique letter forms** that can appear there. Letters may overlap between locations.
+
+| Location | Theme / available forms |
+| -------- | ------------------------ |
+| Ruins of Alph | RUINS + ALPH + UNOWN |
+| Dark Cave | DARK |
+| Union Cave | UNION |
+| Slowpoke Well | SLOW |
+| Ilex Forest | ILEX |
+| Sprout Tower | GROW |
+| Burned Tower | FIRE |
+| Bell Tower | BELL |
+| Mt. Mortar | MORTAR |
+| Lake of Rage | RAGE |
+| Ice Path | ICE |
+| Dragon's Den | DRAGON |
+| Whirl Islands | WHIRL |
+| Mt. Moon | MOON |
+| Rock Tunnel | ROCK |
+| Diglett's Cave | DIG |
+| Seafoam Islands | FROST |
+| Victory Road | VICTORY |
+| Tohjo Falls | TOHJO |
+| Cinnabar Island | MAGMA |
+
+### Endgame and exclusive forms
+
+- **!** and **?** are the **Johto** and **Kanto** roamers, respectively. Both start roaming when all four picture puzzles in the Ruins of Alph are solved. They are level 45 and the normal catch level cap applies. They use standard roamer fleeing and retain HP and status across encounters. A knocked-out roamer returns at full health after the player's next Pokémon League clear, including a repeat clear. A caught roamer stays caught. Each roamer changes routes when the player travels between maps.
+- **Q** is exclusive to **Mt. Silver** and **Z** to **Cerulean Cave**.
+- **V** and **Y** — **Victory Road only** ([World-2](#world-2-routes-and-content-gating) **16-badge** gate).
+
+### Wild encounter rules
+
+- At each designated location, **5%** of eligible wild encounters are **Unown** instead of the normal slot species. An **Unown in the lead slot** raises that chance to **50%**.
+- When Unown is selected, pick **uniformly** among that location’s allowed forms; otherwise use normal encounter tables.
+- Applies to **grass**, **cave**, **Surf**, **Rock Smash**, and **Headbutt**. Does **not** apply to **Fishing**.
+- The encounter rooms inside the **Ruins of Alph** have a **100% Unown** rate with the letters RUINS + ALPH + UNOWN. The outside area uses the usual 5% or 50% rate with the same letters.
+
+### Other notes
+
+- **Caught indicator:** Show the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
+- **Repeat Ball:** Its catch bonus applies to Unown only if the player has already caught that exact form.
+- **Completion reward** — After all **28 forms** are registered, the research society gives out **unlimited copies of TM10 (Hidden Power)** on request.
+- The research society may also give a reward for each newly registered Unown form ([Future-11](DESIGN-FUTURE.md#pokédex-research)).

@@ -335,7 +335,7 @@ A move that leaves the foe badly\npoisoned. This poison damage\nworsens every tu
 Summons a hailstorm that lasts for\nfive turns. The hailstorm damages\nall types except Ice.
 The user tenses its muscles to bulk up\nits body, boosting both its Attack and\nDefense stats.
 The user forcefully shoots seeds at\nthe foe. Two to five seeds are shot in\nrapid succession.
-A variable move that changes type\nand power depending on the hidden\nability of the Pokémon using it.
+Its type depends on the Pokémon.\nIts power grows as you catch\ndifferent forms of Unown.
 The user intensifies the sun for\nfive turns, powering up Fire-type\nmoves.
 The foe is taunted into a rage that\nallows it to use only attack moves for\ntwo to four turns.
 The foe is struck with an icy-cold\nbeam of energy. It may also freeze\nthe target solid.

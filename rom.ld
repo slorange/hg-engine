@@ -335,6 +335,7 @@ AbraTravel_TeleportSpin = 0x0224C75C | 1;
 AbraTravel_TeleportFade = 0x0224C7D4 | 1;
 AbraTravel_TeleportArrive = 0x02053B04 | 1;
 SavArray_Flags_get = 0x020503D0 | 1;
+Save_VarsFlags_CheckFlagInArray = 0x020503DC | 1;
 PokeParty_Delete = 0x0207456C | 1;
 Overlay_UnloadID = 0x02006F7C | 1;
 Overlay_Load = 0x02006FF8 | 1;
@@ -932,6 +933,8 @@ BufferBoxMonSpeciesName = 0x0200BF1C | 1;
 
 #roamers
 PlayerLocationHistoryGetBack = 0x0202D9F4 | 1;
+UpdateNativeRoamerLocationHistory = 0x020676D4 | 1;
+CopyWildBattleResultToField = 0x02050724 | 1;
 PlayerProfile_GetTrainerID_VisibleHalf = 0x02028F88 | 1;
 SetRoamerData = 0x0202DAB8 | 1;
 Roamers_GetRoamMonStats = 0x0202DA54 | 1;

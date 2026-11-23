@@ -10523,36 +10523,36 @@ static const u32 sPokedexAreaRoutesAndCitiesSpecial_Misdreavus[] =
     DEX_END_AREA_DATA,
 };
 
-static const u32 sPokedexAreaSpecialAreasMorning_Unown[] =
+static const u32 sPokedexAreaSpecialAreas_Unown[] =
 {
+    DEX_SPROUT_TOWER,
     DEX_RUINS_OF_ALPH,
+    DEX_UNION_CAVE,
+    DEX_SLOWPOKE_WELL,
+    DEX_ILEX_FOREST,
+    DEX_BURNED_TOWER,
+    DEX_BELL_TOWER,
+    DEX_WHIRL_ISLANDS,
+    DEX_MT_MORTAR,
+    DEX_ICE_PATH,
+    DEX_DRAGONS_DEN,
+    DEX_DARK_CAVE,
+    DEX_MT_MOON,
+    DEX_SEAFOAM_ISLANDS,
+    DEX_MT_SILVER_CAVE,
+    DEX_ROCK_TUNNEL,
+    DEX_VICTORY_ROAD,
+    DEX_TOHJO_FALLS,
+    DEX_DIGLETTS_CAVE,
+    DEX_CERULEAN_CAVE,
     DEX_END_AREA_DATA,
 };
 
-static const u32 sPokedexAreaSpecialAreasDay_Unown[] =
+static const u32 sPokedexAreaRoutesAndCities_Unown[] =
 {
-    DEX_RUINS_OF_ALPH,
-    DEX_END_AREA_DATA,
-};
-
-static const u32 sPokedexAreaSpecialAreasNight_Unown[] =
-{
-    DEX_RUINS_OF_ALPH,
-    DEX_END_AREA_DATA,
-};
-
-static const u32 sPokedexAreaRoutesAndCitiesMorning_Unown[] =
-{
-    DEX_END_AREA_DATA,
-};
-
-static const u32 sPokedexAreaRoutesAndCitiesDay_Unown[] =
-{
-    DEX_END_AREA_DATA,
-};
-
-static const u32 sPokedexAreaRoutesAndCitiesNight_Unown[] =
-{
+    DEX_LAKE_OF_RAGE,
+    DEX_MT_SILVER,
+    DEX_CINNABAR_CITY,
     DEX_END_AREA_DATA,
 };
 
@@ -47552,12 +47552,12 @@ const PokedexU32List sPokedexAreaLists[] =
     [5575] = { sPokedexAreaRoutesAndCitiesNight_Misdreavus, sizeof(sPokedexAreaRoutesAndCitiesNight_Misdreavus) / sizeof(*sPokedexAreaRoutesAndCitiesNight_Misdreavus) },
     [6650] = { sPokedexAreaSpecialAreasSpecial_Misdreavus, sizeof(sPokedexAreaSpecialAreasSpecial_Misdreavus) / sizeof(*sPokedexAreaSpecialAreasSpecial_Misdreavus) },
     [7725] = { sPokedexAreaRoutesAndCitiesSpecial_Misdreavus, sizeof(sPokedexAreaRoutesAndCitiesSpecial_Misdreavus) / sizeof(*sPokedexAreaRoutesAndCitiesSpecial_Misdreavus) },
-    [201] = { sPokedexAreaSpecialAreasMorning_Unown, sizeof(sPokedexAreaSpecialAreasMorning_Unown) / sizeof(*sPokedexAreaSpecialAreasMorning_Unown) },
-    [1276] = { sPokedexAreaSpecialAreasDay_Unown, sizeof(sPokedexAreaSpecialAreasDay_Unown) / sizeof(*sPokedexAreaSpecialAreasDay_Unown) },
-    [2351] = { sPokedexAreaSpecialAreasNight_Unown, sizeof(sPokedexAreaSpecialAreasNight_Unown) / sizeof(*sPokedexAreaSpecialAreasNight_Unown) },
-    [3426] = { sPokedexAreaRoutesAndCitiesMorning_Unown, sizeof(sPokedexAreaRoutesAndCitiesMorning_Unown) / sizeof(*sPokedexAreaRoutesAndCitiesMorning_Unown) },
-    [4501] = { sPokedexAreaRoutesAndCitiesDay_Unown, sizeof(sPokedexAreaRoutesAndCitiesDay_Unown) / sizeof(*sPokedexAreaRoutesAndCitiesDay_Unown) },
-    [5576] = { sPokedexAreaRoutesAndCitiesNight_Unown, sizeof(sPokedexAreaRoutesAndCitiesNight_Unown) / sizeof(*sPokedexAreaRoutesAndCitiesNight_Unown) },
+    [201] = { sPokedexAreaSpecialAreas_Unown, sizeof(sPokedexAreaSpecialAreas_Unown) / sizeof(*sPokedexAreaSpecialAreas_Unown) },
+    [1276] = { sPokedexAreaSpecialAreas_Unown, sizeof(sPokedexAreaSpecialAreas_Unown) / sizeof(*sPokedexAreaSpecialAreas_Unown) },
+    [2351] = { sPokedexAreaSpecialAreas_Unown, sizeof(sPokedexAreaSpecialAreas_Unown) / sizeof(*sPokedexAreaSpecialAreas_Unown) },
+    [3426] = { sPokedexAreaRoutesAndCities_Unown, sizeof(sPokedexAreaRoutesAndCities_Unown) / sizeof(*sPokedexAreaRoutesAndCities_Unown) },
+    [4501] = { sPokedexAreaRoutesAndCities_Unown, sizeof(sPokedexAreaRoutesAndCities_Unown) / sizeof(*sPokedexAreaRoutesAndCities_Unown) },
+    [5576] = { sPokedexAreaRoutesAndCities_Unown, sizeof(sPokedexAreaRoutesAndCities_Unown) / sizeof(*sPokedexAreaRoutesAndCities_Unown) },
     [6651] = { sPokedexAreaSpecialAreasSpecial_Unown, sizeof(sPokedexAreaSpecialAreasSpecial_Unown) / sizeof(*sPokedexAreaSpecialAreasSpecial_Unown) },
     [7726] = { sPokedexAreaRoutesAndCitiesSpecial_Unown, sizeof(sPokedexAreaRoutesAndCitiesSpecial_Unown) / sizeof(*sPokedexAreaRoutesAndCitiesSpecial_Unown) },
     [202] = { sPokedexAreaSpecialAreasMorning_Wobbuffet, sizeof(sPokedexAreaSpecialAreasMorning_Wobbuffet) / sizeof(*sPokedexAreaSpecialAreasMorning_Wobbuffet) },

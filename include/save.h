@@ -94,6 +94,13 @@ typedef struct BerryPot {
 
 #define MAX_BERRY_POT 4
 
+struct UnownRoamerBattleState {
+    u32 personality;
+    u16 hp; // Zero means the next encounter starts at full health.
+    u8 status;
+    u8 initialized;
+};
+
 struct SAVE_MISC_DATA {
     /* 0x000 */ APRICORN_TREE apricorn_trees[MAX_APRICORN_TREE];
     /* 0x004 */ BerryPot berry_pots[MAX_BERRY_POT];
@@ -101,13 +108,14 @@ struct SAVE_MISC_DATA {
     /* 0x050 */ struct Gymmick gymmick;
     /* 0x270 */ u16 rivalName[8]; // 7 + 1
     /* 0x280 */ u8 unk_0280[8]; // 3 chunks of size (4, 2, 2)
-    /* 0x288 */ u8 filler_0288[0x10];
+    /* 0x288 */ struct UnownRoamerBattleState unownRoamerBattle[2];
     /* 0x298 */ u16 favoriteMonSpecies;
     /* 0x29A */ u8 favoriteMonForm : 7;
     u8 favoriteMonIsEgg : 1;
     /* 0x29B */ u8 extraChunksExist : 1;
     u8 unk_029B_1 : 4;
-    /* 0x29C */ u8 filer_029C[4];
+    /* 0x29C */ u16 unownRoamerLastMap;
+    u8 unownRoamerRoute[2]; // 0 = unplaced, 255 = knocked out, otherwise one-based route index.
     /* 0x2A0 */ MAIL_MESSAGE battleGreetingEC;
     /* 0x2A8 */ u32 unk_02A8[2][5];
     /* 0x2D0 */ u8 unk_02D0[5];

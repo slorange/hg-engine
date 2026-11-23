@@ -43,6 +43,10 @@ void LONG_CALL InitStoredMons(struct SAVE_MISC_DATA *saveMiscData)
 void LONG_CALL Sav2_Misc_init_new_fields(struct SAVE_MISC_DATA *saveMiscData)
 {
     InitStoredMons(saveMiscData);
+    memset(saveMiscData->unownRoamerBattle, 0, sizeof(saveMiscData->unownRoamerBattle));
+    saveMiscData->unownRoamerLastMap = 0;
+    saveMiscData->unownRoamerRoute[0] = 0;
+    saveMiscData->unownRoamerRoute[1] = 0;
 }
 
 // convenience flag/var access functions

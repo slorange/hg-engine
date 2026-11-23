@@ -97,7 +97,7 @@ Curated prize lists aligned with the matrix (not the ground/hidden random pool, 
 
 **Bottle Caps.** Silver and Gold Caps cannot be used. Hyper Training is not implemented.
 
-**Hidden Power** type is set by using an Arceus Plate on the Pokémon. The plate stays in the bag ([Future-11](DESIGN-FUTURE.md#hidden-power)). Until then, the type stays IV-dependent. The Unown collection scales Hidden Power’s power ([Future-12](DESIGN-FUTURE.md#future-12-unown-collection-quest)).
+**Hidden Power** type is set by using an Arceus Plate on the Pokémon. The plate stays in the bag ([Future-11](DESIGN-FUTURE.md#hidden-power)). Until then, the type stays IV-dependent. The Unown collection scales Hidden Power’s power ([World-6](DESIGN-WORLD.md#world-6-unown-collection-quest)).
 
 ---
 

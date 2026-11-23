@@ -6,6 +6,7 @@
 #include "encounter.h"
 #include "encounter_location.h"
 #include "pokemon.h"
+#include "roamer.h"
 #include "save.h"
 #include "wild_encounter_finalize.h"
 #include "wild_level_caps.h"
@@ -17,7 +18,11 @@
 extern u32 space_for_setmondata;
 
 void ApplyWildDistanceLevelCapWithLeadAbility(struct PartyPokemon *pp, u8 ability);
+void ApplyWildEncounterLevelAndStage(struct PartyPokemon *pp, u8 level, BOOL babyRoll);
 u8 LONG_CALL MapHeader_GetWildEncounterBank(u32 mapId);
+BOOL LONG_CALL UnownRoamer_TryEncounter(u16 map, u8 *form);
+void LONG_CALL UnownRoamer_PrepareMon(struct PartyPokemon *mon, u8 form);
+void LONG_CALL UnownRoamer_RestoreCondition(struct PartyPokemon *mon, u8 form);
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
 u16 EcologyApplySpeciesWithLeadAbility(u16 vanillaSpecies, u8 method, u8 ability);
 #endif
@@ -64,6 +69,9 @@ static const struct UnownEncounterPool sUnownPools[] = {
     UNOWN_RANGE(D43R0102_VICTORY_ROAD_2F, D43R0103_VICTORY_ROAD_3F, "VICTORY"),
     UNOWN_POOL(D45R0101_TOHJO_FALLS, "TOHJ"),
     UNOWN_POOL(T09_CINNABAR_ISLAND, "MAG"),
+    UNOWN_RANGE(D03R0101_CERULEAN_CAVE_1F, D03R0103_CERULEAN_CAVE_B2F, "Z"),
+    UNOWN_RANGE(D41R0105_MT_SILVER_MOLTRES_ROOM, D41R0107_MT_SILVER_4F, "Q"),
+    UNOWN_RANGE(T31_MT_SILVER_OUTSIDE_POKEMON_CENTER, D41R0102_MT_SILVER_TOP_SNOWY_AREA, "Q"),
 };
 
 static u16 RollUniform(u16 limit)
@@ -75,12 +83,16 @@ static u16 RollUniform(u16 limit)
     return roll % limit;
 }
 
-static BOOL TryPickUnownForm(u8 method, BOOL useExplicitMethod, struct PartyPokemon *lead, u8 *form)
+static BOOL TryPickUnownForm(u8 method, BOOL useExplicitMethod, struct PartyPokemon *lead,
+                             BOOL allowRoamer, u8 *form)
 {
     u16 mapId;
     if ((method >= ECOLOGY_METHOD_OLD_ROD && method <= ECOLOGY_METHOD_SUPER_ROD)
         || !EncounterResolveMapId(&mapId)) {
         return FALSE;
+    }
+    if (allowRoamer && method == ECOLOGY_METHOD_LAND && UnownRoamer_TryEncounter(mapId, form)) {
+        return TRUE;
     }
     u8 bank = MapHeader_GetWildEncounterBank(mapId);
     for (u32 i = 0; i < sizeof(sUnownPools) / sizeof(sUnownPools[0]); i++) {
@@ -222,15 +234,18 @@ static void ApplyLeadPersonality(struct PartyPokemon *pp, struct PartyPokemon *l
 }
 
 static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpecies, u8 ecologyMethod,
-                                  BOOL useExplicitMethod, struct PartyPokemon *lead, u8 ability, u32 ivs)
+                                  BOOL useExplicitMethod, struct PartyPokemon *lead, u8 ability, u32 ivs,
+                                  BOOL allowRoamer)
 {
     if (pp == NULL) {
         return vanillaTableSpecies;
     }
 
     u8 form;
-    if (TryPickUnownForm(ecologyMethod, useExplicitMethod, lead, &form)) {
+    BOOL roaming = FALSE;
+    if (TryPickUnownForm(ecologyMethod, useExplicitMethod, lead, allowRoamer, &form)) {
         u16 species = SPECIES_UNOWN;
+        roaming = form >= UNOWN_ROAMER_FIRST_FORM;
         SetMonData(pp, MON_DATA_SPECIES, &species);
         SetMonData(pp, MON_DATA_FORM, &form);
         SetMonData(pp, MON_DATA_SPECIES_NAME, NULL);
@@ -238,9 +253,15 @@ static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpeci
         WildEncounterApplySpecies(pp, vanillaTableSpecies, ecologyMethod, useExplicitMethod, ability);
     }
     UpdatePassiveForms(pp);
-    ApplyWildDistanceLevelCapWithLeadAbility(pp, ability);
-    if (lead != NULL) {
-        ApplyLeadPersonality(pp, lead, ability, ivs);
+    if (roaming) {
+        UnownRoamer_PrepareMon(pp, form);
+        ApplyWildEncounterLevelAndStage(pp, UNOWN_ROAMER_LEVEL, FALSE);
+        UnownRoamer_RestoreCondition(pp, form);
+    } else {
+        ApplyWildDistanceLevelCapWithLeadAbility(pp, ability);
+        if (lead != NULL) {
+            ApplyLeadPersonality(pp, lead, ability, ivs);
+        }
     }
     WildEncounterApplyPlayerOtId(pp);
     ResetPartyPokemonAbility(pp);
@@ -252,18 +273,18 @@ static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpeci
 
 u16 WildEncounterFinalize(struct PartyPokemon *pp, u16 vanillaTableSpecies)
 {
-    return WildEncounterFinishMon(pp, vanillaTableSpecies, ECOLOGY_METHOD_LAND, FALSE, NULL, 0, 0);
+    return WildEncounterFinishMon(pp, vanillaTableSpecies, ECOLOGY_METHOD_LAND, FALSE, NULL, 0, 0, FALSE);
 }
 
 u16 WildEncounterFinalizeWithLead(struct PartyPokemon *pp, u16 vanillaTableSpecies, u32 encounterType,
-                                  u32 rodType, struct PartyPokemon *lead, u8 ability, u32 ivs)
+                                  u32 rodType, struct PartyPokemon *lead, u8 ability, u32 ivs, BOOL allowRoamer)
 {
     u8 method = WildEncountTypeToEcologyMethod(encounterType, rodType);
 
-    return WildEncounterFinishMon(pp, vanillaTableSpecies, method, TRUE, lead, ability, ivs);
+    return WildEncounterFinishMon(pp, vanillaTableSpecies, method, TRUE, lead, ability, ivs, allowRoamer);
 }
 
 u16 WildEncounterFinalizeForEncount(struct PartyPokemon *pp, u16 vanillaTableSpecies, u32 encounterType, u32 rodType)
 {
-    return WildEncounterFinalizeWithLead(pp, vanillaTableSpecies, encounterType, rodType, NULL, 0, 0);
+    return WildEncounterFinalizeWithLead(pp, vanillaTableSpecies, encounterType, rodType, NULL, 0, 0, FALSE);
 }

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Replace the three shared Center link attendants with dialogue-only researchers."""
+"""Replace the three shared Center link attendants with researchers."""
 from pathlib import Path
 import struct
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,8 +32,12 @@ def patch_scripts(path):
     start=len(data)+12
     scripts=[]
     for slot,message in zip(range(8,11),range(46,49)):
-        # Select sound, lock, face player, message, wait, close, release, end.
-        body=struct.pack('<HHHHHBHHHH',73,1500,96,104,45,message,50,53,97,2)
+        if slot == 8:
+            subprocess.check_call([str(ROOT/'tools/armips'),'armips/scr_seq/scr_seq_center_unown.s'],cwd=ROOT)
+            body=(ROOT/'build/center_unown.bin').read_bytes()
+        else:
+            # Select sound, lock, face player, message, wait, close, release, end.
+            body=struct.pack('<HHHHHBHHHH',73,1500,96,104,45,message,50,53,97,2)
         scripts.append(body)
         struct.pack_into('<i',out,slot*4,start-(slot*4+4))
         start+=len(body)

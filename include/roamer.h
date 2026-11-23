@@ -1,6 +1,9 @@
 #ifndef POKEHEARTGOLD_ROAMER_H
 #define POKEHEARTGOLD_ROAMER_H
 
+#define UNOWN_ROAMER_FIRST_FORM 26
+#define UNOWN_ROAMER_LEVEL 45
+
 #include "types.h"
 
 #include "constants/roamer.h"

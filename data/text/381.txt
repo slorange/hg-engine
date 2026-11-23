@@ -44,6 +44,10 @@ Cancel
 I hope you had a good rest!\nTake care on your travels.
 Come back whenever you\nneed a rest!
 We can’t prepare a room right now.\nPlease try again in a moment.
-Planned content: Rewards for\nUnown collection
+You’ve registered {STRVAR_1 52, 0, 0} of the 28 forms\nof Unown.
 Planned content: Rewards for\nArceus Plate collection
 Planned content: Rewards for\nPokédex completion
+Try bringing an Unown in the lead.\nIts kind show up more often.\rLook for Q on Mt. Silver and Z\nin Cerulean Cave.\rSolve all four picture puzzles\nat the Ruins of Alph.\rThen the ! form roams Johto’s routes.\nThe ? form roams Kanto’s routes.\rIf you knock one out, it returns\nafter you enter the Hall of Fame.
+You found all 28 forms!\rI have a supply of TM10, Hidden\nPower. Would you like a copy?
+Here’s a copy of TM10.\nCome back whenever you need more!
+Your Bag is full.\nMake room and come back for TM10.

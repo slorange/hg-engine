@@ -17,7 +17,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Pokémon Research Society](#future-11-pokémon-research-society) |
-| [Future-12. Unown collection quest](#future-12-unown-collection-quest) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
 | [Priority](#priority) |
 
@@ -325,7 +324,7 @@ Plates may grant a stronger damage bonus than ordinary type-boosting items. Whet
 
 Using a plate on a Pokémon sets that Pokémon’s **Hidden Power** type to the plate’s type. The plate stays in the bag. Plates are never consumed, including when shown to the researchers above.
 
-Until a plate is used, Hidden Power’s type stays IV-dependent. That roll can be any type, including **Fairy**. It skips Fairy today, because Fairy occupies the old ??? type slot; the roll should include Fairy too. The Unown collection still scales Hidden Power’s power ([Future-12](DESIGN-FUTURE.md#future-12-unown-collection-quest)).
+Until a plate is used, Hidden Power’s type stays IV-dependent. That roll can be any type, including **Fairy**. It skips Fairy today, because Fairy occupies the old ??? type slot; the roll should include Fairy too. The Unown collection still scales Hidden Power’s power ([World-6](DESIGN-WORLD.md#world-6-unown-collection-quest)).
 
 ## Pokémon rewards
 
@@ -352,7 +351,7 @@ The same organization could also manage Pokédex completion rewards ([Items-1](D
 
 Milestones grant items, or location information for other legendary and mythical Pokémon.
 
-The same researchers provide an unlimited supply of TM10 after the player completes the [Unown collection quest](#future-12-unown-collection-quest). Additional rewards for individual forms remain open.
+The same researchers provide an unlimited supply of TM10 after the player completes the [Unown collection quest](DESIGN-WORLD.md#world-6-unown-collection-quest). Additional rewards for individual forms remain open.
 
 ## Open design questions
 
@@ -364,87 +363,6 @@ The same researchers provide an unlimited supply of TM10 after the player comple
 - Which mythical shares tier 6 with Arceus.
 - Whether plates deal more damage than ordinary type-boosting items.
 - Whether plate rewards and Pokédex rewards stay separate tracks or become more integrated.
-
----
-
-# Future-12. Unown collection quest
-
-Collect all **28 Unown forms** across Johto and Kanto on a fresh run. Each **unique form caught** and registered in the Pokédex **permanently** improves **all Unown** and increases **Hidden Power's base power for every Pokémon**. Wild encounters provide all 28 forms.
-
-## Progression
-
-Unown's base stats and Hidden Power's base power scale linearly from 0 unique forms caught to 28.
-
-| Track | At 0 forms | At 28 forms |
-| ----- | ---------- | ----------- |
-| **BST** (HP / Atk / Def / Sp. Atk / Sp. Def / Speed) | 66 / 44 / 44 / 66 / 44 / 44 (**308** total) | 150 / 100 / 100 / 150 / 100 / 100 (**700** total) |
-| **Hidden Power (all Pokémon)** | **60** BP (not IV-dependent) | **100** BP |
-Unown's base catch rate falls geometrically from **255** on the first new form to **3** on the 28th. With `n` unique forms already caught, the base catch rate is `round(255 × (3 / 255)^(min(n, 27) / 27))`. Each new form divides the unrounded rate by about **1.18**. Integer rounding can give adjacent stages the same rate. Duplicate catches leave the rate unchanged, and the rate stays at **3** after completion.
-
-- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-11](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed.
-- **Typelessness (Unown only):** Unown has no type weaknesses, resistances, immunities, or STAB, even when its ability is suppressed.
-- **Ability (Unown only):** **Runic Power** multiplies ordinary move damage by **1.33×**. Ability suppression disables the damage bonus. Fixed-damage moves keep their stated damage.
-- **EV yield:** **1 HP** and **1 Sp. Atk**.
-- **Wild held item:** Wild Unown have a **50%** chance to hold **TM10 (Hidden Power)**. TM10 can also appear among randomized field pickups.
-
-## Moveset
-
-| Level | Moves |
-| ----- | ----- |
-| 1 | Ancient Power, Ominous Wind, Silver Wind, Hidden Power |
-| 15 | Teleport |
-| 30 | Safeguard |
-| 45 | Recover |
-| 60 | Perish Song |
-
-The level up set is meant to make it harder to catch Unown as the level increases. Unown cannot learn any TMs. 
-
-## Encounter locations
-
-Each location’s **theme word** lists the **unique letter forms** that can appear there. Letters may overlap between locations.
-
-| Location | Theme / available forms |
-| -------- | ------------------------ |
-| Ruins of Alph | RUINS + ALPH + UNOWN |
-| Dark Cave | DARK |
-| Union Cave | UNION |
-| Slowpoke Well | SLOW |
-| Ilex Forest | ILEX |
-| Sprout Tower | GROW |
-| Burned Tower | FIRE |
-| Bell Tower | BELL |
-| Mt. Mortar | MORTAR |
-| Lake of Rage | RAGE |
-| Ice Path | ICE |
-| Dragon's Den | DRAGON |
-| Whirl Islands | WHIRL |
-| Mt. Moon | MOON |
-| Rock Tunnel | ROCK |
-| Diglett's Cave | DIG |
-| Seafoam Islands | FROST |
-| Victory Road | VICTORY |
-| Tohjo Falls | TOHJO |
-| Cinnabar Island | MAGMA |
-
-### Endgame and exclusive forms
-
-- **!** and **?** are the **Johto** and **Kanto** roamers, respectively. Both roam from the start of a new run. They use the normal Unown moveset and can escape through Teleport, with no automatic roamer flee. A knocked-out roamer returns to its region after the player's next Pokémon League clear, including a repeat clear. A caught roamer stays caught.
-- **Q** is exclusive to **Mt. Silver** and **Z** to **Cerulean Cave**.
-- **V** and **Y** — **Victory Road only** ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) **16-badge** gate).
-
-### Wild encounter rules
-
-- At each designated location, **5%** of eligible wild encounters are **Unown** instead of the normal slot species. An **Unown in the lead slot** raises that chance to **50%**.
-- When Unown is selected, pick **uniformly** among that location’s allowed forms; otherwise use normal encounter tables.
-- Applies to **grass**, **cave**, **Surf**, **Rock Smash**, and **Headbutt**. Does **not** apply to **Fishing**.
-- The encounter rooms inside the **Ruins of Alph** have a **100% Unown** rate with the letters RUINS + ALPH + UNOWN. The outside area uses the usual 5% or 50% rate with the same letters.
-
-### Other notes
-
-- **Caught indicator:** Show the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
-- **Repeat Ball:** Its catch bonus applies to Unown only if the player has already caught that exact form.
-- **Completion reward** — After all **28 forms** are registered, the research society gives out **unlimited copies of TM10 (Hidden Power)** on request.
-- The research society may also give a reward for each newly registered Unown form ([Future-11](DESIGN-FUTURE.md#pokédex-research)).
 
 ---
 
@@ -487,7 +405,6 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | ---- | :---: | :----: | :--------: | :--------: | :--------: | :------: | ---------- |
 | [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | — |
 | [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | — |
-| [Future-12](#future-12-unown-collection-quest) Unown quest | 8 | 2 | 4 | 2 | 4 | 2 | — |
 | [Future-7](#future-7-trainer-party-improvements) Trainer party improvements | 7 | 3 | 2 | 1 | 1 | 3 | — |
 | [Future-11](#future-11-pokémon-research-society) Pokémon Research Society | 7 | 3 | 3 | 2 | 2 | 3 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |

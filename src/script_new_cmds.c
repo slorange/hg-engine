@@ -8,6 +8,7 @@
 #include "../include/ecology/ecology_script.h"
 #include "../include/field_pickups.h"
 #include "../include/fishing_rod.h"
+#include "../include/pokedex.h"
 #include "../include/repel.h"
 #include "../include/roamer.h"
 #include "../include/save.h"
@@ -24,6 +25,7 @@
 #define SCRIPT_NEW_CMD_CENTER_REST            7
 #define SCRIPT_NEW_CMD_FIELD_PICKUP           8
 #define SCRIPT_NEW_CMD_APRICORN_TREE          9
+#define SCRIPT_NEW_CMD_UNOWN_RESEARCH       10
 #define SCRIPT_NEW_CMD_MAX 256
 
 extern BOOL LONG_CALL FieldSystem_ApricornTree_HasFruit(FieldSystem *, LocalMapObject *);
@@ -56,6 +58,16 @@ BOOL Script_RunNewCmd(SCRIPTCONTEXT *ctx)
     u16 UNUSED arg0 = ScriptReadHalfword(ctx);
 
     switch (sw) {
+    case SCRIPT_NEW_CMD_UNOWN_RESEARCH: {
+        void *save = ctx->fsys->savedata;
+        u8 count = Pokedex_CountCaughtUnown(SaveData_GetDexPtr(save));
+        u16 result = count;
+        if (arg0 != 0) {
+            result = count == 28 && Bag_AddItem(Sav2_Bag_get(save), ITEM_TM010, 1, HEAPID_WORLD);
+        }
+        SetScriptVar(0x800C, result);
+        break;
+    }
     case SCRIPT_NEW_CMD_APRICORN_TREE:
         CheckApricornHarvest(ctx->fsys);
         break;

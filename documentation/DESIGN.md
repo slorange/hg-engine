@@ -10,7 +10,7 @@
 
 | Document | Prefix | Topics |
 | -------- | ------ | ------ |
-| [DESIGN-WORLD.md](DESIGN-WORLD.md) | `World-*` | Open-world principles, travel, gating, HMs, accelerated time, shared Pokémon Center services |
+| [DESIGN-WORLD.md](DESIGN-WORLD.md) | `World-*` | Open-world principles, travel, gating, HMs, accelerated time, shared Pokémon Center services, Unown collection quest |
 | [DESIGN-ITEMS.md](DESIGN-ITEMS.md) | `Items-*` | Item acquisition, TMs, evolution, shops, berries, Apricorns, Poké Balls |
 | [DESIGN-WILDS.md](DESIGN-WILDS.md) | `Wilds-*` | Ecology seed, wild levels, fishing, content scope |
 | [DESIGN-BATTLES.md](DESIGN-BATTLES.md) | `Battle-*` | Fair trainer fights, badge caps, Gyms, EXP, generated trainer parties |

@@ -8,6 +8,7 @@
 #include "constants/species.h"
 #include "encounter.h"
 #include "pokemon.h"
+#include "roamer.h"
 #include "setencount_ecology.h"
 #include "wild_encounter_finalize.h"
 
@@ -15,7 +16,7 @@ extern u32 space_for_setmondata;
 
 BOOL LONG_CALL BugContest_DoesRepelSuppress(u8 level, void *encounterGen);
 u16 WildEncounterFinalizeWithLead(struct PartyPokemon *pp, u16 vanillaTableSpecies, u32 encounterType,
-                                  u32 rodType, struct PartyPokemon *lead, u8 ability, u32 ivs);
+                                  u32 rodType, struct PartyPokemon *lead, u8 ability, u32 ivs, BOOL allowRoamer);
 
 // Overlay 2 initializes these first fields for every regular encounter method.
 typedef struct EncounterGenStatePrefix {
@@ -32,7 +33,7 @@ static u32 WildPlaceholderPersonality(void)
 }
 
 static struct PartyPokemon *CreateWildMon(u32 encounterType, u32 rodType, u32 ivs,
-                                          struct PartyPokemon *lead, u8 ability)
+                                          struct PartyPokemon *lead, u8 ability, BOOL allowRoamer)
 {
     struct PartyPokemon *wild = AllocMonZeroed(HEAPID_WORLD);
     if (wild == NULL) {
@@ -41,14 +42,14 @@ static struct PartyPokemon *CreateWildMon(u32 encounterType, u32 rodType, u32 iv
     space_for_setmondata = 0;
     PokeParaSet(wild, SPECIES_WOOLOO, WILD_PLACEHOLDER_LEVEL, ivs, TRUE,
                 WildPlaceholderPersonality(), 0, 0);
-    WildEncounterFinalizeWithLead(wild, SPECIES_WOOLOO, encounterType, rodType, lead, ability, ivs);
+    WildEncounterFinalizeWithLead(wild, SPECIES_WOOLOO, encounterType, rodType, lead, ability, ivs, allowRoamer);
     ChangeToBattleForm(wild);
     return wild;
 }
 
 struct PartyPokemon *CreateEcologyWildMon(u32 encounterType, u32 rodType, u32 ivs)
 {
-    return CreateWildMon(encounterType, rodType, ivs, NULL, 0);
+    return CreateWildMon(encounterType, rodType, ivs, NULL, 0, FALSE);
 }
 
 static BOOL LeadAbilitySuppresses(struct PartyPokemon *lead, u8 ability, u8 wildLevel,
@@ -98,7 +99,7 @@ u32 SetEncountData_Ecology(
     if (leadMon != NULL && !GetMonData(leadMon, MON_DATA_IS_EGG, NULL)) {
         ability = GetMonData(leadMon, MON_DATA_ABILITY, NULL);
     }
-    wild = CreateWildMon(encounterType, rodType, 32, leadMon, ability);
+    wild = CreateWildMon(encounterType, rodType, 32, leadMon, ability, battleParam->fight_type == 0);
     if (wild == NULL) {
         return FALSE;
     }
@@ -111,6 +112,10 @@ u32 SetEncountData_Ecology(
     }
 
     added = PokeParty_Add(party, wild);
+    if (added && GetMonData(wild, MON_DATA_SPECIES, NULL) == SPECIES_UNOWN
+        && GetMonData(wild, MON_DATA_FORM, NULL) >= UNOWN_ROAMER_FIRST_FORM) {
+        battleParam->fight_type |= BATTLE_TYPE_ROAMER;
+    }
     sys_FreeMemoryEz(wild);
 
     return added ? TRUE : FALSE;
