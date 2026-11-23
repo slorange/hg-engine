@@ -192,6 +192,11 @@ static void WildMonSetRandomHeldItemImpl(struct PartyPokemon *pokemon, u32 battl
     }
 
     species = (u16)GetMonData(pokemon, MON_DATA_SPECIES, NULL);
+    if (species == SPECIES_UNOWN) {
+        item = (gf_rand() & 1) ? ITEM_TM010 : ITEM_NONE;
+        SetMonData(pokemon, MON_DATA_HELD_ITEM, &item);
+        return;
+    }
     item = RollSpeciesTableHeldItem(species, isCompoundEyes);
 
     if (item == ITEM_NONE) {

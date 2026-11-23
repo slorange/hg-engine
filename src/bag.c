@@ -10,6 +10,12 @@
 #include "../include/save.h"
 #include "../include/script.h"
 
+BOOL Bag_AddPokewalkerReward(BAG_DATA *bag, u16 item, u16 quantity, int heapId)
+{
+    // Quiet Cave items arrive from the peripheral. Reserve TM10 for Unown.
+    return Bag_AddItem(bag, item == ITEM_TM010 ? ITEM_HEART_SCALE : item, quantity, heapId);
+}
+
 #ifdef DEBUG_BATTLE_SCENARIOS
 #include "../include/test_battle.h"
 #endif // DEBUG_BATTLE_SCENARIOS

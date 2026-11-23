@@ -1,8 +1,10 @@
 #include "config.h"
 #include "constants/ability.h"
 #include "constants/generated/ecology_compat.h"
+#include "constants/encounter_tables.h"
 #include "constants/species.h"
 #include "encounter.h"
+#include "encounter_location.h"
 #include "pokemon.h"
 #include "save.h"
 #include "wild_encounter_finalize.h"
@@ -15,9 +17,97 @@
 extern u32 space_for_setmondata;
 
 void ApplyWildDistanceLevelCapWithLeadAbility(struct PartyPokemon *pp, u8 ability);
+u8 LONG_CALL MapHeader_GetWildEncounterBank(u32 mapId);
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
 u16 EcologyApplySpeciesWithLeadAbility(u16 vanillaSpecies, u8 method, u8 ability);
 #endif
+
+struct UnownEncounterPool {
+    u8 firstBank;
+    u8 lastBank;
+    u8 guaranteed;
+    u8 formCount;
+    char letters[11];
+};
+
+#define UNOWN_POOL_ENTRY(first, last, always, letters) \
+    { ENCDATA_##first, ENCDATA_##last, always, sizeof(letters) - 1, letters }
+#define UNOWN_POOL(bank, letters) UNOWN_POOL_ENTRY(bank, bank, FALSE, letters)
+#define UNOWN_RANGE(first, last, letters) UNOWN_POOL_ENTRY(first, last, FALSE, letters)
+#define ALPH_LETTERS "AHILNOPRSUW"
+
+static const struct UnownEncounterPool sUnownPools[] = {
+    UNOWN_POOL_ENTRY(D24R0205_RUINS_OF_ALPH_INSIDE_MAIN_ROOM,
+        D24R0217_RUINS_OF_ALPH_INSIDE_LADDER_ROOM, TRUE, ALPH_LETTERS),
+    UNOWN_POOL(D24R0101_RUINS_OF_ALPH_OUTSIDE, ALPH_LETTERS),
+    UNOWN_RANGE(D42R0102_DARK_CAVE_ROUTE_31_ENTRANCE, D42R0101_DARK_CAVE_ROUTE_45_ENTRANCE, "DARK"),
+    UNOWN_RANGE(D25R0101_UNION_CAVE_1F, D25R0103_UNION_CAVE_B2F, "UNIO"),
+    UNOWN_RANGE(D26R0102_SLOWPOKE_WELL_1F, D26R0103_SLOWPOKE_WELL_B2F, "SLOW"),
+    UNOWN_POOL(D36R0101_ILEX_FOREST, "ILEX"),
+    UNOWN_RANGE(D15R0102_SPROUT_TOWER_2F, D15R0103_SPROUT_TOWER_3F, "GROW"),
+    UNOWN_RANGE(D18R0101_BURNED_TOWER_1F, D18R0102_BURNED_TOWER_B1F, "FIRE"),
+    UNOWN_RANGE(D17R0102_BELL_TOWER_2F, D17R0109_BELL_TOWER_9F, "BEL"),
+    UNOWN_POOL(D17R0112_BELL_TOWER_10F, "BEL"),
+    UNOWN_RANGE(D38R0101_MT_MORTAR_WATERFALL_ROOM, D38R0104_MT_MORTAR_B1F, "MORTA"),
+    UNOWN_POOL(T29_LAKE_OF_RAGE, "RAGE"),
+    UNOWN_RANGE(D39R0101_ICE_PATH_1F, D39R0104_ICE_PATH_B3F, "ICE"),
+    UNOWN_POOL(D44R0102_DRAGONS_DEN, "DRAGON"),
+    UNOWN_RANGE(D40R0101_WHIRL_ISLANDS_1F, D40R0102_WHIRL_ISLANDS_B1F, "WHIRL"),
+    UNOWN_POOL(D40R0104_WHIRL_ISLANDS_B2F, "WHIRL"),
+    UNOWN_POOL(D40R0106_WHIRL_ISLANDS_B3F_LEDGE_OVERLOOKING_LUGIA_ROOM, "WHIRL"),
+    UNOWN_RANGE(D02R0101_MT_MOON_1F, D02R0102_MT_MOON_2F, "MON"),
+    UNOWN_RANGE(D02R0103_MT_MOON_OUTSIDE_AREA, D02R0104_MT_MOON_OUTSIDE_CLEFAIRY_ACTIVE, "MON"),
+    UNOWN_RANGE(D05R0101_ROCK_TUNNEL_1F, D05R0102_ROCK_TUNNEL_B1F, "ROCK"),
+    UNOWN_POOL(D01R0101_DIGLETTS_CAVE, "DIG"),
+    UNOWN_RANGE(D11R0101_SEAFOAM_ISLANDS_1F, D11R0105_SEAFOAM_ISLANDS_B4F, "FROST"),
+    UNOWN_POOL(D43R0101_VICTORY_ROAD_1F, "VICTORY"),
+    UNOWN_RANGE(D43R0102_VICTORY_ROAD_2F, D43R0103_VICTORY_ROAD_3F, "VICTORY"),
+    UNOWN_POOL(D45R0101_TOHJO_FALLS, "TOHJ"),
+    UNOWN_POOL(T09_CINNABAR_ISLAND, "MAG"),
+};
+
+static u16 RollUniform(u16 limit)
+{
+    u16 roll;
+    do {
+        roll = gf_rand();
+    } while (roll >= (0x10000 / limit) * limit);
+    return roll % limit;
+}
+
+static BOOL TryPickUnownForm(u8 method, BOOL useExplicitMethod, struct PartyPokemon *lead, u8 *form)
+{
+    u16 mapId;
+    if ((method >= ECOLOGY_METHOD_OLD_ROD && method <= ECOLOGY_METHOD_SUPER_ROD)
+        || !EncounterResolveMapId(&mapId)) {
+        return FALSE;
+    }
+    u8 bank = MapHeader_GetWildEncounterBank(mapId);
+    for (u32 i = 0; i < sizeof(sUnownPools) / sizeof(sUnownPools[0]); i++) {
+        const struct UnownEncounterPool *pool = &sUnownPools[i];
+        if (bank < pool->firstBank || bank > pool->lastBank) {
+            continue;
+        }
+        if (pool->guaranteed) {
+            if (method != ECOLOGY_METHOD_LAND) {
+                return FALSE;
+            }
+        } else {
+            // The legacy finalizer does not know the actual encounter method.
+            if (!useExplicitMethod) {
+                return FALSE;
+            }
+            BOOL unownLead = lead != NULL && !GetMonData(lead, MON_DATA_IS_EGG, NULL)
+                && GetMonData(lead, MON_DATA_SPECIES, NULL) == SPECIES_UNOWN;
+            if (RollUniform(100) >= (unownLead ? 50 : 5)) {
+                return FALSE;
+            }
+        }
+        *form = pool->letters[RollUniform(pool->formCount)] - 'A';
+        return TRUE;
+    }
+    return FALSE;
+}
 
 static u8 WildEncountTypeToEcologyMethod(u32 encounterType, u32 rodType)
 {
@@ -138,7 +228,15 @@ static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpeci
         return vanillaTableSpecies;
     }
 
-    WildEncounterApplySpecies(pp, vanillaTableSpecies, ecologyMethod, useExplicitMethod, ability);
+    u8 form;
+    if (TryPickUnownForm(ecologyMethod, useExplicitMethod, lead, &form)) {
+        u16 species = SPECIES_UNOWN;
+        SetMonData(pp, MON_DATA_SPECIES, &species);
+        SetMonData(pp, MON_DATA_FORM, &form);
+        SetMonData(pp, MON_DATA_SPECIES_NAME, NULL);
+    } else {
+        WildEncounterApplySpecies(pp, vanillaTableSpecies, ecologyMethod, useExplicitMethod, ability);
+    }
     UpdatePassiveForms(pp);
     ApplyWildDistanceLevelCapWithLeadAbility(pp, ability);
     if (lead != NULL) {

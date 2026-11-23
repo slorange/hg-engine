@@ -1,0 +1,5 @@
+...You have strayed far...\nI found something by the lake while\fI was meditating. Take this, child.\r
+                     
+It is a Heart Scale.\rA small treasure from the lake.\r
+You have no room for it...\r
+I am meditating...\r

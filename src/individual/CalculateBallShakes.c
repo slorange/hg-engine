@@ -17,6 +17,7 @@
 #include "battle.h"
 #include "mega.h"
 #include "overlay.h"
+#include "pokedex.h"
 #include "pokemon.h"
 #include "q412.h"
 #include "save.h"
@@ -216,6 +217,16 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
         speciesCatchRate = PokePersonalParaGet(sp->battlemon[sp->defence_client].species, PERSONAL_CATCH_RATE);
     }
 
+    if (sp->battlemon[sp->defence_client].species == SPECIES_UNOWN) {
+        // 255 * (3 / 255)^(min(caught, 27) / 27), rounded to the nearest integer.
+        static const u8 rates[29] = {
+            255, 216, 183, 156, 132, 112, 95, 81, 68, 58,
+            49, 42, 35, 30, 25, 22, 18, 16, 13, 11,
+            9, 8, 7, 6, 5, 4, 4, 3, 3,
+        };
+        speciesCatchRate = rates[Pokedex_CountCaughtUnown(BattleWorkZukanWorkGet(bw))];
+    }
+
     ballCaptureRatio = 0x1000;
 
     switch (sp->item_work) {
@@ -263,11 +274,16 @@ u32 __attribute__((section(".init"))) CalculateBallShakesInternal(void *bw, stru
         }
 #endif
         break;
-    case ITEM_REPEAT_BALL:
-        if (Battle_CheckIfHasCaughtMon(bw, sp->battlemon[sp->defence_client].species)) {
+    case ITEM_REPEAT_BALL: {
+        const struct BattlePokemon *target = &sp->battlemon[sp->defence_client];
+        BOOL caught = target->species == SPECIES_UNOWN
+            ? Pokedex_HasCaughtUnownForm(BattleWorkZukanWorkGet(bw), target->form_no)
+            : Battle_CheckIfHasCaughtMon(bw, target->species);
+        if (caught) {
             ballCaptureRatio = 0x3000;
         }
         break;
+    }
     case ITEM_TIMER_BALL:
 #if TIMER_BALL_GENERATION < 5
         ballCaptureRatio = (sp->total_turn + 10) / 10 * 0x1000;

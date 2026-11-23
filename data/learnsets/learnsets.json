@@ -35981,12 +35981,38 @@
     "LevelMoves": [
       {
         "Level": 1,
+        "Move": "MOVE_ANCIENT_POWER"
+      },
+      {
+        "Level": 1,
+        "Move": "MOVE_OMINOUS_WIND"
+      },
+      {
+        "Level": 1,
+        "Move": "MOVE_SILVER_WIND"
+      },
+      {
+        "Level": 1,
         "Move": "MOVE_HIDDEN_POWER"
+      },
+      {
+        "Level": 15,
+        "Move": "MOVE_TELEPORT"
+      },
+      {
+        "Level": 30,
+        "Move": "MOVE_SAFEGUARD"
+      },
+      {
+        "Level": 45,
+        "Move": "MOVE_RECOVER"
+      },
+      {
+        "Level": 60,
+        "Move": "MOVE_PERISH_SONG"
       }
     ],
-    "MachineMoves": [
-      "MOVE_HIDDEN_POWER"
-    ],
+    "MachineMoves": [],
     "EggMoves": [],
     "TutorMoves": []
   },
@@ -149167,6 +149193,7 @@
       "MOVE_GIGA_IMPACT",
       "MOVE_GRAVITY",
       "MOVE_HELPING_HAND",
+      "MOVE_HIDDEN_POWER",
       "MOVE_HIGH_HORSEPOWER",
       "MOVE_HYPER_BEAM",
       "MOVE_IMPRISON",
@@ -149295,6 +149322,7 @@
       "MOVE_FALSE_SWIPE",
       "MOVE_GIGA_IMPACT",
       "MOVE_HELPING_HAND",
+      "MOVE_HIDDEN_POWER",
       "MOVE_HYPER_BEAM",
       "MOVE_LIGHT_SCREEN",
       "MOVE_LUNGE",
@@ -149438,6 +149466,7 @@
       "MOVE_HARD_PRESS",
       "MOVE_HEAVY_SLAM",
       "MOVE_HELPING_HAND",
+      "MOVE_HIDDEN_POWER",
       "MOVE_HIGH_HORSEPOWER",
       "MOVE_HYPER_BEAM",
       "MOVE_HYPER_VOICE",
@@ -158196,6 +158225,7 @@
       "MOVE_GIGA_IMPACT",
       "MOVE_GUNK_SHOT",
       "MOVE_HELPING_HAND",
+      "MOVE_HIDDEN_POWER",
       "MOVE_HYPER_BEAM",
       "MOVE_ICE_PUNCH",
       "MOVE_LASH_OUT",
@@ -158463,6 +158493,7 @@
       "MOVE_GRASS_KNOT",
       "MOVE_GRAVITY",
       "MOVE_HELPING_HAND",
+      "MOVE_HIDDEN_POWER",
       "MOVE_HIGH_HORSEPOWER",
       "MOVE_HYPER_BEAM",
       "MOVE_HYPER_VOICE",
@@ -158618,6 +158649,7 @@
       "MOVE_HEAVY_SLAM",
       "MOVE_HELPING_HAND",
       "MOVE_HEX",
+      "MOVE_HIDDEN_POWER",
       "MOVE_HURRICANE",
       "MOVE_HYPER_BEAM",
       "MOVE_HYPER_VOICE",

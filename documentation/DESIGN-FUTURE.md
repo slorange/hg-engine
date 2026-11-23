@@ -352,7 +352,7 @@ The same organization could also manage Pokédex completion rewards ([Items-1](D
 
 Milestones grant items, or location information for other legendary and mythical Pokémon.
 
-The same researchers may give a reward each time the player registers a new Unown form ([Future-12](DESIGN-FUTURE.md#future-12-unown-collection-quest)). What that reward is remains open.
+The same researchers provide an unlimited supply of TM10 after the player completes the [Unown collection quest](#future-12-unown-collection-quest). Additional rewards for individual forms remain open.
 
 ## Open design questions
 
@@ -369,27 +369,29 @@ The same researchers may give a reward each time the player registers a new Unow
 
 # Future-12. Unown collection quest
 
-Collect all **28 Unown forms** across Johto and Kanto. Each **unique form** registered in the Pokédex **permanently** improves **all Unown**. Completing forms also improves **Hidden Power globally** for every Pokémon (not only Unown).
+Collect all **28 Unown forms** across Johto and Kanto on a fresh run. Each **unique form caught** and registered in the Pokédex **permanently** improves **all Unown** and increases **Hidden Power's base power for every Pokémon**. Wild encounters provide all 28 forms.
 
 ## Progression
 
-Scaling is linear from 0 unique forms registered to 28.
+Unown's base stats and Hidden Power's base power scale linearly from 0 unique forms caught to 28.
 
 | Track | At 0 forms | At 28 forms |
 | ----- | ---------- | ----------- |
-| **BST** | 44 / 66 / 44 / 66 / 44 / 44 (**308** total) | 100 / 150 / 100 / 150 / 100 / 100 (**700** total) |
+| **BST** (HP / Atk / Def / Sp. Atk / Sp. Def / Speed) | 66 / 44 / 44 / 66 / 44 / 44 (**308** total) | 150 / 100 / 100 / 150 / 100 / 100 (**700** total) |
 | **Hidden Power (all Pokémon)** | **60** BP (not IV-dependent) | **100** BP |
-| **Catch rate (Unown)** | **255** | **3** |
+Unown's base catch rate falls geometrically from **255** on the first new form to **3** on the 28th. With `n` unique forms already caught, the base catch rate is `round(255 × (3 / 255)^(min(n, 27) / 27))`. Each new form divides the unrounded rate by about **1.18**. Integer rounding can give adjacent stages the same rate. Duplicate catches leave the rate unchanged, and the rate stays at **3** after completion.
 
 - **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-11](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed.
-- **Ability (Unown only):** custom ability — all **damaging** moves deal **+33%**; Unown is **typeless** (no weaknesses, resistances, or STAB).
-- **Wild held item:** **50%** chance to hold **TM10 (Hidden Power)**, which is the only source of the TM in the game.
+- **Typelessness (Unown only):** Unown has no type weaknesses, resistances, immunities, or STAB, even when its ability is suppressed.
+- **Ability (Unown only):** **Runic Power** multiplies ordinary move damage by **1.33×**. Ability suppression disables the damage bonus. Fixed-damage moves keep their stated damage.
+- **EV yield:** **1 HP** and **1 Sp. Atk**.
+- **Wild held item:** Wild Unown have a **50%** chance to hold **TM10 (Hidden Power)**. TM10 can also appear among randomized field pickups.
 
 ## Moveset
 
 | Level | Moves |
 | ----- | ----- |
-| 1 | Secret Power, Ancient Power, Ominous Wind, Silver Wind, Hidden Power |
+| 1 | Ancient Power, Ominous Wind, Silver Wind, Hidden Power |
 | 15 | Teleport |
 | 30 | Safeguard |
 | 45 | Recover |
@@ -426,19 +428,22 @@ Each location’s **theme word** lists the **unique letter forms** that can appe
 
 ### Endgame and exclusive forms
 
-- **Q**, **Z**, **!**, **?** — one each from a **Johto roamer**, **Kanto roamer**, **Mt. Silver**, and **Cerulean Cave** (exact assignments TBD).
+- **!** and **?** are the **Johto** and **Kanto** roamers, respectively. Both roam from the start of a new run. They use the normal Unown moveset and can escape through Teleport, with no automatic roamer flee. A knocked-out roamer returns to its region after the player's next Pokémon League clear, including a repeat clear. A caught roamer stays caught.
+- **Q** is exclusive to **Mt. Silver** and **Z** to **Cerulean Cave**.
 - **V** and **Y** — **Victory Road only** ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) **16-badge** gate).
 
 ### Wild encounter rules
 
-- At each designated location, **5%** of wild encounters are **Unown** instead of the normal slot species.
+- At each designated location, **5%** of eligible wild encounters are **Unown** instead of the normal slot species. An **Unown in the lead slot** raises that chance to **50%**.
 - When Unown is selected, pick **uniformly** among that location’s allowed forms; otherwise use normal encounter tables.
 - Applies to **grass**, **cave**, **Surf**, **Rock Smash**, and **Headbutt**. Does **not** apply to **Fishing**.
-- **Ruins of Alph** has **100% Unown** rate, same as Vanilla, but with only the letters RUINS + ALPH + UNOWN.
+- The encounter rooms inside the **Ruins of Alph** have a **100% Unown** rate with the letters RUINS + ALPH + UNOWN. The outside area uses the usual 5% or 50% rate with the same letters.
 
 ### Other notes
 
 - **Caught indicator:** Show the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
+- **Repeat Ball:** Its catch bonus applies to Unown only if the player has already caught that exact form.
+- **Completion reward** — After all **28 forms** are registered, the research society gives out **unlimited copies of TM10 (Hidden Power)** on request.
 - The research society may also give a reward for each newly registered Unown form ([Future-11](DESIGN-FUTURE.md#pokédex-research)).
 
 ---

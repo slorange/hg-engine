@@ -468,7 +468,16 @@ def hook():
                     with open("base/overarm9.bin", 'rb+') as y9Table:
                         y9Table.seek((int(files)*0x20)+0x4) # read the overlay memory address for offset calculation
                         offset = int(address, 16) - struct.unpack_from("<I", y9Table.read(4))[0] if int(address, 16) & 0x02000000 else int(address, 16) - 0x08000000
-                Hook(rom2, code, offset, int(register), int(address, 16))
+                if register == "bl":
+                    # Replace a single Thumb call, preserving the caller's remaining instructions.
+                    displacement = (code & ~1) - (int(address, 16) + 4)
+                    if displacement % 2 or not -(1 << 22) <= displacement < (1 << 22):
+                        raise ValueError(f"Thumb BL target out of range: {symbol} at {address}")
+                    rom2.seek(offset)
+                    rom2.write(struct.pack("<HH", 0xF000 | ((displacement >> 12) & 0x7FF),
+                                           0xF800 | ((displacement >> 1) & 0x7FF)))
+                else:
+                    Hook(rom2, code, offset, int(register), int(address, 16))
                 rom2.close()
 
 

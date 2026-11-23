@@ -71,7 +71,7 @@ See [`scripts/README.md`](scripts/README.md) for the inventory.
 
 **Do not run `tools/armips` or other build tools natively on Windows** — they are meant to run inside the Docker/Linux build environment. Use Docker `make` below.
 
-**User testing workflow:** load **`test.nds`** (repo root) in DeSmuME. That file *is* the deliverable. Use a **new save** after intro/flag/starting-city changes.
+**User testing workflow:** The user handles all emulator playtesting. Agents build and verify **`test.nds`** (repo root) and hand it off without launching the ROM or opening an emulator. The user loads **`test.nds`** in DeSmuME and uses a **new save** after intro/flag/starting-city changes.
 
 **Agent build command** (this machine, repo at `e:\Code\hg-engine`):
 
@@ -124,7 +124,7 @@ Upstream native/WSL/MSYS2 setup (without Docker): [README (HG-Engine).md](README
 - Do **not** commit `rom.nds` or `test.nds`.
 - First Docker build on a dirty tree can be slow; text-only rebuilds are faster.
 - If MSYS-built object files cause trouble, clear `tools/source/**/*.o` before Docker `make`.
-- After text/scr_seq/zone_event edits, close the emulator and reload **`test.nds`** — don’t reuse a stale file from an old build.
+- For playtesting after text/scr_seq/zone_event edits, the user closes the emulator and reloads the rebuilt **`test.nds`**.
 
 ### Build types
 

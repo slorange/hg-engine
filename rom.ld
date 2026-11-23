@@ -16,6 +16,7 @@ ST_CheckIfInTruant = 0x1B380 + 0x022378C1;
 SCIO_BlankMessage = 0x2CA30 + 0x022378C1;
 BattleWorkFightMsgGet = 0x0223A930 | 1;
 Task_DistributeExp = 0x02245898 | 1;
+SetBattleSceneState = 0x02232F58 | 1;
 
 
 ServerCriticalMessage = 0x166BC+ 0x022378C1;
@@ -74,6 +75,8 @@ BoxMonSetFastModeOn = 0x0206DDD8 |1;
 BoxMonSetFastModeOff = 0x0206DE00 |1;
 SetBoxMonData = 0x0206ED70 |1;
 PokePersonalParaGet = 0x0206FBE8 |1;
+LoadSpeciesFormPersonalData = 0x020725B4 | 1;
+CopyPokedexData = 0x020293FC | 1;
 BoxMonInit = 0x0206DD0C |1;
 PokeLevelExpGet = 0x0206FD00 |1;
 Daycare_GetBoxMonI = 0x0206BDB0 |1;
@@ -492,6 +495,7 @@ AI_TypeCheckCalc = 0x022521C8 | 1;
 AI_ShouldUseNormalTypeEffCalc = 0x02252178 | 1;
 
 Summary_GetPokemonData = 0x0208A520 | 1;
+Summary_SetIconVisible = 0x0200DCE0 | 1;
 Summary_PickStatusIcon = 0x0208AD64 | 1;
 Summary_PrintString = 0x0208C778 | 1;
 Summary_NumberToString = 0x0208C87C | 1;
@@ -519,6 +523,7 @@ BattleStructureCounterInit = 0x02251038 | 1;
 ServerMoveAIInit = 0x0224E384 | 1;
 BattleSystem_GetBattleMon = 0x0224E4FC | 1;
 DumpMoveTableData = 0x02073300 | 1;
+ReadMoveAttribute = 0x02073314 | 1;
 
 GF_ExpHeap_FndGetTotalFreeSize = 0x0201ABEC | 1;
 

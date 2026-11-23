@@ -1,7 +1,28 @@
 #include "../include/summary.h"
 
 #include "../include/battle.h"
+#include "../include/constants/moves.h"
+#include "../include/pokedex.h"
+#include "../include/save.h"
 #include "../include/types.h"
+
+void LONG_CALL Summary_SetIconVisible(void *icon, BOOL visible);
+u32 LONG_CALL ReadMoveAttribute(u32 move, u32 attribute);
+
+u32 Summary_ReadMovePower(u32 move, u32 attribute)
+{
+    if (move == MOVE_HIDDEN_POWER && attribute == MOVEATTRIBUTE_POWER) {
+        void *save = SaveBlock2_get();
+        return Pokedex_HiddenPowerBasePower(save != NULL ? SaveData_GetDexPtr(save) : NULL);
+    }
+    return ReadMoveAttribute(move, attribute);
+}
+
+void Summary_ShowPokemonTypeIcon(void *icon, BOOL visible, const struct SummaryState *summary)
+{
+    // Type index 18 selects a contest icon in the native summary graphics.
+    Summary_SetIconVisible(icon, visible && summary->pokemonData.type1 != TYPE_TYPELESS);
+}
 
 // file is from LheaRachel on github who adapted it from Bubble
 // i just adapted it to hgss and added the +/- handling and such

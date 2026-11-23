@@ -19,6 +19,7 @@
 #include "message.h"
 #include "nitro.h"
 #include "overlay.h"
+#include "pokedex.h"
 #include "pokemon.h"
 #include "save.h"
 #include "system.h"
@@ -40,6 +41,8 @@ struct EXP_CALCULATOR {
 typedef BOOL (*btl_scr_cmd_func)(void *bw, struct BattleStruct *sp);
 #define START_OF_NEW_BTL_SCR_CMDS 0xE1
 extern const btl_scr_cmd_func BattleScriptCmdTable[];
+
+enum { BATTLE_CMD_CALC_HIDDEN_POWER_PARAMS = 119 };
 
 // function declarations
 BOOL BattleScriptCommandHandler(void *bw, struct BattleStruct *sp);
@@ -589,6 +592,10 @@ BOOL BattleScriptCommandHandler(void *bw, struct BattleStruct *sp)
 
         if (command < START_OF_NEW_BTL_SCR_CMDS) {
             ret = BattleScriptCmdTable[command](bw, sp);
+            // CalcHiddenPowerParams still supplies the native IV-based type.
+            if (command == BATTLE_CMD_CALC_HIDDEN_POWER_PARAMS) {
+                sp->damage_power = Pokedex_HiddenPowerBasePower(BattleWorkZukanWorkGet(bw));
+            }
         } else {
             ret = NewBattleScriptCmdTable[command - START_OF_NEW_BTL_SCR_CMDS](bw, sp);
         }
@@ -1598,6 +1605,18 @@ extern u32 gKeepStructureCallbackIntact;
 u32 ALIGN4 store_current_exp_step = 0;
 u32 ALIGN4 store_work_params[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
+void LONG_CALL SetBattleSceneState(void *scene, int state);
+
+void BeginCaptureExperience(void *scene, int state)
+{
+    store_current_exp_step = 0;
+    trackPartyExperience = 0;
+    for (int i = 0; i < (s32)NELEMS(store_work_params); i++) {
+        store_work_params[i] = 0;
+    }
+    SetBattleSceneState(scene, state);
+}
+
 #endif // IMPLEMENT_CAPTURE_EXPERIENCE
 
 /**
@@ -1616,7 +1635,8 @@ BOOL Task_DistributeExp_capture_experience(void *arg0, void *work, u32 get_clien
     u32 original_work_params[NELEMS(store_work_params)];
     struct EXP_CALCULATOR *expcalc = work;
 
-    if (BattleTypeGet(expcalc->bw) & BATTLE_TYPE_NO_EXPERIENCE) {
+    // The catch task polls us again while its scene and countdown finish.
+    if (store_current_exp_step == 38 || (BattleTypeGet(expcalc->bw) & BATTLE_TYPE_NO_EXPERIENCE)) {
         return TRUE;
     }
 
@@ -1685,7 +1705,7 @@ BOOL Task_DistributeExp_capture_experience(void *arg0, void *work, u32 get_clien
     {
         ret = TRUE;
 
-        store_current_exp_step = 0;
+        store_current_exp_step = 38;
         for (int i = 0; i < (s32)NELEMS(store_work_params); i++) // reset and pass back to main func
         {
             store_work_params[i] = 0;

@@ -244,7 +244,8 @@ def write_machine_data(species_dict, species_learnsets, machine_moves, output_pa
             species_name = species_id_to_name.get(species_id)
             learnset = []
             levelup_moves = {}
-            if species_name:
+            # Unown's level-up moves do not grant machine compatibility.
+            if species_name and species_name != "SPECIES_UNOWN":
                 learnset = grab_learnset_field(species_learnsets, species_name, "MachineMoves")
                 learnset = list(set(m.strip() for m in learnset))
 

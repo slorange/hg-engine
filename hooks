@@ -78,6 +78,12 @@ arm9 AddBoxMonData_EditedCases_hook 0206F67C 0
 0024 BugContest_AssignPrize_hook 022599FA 3
 #endif
 # starters
+
+# Unown progress: replace native call sites, preserving surrounding code.
+arm9 UnownLoadStatPersonalData 0206E364 bl
+arm9 UnownCopyBattlePokedex 020523FA bl
+0012 UnownBattleCaughtIconHook 02262B14 bl
+0012 UnownBattleCaughtIconHook 02263B02 bl
 arm9 set_starter_hidden_ability_hook 02096158 5
 arm9 CreateStarter_SetStarterSpecies_hook 02096094 3
 arm9 CreateStarterMon_hook 020960E6 1
@@ -368,6 +374,7 @@ arm9 GrabCryNumSpeciesForm 02006A0C 2
 #ifdef IMPLEMENT_CAPTURE_EXPERIENCE
 
 0012 Task_DistributeExp_capture_experience_hook 0224688A 0
+0012 BeginCaptureExperience 02246882 bl
 0012 DontFreeMemoryIfCatchExp 022463A0 0
 
 #endif
@@ -388,6 +395,9 @@ arm9 GrabCryNumSpeciesForm 02006A0C 2
 
 # pokewalker grab sprite
 0112 GrabPokewalkerMonSpriteIndex 021E9480 3
+0112 Bag_AddPokewalkerReward 021EEA94 bl
+0112 Bag_AddPokewalkerReward 021EEAB4 bl
+0112 Bag_AddPokewalkerReward 021EEAD6 bl
 
 
 #ifdef IMPLEMENT_NEW_EV_IV_VIEWER
@@ -395,6 +405,10 @@ arm9 GrabCryNumSpeciesForm 02006A0C 2
 # code from LheaRachel on github based on code from Bubble791 now on heartgold
 arm9 Summary_IVEV 02088B60 1
 arm9 Summary_Entry_Hook 0208D2C4 1
+arm9 Summary_ReadMovePower 0208D9F4 bl
+arm9 Summary_ShowTypeIcon_R4 0208A5F4 bl
+arm9 Summary_ShowTypeIcon_R4 0208A918 bl
+arm9 Summary_ShowTypeIcon_R5 0208B5EC bl
 
 #endif
 

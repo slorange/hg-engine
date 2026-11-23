@@ -89,7 +89,7 @@ TUTORLEARNSET_DEPENDENCIES := $(LEARNSET_OUTPUT_DIR)/TutorMoveLearnsets.c
 LEVELUPLEARNSET_DEPENDENCIES := $(LEARNSET_OUTPUT_DIR)/LevelupLearnsets.c
 EGGLEARNSET_DEPENDENCIES := $(LEARNSET_OUTPUT_DIR)/EggLearnsets.c
 
-$(LEARNSETS_HEADER): $(LEARNSETS_INPUT) $(VENV_ACTIVATE) src/item.c
+$(LEARNSETS_HEADER): $(LEARNSETS_INPUT) $(VENV_ACTIVATE) src/item.c scripts/build/build_learnsets.py
 	@echo "generating learnset data..."
 	$(PYTHON) scripts/build/build_learnsets.py \
 		--learnsets $(LEARNSETS_INPUT) \

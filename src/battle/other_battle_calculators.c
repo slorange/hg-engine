@@ -1897,7 +1897,7 @@ u8 LONG_CALL UpdateTypeEffectiveness(u32 move_no, u8 defender_type, u8 defaultEf
 // TODO: Refactor this function
 int LONG_CALL GetTypeEffectiveness(struct BattleSystem *bw, struct BattleStruct *sp, int attack_client, int defence_client, int move_type, u32 *flag)
 {
-    if (sp->current_move_index == MOVE_STRUGGLE) {
+    if (sp->current_move_index == MOVE_STRUGGLE || sp->battlemon[defence_client].species == SPECIES_UNOWN) {
         return TYPE_MUL_NORMAL;
     }
 
@@ -2087,7 +2087,9 @@ int LONG_CALL ServerDoTypeCalcMod(void *bw UNUSED, struct BattleStruct *sp, int 
 
     u32 defender_item_held_effect = BattleItemDataGet(sp, GetBattleMonItem(sp, defence_client), 1);
 
-    if (((sp->server_status_flag & SERVER_STATUS_FLAG_TYPE_FLAT) == 0) && ((attacker_type_1 == move_type) || (attacker_type_2 == move_type) || (attacker_type_3 == move_type))) {
+    if (sp->battlemon[attack_client].species != SPECIES_UNOWN
+        && ((sp->server_status_flag & SERVER_STATUS_FLAG_TYPE_FLAT) == 0)
+        && ((attacker_type_1 == move_type) || (attacker_type_2 == move_type) || (attacker_type_3 == move_type))) {
         if (GetBattlerAbility(sp, attack_client) == ABILITY_ADAPTABILITY) {
             damage *= 2;
         } else {
@@ -2098,7 +2100,8 @@ int LONG_CALL ServerDoTypeCalcMod(void *bw UNUSED, struct BattleStruct *sp, int 
     // [0]: Attacking type
     // [1]: Defending type
     // [2]: TYPE_MUL
-    while (TypeEffectivenessTable[typeTableEntryNo][0] != TYPE_ENDTABLE) {
+    while (sp->battlemon[defence_client].species != SPECIES_UNOWN
+           && TypeEffectivenessTable[typeTableEntryNo][0] != TYPE_ENDTABLE) {
         // Foresight and Ring Target are treated as fake custom types near the bottom of the type effectiveness table.
         // If an entry with TYPE_RING_TARGET or TYPE_FORESIGHT is read and the target is under the correct conditions, the table will stop being read before it detects the relevant immunities.
         if (TypeEffectivenessTable[typeTableEntryNo][0] == TYPE_RING_TARGET) {
@@ -2191,7 +2194,8 @@ int LONG_CALL ServerDoTypeCalcMod(void *bw UNUSED, struct BattleStruct *sp, int 
         typeTableEntryNo++;
     }
 
-    if (sp->battlemon[defence_client].is_currently_terastallized && move_type == TYPE_STELLAR) {
+    if (sp->battlemon[defence_client].species != SPECIES_UNOWN
+        && sp->battlemon[defence_client].is_currently_terastallized && move_type == TYPE_STELLAR) {
         damage = TypeCheckCalc(sp, attack_client, TYPE_MUL_SUPER_EFFECTIVE, damage, base_power, flag);
         modifier *= 2; // seems to be useless, modifier isn't used elsewhere
     }
@@ -3964,6 +3968,9 @@ BOOL LONG_CALL HasType(struct BattleStruct *ctx, int battlerId, int type)
         return FALSE;
     }
     struct BattlePokemon *client = &ctx->battlemon[battlerId];
+    if (client->species == SPECIES_UNOWN) {
+        return FALSE;
+    }
     if (client->is_currently_terastallized) {
         return client->tera_type == type;
     }
@@ -3977,7 +3984,7 @@ BOOL LONG_CALL ChangeToPureType(struct BattleStruct *ctx, int battlerId, int typ
     GF_ASSERT(TYPE_NORMAL <= type && type <= TYPE_STELLAR);
     struct BattlePokemon *client = &ctx->battlemon[battlerId];
 
-    if (client->is_currently_terastallized) {
+    if (client->species == SPECIES_UNOWN || client->is_currently_terastallized) {
         return FALSE;
     }
 
@@ -4002,7 +4009,7 @@ BOOL LONG_CALL AddType(struct BattleStruct *ctx, int battlerId, int type)
     GF_ASSERT(TYPE_NORMAL <= type && type <= TYPE_STELLAR);
     struct BattlePokemon *client = &ctx->battlemon[battlerId];
 
-    if (client->is_currently_terastallized) {
+    if (client->species == SPECIES_UNOWN || client->is_currently_terastallized) {
         return FALSE;
     }
 

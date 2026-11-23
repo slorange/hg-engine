@@ -580,6 +580,10 @@ void CalcDamageOverall(void *bw, struct BattleStruct *sp)
 
     // 6.9 Final Modifiers
 
+    if (attackerAbility == ABILITY_RUNIC_POWER && movesplit != SPLIT_STATUS) {
+        finalModifier = QMul_RoundUp(finalModifier, 5448); // 1.33 in Q4.12.
+    }
+
     // Move effects
 
     // 6.9.14 Doubled-damage moves
