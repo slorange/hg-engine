@@ -369,7 +369,7 @@ The same researchers may give a reward each time the player registers a new Unow
 
 # Future-12. Unown collection quest
 
-Collect all **28 Unown forms** across Johto and Kanto. Each **unique form** registered in the Pokédex **permanently** improves **all Unown** in the player’s collection. Completing forms also improves **Hidden Power globally** for every Pokémon (not only Unown).
+Collect all **28 Unown forms** across Johto and Kanto. Each **unique form** registered in the Pokédex **permanently** improves **all Unown**. Completing forms also improves **Hidden Power globally** for every Pokémon (not only Unown).
 
 ## Progression
 
@@ -378,12 +378,12 @@ Scaling is linear from 0 unique forms registered to 28.
 | Track | At 0 forms | At 28 forms |
 | ----- | ---------- | ----------- |
 | **BST** | 44 / 66 / 44 / 66 / 44 / 44 (**308** total) | 100 / 150 / 100 / 150 / 100 / 100 (**700** total) |
-| **Hidden Power (all Pokémon)** | **60** BP, fixed base power (not IV-dependent) | **100** BP, same fixed-power rule |
+| **Hidden Power (all Pokémon)** | **60** BP (not IV-dependent) | **100** BP |
 | **Catch rate (Unown)** | **255** | **3** |
 
-- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-11](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed ([Items-1](DESIGN-ITEMS.md#items-1-item-acquisition-channels)).
+- **Hidden Power type** stays **IV-dependent** until the player sets it with an Arceus Plate ([Future-11](DESIGN-FUTURE.md#hidden-power)). The plate is not consumed.
 - **Ability (Unown only):** custom ability — all **damaging** moves deal **+33%**; Unown is **typeless** (no weaknesses, resistances, or STAB).
-- **Wild held item:** **50%** chance to hold **TM10 (Hidden Power)**.
+- **Wild held item:** **50%** chance to hold **TM10 (Hidden Power)**, which is the only source of the TM in the game.
 
 ## Moveset
 
@@ -394,6 +394,8 @@ Scaling is linear from 0 unique forms registered to 28.
 | 30 | Safeguard |
 | 45 | Recover |
 | 60 | Perish Song |
+
+The level up set is meant to make it harder to catch Unown as the level increases. Unown cannot learn any TMs. 
 
 ## Encounter locations
 
@@ -420,7 +422,7 @@ Each location’s **theme word** lists the **unique letter forms** that can appe
 | Seafoam Islands | FROST |
 | Victory Road | VICTORY |
 | Tohjo Falls | TOHJO |
-| Cinnabar | MAGMA |
+| Cinnabar Island | MAGMA |
 
 ### Endgame and exclusive forms
 
@@ -431,19 +433,13 @@ Each location’s **theme word** lists the **unique letter forms** that can appe
 
 - At each designated location, **5%** of wild encounters are **Unown** instead of the normal slot species.
 - When Unown is selected, pick **uniformly** among that location’s allowed forms; otherwise use normal encounter tables.
-- Applies to **grass**, **cave**, **Surf**, **Rock Smash**, and **Headbutt**.
-- **Ruins of Alph** needs a special case — vanilla-style **100% Unown** areas remain; do not double-stack the 5% rule blindly.
+- Applies to **grass**, **cave**, **Surf**, **Rock Smash**, and **Headbutt**. Does **not** apply to **Fishing**.
+- **Ruins of Alph** has **100% Unown** rate, same as Vanilla, but with only the letters RUINS + ALPH + UNOWN.
 
-### UX and postgame hooks
+### Other notes
 
-- **Caught indicator:** Prefer showing the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
-- Unown collection may grant **clues** or **unlock options** for legendary / mythical postgame content ([Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes), [Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society) — TBD).
+- **Caught indicator:** Show the wild **Poké Ball icon** for Unown **only when that exact form** was caught before — not when any Unown was caught.
 - The research society may also give a reward for each newly registered Unown form ([Future-11](DESIGN-FUTURE.md#pokédex-research)).
-
-## Open design questions
-
-- How global Hidden Power BP scales per form vs only at milestones.
-- Roamer / Mt. Silver / Cerulean Cave assignments for **!** and **?**.
 
 ---
 
@@ -452,8 +448,10 @@ Each location’s **theme word** lists the **unique letter forms** that can appe
 Ideas that do not have their own `Future-*` section yet.
 
 - **Portable resting** — consider a tent, sleeping bag, or camping system that lets players rest outside towns to advance time.
+- **Move Tutor** — make special move tutoring available from any Pokémon Center through the [shared hub](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub).
+- **Specialty Trader** — let players exchange items or currencies for selected rewards through the [shared hub](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub). Inventory and pricing TBD.
 - **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
-- **Game Corner Coin income** — prize menus work today; earning Coins still means **Voltorb Flip** ([Items-2 § Coin income](DESIGN-ITEMS.md#coin-income-not-implemented)). Longer term: buy Coins for ¥, trainer payouts, amulet coin, Voltorb Flip changes, dept-store bundles — exchange rate and UI TBD.
+- **Game Corner Coin income** — [prize menus](DESIGN-DATA.md#data-1-game-corner-prize-pools) work today and all prizes cost 50 Coins during playtesting. Players currently earn Coins through **Voltorb Flip**. Potential sources include buying Coins for ¥, trainer payouts, the Amulet Coin, Voltorb Flip changes, and department-store bundles. Exchange rates, UI, and tiered prize pricing are TBD.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
 - **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
 - **Evolution levels** — review evolution levels. Ponyta → Rapidash at level 40 is tragic
@@ -482,12 +480,12 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 
 | Item | Score | Vision | Excitement | Difficulty | Uniqueness | Presence | Depends on |
 | ---- | :---: | :----: | :--------: | :--------: | :--------: | :------: | ---------- |
-| [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties) |
-| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties) |
-| [Future-7](#future-7-trainer-party-improvements) Trainer party improvements | 9 | 4 | 4 | 2 | 1 | 4 | — |
-| [Future-12](#future-12-unown-collection-quest) Unown quest | 7 | 2 | 3 | 2 | 4 | 2 | — |
+| [Future-8](#future-8-dynamic-battle-rosters--universal-pc) Dynamic rosters | 10 | 5 | 3 | 4 | 5 | 5 | — |
+| [Future-10](#future-10-living-trainers--interactions) Living trainers | 9 | 5 | 4 | 4 | 4 | 4 | — |
+| [Future-12](#future-12-unown-collection-quest) Unown quest | 8 | 2 | 4 | 2 | 4 | 2 | — |
+| [Future-7](#future-7-trainer-party-improvements) Trainer party improvements | 7 | 3 | 2 | 1 | 1 | 3 | — |
+| [Future-11](#future-11-pokémon-research-society) Pokémon Research Society | 7 | 3 | 3 | 2 | 2 | 3 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
-| [Future-11](#future-11-pokémon-research-society) Pokémon Research Society | 3 | 2 | 3 | 3 | 2 | 2 | — |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
-| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | Moon Ball  wants [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) |
+| [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | — |

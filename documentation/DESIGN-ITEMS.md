@@ -9,7 +9,7 @@
 | Section | Status |
 | ------- | ------ |
 | [Items-1. Item acquisition channels](#items-1-item-acquisition-channels) | PARTIALLY IMPLEMENTED |
-| [Items-2. TMs](#items-2-tms) | PARTIALLY IMPLEMENTED |
+| [Items-2. TMs](#items-2-tms) | IMPLEMENTED |
 | [Items-3. Evolution Methods (Trade & Stones)](#items-3-evolution-methods-trade--stones) | IMPLEMENTED |
 | [Items-4. Shops](#items-4-shops) | IMPLEMENTED |
 | [Items-5. Berry economy](#items-5-berry-economy) | IMPLEMENTED |
@@ -103,7 +103,7 @@ Curated prize lists aligned with the matrix (not the ground/hidden random pool, 
 
 # Items-2. TMs
 
-**Status: PARTIALLY IMPLEMENTED**
+**Status: IMPLEMENTED**
 
 TMs remain **consumable**. However **No TM is permanently finite.**
 
@@ -120,12 +120,6 @@ Available from shops — see [Data-5. Department stores](DESIGN-DATA.md#goldenro
 Coin prizes at the department-store Game Corners
 
 See [Data-1. Game Corner prize pools](DESIGN-DATA.md#data-1-game-corner-prize-pools).
-
-### Coin income (not implemented)
-
-**Temporary pricing:** all Game Corner TM, held-item, and Pokémon prizes cost **50 Coins** until proper coin income and tiered pricing ship. This is a playtest shortcut only — not the long-term economy.
-
-Prize menus are wired; **earning Coins is still vanilla** (**Voltorb Flip** on the Game Corner floor). Game Corner TMs are buyable in principle but **Coin income is the bottleneck** until something from [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) ships.
 
 ## Gym TMs
 
@@ -249,12 +243,12 @@ Mom intro grants **Berry Pots** and **5× each** basic berry **Cheri through Per
 
 Apricorns go directly into the Bag and become a renewable crafting resource tied to the accelerated game clock.
 
-- trees refresh once per in-game day;
-- each successful harvest yields **3–5 Apricorns**;
-- 29 additional Apricorn trees grow near the original locations across Kanto and Johto, bringing the total to 60.
-- colors are randomized per save file
+- Trees refresh once per in-game day (Not implemented)
+- Each successful harvest yields **3–5 Apricorns**
+- 29 additional Apricorn trees grow near the original locations across Kanto and Johto, bringing the total to 60. More locations are also planned (Not implemented)
+- Colors are randomized per save file
 
-The player does not need to repeatedly return to Azalea Town merely to craft Apricorn Balls. There is a new NPC in the Pokémon Center that will craft Apricorn Balls for a small fee.
+The player does not need to repeatedly return to Azalea Town to craft Apricorn Balls. There is a new NPC in the Pokémon Center that will craft Apricorn Balls for a small fee.
 
 ## Ball design philosophy
 

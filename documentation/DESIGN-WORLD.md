@@ -9,11 +9,11 @@
 | Section | Status |
 | ------- | ------ |
 | [World-0. Open-World Principles](#world-0-open-world-principles) | DECIDED |
-| [World-1. World Transportation](#world-1-world-transportation) | PARTIALLY IMPLEMENTED |
+| [World-1. World Transportation](#world-1-world-transportation) | IMPLEMENTED |
 | [World-2. Routes and Content Gating](#world-2-routes-and-content-gating) | PARTIALLY IMPLEMENTED (PoC) |
 | [World-3. HMs and Field Moves](#world-3-hms-and-field-moves) | IMPLEMENTED |
-| [World-4. Accelerated day/night cycle](#world-4-accelerated-daynight-cycle) | PARTIALLY IMPLEMENTED |
-| [World-5. Shared Pokémon Center Hub](#world-5-shared-pokémon-center-hub) | PARTIALLY IMPLEMENTED |
+| [World-4. Accelerated day/night cycle](#world-4-accelerated-daynight-cycle) | IMPLEMENTED |
+| [World-5. Shared Pokémon Center Hub](#world-5-shared-pokémon-center-hub) | IMPLEMENTED |
 | Living trainers & interactions | Moved — [Future-10](DESIGN-FUTURE.md#future-10-living-trainers--interactions) |
 
 ---
@@ -75,7 +75,7 @@ Pokémon Centers may contain an Abra transportation service ([World-5](#world-5-
 
 # World-2. Routes and Content Gating
 
-**Status: PARTIALLY IMPLEMENTED (PoC)** — badge guards for **endgame** access only; not used for wild levels or city-to-city travel.
+**Status: PARTIALLY IMPLEMENTED (PoC)**
 
 Before [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps), the plan was to gate large parts of the map with badge checks, HMs, guards, and ferries so every city stayed reachable while wild areas stayed “appropriate” for progression. **That model is retired.** Cities stay open via [World-1](DESIGN-WORLD.md#world-1-world-transportation) (ferries, trains, Aqua, etc.); wild difficulty is distance-based ([Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps)), not badge-guarded grass. HM milestone locks for dungeons and routes remain in [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves).
 
@@ -123,7 +123,7 @@ TM05 has been changed from Roar to Headbutt. Badge **1** puts Flash in the gener
 
 # World-4. Accelerated day/night cycle
 
-**Status: PARTIALLY IMPLEMENTED** 
+**Status: IMPLEMENTED** 
 
 HGSS's real-world clock is replaced by an accelerated in-game clock. 30 real minutes = one in-game day.
 
@@ -134,13 +134,11 @@ Does not apply to:
 
 **Pokémon Center rest:** Nurse Joy can advance the time of day for the current session ([World-5](#world-5-shared-pokémon-center-hub)). Restarting the game restores the real-clock-based schedule; the calendar date stays unchanged.
 
-**Still open:** portable camping in [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes); virtual calendar for [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) tree refresh; RTC penalty when the player sets the clock backward.
-
 ---
 
 # World-5. Shared Pokémon Center Hub
 
-**Status: PARTIALLY IMPLEMENTED**
+**Status: IMPLEMENTED**
 
 ## Design Goal
 
@@ -154,9 +152,8 @@ Pokémon Centers are **optional convenience hubs**, not required stops for heali
 | **Move Relearner** | Relearn moves for $300 per successfully learned move. | Implemented |
 | **Rest / pass time** | Nurse Joy offers free rest until morning (4:00 AM), daytime (10:00 AM), or night (8:00 PM), replacing her healing interaction. The time shift lasts for the current session and resets on a fresh game start; the calendar date stays unchanged. | Implemented |
 | **Apricorn crafting** | Instantly exchange eligible Apricorns in the Bag for specialty balls, one per Apricorn, for $100 per ten Apricorns rounded up. The eight recipes follow [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance). | Implemented |
-| **Move Tutor** | Make special move tutoring available from any Center. | Maybe |
-| **Specialty Trader** | Exchange items or currencies for selected rewards. Inventory and pricing TBD. | Maybe |
-| **Researchers** | Register Arceus Plates and claim plate and Pokédex rewards ([Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society)). | Planned |
+
+[Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society) plans to add researchers to the shared hub so players can register Arceus Plates and claim plate and Pokédex rewards.
 
 Other services may be added as future systems develop. Keep location-specific shops and rewards in the world when they provide a meaningful reason to explore.
 

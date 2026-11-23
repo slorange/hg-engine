@@ -20,7 +20,6 @@ Behavior inherited from HG-Engine.
 - **Moves, abilities, and learnsets** — later-generation moves, abilities, and level-up learnsets.
 - **Move values** — some moves use Pokémon Champions power, type, accuracy, or effect chance on top of Scarlet and Violet values. Move PP stays on the Scarlet and Violet numbers.
 - **Scaled experience** — a higher-level Pokémon gains less experience from a weaker foe. Catching a wild Pokémon also awards experience.
-- **Poké Ball rates** — most balls use current-generation catch rates. A Friend Ball sets friendship to **150**. Safari, Lure, and Sport Balls keep HeartGold rates.
 - **HP bars** — drain and fill at a fixed speed.
 
 ### New game & starting experience
@@ -28,7 +27,7 @@ Behavior inherited from HG-Engine.
 - **Shortened Professor Oak intro** dialogue.
 - **Starting city** — choose from **18 cities** at the start of the game.
 - **Starter selection** — choose three starters, **one per type**, from Gen 1–4 at the start of the game.
-- After starter selection, the player receives — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Bicycle, Apricorn Box, Berry Pots, 5 of each basic berry, 5 Poké Balls, Pokégear.
+- After starter selection, the player receives — Running Shoes, Pokédex, S.S. Ticket, Magnet Train Pass, Bicycle, Berry Pots, 5 of each basic berry, 5 Poké Balls, Pokégear.
 - **National Pokédex** — unlocked from the start
 
 ### Travel & world access
@@ -50,6 +49,13 @@ Behavior inherited from HG-Engine.
 - **Apricorn crafting** — exchange all carried Apricorns for their corresponding Poké Balls immediately. The fee is **$100 per 10 Apricorns, rounded up** across the whole batch.
 - **Abra transportation** — a Psychic and Abra offer travel to visited destinations in **either Johto or Kanto** for **$400**, without needing Fly.
 - **Time Skip** — Nurse Joy gives options to reset until Morning, Day, or Night
+
+### Apricorns & Poké Balls
+
+- **Harvesting** — trees yield **3–5 Apricorns** per harvest and put them directly in the Bag. The Apricorn Box has been removed.
+- **Tree locations and colors** — 29 additional trees bring the total to **60** across Johto and Kanto. Tree colors are shuffled per save.
+- **Ball shops and crafting** — Purple and Grey Apricorns are new, and crafting recipes have changed. Which balls are available in shops vs apricorn only has also changed.
+- **Reworked/buffed ball effects** — Fast, Heavy, Love, Friend, and Dusk Balls.
 
 ### Wild encounters
 
@@ -96,10 +102,13 @@ Behavior inherited from HG-Engine.
 - **Rock Smash drops** — Increased item chance and reworked loot table.
 - **Ground and hidden pickups** — Items are randomized per save file. Available items are treasures, type boosters, evolution stones, TMs, Pokémon upgrades, and bundles of Balls and Apricorns.
 
-### Trainer scaling
+### Trainers
 
-- **Trainer levels** scale to badge count. Gym leaders at cap.
-- **Trainer Pokémon** use level-appropriate **moves** and **evolution stage** for their scaled level (same stage logic as wild encounters).
+- **Generated teams** — opponents draw Pokémon from eligible species pools. Gym teams follow their Gym’s type, and many other trainers follow their trainer class. Team size grows with badge count.
+- **Levels and evolution** — trainer levels scale with badge count, and Pokémon evolve to match their generated level.
+- **Movesets** — generated Pokémon draw from level-up moves and badge-unlocked TMs and HMs. Movesets favor strong attacks, type coverage, and useful status moves.
+- **Held items** — generated Pokémon can carry badge-unlocked items chosen to fit their species, moves, or weaknesses.
+- **EVs and IVs** — generated Pokémon gain evenly spread EVs as badge count rises and roll their IVs individually. Teams earn bottlecaps as badges accumulate. Gym Leaders gain EVs faster and get more bottlecaps.
 
 ### Gyms & story
 

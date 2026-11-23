@@ -1826,7 +1826,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 | Goldenrod | Bright Powder, Quick Claw, Wide Lens, Metronome |
 | Celadon | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
 
-**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut until [Items-2 § Coin income](DESIGN-ITEMS.md#coin-income-not-implemented) ships; restore tiered costs when coin income is decided.
+**Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut. Restore tiered costs when [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) settles Coin income.
 
 ### Files
 
@@ -1850,7 +1850,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 
 **Guard against recurrence:** a matching numeric value alone does not prove an offset is an item, price, or species operand. `validate_pokemon_flow` checks both complete vanilla party-space gates, both GiveMon commands (opcode, species variable, level, remaining arguments), and the four protected Goldenrod jumps. The patcher and build verifier both call it. Verification passed on the rebuilt scripts; the user confirmed the playable fix and level change. Existing saves work; reload the rebuilt `test.nds` in DeSmuME.
 
-**Coin income:** prize menus only — earning Coins is still **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). Design requires a non–Voltorb Flip source: [Items-2 § Coin income](DESIGN-ITEMS.md#coin-income-not-implemented).
+**Coin income:** players earn Coins through **Voltorb Flip** on the casino floor (scr_seq **806** / `CasinoGame` in **910**). [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) lists potential additional sources.
 
 **Changing TMs later:** edit replacement tables in `patch_scr_seq_game_corner.py`, update menu strings in the text banks (keep `{CURSOR_X …}` padding if renaming), rebuild.
 

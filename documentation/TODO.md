@@ -21,7 +21,6 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-21** | **Mist** — when the **opponent** uses Mist, it starts **Sandstorm** (weather / message / field effect) instead of team Mist. **Player’s own Mist OK**. | Same data/scripts for both sides in source; suspect **enemy / trainer battle path** (party build, client IDs, or AI execution) — not `Moves.c` effect wiring. Repro vs trainers; compare `enemy_party` / battle controller for defender vs attacker. |
 | **KB-22** | **Thunder Wave** — when the **opponent** uses it, appears to **miss every time** (or never paralyzes). **Player’s own Thunder Wave OK**. | Player path works; enemy path may differ (`BattleSystem_CheckMoveHit`, before-move checks, or trainer move data). Repro vs wild vs trainer; note target types (Ground = no effect, not miss). |
 | **KB-23** | **Olivine Gym** — after Jasmine gives the Mineral Badge and you leave the gym, the player is stuck: no movement and no menu. | Reproduced as the **5th** Johto badge. That badge starts the Rocket event. Once the Radio Tower is under siege, Whitney cannot be unlocked. The Rocket `setvar` in `scr_seq_jasmine_gym_slot0.s` only runs when `count_badges` is exactly **3**, so it did not fire. At 5 badges the shared reward block grants HM02 Fly, then the TM menu. The lock is on the way out, so check Olivine’s on-transition / gym-exit script. |
-| **KB-24** | **Repel** — completely broken. | User reported in the current ROM; exact symptoms, reproduction steps and cause still need investigation. |
 
 ---
 
@@ -55,6 +54,16 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | **Remove dev badge gate (Route 29 → 46)** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | PoC **2-badge** gatehouse must go before release |
 | **Endgame badge guards** | [World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating) | Ship **Route 26** (13 badges / Waterfall tier), **Route 23** + Victory Road / League, **Route 28** + Mt. Silver |
 | **Dark Cave & Rock Tunnel (Flash)** | [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves) | Entrance message until Flash (1 badge). |
+
+---
+
+## Items ([DESIGN-ITEMS.md](DESIGN-ITEMS.md))
+
+| Item | Design | Notes |
+| ---- | ------ | ----- |
+| **Pokéathlon prizes** | [Items-1](DESIGN-ITEMS.md#items-1-item-acquisition-channels) | Update the prize exchange to stock the planned Pokéathlon rewards. |
+| **Additional Apricorn tree locations** | [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) | Add trees at new locations beyond the existing 60. |
+| **Apricorn regrowth clock** | [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) | Tie tree regrowth to the accelerated clock so harvested trees refresh once per in-game day. |
 
 ---
 
