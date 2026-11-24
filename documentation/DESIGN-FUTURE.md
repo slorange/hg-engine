@@ -9,6 +9,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 
 | Section |
 | ------- |
+| [Future-1. Daycare, Breeding & EV Training](#future-1-daycare-breeding--ev-training) |
 | [Future-2. Full Moon system](#future-2-full-moon-system) |
 | [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
 | [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
@@ -19,6 +20,61 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-11. Pokémon Research Society](#future-11-pokémon-research-society) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
 | [Priority](#priority) |
+
+---
+
+# Future-1. Daycare, Breeding & EV Training
+
+Egg production, IV improvement, and EV training progress by in-game days.
+
+## Daycare
+
+### Breeding
+
+- Remove all incense requirements. Pokémon always produce their baby forms where applicable.
+- Retain vanilla breeding compatibility and Everstone Nature inheritance.
+- Calculate each offspring IV independently using `max(random(0, 31), floor((parentA_IV + parentB_IV) / 2))`.
+
+### IV training
+
+- Replace passive EXP gain with IV improvement.
+- Each training interval increases a random IV by 1, capped at 31.
+- Charge per successful IV increase upon withdrawal.
+
+### Open decisions
+
+- Egg production frequency.
+- IV improvement frequency and price.
+- Whether selecting an already-maxed IV wastes the training attempt.
+
+## EV Boot Camp
+
+Repurpose the former Kanto Daycare into an EV training facility inspired by Gen VIII Poké Jobs.
+
+- Accept up to five Pokémon simultaneously.
+- Select one of the six stats for all enrolled Pokémon to train.
+- Each Pokémon gains 36 EVs per day, reaching 252 in seven days from zero.
+- Respect the 252 per-stat and 510 total EV caps.
+- When the total cap is reached, remove EVs from random other non-zero stats to accommodate gains in the selected stat.
+- Charge upon withdrawal based on the daily rate × Pokémon count × training days.
+
+### Open decisions
+
+- Daily training price.
+- Fixed-duration or open-ended enrollment.
+- Whether days after reaching the selected stat’s cap are billable.
+
+## EV removal
+
+- Existing EV-reducing berries adjust individual stats.
+- An NPC in the shared Pokémon Center resets all EVs on a selected Pokémon.
+- Boot camp training redistributes EVs automatically.
+
+The EV reset service price is open.
+
+## Time progression
+
+Determine whether advancing in-game days through the resting system counts toward breeding and training.
 
 ---
 
@@ -132,6 +188,10 @@ The player picks from a curated list of families for that Gym. The Leader names 
 # Future-7. Trainer party improvements
 
 Build on [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties).
+
+## Notes since the latest playthrough
+- Check whether regular Trainers select moves randomly and whether they can use Gym Leader AI. 
+- Could make Gym Leaders stronger, reduce their evolution requirements to use the early Stone evolutions, better IVs EVs
 
 ## Roster curation
 
@@ -296,7 +356,7 @@ Investigate map-level trainer generation, movement, placement, location-weighted
 
 A shared research organization with representatives in every Pokémon Center. The representative is a service in the shared hub ([World-5](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub)), so the player can register finds and claim rewards from any Center.
 
-The society handles two related collection systems: **Arceus Plate** research and **Pokédex** completion rewards.
+The society handles three related collection systems: **Arceus Plate** research, **Unown** research, and **Pokédex** completion rewards.
 
 ## Plate research
 
@@ -331,9 +391,9 @@ Until a plate is used, Hidden Power’s type stays IV-dependent. That roll can b
 | Tier | Plates | Rewards |
 | ---- | ------ | ------- |
 | 1 | 1–4 | Kecleon, Delibird, Spinda, Chatot |
-| 2 | 5–7 | Dunsparce, Wobbuffet, Tyrogue |
+| 2 | 5–7 | Dunsparce, Wynaut, Tyrogue |
 | 3 | 8–10 | Togepi, Riolu, Eevee |
-| 4 | 11–13 | Lapras, Snorlax, Spiritomb |
+| 4 | 11–13 | Lapras, Munchlax, Spiritomb |
 | 5 | 14–15 | Shaymin, Manaphy |
 | 6 | 16–17 | Undecided mythical, Arceus |
 
@@ -379,9 +439,9 @@ Ideas that do not have their own `Future-*` section yet.
 - **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
 - **Evolution levels** — review evolution levels. Ponyta → Rapidash at level 40 is tragic
 - **Pokémon balance** — every species reasonably viable; encounter rarity roughly reflects power; adjust BST, abilities, and learnsets as needed.
-- **Legendary / Mythical encounters** — quests or encounters for missing species; e.g. each vanilla legendary spot could roll from uncaught legendaries on map load when the player is Champion (Mewtwo slot → Arceus, Moltres spot → Heatran, …). Plate and Pokédex collection is [Future-11](DESIGN-FUTURE.md#future-11-pokémon-research-society).
 - **Battle AI** — increase switching for type matchups when no good damaging move is available.
 - **Separate Blackthorn and Battle Frontier shops** — give each shop its own inventory so Blackthorn’s themed stock can change independently of the Battle Frontier.
+- Other Misc notes in [SCRATCHPAD.txt](SCRATCHPAD.txt)
 
 ---
 
@@ -409,5 +469,6 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | [Future-11](#future-11-pokémon-research-society) Pokémon Research Society | 7 | 3 | 3 | 2 | 2 | 3 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
 | [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
+| [Future-1](#future-1-daycare-breeding--ev-training) Daycare, Breeding & EV Training | 4 | 2 | 3 | 2 | 2 | 1 | — |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
 | [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | — |
