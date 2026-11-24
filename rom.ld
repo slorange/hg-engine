@@ -323,6 +323,7 @@ Sav2_Misc_get = 0x0202A954 | 1;
 CenterHub_SaveLocalGet = 0x0203B9C4 | 1;
 CenterHub_InitMapEvents = 0x0203B648 | 1;
 AbraTravel_OpenFlyMap = 0x0203EAB0 | 1;
+gAbraTravelMapArgs = 0x021FF948;
 FlyMap_InitArgs = 0x02092D8C | 1;
 FlyMap_LaunchApp = 0x0203EA5C | 1;
 AbraTravel_SetNative = 0x0203FD58 | 1;

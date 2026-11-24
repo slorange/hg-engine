@@ -17,6 +17,7 @@
 
 .include "armips/asm/no_partner_double_battles.s" // allows no partner double battles
 .include "armips/asm/wild_level_caps.s" // arm9-persistent FieldSystem* for wild level caps
+.include "armips/asm/abra_map_text.s"
 
 .if FAIRY_TYPE_IMPLEMENTED == 1
 

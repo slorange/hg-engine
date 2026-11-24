@@ -10,6 +10,7 @@ from pathlib import Path
 from datetime import datetime
 import _io
 import ndspy.codeCompression
+import ndspy.rom
 
 if sys.platform.startswith('win'):
     PathVar = os.environ.get('Path')
@@ -347,21 +348,9 @@ def restore_stale_fly_map_overlay101_hook() -> None:
     ov_path = "base/overlay/overlay_0101.bin"
     if not os.path.isfile(ROM) or not os.path.isfile(ov_path) or not os.path.isfile("base/overarm9.bin"):
         return
-    import tempfile
-
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp)
-        y9_path = tmp_path / "y9.bin"
-        ov_dir = tmp_path / "overlay"
-        subprocess.run(
-            ["tools/ndstool", "-x", ROM, "-y9", str(y9_path), "-y", str(ov_dir)],
-            check=True,
-            capture_output=True,
-        )
-        van_ov = (ov_dir / "overlay_0101.bin").read_bytes()
-        y9 = y9_path.read_bytes()
-    base = struct.unpack_from("<I", y9, 101 * 0x20 + 4)[0]
-    off = STALE_FLY_MAP_OV101_ADDR - base
+    vanilla = load_vanilla_map_overlay()
+    van_ov = vanilla.data
+    off = STALE_FLY_MAP_OV101_ADDR - vanilla.ramAddress
     if off < 0 or off + STALE_FLY_MAP_OV101_LEN > len(van_ov):
         return
     patch = van_ov[off : off + STALE_FLY_MAP_OV101_LEN]
@@ -695,6 +684,39 @@ def offset():
 OVERLAYS_TO_DECOMPRESS = [1, 2, 6, 7, 8, 10, 12, 14, 15, 18, 23, 24, 31, 53, 61, 63, 64, 68, 94, 96, 112, 123]
 
 
+def load_vanilla_map_overlay():
+    return ndspy.rom.NintendoDSRom.fromFile(ROM).loadArm9Overlays([101])[101]
+
+
+def prepare_map_overlay(table_path, overlay_path):
+    vanilla_size = 0x13BC0
+    selector_size = 0x20
+    entry = 101 * 0x20
+    with table_path.open("r+b") as table:
+        table.seek(entry)
+        _, address, size, _, _, _, _, flags = struct.unpack("<8I", table.read(0x20))
+        if size == vanilla_size + selector_size and not flags & 0x01000000:
+            if overlay_path.stat().st_size != size:
+                raise ValueError("Town Map overlay size does not match its expanded table entry")
+            return
+        if address != 0x021E7740 or size != vanilla_size:
+            raise ValueError("Unexpected Town Map overlay layout")
+
+        if flags & 0x01000000:
+            # Recover from earlier builds that patched the compressed stream.
+            data = load_vanilla_map_overlay().data
+        else:
+            data = overlay_path.read_bytes()
+        if len(data) != size:
+            raise ValueError("Town Map overlay does not match the extracted ARM9 overlay table")
+
+        overlay_path.write_bytes(data + bytes(selector_size))
+        table.seek(entry + 8)
+        table.write(struct.pack("<I", size + selector_size))
+        table.seek(entry + 0x1C)
+        table.write(struct.pack("<I", flags & 0xFE000000))
+
+
 def decompress():
     if os.path.exists("build/arm9.bin"):
         os.remove("build/arm9.bin")
@@ -722,6 +744,7 @@ def decompress():
         rom.close()
     for n in OVERLAYS_TO_DECOMPRESS:
         decompress_file("base/overlay/overlay_" + str(n).zfill(4) + ".bin")
+    prepare_map_overlay(Path("base/overarm9.bin"), Path("base/overlay/overlay_0101.bin"))
 
 
 

@@ -44,6 +44,7 @@ typedef struct AbraTeleportEnv {
 } AbraTeleportEnv;
 
 extern AbraMapArgs *LONG_CALL AbraTravel_OpenFlyMap(FieldSystem *, int kind);
+extern AbraMapArgs *gAbraTravelMapArgs;
 extern void LONG_CALL AbraTravel_SetNative(SCRIPTCONTEXT *, BOOL (*)(SCRIPTCONTEXT *));
 extern BOOL LONG_CALL FieldSystem_ApplicationIsRunning(FieldSystem *);
 extern void *LONG_CALL AbraTravel_TaskEnv(TaskManager *);
@@ -111,6 +112,8 @@ BOOL AbraTravel_Command(SCRIPTCONTEXT *ctx, unsigned mode)
         const CenterHubDoor *door = &gCenterHubDoors[CenterHub_GetOrigin(misc->centerHubOrigin) - 1];
         sHasDestination = FALSE;
         *app = AbraTravel_OpenFlyMap(field, 0);
+        // The picker reads this identity when its application task initializes.
+        gAbraTravelMapArgs = *app;
         // Keep the player marker/cursor at the originating Center's outdoor
         // position. Native region checks use x/z separately: the neutral
         // Indigo region allows Johto<->Kanto in this picker only, without
@@ -124,6 +127,7 @@ BOOL AbraTravel_Command(SCRIPTCONTEXT *ctx, unsigned mode)
         return TRUE;
     }
     if (mode == 1) {
+        gAbraTravelMapArgs = NULL;
         if (*app != NULL) {
             sHasDestination = (*app)->selected && AbraTravel_Resolve(
                 (const u16 *)0x020F9E80, SavArray_Flags_get(field->savedata),
