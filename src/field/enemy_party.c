@@ -293,6 +293,13 @@ static u8 GetTrainerGymClass(int trainerId, u8 trainerClass)
     case 369:
     case 415:
         return TRAINERCLASS_LEADER_SABRINA;
+    case 689:
+    case 690:
+    case 691:
+    case 692:
+    case 693:
+    case 694:
+        return TRAINERCLASS_LEADER_BLAINE;
     case 681:
     case 682:
     case 683:

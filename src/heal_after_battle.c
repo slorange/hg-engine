@@ -13,7 +13,7 @@ int LONG_CALL PokeParty_GetPokeCount(struct Party *party);
 static void HealPartyMon(struct PartyPokemon *mon)
 {
     u16 maxhp;
-    u16 status = 0;
+    u32 status = 0;
 
     if (mon == NULL) {
         return;

@@ -521,7 +521,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 |------|--------|
 | Toggle | `HEAL_AFTER_BATTLE` in `include/config.h` (enabled by default; comment out to disable) |
 | Form / items hook | `Battle_End` @ overlay 12 **`0x0B90`** → `BattleEndRevertFormChange` only (no heal in battle overlay) |
-| Heal impl | `src/heal_after_battle.c` → **`build/linked.o`** (ARM9 extension, same link unit as `src/repel.c`); **`PokeParty_GetPokeCount`** + **`Party_GetMonByIndex`** + **`MON_DATA_SPECIES_EXISTS`**; HP/status as **`u16`** |
+| Heal impl | `src/heal_after_battle.c` → **`build/linked.o`** (ARM9 extension, same link unit as `src/repel.c`); **`PokeParty_GetPokeCount`** + **`Party_GetMonByIndex`** + **`MON_DATA_SPECIES_EXISTS`**; HP as **`u16`**, status as **`u32`** because `SetMonData` reads four bytes for `MON_DATA_STATUS` |
 | Field apply | **`HealAfterBattle_HealPartyOnFieldStep(saveData)`** — pass **`saveData` from the step hook**, not `gFieldSysPtr->savedata` |
 | Logic | Nurse Joy–equivalent: max HP, clear status, `RestoreBoxMonPP` |
 
@@ -927,7 +927,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Phase 3:** Gym membership takes precedence over the trainer's ordinary class. Gym Leaders and Leader rematches resolve by class. Gym subordinates resolve by trainer ID from the built zone events and local battle scripts. Match either type on the eligible Pokémon after stage adjustment. Multi-type filters have no slot quotas. When the type pool has no unused species at the rolled level and evolution seed, fall back to the unrestricted eligible pool for an unused species.
 
-**Gym subordinate IDs:** Falkner 29, 50 · Bugsy 10, 67–69 · Whitney 5, 22, 70, 71 · Morty 46, 89, 493, 494 · Chuck 156, 157, 159, 251 · Pryce 480–484 · Clair 110–112, 117, 119 · Brock 308, 685 · Misty 297, 298, 676–678 · Lt. Surge 232, 337, 396 · Erika 326, 336, 346, 356 · Janine 83, 84, 136, 183 · Sabrina 230, 368, 369, 415 · Blue 681–684. Jasmine and Blaine have no subordinate battles.
+**Gym subordinate IDs:** Falkner 29, 50 · Bugsy 10, 67–69 · Whitney 5, 22, 70, 71 · Morty 46, 89, 493, 494 · Chuck 156, 157, 159, 251 · Pryce 480–484 · Clair 110–112, 117, 119 · Brock 308, 685 · Misty 297, 298, 676–678 · Lt. Surge 232, 337, 396 · Erika 326, 336, 346, 356 · Janine 83, 84, 136, 183 · Sabrina 230, 368, 369, 415 · Blaine 689–694 · Blue 681–684. Jasmine has no subordinate battles.
 
 **Class filters:** `GetTrainerTypeMask()` in `src/field/enemy_party.c` holds the mapping. Unmapped classes and Blue use All. Juggler accepts Psychic and the Voltorb line outside Gym overrides. Clair's Gym uses Dragon/Water and Champion Lance uses Dragon/Flying for now.
 

@@ -18,11 +18,8 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 | **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
 | **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
 | **KB-9** | Crash when leaving **Mahogany Gym** (returning to the field after exit). | Inconsistent — could not reproduce on retest. Potentially related to KB-23 |
-| **KB-21** | **Mist** — when the **opponent** uses Mist, it starts **Sandstorm** (weather / message / field effect) instead of team Mist. **Player’s own Mist OK**. | Same data/scripts for both sides in source; suspect **enemy / trainer battle path** (party build, client IDs, or AI execution) — not `Moves.c` effect wiring. Repro vs trainers; compare `enemy_party` / battle controller for defender vs attacker. |
-| **KB-22** | **Thunder Wave** — when the **opponent** uses it, appears to **miss every time** (or never paralyzes). **Player’s own Thunder Wave OK**. A trainer’s Nuzzle also failed to paralyze. | Player path works; enemy path may differ (`BattleSystem_CheckMoveHit`, before-move checks, or trainer move data). Repro vs wild vs trainer; note target types (Ground = no effect, not miss). |
 | **KB-23** | **Olivine Gym** — after Jasmine gives the Mineral Badge and you leave the gym, the player is stuck: no movement and no menu. | Reproduced as the **5th** Johto badge. That badge starts the Rocket event. Once the Radio Tower is under siege, Whitney cannot be unlocked. The Rocket `setvar` in `scr_seq_jasmine_gym_slot0.s` only runs when `count_badges` is exactly **3**, so it did not fire. At 5 badges the shared reward block grants HM02 Fly, then the TM menu. The lock is on the way out, so check Olivine’s on-transition / gym-exit script. |
 | **KB-24** | **Pokémon Center Abra** uses “Fly”. | |
-| **KB-25** | **Blaine’s Gym** — a Scientist uses Electric- and Steel-type Pokémon. | |
 
 ---
 
@@ -32,6 +29,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 | Item | Design | What to test |
 | ---- | ------ | ------------ |
+| **KB-25 — Blaine’s Gym trainers** | [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties) | Battle Cary, Waldo, Merle, Lowell, Linden, and Daniel. Verify that their generated teams use the Gym’s Fire-type pool. |
 | **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
 | **Ruins of Alph and roaming Unown** | [World-6](DESIGN-WORLD.md#world-6-unown-collection-quest) | On a fresh run, solve all four picture puzzles and verify each records completion. Check that neither roamer appears before the fourth puzzle and that it unlocks both. Find level 45 `!` in Johto and `?` in Kanto. Verify fleeing, HP and status persistence, the catch cap, and that a knocked-out roamer returns after the next League clear while a caught one stays gone. |
 | **Poké Ball catch rates** | [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) | Test all eight crafted balls plus Net and Repeat. Cover Fast and Heavy bracket boundaries, Fast’s legendary beast bonus, Level’s anchors and intermediate ratios, Dusk’s cave floors and outdoor day/night rates, Love’s gender and Egg Group cases, Friend’s family bonus and 200 friendship, Dream’s sleep and Comatose cases, Quick’s first and later turns, Net’s Water and Bug targets, and Repeat’s caught and uncaught species. Include non-qualifying controls. |
