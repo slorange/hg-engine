@@ -1,10 +1,42 @@
 /* Host test of the actual routing code, including save/restart round trips. */
 #include "center_hub.h"
+#include "config.h"
 #include <assert.h>
 extern int puts(const char *);
 
+#ifdef OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS
+static void TestHomeDoorSwap(void)
+{
+    // Saffron uses Copycat's house, beside its Pokémon Center.
+    Location next = {399, 0, 0, 0, 0};
+    Home_ResolveTransition(13, 59, &next);
+    assert(next.mapId == 63 && next.warpId == 0);
+    Home_ResolveTransition(13, 60, &next);
+    assert(next.mapId == 399 && next.warpId == 0);
+
+    next = (Location){59, 14, 0, 0, 0};
+    Home_ResolveTransition(13, 399, &next);
+    assert(next.mapId == 60 && next.warpId == 1);
+
+    next = (Location){63, 1, 0, 0, 0}; // Bedroom stairs.
+    Home_ResolveTransition(13, 64, &next);
+    assert(next.mapId == 63 && next.warpId == 1);
+    next = (Location){399, -1, 3, 5, 0}; // Explicit-coordinate transition.
+    Home_ResolveTransition(13, 59, &next);
+    assert(next.mapId == 399 && next.warpId == -1 && next.x == 3 && next.z == 5);
+    next = (Location){63, 0, 0, 0, 0};
+    Home_ResolveTransition(0, 60, &next);
+    Home_ResolveTransition(0xFFFF, 60, &next);
+    assert(next.mapId == 63 && next.warpId == 0);
+    puts("OK: Home door swap, stairs, explicit coordinates, and default/invalid city");
+}
+#endif
+
 int main(void)
 {
+#ifdef OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS
+    TestHomeDoorSwap();
+#endif
     unsigned i;
     for (i = 0; i < NELEMS(gCenterHubDoors); i++) {
         const CenterHubDoor *door = &gCenterHubDoors[i];

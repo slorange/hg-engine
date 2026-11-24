@@ -71,18 +71,6 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 ## Story ([DESIGN-STORY.md](DESIGN-STORY.md))
 
-### Intro and home
-
-[Story-1](DESIGN-STORY.md#story-1-starting-city-and-home) design; step **1** complete.
-
-| Step | Direction | Status |
-| ---- | --------- | ------ |
-| **2** | Start city outdoor home door → Mom interior | **Rolled back** — retarget on map load (v2 plan in Story-1) |
-| **3** | New Bark house door (start ≠ New Bark) → displaced interior | **Not started** |
-| **4** | Leave displaced interior → New Bark outdoor | **Not started** |
-
-Displaced-interior NPC/script cleanup: [Vanilla cleanup](#vanilla-cleanup-backlog) (Copycat / Saffron home, etc.).
-
 ### Olivine Gym lighthouse-gossip NPCs
 
 Mom intro skips the lighthouse fetch but **`clearflag FLAG_HIDE_OLIVINE_GYM_GENTLEMAN/GIRL` (476/477)** still reveals the two vanilla gym NPCs (zone_event **080**, scr_seq **913** scripts **2–3**, text **606**) — dialogue assumes Amphy / Jasmine at the lighthouse. **Hide flags alone do not disable interaction** (invisible ghost talk reported in testing). Need a verified fix on **`2_080`** / **913** / **606**: remove or replace NPCs, NOP talk scripts, or rewrite lines — not outdoor Olivine **074**. Recipe context: [HACK-NOTES § Olivine Secret Medicine](HACK-NOTES.md#olivine-secret-medicine-jasmine).

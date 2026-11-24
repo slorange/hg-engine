@@ -26,7 +26,8 @@ EVENTS = {
 
 def main():
     source = (ROOT / "src/center_hub.c").read_text()
-    doors = [tuple(map(int, m)) for m in re.findall(r"\{(\d+), (\d+), (\d+)\}", source)]
+    center_table = source.split("gCenterHubDoors[24] = {", 1)[1].split("};", 1)[0]
+    doors = [tuple(map(int, m)) for m in re.findall(r"\{(\d+), (\d+), (\d+)\}", center_table)]
     assert len(doors) == 24 and {d[0] for d in doors} == set(EVENTS)
     assert 300 not in {d[0] for d in doors}, "Indigo must remain excluded"
     supported = {int(i) for n, i in re.findall(r"#define\s+(MAP_\w*PC0101)\s+(\d+)", (ROOT / "include/constants/maps.h").read_text()) if int(i) != 255}

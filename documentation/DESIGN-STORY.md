@@ -8,7 +8,7 @@
 
 | Section | Status |
 | ------- | ------ |
-| [Story-1. Starting City and Home](#story-1-starting-city-and-home) | PARTIALLY IMPLEMENTED |
+| [Story-1. Starting City and Home](#story-1-starting-city-and-home) | IMPLEMENTED |
 | [Story-2. Starter Pokémon and Intro Flow](#story-2-starter-pokémon-and-intro-flow) | IMPLEMENTED |
 | [Story-3. Story and Script Policy](#story-3-story-and-script-policy) | DECIDED |
 
@@ -16,26 +16,18 @@
 
 # Story-1. Starting City and Home
 
-**Status: PARTIALLY IMPLEMENTED**
+**Status: IMPLEMENTED**
 
-The player chooses a **starting city** from **18** Johto and Kanto locations during the Mom cutscene. Starting city affects wild Pokémon level caps — [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps).
+During the opening cutscene with Mom, the player chooses one of **18 starting cities** across Johto and Kanto. The chosen city determines where the player lives and is the starting point for [wild Pokémon level caps](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps).
 
-Each city has a **designated home building** on the overworld (that city’s player-house door). Cities the player did **not** choose keep that building’s vanilla behaviour. When a city **is** chosen, its designated building becomes the **outdoor** home anchor: leaving the canonical **Mom interior** should place the player outside that building, and entering that door should return to the Mom interior ([home wiring](#home-wiring-four-steps)).
+## How the home doors work
 
-When the start is **not** New Bark Town, the **interior** linked from New Bark’s player-house door is **displaced** — it loads that start city’s original player-house interior (not the Mom map). Leaving that displaced interior sends the player back to New Bark Town outdoors.
+Each eligible city has a designated home building. Its front door leads to Mom’s house if the player chooses that city, and Mom’s front door leads back outside to the same spot. The player first uses this exit when leaving the house after the opening cutscene.
 
-## Home wiring (four steps)
+- **Starting in New Bark Town.** Mom’s house keeps its original front door in New Bark Town.
+- **Starting anywhere else.** The chosen city’s designated building becomes the entrance to Mom’s house. The interior that originally belonged to that building is now accessible through the original New Bark player-house door. Leaving that interior puts the player back outside the New Bark door.
 
-Bidirectional home needs four warp behaviours per save:
-
-| Step | Direction | Requirement |
-| ---- | --------- | ----------- |
-| **1** | Leave Mom interior | Front door → **chosen start city’s** outdoor home door |
-| **2** | Enter start city’s outdoor home door | That door → **Mom interior** |
-| **3** | Enter New Bark player-house door (start ≠ New Bark) | → **displaced** vanilla interior for start city (not Mom cutscene) |
-| **4** | Leave displaced interior | → **New Bark outdoor** door tile |
-
-**Planned v2 for step 2:** leave outdoor doors vanilla in ROM; on map load, retarget **only the start city’s** home-door warp to the Mom interior (same approach as step 1). Steps 3–4 likely need a similar targeted pattern.
+The designated buildings in all other cities keep their original entrances and interiors.
 
 ---
 
@@ -54,7 +46,7 @@ After Professor Oak / name / gender, the player still wakes in the **bedroom** (
 1. **City picker** — [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home).
 2. **Starter pick** — grass, then fire, then water menus (4 options each).
 3. **Mom grants** — bag, Pass, Pokédex, shoes, etc.
-4. **Exit** — walk out the front door to the chosen city ([Story-1 § Home wiring](DESIGN-STORY.md#home-wiring-four-steps) step 1).
+4. **Exit** — walk out the front door to the chosen city ([Story-1 § How the home doors work](DESIGN-STORY.md#how-the-home-doors-work)).
 
 ---
 

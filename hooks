@@ -5,6 +5,10 @@
 # Full map-load replacement; preserve r0/r1 by jumping through r3.
 arm9 CenterHub_LoadMap 02052F94 3
 arm9 CenterHub_GetBlackoutSpawn 0203BB20 3
+#else
+#ifdef OPENWORLD_STORY_SKIP_AND_STARTING_ITEMS
+arm9 CenterHub_LoadMap 02052F94 3
+#endif
 #endif
 
 #overlay 1 is loaded in at 021E5900

@@ -1491,14 +1491,14 @@ So **`0300.png` is not a “free” custom slot** — gfx **300** is **Venusaur*
 
 **Starting city / starter (v1 — [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow)):**
 
-**Status (Sep 2026):** **18-city menu**, **three-type starter pick** (grass / fire / water, 4 options each → **3** Pokémon), and **step 1 exit** verified in-game. Outdoor home-door routing (**Story-1 steps 2–4**) not complete — step 2 was attempted twice and rolled back; see [Home = bidirectional door + interior swap](#home--bidirectional-door--interior-swap).
+The intro offers an **18-city menu** and one starter per type (grass, fire, and water, with four choices each). See [Home = bidirectional door + interior swap](#home--bidirectional-door--interior-swap) for the door routing and existing-save behavior.
 
 | Step | When | What |
 |------|------|------|
 | 1 | Mom cutscene, before starter menu | **18-city** `ListLocalText` (menu index **0–17**) → `VAR_PLAYER_START_CITY` (**0x4031**) → `_set_home_dynamic_warp` |
 | 2 | Same cutscene | **Three** starter menus (grass / fire / water, 4 options each) → **3×** `give_mon` (not `choose_starter`) → `FLAG_GOT_STARTER` |
 | 3 | Same cutscene | Mom grants (bag, Pokédex, Pass, etc.) — **no post-cutscene teleport** |
-| 4 | Walk to front door **(3, 10)** on 1F | Dynamic exit warp → outdoor home door in chosen city (**Story-1 home step 1 — works**) |
+| 4 | Walk to front door **(3, 10)** on 1F | Dynamic exit warp → outdoor home door in chosen city |
 
 **Menu index = Wilds-1 table row** (direct lookup in `src/wild_level_caps.c`; no PoC remap).
 
@@ -1540,16 +1540,16 @@ Open-world intro **does not** use vanilla `choose_starter` (3-ball UI) or `src/s
 
 ### Home = bidirectional door + interior swap
 
-Canonical interior stays **`T20R0201`** (scr_seq **845**, Mom). Four warp behaviours per save ([Story-1 home wiring](DESIGN-STORY.md#home-wiring-four-steps)):
+The canonical Mom interior is **`T20R0201`** (scr_seq **845**). See [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home) for the player-facing behavior.
 
-| Step | Direction | Status |
+| Step | Direction | Mechanism |
 |------|-----------|--------|
-| **1** | Mom interior → start city outdoor door | **Complete** — dynamic exit (below) |
-| **2** | Start city outdoor door → Mom interior | **Rolled back** — see [Outdoor entrance attempts](#outdoor-entrance-attempts-rolled-back) |
-| **3** | New Bark door → displaced interior (start ≠ New Bark) | **Not started** |
-| **4** | Displaced interior → New Bark outdoor | **Not started** |
+| **1** | Mom interior → start city outdoor door | Dynamic exit set by Mom’s script |
+| **2** | Start city outdoor door → Mom interior | Map-load hook redirects the original house entry to Mom’s warp 0 |
+| **3** | New Bark door → displaced interior (start ≠ New Bark) | Map-load hook redirects Mom’s original entry to the displaced house’s warp 0 |
+| **4** | Displaced interior → New Bark outdoor | Map-load hook redirects the original mapped exit to New Bark warp 1 |
 
-**Designated home doors** (reference for Mom `_set_home_dynamic_warp` and future step 2/3). Outdoor doors stay **vanilla** in ROM as of Sep 2026 rollback.
+**Designated home doors** (reference for Mom’s `_set_home_dynamic_warp` and `sHomeDoors` in `src/center_hub.c`). The ROM retains the original outdoor warp tables.
 
 | Idx | City | zone_event | warp | (x, z) | Outdoor hdr | Vanilla interior hdr |
 |-----|------|------------|------|--------|-------------|----------------------|
@@ -1585,9 +1585,9 @@ Goldenrod: NE house by Flower Shop (**not** Friendship Checker / `T25R0301`). Sa
 
 **Engine reference (pret `field/field_control.c`):** warp with `anchor == 0x100` and `header == 0xFFF` uses `LocalFieldData.dynamicWarp`. Vanilla examples: zone_event **396–402** (elevator exits).
 
-#### Outdoor entrance attempts (rolled back)
+#### Steps 2–4 — Home door swap
 
-**v1:** mass-patched all outdoor home doors → interior **63** — proved warp table, wrong UX. **v2:** ARM9 `Field_InitMapEvents` RAM hook — map-load crashes; hook bytes stuck in `base/arm9.bin` until **`rm -rf base && make`**. **Current / v3 plan:** outdoor doors **vanilla** in ROM; patch **only start city** door → **63** on load (not implemented). Steps 3–4 still open.
+`Home_ResolveTransition` runs in the shared Pokémon Center ARM9 map-load hook at **0x02052F94**, before the destination’s map events load. It matches the source map, original destination map, and original destination warp. The hook reads **`VAR_PLAYER_START_CITY` (0x4031)** through **`GetScriptVarPassSave(SavArray_Flags_get(...), ...)`**. The variable reader expects the flags/vars block. Passing the full save object reads the wrong location. A New Bark start or an invalid city keeps the original routes. Existing saves with a city chosen in Mom’s intro work without migration. The New Bark door was verified on an existing Violet save.
 
 ### Failed approaches (save future dev time)
 
@@ -1608,17 +1608,19 @@ Goldenrod: NE house by Flower Shop (**not** Friendship Checker / `T25R0301`). Sa
 **Build / verify:**
 
 ```bash
-make build/narc/scr_seq.narc build/narc/zone_event.narc NOSCAN=1
+make test.nds -j24
 python scripts/dev/verify_t20_mom_patch.py
 python scripts/dev/verify_start_city_patch.py
-# repack test.nds
+python scripts/dev/verify_center_hub.py
+gcc -w -DCENTER_HUB_HOST_TEST -Iinclude src/center_hub.c scripts/dev/test_center_hub.c -o build/test_center_hub
+build/test_center_hub
 ```
 
 **Files:** `armips/scr_seq/scr_seq_t20_mom_script0.s`, `tools/patch_scr_seq_t20_mom.py` (`2_845`), `tools/patch_zone_event_start_city.py` (interior **060** exit only), `scripts/dev/verify_start_city_patch.py`, `scripts/dev/verify_t20_mom_patch.py`, `data/text/545.txt`, `armips/include/vars.s`. Init header **618** stays vanilla.
 
 **Bedroom starter:** not used — bedroom scr_seq **846** stays vanilla (**no** `choose_starter`, no OnTransition starter hook). All starter picking is in **Mom script 0** only.
 
-**Change a home door:** recon in `build/a032_vanilla` (member, warp index, x/z, vanilla header) → update **`EXPECTED_DOORS`** in verify script + **`_set_home_dynamic_warp`** branch + warp constant in Mom script. Verify **060** still has exactly 2 warps.
+**Change a home door** by checking its outdoor event member, warp index, coordinates, original interior header, and the reciprocal interior exit in `build/a032_vanilla`. Update **`sHomeDoors`**, **`EXPECTED_DOORS`**, and the **`_set_home_dynamic_warp`** branch and warp constant in Mom’s script. Verify that member **060** still has exactly two warps.
 
 **Dialogue:** Mom intro greet **545** strings **0–1**. Post-cutscene talk still uses vanilla Elm errand strings until [Story-3](DESIGN-STORY.md#story-3-story-and-script-policy). Cutscene skips bag/card/save/options `npc_msg`s; fanfares + flags unlock touch menu.
 
