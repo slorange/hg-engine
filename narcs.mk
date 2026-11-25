@@ -725,6 +725,8 @@ SCR_SEQ_VIOLET_GATE_PATCH += scripts/build/patch_violet_story.py
 UNION_CAVE_PLATE_PATCH := scripts/build/patch_union_cave_plate.py
 $(SCR_SEQ_NARC): $(UNION_CAVE_PLATE_PATCH) tools/patch_scr_seq_t23_azalea.py scripts/build/patch_route36_rock_smash.py
 $(SCR_SEQ_NARC): scripts/build/patch_goldenrod_story.py
+$(SCR_SEQ_NARC): scripts/build/patch_route34_story.py
+$(SCR_SEQ_NARC): scripts/build/patch_ilex_kimono.py
 
 $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) $(SCR_SEQ_NEW_BARK_PATCH_DEPS) $(SCR_SEQ_VIOLET_GATE_PATCH) armips/include/openworld_story_skip_flags.inc include/config.h scripts/build/patch_bug_contest_daily.py scripts/build/patch_route30_apricorn_box.py scripts/build/patch_route30_story.py tools/append_scr_seq_script.py scripts/build/patch_shard_traders.py scripts/build/patch_field_hm_badges.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py scripts/build/patch_center_rest.py scripts/build/patch_center_researchers.py
 	$(PYTHON) tools/extract_scr_seq_vanilla.py $(SCR_SEQ_DIR)
@@ -738,6 +740,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) $(SCR_SEQ_NEW_BAR
 	$(PYTHON) -m scripts.build.patch_violet_story $(SCR_SEQ_DIR)/2_857 $(SCR_SEQ_DIR)/2_630 $(SCR_SEQ_DIR)/2_018
 	$(PYTHON) -m scripts.build.patch_union_cave_plate header $(SCR_SEQ_DIR)/2_319
 	for file in $(SCR_SEQ_DEPENDENCIES); do $(ARMIPS) $$file; done
+	$(PYTHON) -m scripts.build.patch_ilex_kimono scripts $(SCR_SEQ_DIR)/2_092 $(BUILD)/ilex_kimono.bin $(BUILD)/ilex_headbutt.bin
 	$(PYTHON) tools/patch_scr_seq_r32_badge.py $(SCR_SEQ_DIR)/2_232
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
 	$(PYTHON) tools/patch_scr_seq_w40_ferry.py $(SCR_SEQ_DIR)/2_962
@@ -751,6 +754,7 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) $(SCR_SEQ_NEW_BAR
 	$(PYTHON) tools/patch_scr_seq_kanto_waters_ferry.py $(SCR_SEQ_DIR)/2_735 $(SCR_SEQ_DIR)/2_958 $(SCR_SEQ_DIR)/2_960 $(SCR_SEQ_DIR)/2_961 $(SCR_SEQ_DIR)/2_815
 	$(PYTHON) tools/patch_scr_seq_r34_rod_guru.py $(SCR_SEQ_DIR)/2_237
 	$(PYTHON) scripts/build/verify_r34_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_237
+	$(PYTHON) -m scripts.build.patch_route34_story scripts $(SCR_SEQ_DIR)
 	$(PYTHON) tools/patch_scr_seq_olivine_rod_guru.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) scripts/build/verify_olivine_rod_guru_scr_seq.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) tools/patch_scr_seq_viridian_rod_guru.py $(SCR_SEQ_DIR)/2_741
@@ -834,6 +838,8 @@ ZONE_EVENT_JSONS := $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/*.json)
 ZONE_EVENT_PATCH_SCRIPTS := $(wildcard tools/patch_zone_event*.py) scripts/dev/verify_olivine_rod_guru_zone_event.py scripts/dev/verify_start_city_patch.py scripts/dev/verify_saffron_mart_clerks.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py scripts/build/patch_center_researchers.py
 ZONE_EVENT_PATCH_SCRIPTS += scripts/build/patch_apricorn_trees.py
 ZONE_EVENT_PATCH_SCRIPTS += $(UNION_CAVE_PLATE_PATCH)
+ZONE_EVENT_PATCH_SCRIPTS += scripts/build/patch_route34_story.py tools/patch_zone_event_r32_badge.py
+ZONE_EVENT_PATCH_SCRIPTS += scripts/build/patch_ilex_kimono.py
 ZONE_EVENT_DEPENDENCIES := tools/zone_event_enc.py tools/extract_zone_event_vanilla.py include/config.h $(ZONE_EVENT_JSONS) $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/events/*) $(ZONE_EVENT_PATCH_SCRIPTS)
 
 $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
@@ -844,6 +850,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r32_badge.py $(ZONE_EVENT_DIR)/2_033
 	$(PYTHON) -m scripts.build.patch_union_cave_plate events $(ZONE_EVENT_DIR)/2_149
 	$(PYTHON) tools/patch_zone_event_gym_cut_trees.py $(ZONE_EVENT_DIR)/2_051 $(ZONE_EVENT_DIR)/2_052 $(ZONE_EVENT_DIR)/2_352 $(ZONE_EVENT_DIR)/2_114
+	$(PYTHON) -m scripts.build.patch_ilex_kimono events $(ZONE_EVENT_DIR)/2_114
 	$(PYTHON) tools/patch_zone_event_r35_cut_tree.py $(ZONE_EVENT_DIR)/2_036
 	$(PYTHON) tools/patch_zone_event_blackthorn_gym_clair.py $(ZONE_EVENT_DIR)/2_137
 	$(PYTHON) tools/patch_zone_event_t28_rocket.py $(ZONE_EVENT_DIR)
@@ -852,6 +859,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r44_rod_guru.py $(ZONE_EVENT_DIR)/2_043
 	$(PYTHON) tools/patch_zone_event_r44_ferry.py $(ZONE_EVENT_DIR)/2_043
 	$(PYTHON) tools/patch_zone_event_r34_rod_guru.py $(ZONE_EVENT_DIR)/2_035
+	$(PYTHON) -m scripts.build.patch_route34_story events $(ZONE_EVENT_DIR)
 	$(PYTHON) scripts/dev/verify_r34_rod_guru_zone_event.py $(ZONE_EVENT_DIR)/2_035
 	$(PYTHON) tools/patch_zone_event_t30_ferry.py $(ZONE_EVENT_DIR)/2_086
 	$(PYTHON) tools/patch_zone_event_olivine_rod_guru.py $(ZONE_EVENT_DIR)/2_074
