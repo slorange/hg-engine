@@ -715,12 +715,21 @@ SCR_SEQ_DEPENDENCIES_DIR := armips/scr_seq
 SCR_SEQ_PATCH_ONLY := $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_t20_mom_script0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot2.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot3.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot4.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_falkner_gym_slot5.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_morty_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_pryce_gym_hm_ext.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_jasmine_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_clair_gym_slot13.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_brock_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_misty_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_surge_gym_slot23.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_janine_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_blue_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_erika_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_sabrina_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_blaine_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_bugsy_gym_slot1.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_whitney_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_chuck_gym_slot0.s $(SCR_SEQ_DEPENDENCIES_DIR)/kanto_waters_landings.s
 SCR_SEQ_PATCH_ONLY += $(SCR_SEQ_DEPENDENCIES_DIR)/scr_seq_center_unown.s
 SCR_SEQ_DEPENDENCIES := $(filter-out $(SCR_SEQ_PATCH_ONLY),$(wildcard $(SCR_SEQ_DEPENDENCIES_DIR)/*.s))
+SCR_SEQ_NEW_BARK_PATCH_DEPS := scripts/build/patch_new_bark_intro.py tools/patch_scr_seq_t20_mom.py
+SCR_SEQ_VIOLET_GATE_PATCH := scripts/build/patch_violet_gate_recorder.py
+SCR_SEQ_VIOLET_GATE_PATCH += scripts/build/patch_violet_story.py
+UNION_CAVE_PLATE_PATCH := scripts/build/patch_union_cave_plate.py
+$(SCR_SEQ_NARC): $(UNION_CAVE_PLATE_PATCH) tools/patch_scr_seq_t23_azalea.py
 
-$(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) armips/include/openworld_story_skip_flags.inc include/config.h scripts/build/patch_bug_contest_daily.py scripts/build/patch_route30_apricorn_box.py scripts/build/patch_shard_traders.py scripts/build/patch_field_hm_badges.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py scripts/build/patch_center_rest.py scripts/build/patch_center_researchers.py
+$(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) $(SCR_SEQ_NEW_BARK_PATCH_DEPS) $(SCR_SEQ_VIOLET_GATE_PATCH) armips/include/openworld_story_skip_flags.inc include/config.h scripts/build/patch_bug_contest_daily.py scripts/build/patch_route30_apricorn_box.py scripts/build/patch_route30_story.py tools/append_scr_seq_script.py scripts/build/patch_shard_traders.py scripts/build/patch_field_hm_badges.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py scripts/build/patch_center_rest.py scripts/build/patch_center_researchers.py
 	$(PYTHON) tools/extract_scr_seq_vanilla.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_field_hm_badges.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_bug_contest_daily.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_route30_apricorn_box.py $(SCR_SEQ_DIR)/2_227
+	$(PYTHON) -m scripts.build.patch_route30_story $(SCR_SEQ_DIR)/2_227 $(SCR_SEQ_DIR)/2_229
+	$(PYTHON) -m scripts.build.patch_violet_gate_recorder $(SCR_SEQ_DIR)/2_231
+	$(PYTHON) -m scripts.build.patch_violet_story $(SCR_SEQ_DIR)/2_857 $(SCR_SEQ_DIR)/2_630 $(SCR_SEQ_DIR)/2_018
+	$(PYTHON) -m scripts.build.patch_union_cave_plate header $(SCR_SEQ_DIR)/2_319
 	for file in $(SCR_SEQ_DEPENDENCIES); do $(ARMIPS) $$file; done
 	$(PYTHON) tools/patch_scr_seq_r32_badge.py $(SCR_SEQ_DIR)/2_232
 	$(PYTHON) tools/patch_scr_seq_r42_ferry.py $(SCR_SEQ_DIR)/2_252
@@ -759,12 +768,13 @@ $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) armips/include/op
 	$(PYTHON) tools/patch_scr_seq_olivine_gym_story.py $(SCR_SEQ_DIR)/2_911
 	$(PYTHON) tools/patch_scr_seq_olivine_lighthouse.py $(SCR_SEQ_DIR)/2_066
 	$(PYTHON) tools/patch_scr_seq_t28_rocket.py $(SCR_SEQ_DIR)/2_930
-	$(PYTHON) tools/patch_scr_seq_t23_azalea.py $(SCR_SEQ_DIR)/2_866
+	$(PYTHON) tools/patch_scr_seq_t23_azalea.py $(SCR_SEQ_DIR)/2_866 $(SCR_SEQ_DIR)/2_874
 	$(PYTHON) tools/patch_scr_seq_ss_aqua_weekday.py $(SCR_SEQ_DIR)/2_152 $(SCR_SEQ_DIR)/2_154 $(SCR_SEQ_DIR)/2_153 $(SCR_SEQ_DIR)/2_155
 	$(PYTHON) scripts/build/verify_ss_aqua_weekday_scr_seq.py $(SCR_SEQ_DIR)/2_152 $(SCR_SEQ_DIR)/2_154 $(SCR_SEQ_DIR)/2_153 $(SCR_SEQ_DIR)/2_155
 	$(PYTHON) tools/patch_scr_seq_t20_mom.py $(SCR_SEQ_DIR)/2_845
 	$(PYTHON) tools/patch_scr_seq_start_city.py $(SCR_SEQ_DIR)/2_845
 	$(PYTHON) tools/patch_scr_seq_t20_bedroom.py $(SCR_SEQ_DIR)/2_846
+	$(PYTHON) -m scripts.build.patch_new_bark_intro $(SCR_SEQ_DIR)/2_842
 	$(PYTHON) tools/patch_scr_seq_train.py $(SCR_SEQ_DIR)/2_893 $(SCR_SEQ_DIR)/2_834
 	$(PYTHON) tools/patch_scr_seq_r04_boost.py $(SCR_SEQ_DIR)/2_178
 	$(PYTHON) tools/patch_scr_seq_gym_falkner.py $(SCR_SEQ_DIR)/2_859
@@ -816,6 +826,7 @@ ZONE_EVENT_DEPENDENCIES_DIR := data/zone_event
 ZONE_EVENT_JSONS := $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/*.json)
 ZONE_EVENT_PATCH_SCRIPTS := $(wildcard tools/patch_zone_event*.py) scripts/dev/verify_olivine_rod_guru_zone_event.py scripts/dev/verify_start_city_patch.py scripts/dev/verify_saffron_mart_clerks.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py scripts/build/patch_center_researchers.py
 ZONE_EVENT_PATCH_SCRIPTS += scripts/build/patch_apricorn_trees.py
+ZONE_EVENT_PATCH_SCRIPTS += $(UNION_CAVE_PLATE_PATCH)
 ZONE_EVENT_DEPENDENCIES := tools/zone_event_enc.py tools/extract_zone_event_vanilla.py include/config.h $(ZONE_EVENT_JSONS) $(wildcard $(ZONE_EVENT_DEPENDENCIES_DIR)/events/*) $(ZONE_EVENT_PATCH_SCRIPTS)
 
 $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
@@ -824,6 +835,7 @@ $(ZONE_EVENT_NARC): $(ZONE_EVENT_DEPENDENCIES)
 	$(PYTHON) tools/patch_zone_event_r42_ferry.py $(ZONE_EVENT_DIR)/2_041
 	$(PYTHON) tools/patch_zone_event_r04_boost.py $(ZONE_EVENT_DIR)/2_009
 	$(PYTHON) tools/patch_zone_event_r32_badge.py $(ZONE_EVENT_DIR)/2_033
+	$(PYTHON) -m scripts.build.patch_union_cave_plate events $(ZONE_EVENT_DIR)/2_149
 	$(PYTHON) tools/patch_zone_event_gym_cut_trees.py $(ZONE_EVENT_DIR)/2_051 $(ZONE_EVENT_DIR)/2_052 $(ZONE_EVENT_DIR)/2_352 $(ZONE_EVENT_DIR)/2_114
 	$(PYTHON) tools/patch_zone_event_r35_cut_tree.py $(ZONE_EVENT_DIR)/2_036
 	$(PYTHON) tools/patch_zone_event_blackthorn_gym_clair.py $(ZONE_EVENT_DIR)/2_137

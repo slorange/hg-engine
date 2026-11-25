@@ -1,0 +1,265 @@
+{
+  "bgs": [
+    {
+      "scriptId": 14,
+      "type": 1,
+      "x": 682,
+      "z": 393,
+      "y": 0,
+      "dir": 4
+    },
+    {
+      "scriptId": 8,
+      "type": 1,
+      "x": 693,
+      "z": 396,
+      "y": 0,
+      "dir": 4
+    },
+    {
+      "scriptId": 15,
+      "type": 1,
+      "x": 685,
+      "z": 400,
+      "y": 0,
+      "dir": 4
+    },
+    {
+      "scriptId": 17,
+      "type": 1,
+      "x": 688,
+      "z": 407,
+      "y": 0,
+      "dir": 4
+    },
+    {
+      "scriptId": 8000,
+      "type": 2,
+      "x": 682,
+      "z": 391,
+      "y": 0,
+      "dir": 4
+    }
+  ],
+  "objects": [
+    {
+      "id": 0,
+      "spriteId": 148,
+      "movement": 0,
+      "type": 0,
+      "eventFlag": 400,
+      "scriptId": 1,
+      "facingDirection": 3,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 682,
+      "z": 391,
+      "y": 0
+    },
+    {
+      "id": 1,
+      "spriteId": 325,
+      "movement": 2,
+      "type": 0,
+      "eventFlag": 0,
+      "scriptId": 2,
+      "facingDirection": 2,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 683,
+      "z": 399,
+      "y": 0
+    },
+    {
+      "id": 2,
+      "spriteId": 332,
+      "movement": 3,
+      "type": 0,
+      "eventFlag": 0,
+      "scriptId": 16,
+      "facingDirection": 1,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 1,
+      "yRange": 1,
+      "x": 685,
+      "z": 408,
+      "y": 0
+    },
+    {
+      "id": 3,
+      "spriteId": 1032,
+      "movement": 0,
+      "type": 0,
+      "eventFlag": 417,
+      "scriptId": 6,
+      "facingDirection": 1,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 695,
+      "z": 406,
+      "y": 0
+    },
+    {
+      "id": 4,
+      "spriteId": 101,
+      "movement": 0,
+      "type": 0,
+      "eventFlag": 418,
+      "scriptId": 5,
+      "facingDirection": 1,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 688,
+      "z": 392,
+      "y": 0
+    },
+    {
+      "id": 5,
+      "spriteId": 99,
+      "movement": 0,
+      "type": 0,
+      "eventFlag": 0,
+      "scriptId": 0,
+      "facingDirection": 0,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 703,
+      "z": 384,
+      "y": 0
+    },
+    {
+      "id": 6,
+      "spriteId": 328,
+      "movement": 14,
+      "type": 0,
+      "eventFlag": 638,
+      "scriptId": 18,
+      "facingDirection": 0,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 695,
+      "z": 403,
+      "y": 0
+    },
+    {
+      "id": 7,
+      "spriteId": 365,
+      "movement": 0,
+      "type": 0,
+      "eventFlag": 678,
+      "scriptId": 0,
+      "facingDirection": 1,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 695,
+      "z": 396,
+      "y": 0
+    },
+    {
+      "id": 8,
+      "spriteId": 101,
+      "movement": 0,
+      "type": 0,
+      "eventFlag": 744,
+      "scriptId": 5,
+      "facingDirection": 2,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 694,
+      "z": 400,
+      "y": 0
+    },
+    {
+      "id": 9,
+      "spriteId": 1032,
+      "movement": 0,
+      "type": 0,
+      "eventFlag": 744,
+      "scriptId": 6,
+      "facingDirection": 3,
+      "param0": 0,
+      "param1": 0,
+      "param2": 0,
+      "xRange": 0,
+      "yRange": 0,
+      "x": 693,
+      "z": 400,
+      "y": 0
+    }
+  ],
+  "warps": [
+    {
+      "x": 684,
+      "z": 393,
+      "header": 61,
+      "anchor": 0,
+      "y": 0
+    },
+    {
+      "x": 695,
+      "z": 396,
+      "header": 63,
+      "anchor": 0,
+      "y": 0
+    },
+    {
+      "x": 679,
+      "z": 405,
+      "header": 65,
+      "anchor": 0,
+      "y": 0
+    },
+    {
+      "x": 690,
+      "z": 407,
+      "header": 66,
+      "anchor": 0,
+      "y": 0
+    },
+    {
+      "x": 688,
+      "z": 392,
+      "header": 62,
+      "anchor": 0,
+      "y": 0
+    }
+  ],
+  "coords": [
+    {
+      "scriptId": 11,
+      "x": 688,
+      "z": 392,
+      "w": 1,
+      "h": 1,
+      "y": 0,
+      "val": 0,
+      "var": 16387
+    }
+  ]
+}

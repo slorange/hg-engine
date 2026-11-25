@@ -14,7 +14,6 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 | ID | Symptom | Notes |
 | -- | ------- | ----- |
-| **KB-3** | Cherrygrove guide — Town Map / running-shoes tutorial cutscene still runs; guide NPC is invisible on new saves. | Mom already grants shoes + Town Map. Fix via guide triggers, not hide-flag alone. See [Vanilla cleanup — Mom / intro](#superseded-by-mom-cutscene--starting-grants). |
 | **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
 | **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
 | **KB-9** | Crash when leaving **Mahogany Gym** (returning to the field after exit). | Inconsistent — could not reproduce on retest. Potentially related to KB-23 |
@@ -86,20 +85,14 @@ Removals or script skips for obsolete vanilla content. Prefer disabling a branch
 
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
-| Cherrygrove guide (Town Map, running-shoes tutorial) | Mom grants shoes + Town Map card | Skip or shorten guide **trigger scripts** ([KB-3](#known-bugs)) |
-| Route 30 Apricorn Box NPC | Mom grants Apricorn Box + flag 109 | Remove NPC or make flavour-only |
-| Mom post-cutscene Elm errand line | Open-world intro has no Elm fetch | Replace Elm-fetch dialogue; skip Elm lab gate scripts |
 | Mom **seated** talk after intro | Intro cutscene replaces vanilla Mom flow | Broken menus/dialogue ([KB-6](#known-bugs)) |
-| Vanilla New Bark bedroom starter flow | Starters chosen in Mom cutscene | Bedroom must not re-run vanilla three-ball picker |
 
-### Opening / rival / egg (still mostly vanilla)
+### Remaining opening and rival scripts
 
 | Vanilla content | Why obsolete | Cleanup |
 |-----------------|--------------|---------|
-| Professor Elm lab errand and waiting NPCs | No linear New Bark opening | Flag-on-load or script skip in Elm lab |
-| Rival intro, naming, Route 22/30 battles | Rival removed ([Story-3](DESIGN-STORY.md#rival--remove)) | Strip rival NPCs, naming flow, and battle scripts |
-| Mr. Pokémon / Togepi egg quest | Not part of open-world start | Skip egg give; adjust Violet City references if needed |
-| Professor Oak visit chain | Superseded by direct bedroom wake | Skip Oak trigger scripts on Route 29 / lab |
+| Elm’s Lab dialogue after the intro | The early lab triggers are already bypassed | Replace Elm’s state-6 dialogue that sends the player to Violet’s Mart for the removed Egg. Update the aide’s stolen-Pokémon line. |
+| Remaining rival appearances, naming, and battles | Rival removed ([Story-3](DESIGN-STORY.md#rival--remove)) | Audit the remaining encounters outside the Cherrygrove and Azalea skips and remove obsolete NPCs and triggers. |
 
 ### Superseded services and items
 
@@ -116,8 +109,7 @@ Removals or script skips for obsolete vanilla content. Prefer disabling a branch
 |-----------------|--------------|---------|
 | SquirtBottle / Floria flower-shop chain | Route 36 Sudowoodo removed | Remove or flavour-only Goldenrod SquirtBottle girl |
 | Sudowoodo encounter scripts (Route 36) | Tree hidden via Mom intro flag | Optional: relocate encounter elsewhere later |
-| Stale badge-gate scripts (R32, R36, Mahogany, …) | Replaced by open travel | Scan coord triggers / talk scripts |
-| Kurt’s house entry cutscene (Azalea Town) | Thanks the player for helping against Team Rocket after the Slowpoke Well story is skipped | Remove the entry cutscene and its Pokégear number offer. Keep Kurt’s regular retired-crafter dialogue. |
+| Stale badge-gate scripts (R36, Mahogany, …) | Replaced by open travel | Scan coord triggers / talk scripts |
 
 ### Superseded HM and progression teaching
 

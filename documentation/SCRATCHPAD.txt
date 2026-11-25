@@ -20,6 +20,7 @@ Then you have to rematch the E4 to get Red to appear again.
 
 Places where the game gave a reward we've removed or moved somewhere else that now need a new reward:
 - Sprout Tower
+- Top of Lighthouse (Jasmine's Ampharos)
 - Kimono Girls (Or not?? This is Clear/Tidal bell to summon Ho-oh / Lugia but not catch I think, not surf idk
 - Professor Oak after becoming Champion
 - Professor Elm after becoming Champion (currently master ball)

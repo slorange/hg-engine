@@ -63,7 +63,8 @@ scr_seq_falkner_gym_001:
     add_special_game_stat SCORE_EVENT_BADGE_GET
     settrainerflag TRAINER_BIRD_KEEPER_GS_ROD
     settrainerflag TRAINER_BIRD_KEEPER_GS_ABE
-    setvar VAR_SCENE_VIOLET_CITY_OW, 1
+    clearflag FLAG_HIDE_VIOLET_KIMONO_GIRL
+    setvar VAR_SCENE_VIOLET_CITY_OW, 3
     setflag FLAG_UNK_192
     setvar VAR_SCENE_ELMS_LAB, 6
     setflag FLAG_UNK_0F4

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Route 32 zone_event member 033: remove Zephyr Badge gate south of Violet City."""
+"""Remove the Zephyr Badge gate and SlowpokeTail salesman from Route 32."""
 
 from __future__ import annotations
 
@@ -11,7 +11,8 @@ from pathlib import Path
 BLOCKER_NPC = (1, 2, 477, 305)
 EXIT_COORD = (3, 475, 305)
 
-REMOVE_SPECS = (BLOCKER_NPC,)
+SLOWPOKETAIL_SALESMAN = (10, 4, 462, 416)
+REMOVE_SPECS = (BLOCKER_NPC, SLOWPOKETAIL_SALESMAN)
 
 
 def parse_zone_event(data: bytes) -> tuple[list[list[int]], list[bytes], bytes, list[list[int]]]:
@@ -89,8 +90,8 @@ def patch_member(data: bytearray) -> None:
     new_coords = [c for c in coords if not (c[0] == script and c[1] == x and c[2] == z)]
     removed_coord = len(new_coords) < len(coords)
 
-    if not removed:
-        raise ValueError("Route 32 badge gate object not found in zone_event 033")
+    if len(removed) != len(REMOVE_SPECS):
+        raise ValueError("Route 32 badge gate or SlowpokeTail salesman missing from zone_event 033")
     if not removed_coord:
         raise ValueError("Route 32 badge gate coord trigger not found in zone_event 033")
 

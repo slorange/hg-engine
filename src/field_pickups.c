@@ -23,6 +23,7 @@ typedef struct {
 #define BUNDLE(item, weight, min, max) RANGE(item, item, weight, min, max)
 #define SINGLE(item) BUNDLE(item, 1, 1, 1)
 #define CATEGORY(entries, weight) { entries, sizeof(entries) / sizeof((entries)[0]), weight }
+#define FLAG_HIDE_UNION_CAVE_SPLASH_PLATE 1359
 
 static const PickupEntry sTreasures[] = {
     SINGLE(ITEM_TINY_MUSHROOM), SINGLE(ITEM_BIG_MUSHROOM), SINGLE(ITEM_PEARL),
@@ -152,8 +153,12 @@ void FieldPickup_Run(SCRIPTCONTEXT *ctx, u16 action)
             if (target != NULL && *target != NULL)
                 flag = (*target)->evFlagId;
         }
-        if (flag != 0)
+        if (action == FIELD_PICKUP_CHECK_GROUND && flag == FLAG_HIDE_UNION_CAVE_SPLASH_PLATE) {
+            *item = ITEM_SPLASH_PLATE;
+            *quantity = 1;
+        } else if (flag != 0) {
             PickReward(Sav2_PlayerData_GetProfileAddr(save)->id, flag, item, quantity);
+        }
     }
 
     BAG_DATA *bag = Sav2_Bag_get(save);

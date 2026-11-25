@@ -88,8 +88,8 @@ def resolve_value(value, *, maps: dict[str, int], event_defs: dict[str, int]) ->
 
 def encode_zone_event(data: dict) -> bytes:
     maps = load_maps()
-    header_path = ROOT / data["header"]
-    event_defs = load_defines(header_path)
+    header = data.get("header")
+    event_defs = load_defines(ROOT / header) if header else {}
 
     out = bytearray()
 

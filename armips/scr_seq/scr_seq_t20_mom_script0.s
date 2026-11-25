@@ -7,6 +7,7 @@
 .include "armips/include/vars.s"
 
 .equ ITEM_BIKE, 450
+.equ ITEM_VS_RECORDER, 465
 .equ ITEM_SS_TICKET, 456
 .equ ITEM_PASS, 480
 .equ ITEM_BERRY_POTS, 470
@@ -197,6 +198,12 @@ _mom_begin:
     giveitem_no_check ITEM_PASS, 1
     giveitem_no_check ITEM_BERRY_POTS, 1
     giveitem_no_check ITEM_BIKE, 1
+    hasitem ITEM_VS_RECORDER, 1, VAR_SPECIAL_RESULT
+    compare VAR_SPECIAL_RESULT, 0
+    goto_if_ne _vs_recorder_granted
+    giveitem ITEM_VS_RECORDER, 1, VAR_SPECIAL_RESULT
+_vs_recorder_granted:
+    setvar VAR_UNK_4132, 1
     // Basic berries (Cheri–Persim): silent — no per-item received text
     giveitem ITEM_CHERI_BERRY, 5, VAR_SPECIAL_RESULT
     giveitem ITEM_CHESTO_BERRY, 5, VAR_SPECIAL_RESULT

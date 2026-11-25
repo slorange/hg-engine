@@ -69,6 +69,7 @@ void BuildGeneratedTrainerMovesets(struct PartyPokemon **party, const int *order
 void SetGeneratedTrainerHeldItem(struct PartyPokemon *mon, u8 badgeCount);
 
 #ifdef TRAINER_LEVEL_SCALING
+enum { TRAINER_ID_ELDER_LI = 290 };
 
 /**
  *  @brief pick a uniform random level in [floor, ceiling] inclusive
@@ -116,9 +117,9 @@ static BOOL IsGymLeaderTrainerClass(u8 trainerClass)
 
 
 // Class identity is shared by original fights and rematches.
-static u8 TrainerEncounterStageContext(u8 trainerClass)
+static u8 TrainerEncounterStageContext(u8 trainerClass, BOOL usesLeaderRules)
 {
-    if (IsGymLeaderTrainerClass(trainerClass)) {
+    if (usesLeaderRules) {
         return ENCOUNTER_STAGE_LEADER;
     }
     switch (trainerClass) {
@@ -478,9 +479,10 @@ static u16 GetTrainerSpeciesAtIndex(u16 index, u8 level, u32 branchRoll, u8 stag
     return IsRandomTrainerSpeciesEligible(species) ? species : SPECIES_NONE;
 }
 
-static BOOL IsUnusedTrainerSpecies(u16 species, const u16 *usedSpecies, int usedCount)
+static BOOL IsUnusedTrainerSpecies(u16 species, const u16 *usedSpecies, int usedCount, BOOL excludeBellsproutLine)
 {
-    if (species == SPECIES_NONE) {
+    if (species == SPECIES_NONE
+        || (excludeBellsproutLine && species >= SPECIES_BELLSPROUT && species <= SPECIES_VICTREEBEL)) {
         return FALSE;
     }
     for (int i = 0; i < usedCount; i++) {
@@ -492,7 +494,7 @@ static BOOL IsUnusedTrainerSpecies(u16 species, const u16 *usedSpecies, int used
 }
 
 static u16 PickRandomTrainerSpecies(u8 level, u32 branchRoll, u8 stageContext, u32 typeMask, u8 exceptionClass,
-    const u16 *usedSpecies, int usedCount)
+    const u16 *usedSpecies, int usedCount, BOOL excludeBellsproutLine)
 {
     if (exceptionClass == TRAINERCLASS_KIMONO_GIRL) {
         static const u16 eeveeFamily[] = {
@@ -503,7 +505,7 @@ static u16 PickRandomTrainerSpecies(u8 level, u32 branchRoll, u8 stageContext, u
         int count = 0;
         for (u32 i = 0; i < NELEMS(eeveeFamily); i++) {
             u16 species = eeveeFamily[i];
-            if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount)) {
+            if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount, excludeBellsproutLine)) {
                 available[count++] = species;
             }
         }
@@ -515,7 +517,7 @@ static u16 PickRandomTrainerSpecies(u8 level, u32 branchRoll, u8 stageContext, u
 
     for (int attempt = 0; attempt < 32; attempt++) {
         u16 species = GetTrainerSpeciesAtIndex(gf_rand() % poolSize, level, branchRoll, stageContext, exceptionClass);
-        if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount)) {
+        if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount, excludeBellsproutLine)) {
             if (IsTrainerTypeMatch(species, typeMask, exceptionClass)) {
                 return species;
             }
@@ -533,7 +535,7 @@ static u16 PickRandomTrainerSpecies(u8 level, u32 branchRoll, u8 stageContext, u
             index -= poolSize;
         }
         u16 species = GetTrainerSpeciesAtIndex(index, level, branchRoll, stageContext, exceptionClass);
-        if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount)) {
+        if (IsUnusedTrainerSpecies(species, usedSpecies, usedCount, excludeBellsproutLine)) {
             if (IsTrainerTypeMatch(species, typeMask, exceptionClass)) {
                 return species;
             }
@@ -543,6 +545,12 @@ static u16 PickRandomTrainerSpecies(u8 level, u32 branchRoll, u8 stageContext, u
         }
     }
     return fallback;
+}
+
+static BOOL IsSproutTowerTrainer(u32 trainerId)
+{
+    // Chow, the five sages on the upper floors, and Elder Li.
+    return trainerId == 43 || (trainerId >= 51 && trainerId <= 55) || trainerId == TRAINER_ID_ELDER_LI;
 }
 #endif // TRAINER_RANDOM_SPECIES
 
@@ -595,6 +603,10 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
     u32 additionalflags = 0;
 
 #ifdef TRAINER_LEVEL_SCALING
+#if defined(TRAINER_GYM_LEADER_CAP_LEVEL) || defined(TRAINER_SPECIES_STAGE_ADJUST)
+    BOOL usesLeaderRules = IsGymLeaderTrainerClass(bp->trainer_data[num].tr_type)
+        || bp->trainer_id[num] == TRAINER_ID_ELDER_LI;
+#endif
     u8 trainerLevelCap;
     u8 trainerLevelFloor;
     BOOL gymLeaderUsesCap;
@@ -607,7 +619,10 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         if (generateSpecies) {
             generatedBadgeCount = badgeCount;
             pokecount = 3 + (badgeCount < 3 ? badgeCount : 3);
-            if (bp->trainer_id[BATTLER_ENEMY] != 0 && bp->trainer_id[BATTLER_ENEMY2] != 0) {
+            // Pairs such as the Twins use the same trainer ID and share one party.
+            u32 enemy = bp->trainer_id[BATTLER_ENEMY];
+            u32 enemy2 = bp->trainer_id[BATTLER_ENEMY2];
+            if (enemy != 0 && enemy2 != 0 && enemy != enemy2) {
                 pokecount = (pokecount + 1) / 2;
             }
             bp->trainer_data[num].poke_count = pokecount | randomorder_flag;
@@ -619,7 +634,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
         trainerLevelCap = GetPlayerLevelCapForBadges(badgeCount);
         trainerLevelFloor = trainerLevelCap - 4;
 #if defined(TRAINER_GYM_LEADER_CAP_LEVEL)
-        gymLeaderUsesCap = IsGymLeaderTrainerClass(bp->trainer_data[num].tr_type);
+        gymLeaderUsesCap = usesLeaderRules;
 #else
         gymLeaderUsesCap = FALSE;
 #endif
@@ -640,6 +655,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
 #if defined(TRAINER_RANDOM_SPECIES) && defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
     u8 trainerClass = bp->trainer_data[num].tr_type;
+    BOOL hasSproutTowerSignature = generateSpecies && IsSproutTowerTrainer(bp->trainer_id[num]);
     u8 profileClass = GetTrainerGymClass(bp->trainer_id[num], trainerClass);
     u32 typeMask = GetTrainerTypeMask(profileClass);
     // Gym subordinates borrow the type filter but none of the class exceptions.
@@ -679,8 +695,14 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
             encounterBranchRoll = gf_rand();
             encounterBranchRoll |= (u32)gf_rand() << 16;
             gLastPokemonLevelForMoneyCalc = level;
-            species = PickRandomTrainerSpecies((u8)level, encounterBranchRoll,
-                TrainerEncounterStageContext(trainerClass), typeMask, exceptionClass, generatedSpecies, i);
+            u8 stageContext = TrainerEncounterStageContext(trainerClass, usesLeaderRules);
+            if (hasSproutTowerSignature && i == 0) {
+                species = AdjustEncounterSpeciesForLevel(SPECIES_BELLSPROUT, (u8)level, encounterBranchRoll,
+                    stageContext, FALSE);
+            } else {
+                species = PickRandomTrainerSpecies((u8)level, encounterBranchRoll, stageContext,
+                    typeMask, exceptionClass, generatedSpecies, i, hasSproutTowerSignature);
+            }
             if (species == SPECIES_NONE) {
                 // Retain the relative party order of the slots that were built.
                 int count = 0;
@@ -702,7 +724,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
             ApplyEncounterGenderAfterStageAdjust(mons[i]);
             ResetPartyPokemonAbility(mons[i]);
             ChangeToBattleForm(mons[i]);
-            SetGeneratedTrainerEVs(mons[i], generatedBadgeCount, IsGymLeaderTrainerClass(trainerClass));
+            SetGeneratedTrainerEVs(mons[i], generatedBadgeCount, usesLeaderRules);
             RecalcPartyPokemonStats(mons[i]);
             continue;
         }
@@ -945,7 +967,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
 #if defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
         ApplyEncounterStageAdjustToMon(mons[i], (u8)level, encounterBranchRoll,
-            TrainerEncounterStageContext(bp->trainer_data[num].tr_type), FALSE);
+            TrainerEncounterStageContext(bp->trainer_data[num].tr_type, usesLeaderRules), FALSE);
         ResetPartyPokemonAbility(mons[i]);
 #endif
 
@@ -998,8 +1020,15 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
 #if defined(TRAINER_RANDOM_SPECIES) && defined(TRAINER_LEVEL_SCALING) && defined(TRAINER_SPECIES_STAGE_ADJUST)
     if (generateSpecies) {
+        if (hasSproutTowerSignature && pokecount > 1) {
+            int signatureSlot = 0;
+            while (partyOrder[signatureSlot] != 0) {
+                signatureSlot++;
+            }
+            swap(&partyOrder[signatureSlot], &partyOrder[gf_rand() % pokecount]);
+        }
         BuildGeneratedTrainerMovesets(mons, partyOrder, pokecount, generatedBadgeCount);
-        UpgradeGeneratedTrainerIVs(mons, pokecount, generatedBadgeCount, IsGymLeaderTrainerClass(trainerClass));
+        UpgradeGeneratedTrainerIVs(mons, pokecount, generatedBadgeCount, usesLeaderRules);
         for (i = 0; i < pokecount; i++) {
             TrainerMonHandleFrustration(mons[i]);
             SetGeneratedTrainerHeldItem(mons[i], generatedBadgeCount);
@@ -1009,7 +1038,7 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
 
     for (i = 0; i < pokecount; i++) {
         PokeParty_Add(bp->poke_party[num], mons[partyOrder[i]]);
-        sys_FreeMemoryEz(mons[i]);
+        sys_FreeMemoryEz(mons[partyOrder[i]]);
     }
 
     if (buf != NULL) {

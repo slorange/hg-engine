@@ -1390,7 +1390,7 @@ FLAG_UNK_54B                                              equ 1355
 FLAG_UNK_54C                                              equ 1356
 FLAG_UNK_54D                                              equ 1357
 FLAG_UNK_54E                                              equ 1358
-FLAG_UNK_54F                                              equ 1359
+FLAG_HIDE_UNION_CAVE_SPLASH_PLATE                         equ 1359
 
 
 // Trainer flags
