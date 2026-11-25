@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Patch New Bark player house scr_seq 845: open-world grants in script 0."""
+"""Patch the player house intro and restore seated Mom's savings dialogue."""
 
 from __future__ import annotations
 
@@ -18,7 +18,6 @@ MEMBER_INDEX = 845
 VANILLA_MEMBER = ROOT / f"build/a012_vanilla/2_{MEMBER_INDEX:03d}"
 SCRIPT0_ASM = ROOT / "armips/scr_seq/scr_seq_t20_mom_script0.s"
 SCRIPT0_BIN = ROOT / "build/t20_mom_script0.bin"
-SCRIPT_SLOT = 0
 MAX_TABLE_SCAN = 512
 
 
@@ -92,39 +91,10 @@ def script_offset(data: bytes, index: int) -> int:
 
 def extract_scripts(data: bytes) -> list[bytes]:
     _, count = find_scrdef_end(data)
-    scripts: list[bytes] = []
-    for i in range(count):
-        start = script_offset(data, i)
-        end = script_offset(data, i + 1) if i + 1 < count else len(data)
-        scripts.append(data[start:end])
-    return scripts
-
-
-def scrdef_word(data: bytes) -> int:
-    fd_pos, _ = find_scrdef_end(data)
-    return struct.unpack_from("<I", data, fd_pos)[0]
-
-
-def build_scr_seq(script_bodies: list[bytes], scrdef: int) -> bytes:
-    n = len(script_bodies)
-    table_bytes = (n + 1) * 4
-    script_start = table_bytes - 2
-
-    abs_starts: list[int] = []
-    pos = script_start
-    for body in script_bodies:
-        abs_starts.append(pos)
-        pos += len(body)
-
-    out = bytearray(table_bytes)
-    for i in range(n):
-        rel = abs_starts[i] - (i * 4 + 4)
-        struct.pack_into("<i", out, i * 4, rel)
-    struct.pack_into("<I", out, n * 4, scrdef)
-
-    body = b"".join(script_bodies)
-    out[script_start : script_start + len(body)] = body
-    return bytes(out)
+    starts = [script_offset(data, slot) for slot in range(count)]
+    ordered = sorted(set(starts + [len(data)]))
+    ends = dict(zip(ordered, ordered[1:]))
+    return [data[start:ends[start]] for start in starts]
 
 
 def load_vanilla_member() -> bytearray:
@@ -158,33 +128,45 @@ def load_vanilla_member() -> bytearray:
     return bytearray(VANILLA_MEMBER.read_bytes())
 
 
-def remap_vanilla_msg_indices(body: bytearray) -> None:
-    """545.txt inserts city + starter strings before vanilla index 9; shift npc_msg ids >= 9."""
-    msg_shift = 12  # 545.txt inserts 12 strings before vanilla index 9 (+ fire/water prompts)
-    i = 0
-    while i + 2 < len(body):
-        if body[i] == 0x2D and body[i + 1] == 0x00:
-            mid = body[i + 2]
-            if mid >= 9:
-                body[i + 2] = mid + msg_shift
-            i += 3
-            continue
-        i += 1
-
-
 def patch_script0(data: bytearray, script0: bytes) -> None:
-    scripts = extract_scripts(data)
-    if SCRIPT_SLOT >= len(scripts):
-        raise ValueError(f"script slot {SCRIPT_SLOT} missing (only {len(scripts)} scripts)")
-    for idx in range(len(scripts)):
-        if idx == SCRIPT_SLOT:
-            scripts[idx] = script0
-        else:
-            remapped = bytearray(scripts[idx])
-            remap_vanilla_msg_indices(remapped)
-            scripts[idx] = bytes(remapped)
-    rebuilt = build_scr_seq(scripts, scrdef_word(data))
-    data[:] = rebuilt
+    if find_scrdef_end(data)[1] != 7 or script_offset(data, 1) != 0x126:
+        raise ValueError("Unexpected player house script table")
+
+    # Keep the original bytecode addresses: slot 6 branches back into the
+    # original intro body, and the furniture entries sit before it in the table.
+    if len(data) % 2:
+        data.append(0)
+    struct.pack_into("<i", data, 0, len(data) - 4)
+    data.extend(script0)
+
+    # The intro grants the S.S. Ticket and Pokégear. Skip the vanilla
+    # referrals to Elm and go directly to Mom's savings conversation.
+    dispatch = script_offset(data, 1)
+    if data[dispatch:dispatch + 11] != bytes.fromhex("20 00 64 09 1c 00 01 2b 00 00 00"):
+        raise ValueError("Unexpected seated Mom story check")
+    struct.pack_into("<Hi", data, dispatch, 22, 0x205 - (dispatch + 6))
+
+    # The open-world dialogue bank shifts the stock savings and furniture text
+    # by 30. Patch the known command operands, including the local menu labels.
+    savings_messages = {
+        0x22B: 15, 0x237: 16, 0x259: 17, 0x266: 18, 0x275: 20,
+        0x38D: 26, 0x398: 25, 0x3B5: 17, 0x3C2: 18, 0x3D5: 21,
+        0x3EF: 24, 0x406: 23, 0x411: 21, 0x420: 22, 0x42F: 27, 0x43E: 28,
+    }
+    messages = savings_messages | {
+        script_offset(data, slot) + 6: 33 + slot for slot in range(2, 6)
+    }
+    for offset, message in messages.items():
+        if data[offset:offset + 3] != struct.pack("<HB", 45, message):
+            raise ValueError(f"Unexpected player house dialogue at {offset:#x}")
+        data[offset + 2] = message + 30
+
+    for choice in range(4):
+        offset = 0x288 + 8 * choice
+        label = 29 + choice
+        if data[offset:offset + 8] != struct.pack("<4H", 751, label, 255, choice):
+            raise ValueError(f"Unexpected Mom savings menu choice {choice}")
+        struct.pack_into("<H", data, offset + 2, label + 30)
 
 
 def main(argv: list[str]) -> int:
@@ -210,7 +192,7 @@ def main(argv: list[str]) -> int:
     target.write_bytes(data)
     print(
         f"patched Mom script 0 in {target} ({len(data)} bytes, "
-        f"{len(script0)}-byte script0, rebuilt offset table)"
+        f"{len(script0)}-byte intro, corrected seated Mom and furniture text)"
     )
     return 0
 

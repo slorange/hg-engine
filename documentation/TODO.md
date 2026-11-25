@@ -14,10 +14,7 @@ Regressions in the **current ROM** (not incomplete design from domain sections).
 
 | ID | Symptom | Notes |
 | -- | ------- | ----- |
-| **KB-6** | Mom (player house 1F) — after intro, seated Mom shows broken dialogue or wrong menus. | After open-world intro; [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow). |
 | **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
-| **KB-9** | Crash when leaving **Mahogany Gym** (returning to the field after exit). | Inconsistent — could not reproduce on retest. Potentially related to KB-23 |
-| **KB-23** | **Olivine Gym** — after Jasmine gives the Mineral Badge and you leave the gym, the player is stuck: no movement and no menu. | Reproduced as the **5th** Johto badge. That badge starts the Rocket event. Once the Radio Tower is under siege, Whitney cannot be unlocked. The Rocket `setvar` in `scr_seq_jasmine_gym_slot0.s` only runs when `count_badges` is exactly **3**, so it did not fire. At 5 badges the shared reward block grants HM02 Fly, then the TM menu. The lock is on the way out, so check Olivine’s on-transition / gym-exit script. |
 
 ---
 
@@ -27,6 +24,8 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 | Item | Design | What to test |
 | ---- | ------ | ------------ |
+| **KB-9: Mahogany Gym exit crash** | | Retest leaving Mahogany Gym after the Goldenrod Rocket takeover removal. |
+| **KB-23: Olivine Gym exit softlock** | | Earn Jasmine's badge as the fifth Johto badge. After exiting, verify movement and menu access with the takeover removed. |
 | **Power Plant / Machine Part (partial)** | | Verify that the Power Plant is in the expected state when the Magnet Train is available without the quest. |
 | **Ruins of Alph and roaming Unown** | [World-6](DESIGN-WORLD.md#world-6-unown-collection-quest) | On a fresh run, solve all four picture puzzles and verify each records completion. Check that neither roamer appears before the fourth puzzle and that it unlocks both. Find level 45 `!` in Johto and `?` in Kanto. Verify fleeing, HP and status persistence, the catch cap, and that a knocked-out roamer returns after the next League clear while a caught one stays gone. |
 | **Poké Ball catch rates** | [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) | Test changed balls. Cover Fast and Heavy bracket boundaries, Fast’s legendary beast bonus, Level’s anchors and intermediate ratios, Dusk’s cave floors and outdoor day/night rates, Love’s gender and Egg Group cases, Friend’s family bonus and 200 friendship, Dream’s sleep. Include non-qualifying controls. |
@@ -80,14 +79,14 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Dragon's Den – Weekly training | Remove recurring rival NPC. |
 | Indigo Plateau – Weekly rematches | Remove recurring rival battles. |
 
-#### Remaining Team Rocket
+### Remaining Team Rocket
 
 | Vanilla content | Cleanup |
 |-----------------|---------|
 | Ecruteak City – Dance Theater | Remove Rocket Grunt battle and HM reward |
 | Mahogany Town – Rocket Hideout | Prevent entry to the hideout. |
 
-### Superseded services and items
+### Services and items
 
 | Vanilla content  | Cleanup |
 |-----------------|---------|
@@ -96,7 +95,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Copycat / S.S. Ticket story (partial) | Displaced-interior scripts still vanilla ([Story-1](DESIGN-STORY.md#story-1-starting-city-and-home)) |
 | Steven (Gen 3 Champion) scenes | https://chatgpt.com/c/6b06fca4-b518-83ea-bfc7-d409947410ea |
 
-### Superseded HM and progression teaching
+### HM and progression teaching
 
 Target: Gym Leaders grant badge + TM + HM order ([Battle-3](DESIGN-BATTLES.md#first-defeat-rewards), [World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
 
@@ -106,4 +105,3 @@ Target: Gym Leaders grant badge + TM + HM order ([Battle-3](DESIGN-BATTLES.md#fi
 | Surf – Ecruteak Dance Theater | Remove Rocket Grunt event and HM reward. |
 | Strength – Hiker on Route 42 | Remove HM reward script. |
 | Rock Climb – Professor Oak in Pallet Town | Remove HM reward script. |
-| Headbutt – Ilex Forest move tutor | Remove or replace move tutor. |
