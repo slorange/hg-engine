@@ -125,10 +125,11 @@ Expected to be technically difficult. Potentially affected: Pokémon data struct
 
 Deferred until reliable HGSS map/geometry editing is possible.
 
-## Surface fixes
+## Local map fixes
 
 - Replace the Route 42 ferry NPC with a physical bridge.
 - Remove the Route 4 one-way ledge currently handled by the "ledge bump" NPC.
+- Add a small island in Union Cave B2F at Lapras’s former spot so the plate sits on dry land.
 
 ## Johto underground network
 
@@ -178,6 +179,8 @@ The player picks from a curated list of families for that Gym. The Leader names 
 **Rules:**
 - One family choice per first Gym clear (not rematches unless redesigned later).
 - Hint data must come from the save's ecology tables, not hardcoded vanilla locations.
+- Give the location where the chosen family can be encountered at the lowest level in that save's ecology.
+- If that encounter is above the player's current level cap, add “once you have X badges,” where X is the minimum badge count that raises the cap to the encounter's level or higher.
 - Multi-type Leaders (Whitney, Morty) offer families from **either** qualifying type.
 - Family lists are curated per Leader — not every species of that type in the dex.
 - Blue has no type and will need special handling. Consider giving him a curated list of rare mons unavailable by other gym leaders
@@ -249,6 +252,15 @@ The first time a unique Pokémon enters, it **permanently consumes one roster sl
 
 - Consider allowing each side to commit at most one Pokémon of a given species per battle. Once a species is committed, a second individual of that species would be ineligible for the rest of the battle.
 
+## EXP recipients
+
+At each EXP award, up to as many Pokémon can gain EXP as there are roster slots per side. In a 4v4 battle, up to four of the player's Pokémon receive EXP.
+
+1. Give priority to Pokémon that have entered the battle so far, including any selected from storage.
+2. Fill any remaining EXP slots with eligible Pokémon that have yet to enter, starting at the top of the field party.
+
+Skip Pokémon that are fainted or already at the level cap and continue down the priority list until all EXP slots are filled or no eligible Pokémon remain. For example, if two Pokémon have entered a 4v4 and one is level-capped, the other participant and the first three eligible nonparticipants in field-party order receive EXP.
+
 ## Counter-picking and information
 
 Dynamic counter-picking is intentional. Neither side initially knows the other's full collection. Revealing a counter spends a roster slot — **advantage and commitment**. NPC AI should eventually understand this rather than selecting independently.
@@ -261,7 +273,7 @@ Exact wild-battle UI/selection behaviour is a technical design problem.
 
 ## Field party vs full collection
 
-The six field Pokémon: following mon, EXP defaults ([Battle-4](DESIGN-BATTLES.md#battle-4-experience)), overworld presentation, convenient ordering.
+The six field Pokémon determine the follower, overworld presentation, party order, and which nonparticipants are next in line for EXP.
 
 The entire collection: accessible anywhere including in battle; trainer-battle bench.
 
@@ -430,10 +442,11 @@ The same researchers provide an unlimited supply of TM10 after the player comple
 
 Ideas that do not have their own `Future-*` section yet.
 
+- **Starting city and starter selection** — move both choices from Mom’s script to Oak’s intro so players make them before waking up.
+- **Silver encounters** — add an option to restore Silver at all his vanilla locations outside Team Rocket locations and scenes. Rewrite his dialogue so encounters can be played in any order, and give them independent triggers so they never require or restart other quests such as Mr. Pokémon’s Egg errand or the Farfetch’d puzzle near Azalea. Consider a few additional encounters in Kanto.
 - **Portable resting** — consider a tent, sleeping bag, or camping system that lets players rest outside towns to advance time.
 - **Move Tutor** — make special move tutoring available from any Pokémon Center through the [shared hub](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub).
 - **Specialty Trader** — let players exchange items or currencies for selected rewards through the [shared hub](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub). Inventory and pricing TBD.
-- **Post-battle party heal timing** — [Battle-1](DESIGN-BATTLES.md#recovery) expects recovery as soon as a battle ends. Initial release applies heal on the **first overworld step** (workaround for battle-overlay crashes). Move heal to **end of battle / return to field** so the party, follower, and back-to-back trainer fights match design (no heal gap on turn-in-place or chained trainers).
 - **Game Corner Coin income** — [prize menus](DESIGN-DATA.md#data-1-game-corner-prize-pools) work today and all prizes cost 50 Coins during playtesting. Players currently earn Coins through **Voltorb Flip**. Potential sources include buying Coins for ¥, trainer payouts, the Amulet Coin, Voltorb Flip changes, and department-store bundles. Exchange rates, UI, and tiered prize pricing are TBD.
 - **Move balance** — every type needs viable early-, mid-, and late-game attacks; consider thematic type changes (e.g. Cut → Grass or Bug) and buffs to weak 20 BP moves.
 - **Pokémon learnsets** — every species should have appropriate STAB through progression plus some coverage options.
