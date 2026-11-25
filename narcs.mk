@@ -723,12 +723,13 @@ SCR_SEQ_NEW_BARK_PATCH_DEPS := scripts/build/patch_new_bark_intro.py tools/patch
 SCR_SEQ_VIOLET_GATE_PATCH := scripts/build/patch_violet_gate_recorder.py
 SCR_SEQ_VIOLET_GATE_PATCH += scripts/build/patch_violet_story.py
 UNION_CAVE_PLATE_PATCH := scripts/build/patch_union_cave_plate.py
-$(SCR_SEQ_NARC): $(UNION_CAVE_PLATE_PATCH) tools/patch_scr_seq_t23_azalea.py
+$(SCR_SEQ_NARC): $(UNION_CAVE_PLATE_PATCH) tools/patch_scr_seq_t23_azalea.py scripts/build/patch_route36_rock_smash.py
 
 $(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) $(SCR_SEQ_NEW_BARK_PATCH_DEPS) $(SCR_SEQ_VIOLET_GATE_PATCH) armips/include/openworld_story_skip_flags.inc include/config.h scripts/build/patch_bug_contest_daily.py scripts/build/patch_route30_apricorn_box.py scripts/build/patch_route30_story.py tools/append_scr_seq_script.py scripts/build/patch_shard_traders.py scripts/build/patch_field_hm_badges.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py scripts/build/patch_center_rest.py scripts/build/patch_center_researchers.py
 	$(PYTHON) tools/extract_scr_seq_vanilla.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_field_hm_badges.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_bug_contest_daily.py $(SCR_SEQ_DIR)
+	$(PYTHON) -m scripts.build.patch_route36_rock_smash $(SCR_SEQ_DIR)/2_243
 	$(PYTHON) scripts/build/patch_route30_apricorn_box.py $(SCR_SEQ_DIR)/2_227
 	$(PYTHON) -m scripts.build.patch_route30_story $(SCR_SEQ_DIR)/2_227 $(SCR_SEQ_DIR)/2_229
 	$(PYTHON) -m scripts.build.patch_violet_gate_recorder $(SCR_SEQ_DIR)/2_231
