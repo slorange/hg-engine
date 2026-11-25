@@ -63,6 +63,7 @@ BOOL CheckDefenderItemEffectOnHit(void *bw, struct BattleStruct *sp, int *seq_no
             && (sp->waza_status_flag & MOVE_STATUS_SUPER_EFFECTIVE)) {
             sp->battlerIdTemp = sp->defence_client;
             sp->item_work = sp->battlemon[sp->defence_client].item;
+            sp->hp_calc_work = BattleDamageDivide(sp->battlemon[sp->defence_client].maxhp, itemPower);
             seq_no[0] = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
             ret = TRUE;
         }

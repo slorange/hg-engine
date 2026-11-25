@@ -23930,7 +23930,7 @@ const MoveSourceEntry sMoveSource[NUM_OF_MOVES + 1] = {
             .fullName = "Snowscape",
         },
         .data = {
-            .effect = MOVE_EFFECT_WEATHER_SNOW,
+            .effect = MOVE_EFFECT_WEATHER_HAIL,
             .split = SPLIT_STATUS,
             .power = 0,
             .type = TYPE_ICE,

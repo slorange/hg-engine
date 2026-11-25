@@ -13535,7 +13535,7 @@ const ITEMDATA __data[] =
 {
     ITEM_PRICE(80),
     .holdEffect = HOLD_EFFECT_HP_RESTORE_SE,
-    .holdEffectParam = 4,
+    .holdEffectParam = 2,
     .pluckEffect = 0,
     .flingEffect = 0,
     .flingPower = 10,

@@ -29,12 +29,9 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | ---- | ------ | ------------ |
 | **Power Plant / Machine Part (partial)** | | Verify that the Power Plant is in the expected state when the Magnet Train is available without the quest. |
 | **KB-25 — Blaine’s Gym trainers** | [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties) | Battle Cary, Waldo, Merle, Lowell, Linden, and Daniel. Verify that their generated teams use the Gym’s Fire-type pool. |
-| **Thief / Covet loot to bag** | | **Thief / Covet** in a wild battle — stolen item goes to the bag, original held item re-equipped. |
 | **Ruins of Alph and roaming Unown** | [World-6](DESIGN-WORLD.md#world-6-unown-collection-quest) | On a fresh run, solve all four picture puzzles and verify each records completion. Check that neither roamer appears before the fourth puzzle and that it unlocks both. Find level 45 `!` in Johto and `?` in Kanto. Verify fleeing, HP and status persistence, the catch cap, and that a knocked-out roamer returns after the next League clear while a caught one stays gone. |
 | **Poké Ball catch rates** | [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) | Test changed balls. Cover Fast and Heavy bracket boundaries, Fast’s legendary beast bonus, Level’s anchors and intermediate ratios, Dusk’s cave floors and outdoor day/night rates, Love’s gender and Egg Group cases, Friend’s family bonus and 200 friendship, Dream’s sleep. Include non-qualifying controls. |
 | **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#ground-and-hidden-items) | Playtest a visible ball and hidden spot, then revisit after collecting. Check that a full Bag leaves the spot available and that a retry gives the same bundle. Spot-check the randomized Ice Path pickup and fixed Mt. Moon Moon Stone. |
-| **Lansat Berry held effect** | [Items-5](DESIGN-ITEMS.md#items-5-berry-economy) | Lower a holder without Gluttony or Focus Energy to 25% HP or below. Verify that the berry is consumed and raises critical-hit rate. The held-item branch in `src/battle/battle_item.c` calls the generic sharp stat-raise script, while the Fling branch calls the dedicated crit-raise script. Check for an unintended stat change. |
-| **Enigma Berry held effect** | [Items-5](DESIGN-ITEMS.md#items-5-berry-economy) | Survive a super-effective damaging hit and verify that the berry is consumed and restores one quarter of max HP, limited by missing HP. Use a neutral hit as a control. The hit handler in `src/individual/CheckDefenderItemEffectOnHit.c` selects the heal script without setting its HP calculation value. |
 
 ---
 
@@ -100,6 +97,7 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Olivine Gym gossip NPCs (476/477) | [Story § Olivine Gym](TODO.md#olivine-gym-lighthouse-gossip-npcs) — zone **080**, not city **074** |
 | Copycat / S.S. Ticket story (partial) | Displaced-interior scripts still vanilla ([Story-1](DESIGN-STORY.md#story-1-starting-city-and-home)) |
 | SquirtBottle / Floria flower-shop chain | Remove or flavour-only Goldenrod SquirtBottle girl |
+| Steven (Gen 3 Champion) scenes | https://chatgpt.com/c/6b06fca4-b518-83ea-bfc7-d409947410ea |
 
 ### Superseded HM and progression teaching
 

@@ -502,7 +502,7 @@ BOOL LONG_CALL TryUseHeldItem(void *bw, struct BattleStruct *ctx, int battlerId)
                 boost /= 2;
             }
             if (ctx->battlemon[battlerId].hp <= (s32)(ctx->battlemon[battlerId].maxhp) / boost && !(ctx->battlemon[battlerId].condition2 & STATUS2_FOCUS_ENERGY)) {
-                script = BATTLE_SUBSCRIPT_HELD_ITEM_SHARPLY_RAISE_STAT;
+                script = BATTLE_SUBSCRIPT_HELD_ITEM_RAISE_CRIT;
                 ret = TRUE;
             }
             break;
