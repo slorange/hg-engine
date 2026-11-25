@@ -83,10 +83,6 @@ scr_seq_chuck_gym_leader:
     addvar VAR_MIDGAME_BADGES, 1
     add_special_game_stat SCORE_EVENT_BADGE_GET
     setvar VAR_UNK_4116, 1
-    compare VAR_MIDGAME_BADGES, 3
-    goto_if_ne _skip_rocket_scene
-    setvar VAR_SCENE_ROCKET_TAKEOVER, 1
-_skip_rocket_scene:
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
     count_badges VAR_SPECIAL_x8000

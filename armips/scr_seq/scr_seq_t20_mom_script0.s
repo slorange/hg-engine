@@ -7,6 +7,7 @@
 .include "armips/include/vars.s"
 
 .equ ITEM_BIKE, 450
+.equ ITEM_FASHION_CASE, 435
 .equ ITEM_VS_RECORDER, 465
 .equ ITEM_SS_TICKET, 456
 .equ ITEM_PASS, 480
@@ -188,6 +189,9 @@ _mom_begin:
     play_fanfare SEQ_ME_ITEM
     wait_fanfare
     UpgradePokegear 1
+    register_pokegear_card 2
+    setflag FLAG_GOT_RADIO_CARD
+    setflag FLAG_UNK_318
     play_fanfare SEQ_ME_POKEGEAR_REGIST
     wait_fanfare
     register_gear_number PHONE_CONTACT_MOTHER
@@ -198,6 +202,9 @@ _mom_begin:
     giveitem_no_check ITEM_PASS, 1
     giveitem_no_check ITEM_BERRY_POTS, 1
     giveitem_no_check ITEM_BIKE, 1
+    giveitem ITEM_FASHION_CASE, 1, VAR_SPECIAL_RESULT
+    setflag FLAG_HIDE_GOLDENROD_UNDERGROUND_FRIEND
+    setvar VAR_UNK_40F8, 1
     hasitem ITEM_VS_RECORDER, 1, VAR_SPECIAL_RESULT
     compare VAR_SPECIAL_RESULT, 0
     goto_if_ne _vs_recorder_granted

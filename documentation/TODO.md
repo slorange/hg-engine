@@ -86,7 +86,6 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 |-----------------|---------|
 | Ecruteak City – Dance Theater | Remove Rocket Grunt battle and HM reward |
 | Mahogany Town – Rocket Hideout | Prevent entry to the hideout. |
-| Goldenrod City | Remove Rockets in town, underground and radio tower |
 
 ### Superseded services and items
 
@@ -95,7 +94,6 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | Cianwood pharmacy free Secret Medicine | Remove free give; optional flavour dialogue only |
 | Olivine Gym gossip NPCs (476/477) | [Story § Olivine Gym](TODO.md#olivine-gym-lighthouse-gossip-npcs) — zone **080**, not city **074** |
 | Copycat / S.S. Ticket story (partial) | Displaced-interior scripts still vanilla ([Story-1](DESIGN-STORY.md#story-1-starting-city-and-home)) |
-| SquirtBottle / Floria flower-shop chain | Remove or flavour-only Goldenrod SquirtBottle girl |
 | Steven (Gen 3 Champion) scenes | https://chatgpt.com/c/6b06fca4-b518-83ea-bfc7-d409947410ea |
 
 ### Superseded HM and progression teaching
@@ -107,6 +105,5 @@ Target: Gym Leaders grant badge + TM + HM order ([Battle-3](DESIGN-BATTLES.md#fi
 | Fly – Chuck's wife in Cianwood | Remove or Replace HM reward script. |
 | Surf – Ecruteak Dance Theater | Remove Rocket Grunt event and HM reward. |
 | Strength – Hiker on Route 42 | Remove HM reward script. |
-| Rock Smash – NPC on Route 36 | Remove HM reward script. |
 | Rock Climb – Professor Oak in Pallet Town | Remove HM reward script. |
 | Headbutt – Ilex Forest move tutor | Remove or replace move tutor. |

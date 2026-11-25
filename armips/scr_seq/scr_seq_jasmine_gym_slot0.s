@@ -64,11 +64,6 @@ scr_seq_jasmine_gym_001:
     givebadge BADGE_MINERAL
     addvar VAR_MIDGAME_BADGES, 1
     add_special_game_stat SCORE_EVENT_BADGE_GET
-    count_badges VAR_SPECIAL_x8000
-    compare VAR_SPECIAL_x8000, 3
-    goto_if_ne _skip_rocket_scene
-    setvar VAR_SCENE_ROCKET_TAKEOVER, 1
-_skip_rocket_scene:
     buffer_players_name 0
     npc_msg MSG_POST_BATTLE_2
     wait_button
