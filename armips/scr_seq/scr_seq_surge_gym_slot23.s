@@ -32,6 +32,23 @@
 .equ MSG_REMATCH_ACCEPT, 21
 .equ MSG_REMATCH_WON, 22
 .equ MSG_FAREWELL, 23
+.equ MSG_HINT_OFFER, 24
+.equ MSG_HINT_FIRST_WILD, 25
+.equ MSG_HINT_ROTOM, 36
+.equ MSG_HINT_SKIP, 37
+.equ MSG_HINT_LAND, 38
+.equ MSG_HINT_BADGES, 45
+.equ MSG_HINT_CHAMPION, 46
+.equ MSG_HINT_GAME_CORNER, 47
+.equ HINT_WILD_COUNT, MSG_HINT_ROTOM - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT + 1
+.equ HINT_HAS_GAME_CORNER, 1
+.equ HINT_HAS_RESEARCH, 0
+// 255 leaves the dialogue window alone when the list cursor changes.
+.equ HINT_HAS_GENERIC_PRIZES, 0
+.equ NO_LIST_HIGHLIGHT, 255
+
+.equ CMD_GYM_POKEMON_HINT, 11
 
 .equ BADGES_TM73, 2
 .equ BADGES_TM25, 8
@@ -40,6 +57,38 @@
 .if GYM_BADGE_COUNT_FIELD_REWARDS == 0
 .error "Build via tools/patch_scr_seq_gym_surge.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
+
+.macro remove_surge_fence_objects
+    setflag FLAG_UNK_31A // Hide all six collision objects on future visits.
+    hide_person 0
+    hide_person 1
+    hide_person 2
+    hide_person 3
+    hide_person 4
+    hide_person 5
+.endmacro
+
+.create "build/surge_gym_slot22.bin", 0
+    goto_if_set FLAG_UNK_31A, _transition_end
+    // Transition scripts run without the task environment used by 0x8000 vars.
+    CheckBadge BADGE_THUNDER, VAR_TEMP_x4000
+    compare VAR_TEMP_x4000, 1
+    goto_if_eq _repair_defeated_gym
+
+    // Vanilla transition hides the collision objects' sprites while the puzzle is active.
+    VanishOverworld 0
+    VanishOverworld 1
+    VanishOverworld 2
+    VanishOverworld 3
+    VanishOverworld 4
+    VanishOverworld 5
+_transition_end:
+    end
+
+_repair_defeated_gym:
+    remove_surge_fence_objects
+    end
+.close
 
 .create "build/surge_gym_slot23.bin", 0
 
@@ -63,6 +112,8 @@ scr_seq_surge_gym_leader:
     wait_button
     closemsg
     GiveBadge BADGE_THUNDER
+    vermilion_gym_lock_action 0, 3
+    remove_surge_fence_objects
     addvar VAR_UNK_4135, 1
     add_special_game_stat SCORE_EVENT_BADGE_GET
     buffer_players_name 0
@@ -73,6 +124,8 @@ scr_seq_surge_gym_leader:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_TM_CHOOSE
     touchscreen_menu_hide
     count_badges VAR_SPECIAL_x8000
@@ -134,7 +187,7 @@ _bag_full:
     end
 
 _already_beaten:
-    goto_if_unset FLAG_GOT_TM34_FROM_LT_SURGE, _tm_grant
+    goto_if_unset FLAG_GOT_TM34_FROM_LT_SURGE, _tm_menu
 _rematch_offer:
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
@@ -149,6 +202,7 @@ _rematch_offer:
     lockall
     faceplayer
     npc_msg MSG_REMATCH_WON
+    wait_button
     closemsg
     clearflag FLAG_GOT_TM34_FROM_LT_SURGE
     goto _tm_grant
@@ -164,5 +218,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

@@ -40,6 +40,26 @@
 .error "Build via tools/patch_scr_seq_gym_jasmine.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
 
+.equ MSG_HINT_OFFER, 33
+.equ MSG_HINT_FIRST_WILD, 34
+.equ MSG_HINT_SKIP, 41
+.equ MSG_HINT_LAND, 42
+.equ MSG_HINT_BADGES, 49
+.equ MSG_HINT_CHAMPION, 50
+.equ MSG_HINT_RESEARCH, 51
+.equ MSG_HINT_FOSSIL_SOURCE, 52
+.equ MSG_HINT_FOSSIL_RESTORE, 53
+.equ MSG_HINT_GOLDENROD, 54
+.equ MSG_HINT_CELADON, 55
+.equ HINT_WILD_COUNT, MSG_HINT_SKIP - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT
+.equ HINT_HAS_GAME_CORNER, 0
+.equ HINT_HAS_RESEARCH, 1
+.equ HINT_HAS_FOSSILS, 1
+.equ HINT_HAS_GENERIC_PRIZES, 1
+.equ NO_LIST_HIGHLIGHT, 255
+.equ CMD_GYM_POKEMON_HINT, 19
+
 .create "build/jasmine_gym_slot0.bin", 0
 
 scr_seq_jasmine_gym_001:
@@ -72,6 +92,8 @@ scr_seq_jasmine_gym_001:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     count_badges VAR_SPECIAL_x8000
     compare VAR_SPECIAL_x8000, BADGES_TM74
     goto_if_lt _only_tm47
@@ -128,7 +150,7 @@ _bag_full:
     end
 
 _already_beaten:
-    goto_if_unset FLAG_GOT_TM23_FROM_JASMINE, _tm_grant
+    goto_if_unset FLAG_GOT_TM23_FROM_JASMINE, _tm_menu
 _rematch_offer:
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
@@ -158,5 +180,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

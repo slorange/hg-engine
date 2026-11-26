@@ -5,6 +5,8 @@
 #include "constants/ability.h"
 #include "constants/battle_constants.h"
 #include "constants/encounter_tables.h"
+#include "constants/file.h"
+#include "constants/maps.h"
 #include "constants/generated/ecology_compat.h"
 #include "ecology/ecology_compat_access.h"
 #include "ecology/ecology_compat_view.h"
@@ -12,12 +14,84 @@
 #include "ecology/ecology_generate.h"
 #include "ecology/ecology_save.h"
 #include "encounter_location.h"
+#include "encounter_overlay.h"
 #include "pokemon.h"
 #include "rtc.h"
 #include "save.h"
 #include "types.h"
 
 u8 LONG_CALL MapHeader_GetWildEncounterBank(u32 mapId);
+
+static BOOL EcologyHintBankHasMethod(u8 bank, u8 method)
+{
+    // Headbutt availability comes from the ecology location's tree group.
+    if (method == ECOLOGY_METHOD_HEADBUTT)
+        return TRUE;
+
+    // EncounterData starts with rates for walk, Surf, Rock Smash, then the rods.
+    static const u8 rateOffsets[] = {0, 1, 3, 4, 5, 2};
+    u8 rate = 0;
+    ReadFromNarcMemberByIdPair(&rate, ARC_WILD_ENCOUNTERS, bank, rateOffsets[method], sizeof(rate));
+    return rate != 0;
+}
+
+BOOL EcologyFindHint(u16 species, struct EcologyHint *hint)
+{
+    const EcologyWorldSave *eco = EcologySaveGetMutable(SaveBlock2_get());
+    u16 slotBases[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];
+    u16 family;
+    hint->level = 0;
+    if (!EcologySaveIsValid(eco) || !EcologyCompatSessionEnsure()
+        || EcologyGenBuildSlotLayout(slotBases) == 0) {
+        return FALSE;
+    }
+
+    for (family = 0; family < ECOLOGY_NUM_FAMILIES; family++) {
+        if (ECO_FAMILY_INFO(family).baseSpecies == species)
+            break;
+    }
+    if (family == ECOLOGY_NUM_FAMILIES)
+        return FALSE;
+
+    for (u8 group = 0; group < ECOLOGY_NUM_GROUPS; group++) {
+        EcologyGroupInfo info = ECO_GROUPS(group);
+        for (u8 method = 0; method < ECOLOGY_METHOD_COUNT; method++) {
+            u16 index = group * ECOLOGY_METHOD_COUNT + method;
+            u16 base = EcologyGenSlotLayoutBase(group, method, slotBases);
+            u8 count = ECO_METHOD_SLOTS(index);
+            u8 slot;
+            for (slot = 0; slot < count; slot++) {
+                if (base + slot < eco->slotCount && eco->familyIds[base + slot] == family)
+                    break;
+            }
+            if (slot == count)
+                continue;
+
+            for (u8 i = 0; i < info.encdataCount; i++) {
+                u8 bank = gEcologyCompatView->groupEncdataIds[info.encdataOffset + i];
+                u8 cap = GetWildLevelCapForEncounterBank(bank);
+                // Use the ordinary roll floor so a rare baby roll doesn't mask a badge gate.
+                u8 level = (u8)(cap * 9 / 10);
+                level = level > 4 ? level - 2 : 2;
+                if (hint->level && (level > hint->level
+                    || (level == hint->level && method >= hint->method))) {
+                    continue;
+                }
+                if (!EcologyHintBankHasMethod(bank, method))
+                    continue;
+                for (u16 map = 0; map < MAP_ID_MAX; map++) {
+                    if (MapHeader_GetWildEncounterBank(map) == bank) {
+                        hint->mapId = map;
+                        hint->method = method;
+                        hint->level = level;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return hint->level != 0;
+}
 
 static s8 EcologyFindGroupForEncBank(u8 encBank)
 {
@@ -215,6 +289,15 @@ u16 EcologyApplyGrassSpeciesOverride(u16 vanillaSpecies)
     method = (u8)(methodScratch - 1u);
 
     return EcologyApplySpeciesOverrideForMethod(vanillaSpecies, method);
+}
+
+#else
+
+#include "encounter_overlay.h"
+
+BOOL EcologyFindHint(UNUSED u16 species, UNUSED struct EcologyHint *hint)
+{
+    return FALSE;
 }
 
 #endif

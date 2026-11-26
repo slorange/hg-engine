@@ -35,6 +35,7 @@ Other places we need rewards:
 
 
 Items and things that need a location
+- Starter Pokemon
 - Amulet Coin (likely still available in goldenrod)
 - Soothe Bell (likely still available in National Park (BCC))
 - Dowsing MCHN* (vanilla NPC in the house beside Ecruteak Gym)

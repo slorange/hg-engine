@@ -35,6 +35,23 @@
 .equ MSG_REMATCH_ACCEPT, 17
 .equ MSG_REMATCH_WON, 18
 .equ MSG_FAREWELL, 19
+.equ MSG_HINT_OFFER, 20
+.equ MSG_HINT_FIRST_WILD, 21
+.equ MSG_HINT_SKIP, 47
+.equ MSG_HINT_LAND, 48
+.equ MSG_HINT_BADGES, 55
+.equ MSG_HINT_CHAMPION, 56
+.equ MSG_HINT_RESEARCH, 57
+.equ MSG_HINT_FOSSIL_SOURCE, 58
+.equ MSG_HINT_FOSSIL_RESTORE, 59
+.equ HINT_WILD_COUNT, MSG_HINT_SKIP - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT
+.equ HINT_HAS_GAME_CORNER, 0
+.equ HINT_HAS_RESEARCH, 1
+.equ HINT_HAS_FOSSILS, 1
+.equ HINT_HAS_GENERIC_PRIZES, 0
+.equ NO_LIST_HIGHLIGHT, 255
+.equ CMD_GYM_POKEMON_HINT, 13
 
 // Minimum badges (incl. Boulder) to offer each TM; Sandstorm / Rock Tomb / Rock Polish always.
 // Gated entries are added in ascending order so one early exit skips the rest.
@@ -80,6 +97,8 @@ scr_seq_brock_gym_leader:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_TM_CHOOSE
     touchscreen_menu_hide
     count_badges VAR_SPECIAL_x8000
@@ -146,7 +165,7 @@ _bag_full:
     end
 
 _already_beaten:
-    goto_if_unset FLAG_GOT_TM80_FROM_BROCK, _tm_grant
+    goto_if_unset FLAG_GOT_TM80_FROM_BROCK, _tm_menu
 _rematch_offer:
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
@@ -161,6 +180,7 @@ _rematch_offer:
     lockall
     faceplayer
     npc_msg MSG_REMATCH_WON
+    wait_button
     closemsg
     // Cleared so a bag-full rematch reward is retried on the next talk instead of offering another battle.
     clearflag FLAG_GOT_TM80_FROM_BROCK
@@ -177,5 +197,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

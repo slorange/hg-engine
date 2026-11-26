@@ -141,10 +141,15 @@ See [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties) for th
 | Clair | Dragon + Water | Blaine | Rhyhorn line |
 | Brock | Rock + Ground | Brock | Vulpix line |
 | Blue | **All Types** | Pryce | Seel line |
-| Lance | Dragon + Flying  | Sabrina | Venonat line |
+| Lance | Dragon | Sabrina | Venonat line |
 | |  | Karen | Oddish and Gastly line |
 | |  | Koga | Pineco line |
 | |  | Bruno | Onix line | 
+
+### Clair and Lance roster filters
+
+- **Clair** draws from Dragon types and the Tentacool, Horsea, Magikarp, Lapras, Totodile, and Feebas families. Blackthorn Gym trainers draw from Dragon and Water types.
+- **Champion Lance** draws from Dragon types and the Charmander, Aerodactyl, Magikarp, Gligar, Skarmory, Yanma, and Zubat families.
 
 ## Trainer class type pools
 

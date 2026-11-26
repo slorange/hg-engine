@@ -33,11 +33,33 @@
 .error "Build via tools/patch_scr_seq_gym_pryce.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
 
+.equ MSG_HINT_OFFER, 18
+.equ MSG_HINT_FIRST_WILD, 19
+.equ MSG_HINT_SKIP, 27
+.equ MSG_HINT_LAND, 28
+.equ MSG_HINT_BADGES, 35
+.equ MSG_HINT_CHAMPION, 36
+.equ MSG_HINT_RESEARCH, 37
+.equ MSG_HINT_FOSSIL_SOURCE, 38
+.equ MSG_HINT_FOSSIL_RESTORE, 39
+.equ MSG_HINT_GOLDENROD, 40
+.equ MSG_HINT_CELADON, 41
+.equ HINT_WILD_COUNT, MSG_HINT_SKIP - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT
+.equ HINT_HAS_GAME_CORNER, 0
+.equ HINT_HAS_RESEARCH, 1
+.equ HINT_HAS_FOSSILS, 1
+.equ HINT_HAS_GENERIC_PRIZES, 1
+.equ NO_LIST_HIGHLIGHT, 255
+.equ CMD_GYM_POKEMON_HINT, 18
+
 .create "build/pryce_gym_hm_ext.bin", 0
 
 scr_seq_pryce_gym_hm_ext:
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     count_badges VAR_SPECIAL_x8000
     compare VAR_SPECIAL_x8000, BADGES_TM72
     goto_if_lt _only_tm07
@@ -98,7 +120,7 @@ _bag_full:
 // Vanilla badge-owned branch is retargeted here by patch_scr_seq_gym_pryce.py.
 // The old photo script lived in bytes the TM trampoline already overwrites.
 _pryce_revisit:
-    goto_if_unset FLAG_GOT_TM07_FROM_PRYCE, _tm_grant
+    goto_if_unset FLAG_GOT_TM07_FROM_PRYCE, _tm_menu
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
     compare VAR_SPECIAL_RESULT, 1
@@ -127,5 +149,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

@@ -34,6 +34,26 @@
 .error "Build via tools/patch_scr_seq_gym_misty.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
 
+.equ MSG_HINT_OFFER, 24
+.equ MSG_HINT_FIRST_WILD, 25
+.equ MSG_HINT_SKIP, 50
+.equ MSG_HINT_LAND, 51
+.equ MSG_HINT_BADGES, 58
+.equ MSG_HINT_CHAMPION, 59
+.equ MSG_HINT_RESEARCH, 60
+.equ MSG_HINT_FOSSIL_SOURCE, 61
+.equ MSG_HINT_FOSSIL_RESTORE, 62
+.equ MSG_HINT_GOLDENROD, 63
+.equ MSG_HINT_CELADON, 64
+.equ HINT_WILD_COUNT, MSG_HINT_SKIP - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT
+.equ HINT_HAS_GAME_CORNER, 0
+.equ HINT_HAS_RESEARCH, 1
+.equ HINT_HAS_FOSSILS, 1
+.equ HINT_HAS_GENERIC_PRIZES, 1
+.equ NO_LIST_HIGHLIGHT, 255
+.equ CMD_GYM_POKEMON_HINT, 21
+
 .create "build/misty_gym_slot0.bin", 0
 
 scr_seq_misty_gym_leader:
@@ -66,6 +86,8 @@ scr_seq_misty_gym_leader:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_TM_CHOOSE
     touchscreen_menu_hide
     count_badges VAR_SPECIAL_x8000
@@ -113,7 +135,7 @@ _bag_full:
     end
 
 _already_beaten:
-    goto_if_unset FLAG_GOT_TM03_FROM_MISTY, _tm_grant
+    goto_if_unset FLAG_GOT_TM03_FROM_MISTY, _tm_menu
 _rematch_offer:
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
@@ -143,5 +165,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

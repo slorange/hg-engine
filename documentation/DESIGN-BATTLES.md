@@ -115,12 +115,16 @@ After a Leader battle:
 
 1. **Badge**
 2. **HM** — field ability for this badge count when that row grants a new unlock ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves))
-3. **TM** — player picks one from that Leader's pool they qualify for by badge count ([Items-2 § Gym TMs](DESIGN-ITEMS.md#gym-tms))
-4. **Wild Pokémon Hint** ([Future-5](DESIGN-FUTURE.md#future-5-gym-leader-ecology-hints))
+3. **Pokémon hint** — offered by every Leader except Blue
+4. **TM** — player picks one from that Leader's pool they qualify for by badge count ([Items-2 § Gym TMs](DESIGN-ITEMS.md#gym-tms))
+
+## Pokémon hints
+
+After a first clear or a rematch win, choose one family from the Leader’s curated list. Wild hints use the save’s [ecology](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle) and give the location and method with the lowest ordinary encounter level. If that level exceeds the catch cap, the Leader names the minimum badge count needed. Hints can also point to Game Corner prizes or [Research Society rewards and fossil restoration](DESIGN-FUTURE.md#future-11-pokémon-research-society).
 
 ## Rematches
 
-Gym Leaders can be rematched without a hard limit. Each rematch offers the same **TM choice** as the first win.
+Gym Leaders can be rematched without a hard limit. Each rematch win offers the same [Pokémon hint](#pokémon-hints) and **TM choice** as the first win.
 
 **Rematches** use the current badge tier and cap, not the tier at first defeat.
 

@@ -7,7 +7,7 @@
 #include "types.h"
 #endif
 
-#define ECOLOGY_COMPAT_VERSION 0x03A010D9u
+#define ECOLOGY_COMPAT_VERSION 0x5E051D92u
 
 #define ECOLOGY_TIME_MORNING  (1u << 0)
 #define ECOLOGY_TIME_DAY      (1u << 1)
@@ -96,7 +96,7 @@ typedef struct EcologyGroupBucketEntry {
 
 #define ECOLOGY_NUM_FAMILIES 177
 #define ECOLOGY_NUM_GROUPS 93
-#define ECOLOGY_NUM_EDGES 8996
+#define ECOLOGY_NUM_EDGES 9050
 #define ECOLOGY_NUM_REQUIRED_ROUTES 26
 
 extern const EcologyFamilyInfo sEcologyFamilyInfo[ECOLOGY_NUM_FAMILIES];

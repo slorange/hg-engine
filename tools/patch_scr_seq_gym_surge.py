@@ -2,8 +2,8 @@
 """Patch Vermilion Gym Lt. Surge (scr_seq 778): badge-count HM + TM choice menu.
 
 Retail warp (Vermilion City zone_event 051) loads MAP_T06GYM0101 (365), not MAP_T08GYM0101 (480).
-Leader = slot 23 (script 24). Level scripts member 551 → on-transition script 23 = slot 22 — leave vanilla.
-Slots 0–22: trash-can gymmick — do not patch.
+Leader = slot 23 (script 24). Level scripts member 551 → on-transition script 23 = slot 22.
+Slots 0–21 retain the vanilla trash-can puzzle.
 """
 
 from __future__ import annotations
@@ -23,10 +23,12 @@ from patch_scr_seq_gym_falkner import (
 ROOT = Path(__file__).resolve().parents[1]
 MEMBER_INDEX = 778
 SCRIPT_SLOT = 23
+TRANSITION_SLOT = 22
 VANILLA_MEMBER = ROOT / f"build/a012_vanilla/2_{MEMBER_INDEX:03d}"
 PYTHON = ROOT / ".venv/bin/python"
 SLOT_ASM = ROOT / "armips/scr_seq/scr_seq_surge_gym_slot23.s"
 SLOT_BIN = ROOT / "build/surge_gym_slot23.bin"
+TRANSITION_BIN = ROOT / "build/surge_gym_slot22.bin"
 
 
 def load_vanilla_member() -> bytearray:
@@ -75,6 +77,7 @@ def main(argv: list[str]) -> int:
         raise ValueError(f"empty slot blob {SLOT_BIN}")
 
     data = bytearray(vanilla)
+    patch_script_slot(data, TRANSITION_SLOT, TRANSITION_BIN.read_bytes())
     patch_script_slot(data, SCRIPT_SLOT, slot_blob)
     target.write_bytes(data)
     print(

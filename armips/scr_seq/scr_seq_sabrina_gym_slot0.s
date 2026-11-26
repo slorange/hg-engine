@@ -41,6 +41,26 @@
 .error "Build via tools/patch_scr_seq_gym_sabrina.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
 
+.equ MSG_HINT_OFFER, 19
+.equ MSG_HINT_FIRST_WILD, 20
+.equ MSG_HINT_SKIP, 40
+.equ MSG_HINT_LAND, 41
+.equ MSG_HINT_BADGES, 48
+.equ MSG_HINT_CHAMPION, 49
+.equ MSG_HINT_RESEARCH, 50
+.equ MSG_HINT_FOSSIL_SOURCE, 51
+.equ MSG_HINT_FOSSIL_RESTORE, 52
+.equ MSG_HINT_GOLDENROD, 53
+.equ MSG_HINT_CELADON, 54
+.equ HINT_WILD_COUNT, MSG_HINT_SKIP - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT
+.equ HINT_HAS_GAME_CORNER, 0
+.equ HINT_HAS_RESEARCH, 1
+.equ HINT_HAS_FOSSILS, 1
+.equ HINT_HAS_GENERIC_PRIZES, 1
+.equ NO_LIST_HIGHLIGHT, 255
+.equ CMD_GYM_POKEMON_HINT, 24
+
 .create "build/sabrina_gym_slot0.bin", 0
 
 scr_seq_sabrina_gym_leader:
@@ -78,6 +98,8 @@ scr_seq_sabrina_gym_leader:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     // Skill Swap and Psych Up are both unlocked at 0 badges, so the menu always opens.
     count_badges VAR_SPECIAL_x8000
     non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_TM_CHOOSE
@@ -141,7 +163,7 @@ _bag_full:
     end
 
 _already_beaten:
-    goto_if_unset FLAG_GOT_TM48_FROM_SABRINA, _tm_grant
+    goto_if_unset FLAG_GOT_TM48_FROM_SABRINA, _tm_menu
 _rematch_offer:
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
@@ -171,5 +193,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

@@ -10,7 +10,7 @@
 | ------- | ------ |
 | [Story-1. Starting City and Home](#story-1-starting-city-and-home) | IMPLEMENTED |
 | [Story-2. Starter Pokémon and Intro Flow](#story-2-starter-pokémon-and-intro-flow) | IMPLEMENTED |
-| [Story-3. Story and Script Policy](#story-3-story-and-script-policy) | DECIDED |
+| [Story-3. Story and Script Policy](#story-3-story-and-script-policy) | PARTIALLY IMPLEMENTED |
 
 ---
 
@@ -52,7 +52,7 @@ After Professor Oak / name / gender, the player still wakes in the **bedroom** (
 
 # Story-3. Story and Script Policy
 
-**Status: DECIDED**
+**Status: PARTIALLY IMPLEMENTED**
 
 Vanilla HeartGold and SoulSilver cast the player as the **sole protagonist** of a fixed script: the world waits on Elm’s errand, a named rival, Team Rocket set pieces, and badge order implied by roadblocks and fetch quests. [Index-2 — Game Identity](DESIGN.md#index-2-game-identity) reframes the romhack as a **trainer’s road trip** — you are **one of many travelers**, not the center of a plot the whole region revolves around. That only works if the map and NPCs stop assuming **New Bark → linear opening → prescribed Gym route**.
 
@@ -88,6 +88,5 @@ No rival character: no naming, scripted intro, mandatory early battles, or badge
 2. **No story-gated Gym approach** — no Cut/Surf/Strength/Whirlpool (or Rocket/badge-count) blocking the Gym door or Leader; HMs are granted by Gym Leaders per badge order ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves), [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)). HM/Flash/dungeon gating ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)) and endgame badge guards ([World-2](DESIGN-WORLD.md#world-2-routes-and-content-gating)) still apply outside Gyms. Wild **levels** use [Wilds-1](DESIGN-WILDS.md#wilds-1-starting-city-distance-based-wild-level-caps), not badge guard tiles.
 3. **Internal Gym puzzles** — trash cans, maze, etc. stay unless they hard-require an HM.
 
-Per-Leader gate removals and remaining script strips are tracked in **TODO.md**; policy above is the design source. Starting city must not depend on Elm/rival/New Bark flags.
 
 ---

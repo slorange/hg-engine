@@ -19,6 +19,8 @@ The user playtests **`test.nds`** at the repo root in DeSmuME — not `build/out
 docker run --rm -v "e:/Code/hg-engine:/hg-engine" -w /hg-engine hg-engine make test.nds -j24
 ```
 
+**Clean-build encounter packer collision:** `narcs.mk` and `overlays.mk` both define `ENCOUNTER_OBJS`. If `o2narc` receives several overlay objects and prints its usage, run `make '--eval=build/narc/encounters.narc: ENCOUNTER_OBJS := build/Encounters.o' test.nds -j24` inside Docker. The failed recipe can overwrite generated `build/encounter/api.o` with the object for `data/Encounters.c`; if so, remove that one generated object before retrying. An encounter overlay linker overflow immediately after this failure is a clue to check that object.
+
 ## Contents
 
 Implementation recipes only — link **to** [DESIGN.md](DESIGN.md) / CHANGELOG / [TODO.md](TODO.md) for context; **design docs do not link** to HACK-NOTES, CHANGELOG, or TODO ([agents.mdc § Design docs](../.cursor/rules/agents.mdc#design-docs-and-agent-boundaries)). **Known bugs:** [TODO.md § Known bugs](TODO.md#known-bugs) symptoms + [§ below](#known-bugs-todomd). **Agents:** `.cursor/rules/agents.mdc`.
@@ -99,7 +101,7 @@ Symptom list: [TODO.md § Known bugs](TODO.md#known-bugs). Implementation detail
 
 **Design:** [Story-1](DESIGN-STORY.md#story-1-starting-city-and-home), [Story-2](DESIGN-STORY.md#story-2-starter-pokémon-and-intro-flow).
 
-**Related recipe:** [Open-world starting inventory](#open-world-starting-inventory-new-saves) — only script slot **0** rebuilt; scr_seq **845** other slots + **545** text remap may not match sitting-script branches.
+**Cause and patch:** scr_seq **845** has out-of-order entries. Slot **6** branches backward into the original intro body, and rebuilding the table as consecutive slot bodies lost a furniture entry. In `tools/patch_scr_seq_t20_mom.py`, append the new intro and repoint slot **0**, preserving original offsets. Zone **060** Mom object **0** uses script ID **2** (slot **1**), which now jumps directly to the savings conversation. Text bank **545** shifts the stock savings messages and four local menu labels by **30**. Furniture slots **2–5** use indices **65–68**. Verify the savings menu in game after the intro. [Open-world starting inventory](#open-world-starting-inventory-new-saves)
 
 ### KB-10 — Surf wild encounters (wrong species)
 
@@ -578,7 +580,7 @@ Surge Gym interior keeps the trash-can puzzle (no cut trees there).
 | Chuck | member **877**, slot **0** — `scr_seq_chuck_gym_slot0.s`, text **574** labels **15–19**, rematch **20–23**. Brick Break only below **4** badges, Bulk Up + Drain Punch @**4**, Focus Punch @**6**, Focus Blast @**8**. Rematch **718**. `FLAG_GOT_TM01_FROM_CHUCK` (**186**). Still increments `VAR_UNK_4134` and sets `VAR_SCENE_ROCKET_TAKEOVER` when that counter is **3**. On-transition slot **1** (level scripts **650**) — leave vanilla. `VAR_TEMP_x4000 == 0` still shows the training line |
 | Brock (Kanto) | member **752**, slot **0** — `scr_seq_brock_gym_slot0.s`, text **462**, trainer **253** / rematch **720**; TM choice + badge gating + rematch — [Pewter Gym](#pewter-gym--brock--gym-tm-choice-pool-prototype). `FLAG_GOT_TM80_FROM_BROCK` (**383**) = took a Brock TM. On-transition slot **3** (level scripts **525**) — leave vanilla |
 | Misty (Kanto) | member **760**, slot **0** — `scr_seq_misty_gym_slot0.s`, text **469** (pre **8**, post **9**, badge **10**, revisit **13**, labels **17–19**, rematch **20–23**); trainer **254** / rematch **721**; TM03 / TM18 / TM55 (Brine **4** badges) — [Cerulean Gym](#cerulean-gym--misty--gym-tm-choice-pool). `FLAG_GOT_TM03_FROM_MISTY` (**384**). On-transition slot **3** (level scripts **533**) — leave vanilla; slots **4–7** = Machine Part / Rocket (story skip flags) — do not patch |
-| Lt. Surge (Kanto) | member **778**, slot **23** (script **24**) — `scr_seq_surge_gym_slot23.s`, text **485**; trainer **255** / rematch **722** — [Vermilion Gym](#vermilion-gym--lt-surge--gym-tm-choice-pool). **`MAP_T06GYM0101` (365)** is the playable interior (warp from Vermilion **051**). `MAP_T08GYM0101` (480) / scr **809** is **Fuchsia Gym (Janine)**, not Vermilion. `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**). On-transition **script 23** = slot **22** (level scripts **551**); slots **0–22** = trash-can puzzle — patch slot **23** only |
+| Lt. Surge (Kanto) | member **778**, slot **23** (script **24**) — `scr_seq_surge_gym_slot23.s`, text **485**; trainer **255** / rematch **722** — [Vermilion Gym](#vermilion-gym--lt-surge--gym-tm-choice-pool). **`MAP_T06GYM0101` (365)** is the playable interior (warp from Vermilion **051**). `MAP_T08GYM0101` (480) / scr **809** is **Fuchsia Gym (Janine)**, not Vermilion. `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**). On-transition **script 23** = slot **22** (level scripts **551**) repairs fence collision for Thunder Badge holders; slots **0–21** retain the trash-can puzzle |
 | Janine (Kanto) | member **809**, slot **1** (script **2**) — `scr_seq_janine_gym_slot1.s`, text **514** (pre **0**, post **1**, badge **2**, revisit **4**, labels **19–21**, rematch **22–25**); trainer **257** / rematch **724**; TM06 always, TM84 @**6**, TM36 @**8**. Below **6** badges the menu is skipped and TM06 is given directly — [Fuchsia Gym](#fuchsia-gym--janine--gym-tm-choice-pool). `FLAG_GOT_TM84_FROM_JANINE` (**301**). On-transition slot **0** (level scripts **582** = `02 01 00`) — leave vanilla |
 | Blue (Kanto) | member **743**, slot **0** — `scr_seq_blue_gym_slot0.s`, text **454**; trainer **261** / rematch **727**; Swagger always, Safeguard @**2**, Double Team @**4**, Swords Dance @**6**, Trick Room @**8**. Below **2** badges the menu is skipped — [Viridian Gym](#viridian-gym--blue--gym-tm-choice-pool). `FLAG_GOT_TM92_FROM_BLUE` (**382**). On-transition slot **2** — flag flip only |
 | Erika (Kanto) | member **786**, slot **0** — `scr_seq_erika_gym_slot0.s`, text **492**; trainer **256** / rematch **723**; Bullet Seed always, Grass Knot @**2**, Giga Drain @**4**, Solar Beam + Energy Ball @**8**. Below **2** badges the menu is skipped — [Celadon Gym](#celadon-gym--erika--gym-tm-choice-pool). `FLAG_GOT_TM19_FROM_ERIKA` (**292**). On-transition slot **2** (level scripts **559**) — leave vanilla. Do not rewrite zone **352** (cut trees) |
@@ -799,12 +801,14 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 | What | Where |
 |------|--------|
-| Leader script | `armips/scr_seq/scr_seq_surge_gym_slot23.s` → `build/surge_gym_slot23.bin` |
+| Leader and transition scripts | `armips/scr_seq/scr_seq_surge_gym_slot23.s` → `build/surge_gym_slot23.bin` and `build/surge_gym_slot22.bin` |
 | Patch / verify | `tools/patch_scr_seq_gym_surge.py build/a012/2_778`; `verify_falkner_gym_hm_patch.py` |
 | Text | `data/text/485.txt` — leader lines **0–5**; trash / fence strings **6–15**; appended **16–24** (TM labels + rematch) |
 | Vanilla facts | `BADGE_THUNDER`, rematch **722**, `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**) |
 
 **Pool:** Shock Wave / Charge Beam (**0**); Thunder Wave (**2**); Thunder (**8**); Thunderbolt (**10**). Five-entry menu (same pattern as Brock).
+
+The first win opens the fences and removes all six collision objects (**0–5**), setting their shared hide flag (**794**). On transition, slot **22** repairs earlier saves that have the Thunder Badge without that flag. The vanilla transition behavior and trash-can puzzle remain active before the first win.
 
 ### Fuchsia Gym — Janine + Gym TM choice pool
 
@@ -929,7 +933,7 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 
 **Gym subordinate IDs:** Falkner 29, 50 · Bugsy 10, 67–69 · Whitney 5, 22, 70, 71 · Morty 46, 89, 493, 494 · Chuck 156, 157, 159, 251 · Pryce 480–484 · Clair 110–112, 117, 119 · Brock 308, 685 · Misty 297, 298, 676–678 · Lt. Surge 232, 337, 396 · Erika 326, 336, 346, 356 · Janine 83, 84, 136, 183 · Sabrina 230, 368, 369, 415 · Blaine 689–694 · Blue 681–684. Jasmine has no subordinate battles.
 
-**Class filters:** `GetTrainerTypeMask()` in `src/field/enemy_party.c` holds the mapping. Unmapped classes and Blue use All. Juggler accepts Psychic and the Voltorb line outside Gym overrides. Clair's Gym uses Dragon/Water and Champion Lance uses Dragon/Flying for now.
+**Class filters:** `GetTrainerTypeMask()` in `src/field/enemy_party.c` holds the mapping. Unmapped classes and Blue use All. Juggler accepts Psychic and the Voltorb line outside Gym overrides. Clair and Champion Lance use Dragon plus their respective [family exceptions](DESIGN-DATA.md#clair-and-lance-roster-filters). Blackthorn Gym trainers use Dragon/Water.
 
 **Phase 4:** Family exceptions expand the eligible pool for the named opponent and their rematches. They use the ordinary level-based stage selector, and Gym subordinates inherit only the Gym type filter. Brock allows Vulpix, Jasmine allows Mareep, Misty allows Togepi, Blaine allows Rhyhorn, Pryce allows Seel, and Sabrina allows Venonat. Karen allows Oddish (including Bellossom) and Gastly, Koga allows Pineco, and Bruno allows Onix. Juggler's Voltorb exception uses the same family check. Misty can roll Togepi itself at low levels even though ordinary trainer stage adjustment skips babies.
 
@@ -1298,6 +1302,14 @@ Vanilla OnLoad (`scr_seq_T28_005`) **starts** the takeover (`VAR_SCENE_ROCKET_TA
 
 **Status:** Mahogany rocket-skip **verified in-game** (Aug 2026). Expect the same multi-layer trap on other Johto outdoor blockers.
 
+### Goldenrod, Route 34, and Ilex Forest
+
+- **Goldenrod:** `patch_goldenrod_story.py` keeps `VAR_SCENE_ROCKET_TAKEOVER` (**0x4077**) at **5** in the city, Radio Tower 1F, and Underground basements. Chuck, Jasmine, and Pryce’s custom rewards no longer reactivate it. Whitney’s door blocker and Radio Tower appearance use hide flag **792**. Mom sets that flag and separately registers Radio Card **2**. The gym-exit symptoms in KB-9 and KB-23 still need retesting.
+- **Department Store elevator:** scr_seq **905** uses menu return value **5** (label **122**) for B1F, which routes to warehouse map **200**. Value **6** (label **121**) goes to the 6F Atrium. Follow the selection branch to its destination before changing a menu entry.
+- **Route 34:** the Day Care introduction starts outdoors (zone **035**, script ID **4**, scene **0x408E**) and continues indoors (scr_seq **238**). The final outdoor script and the indoor scene register the four phone numbers. The rod guru patch rewrites member **237** from vanilla, so run `patch_route34_story.py` afterward or it will restore the outdoor scenes and Power Herb reward.
+- **Ilex:** map **117**, zone **114**, scr_seq **092**, text **115**. The Kimono Girl (object **12**) uses script ID **16** on interaction. The Headbutt demonstration remains coordinate script ID **17** at **(37, 42)** and only plays while **0x40EA** is **0**. A save that has already seen it needs an earlier save to retest the trigger. The tutor’s interaction in slot **2** checks for four badges after the opening line.
+- **Dialogue input and followers:** `wait_button` also accepts D-pad input and turns the player. Use `wait_ab_press` when dialogue should only advance with A or B, and avoid trailing page breaks when the script already waits for input. Opcode **729** tests whether the follower is active. Opcode **730** can return true when no follower is active.
+
 ### Two layers of “remove this guy”
 
 | Layer | What it does | Mahogany rocket example |
@@ -1472,7 +1484,7 @@ So **`0300.png` is not a “free” custom slot** — gfx **300** is **Venusaur*
 
 **Loop fix:** keep vanilla init header **618** (OnFrame `var==0`, like retail). Script **0** sets `VAR_SCENE_PLAYERS_HOUSE_1F = 1` on the first frame before any `wait`, so the cutscene cannot re-trigger. Do **not** move this cutscene to OnTransition — that runs too early and crashes on stairs.
 
-**KB-6:** after the cutscene, **seated Mom** talk is broken (weird menus / wrong conversation). Script **0** only — other **845** slots + **545** text remap may not match vanilla sitting behaviour ([TODO.md KB-6](TODO.md#known-bugs)).
+**Seated Mom:** [KB-6](#kb-6--seated-mom-dialogue-after-intro) documents slot **1**, the savings menu, and the furniture text mapping.
 
 **Grants:** Rebuilt script **0** inserts items/shoes/dex after UI unlock fanfares. `std_give_item_verbose` already waits for A per item — do not add extra `wait_button` between grants; one `closemsg` after **all** item grants (including HM02) clears the window.
 
@@ -1622,7 +1634,7 @@ build/test_center_hub
 
 **Change a home door** by checking its outdoor event member, warp index, coordinates, original interior header, and the reciprocal interior exit in `build/a032_vanilla`. Update **`sHomeDoors`**, **`EXPECTED_DOORS`**, and the **`_set_home_dynamic_warp`** branch and warp constant in Mom’s script. Verify that member **060** still has exactly two warps.
 
-**Dialogue:** Mom intro greet **545** strings **0–1**. Post-cutscene talk still uses vanilla Elm errand strings until [Story-3](DESIGN-STORY.md#story-3-story-and-script-policy). Cutscene skips bag/card/save/options `npc_msg`s; fanfares + flags unlock touch menu.
+**Dialogue:** Mom intro uses bank **545** strings **0–1**. Slot **1** routes to savings after the cutscene. Fanfares and flags unlock the touch menu during the intro.
 
 **Note:** Test with **new saves** after ROM changes. Story hooks (Elm, rival) still vanilla until Phase 4.
 
@@ -2119,7 +2131,7 @@ Playtest normal grass and contest battles from near/far starts, including babies
 
 ## Per-save wild ecology shuffle (Wilds-6)
 
-**Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Deferred addon scope (Gym hints, flash persistence, other methods): [Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
+**Design:** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Gym hints use this save data. See [Battle-3 § Pokémon hints](DESIGN-BATTLES.md#pokémon-hints). This section is the **implementation recipe** for authoring, prebuild compat, offline assignment tests, and the in-ROM PoC.
 
 **Status (Nov 2026):** **Compat + Mom gen + encounter hooks + flash persistence shipped** — Mom gen freeze fixed ([KB-14](#kb-14--mom-ecology-gen-freeze-overlay-131-compat-pointer)). World generated on **`SCRIPT_NEW_CMD_ECOLOGY_GENERATE`**; seed = trainer ID; **`EcologyWorldSave`** in **`SAVE_MISC`**. **`SetEncountData_Ecology`** @ **`7B64`** rolls species for **grass, Surf, rods, Headbutt, Rock Smash** ([KB-12](#kb-12--wild-ecology-encounter-hooks-setencountdata)). Placeholder species **Wooloo** (level 5) until **`WildEncounterFinalizeForEncount`** runs. **Still open:** swarms/Safari/special policy, real mon creation (drop placeholder **`PokeParaSet`**). Lead-overwrite bug fixed ([KB-13 / KB-17](#kb-13--kb-17--wild-encounter-overwrote-the-party-lead-fixed)). **Cave land time:** **`ECOLOGY_GROUP_FLAG_CAVE_IGNORE_LAND_TIME`** (Cave habitat only; encounter roll in **`ecology_encounter.c`**). **Pairing** + **Required on Route** + baseline ladder: [ecology.md](ecology.md).
 
@@ -2281,7 +2293,7 @@ Many **cities** carry a `Types` tag but **no land** slots (surf/headbutt only); 
 Re-run audit after eco-fam edits:  
 `python scripts/local/_typed_pool_audit.py` (session helper; move to `scripts/dev/` if promoted).
 
-**Still open (Wilds-6):** swarms policy, Gym hints ([Future-5](DESIGN-FUTURE.md#future-5-wild-ecology--remaining-scope)). Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
+**Still open (Wilds-6):** swarms policy. Runtime reads **eco-bin** NARC only — not field-overlay CSR ([Overlay 129 budget](#overlay-129-32-kib-engine-overlay)).
 
 ### SAVE_MISC flash (`EcologyWorldSave`)
 

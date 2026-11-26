@@ -37,6 +37,26 @@
 .error "Build via tools/patch_scr_seq_gym_bugsy.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
 
+.equ MSG_HINT_OFFER, 14
+.equ MSG_HINT_FIRST_WILD, 15
+.equ MSG_HINT_SKIP, 37
+.equ MSG_HINT_LAND, 38
+.equ MSG_HINT_BADGES, 45
+.equ MSG_HINT_CHAMPION, 46
+.equ MSG_HINT_RESEARCH, 47
+.equ MSG_HINT_FOSSIL_SOURCE, 48
+.equ MSG_HINT_FOSSIL_RESTORE, 49
+.equ MSG_HINT_GOLDENROD, 50
+.equ MSG_HINT_CELADON, 51
+.equ HINT_WILD_COUNT, MSG_HINT_SKIP - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT
+.equ HINT_HAS_GAME_CORNER, 0
+.equ HINT_HAS_RESEARCH, 1
+.equ HINT_HAS_FOSSILS, 1
+.equ HINT_HAS_GENERIC_PRIZES, 1
+.equ NO_LIST_HIGHLIGHT, 255
+.equ CMD_GYM_POKEMON_HINT, 15
+
 .create "build/bugsy_gym_slot1.bin", 0
 
 scr_seq_bugsy_gym_leader:
@@ -72,6 +92,8 @@ scr_seq_bugsy_gym_leader:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     count_badges VAR_SPECIAL_x8000
     compare VAR_SPECIAL_x8000, BADGES_TM89
     goto_if_lt _only_tm62
@@ -123,7 +145,7 @@ _bag_full:
     end
 
 _already_beaten:
-    goto_if_unset FLAG_GOT_TM89_FROM_BUGSY, _tm_grant
+    goto_if_unset FLAG_GOT_TM89_FROM_BUGSY, _tm_menu
 _rematch_offer:
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
@@ -153,5 +175,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

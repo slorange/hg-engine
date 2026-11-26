@@ -38,6 +38,26 @@
 .error "Build via tools/patch_scr_seq_gym_falkner.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
 
+.equ MSG_HINT_OFFER, 27
+.equ MSG_HINT_FIRST_WILD, 28
+.equ MSG_HINT_SKIP, 53
+.equ MSG_HINT_LAND, 54
+.equ MSG_HINT_BADGES, 61
+.equ MSG_HINT_CHAMPION, 62
+.equ MSG_HINT_RESEARCH, 63
+.equ MSG_HINT_FOSSIL_SOURCE, 64
+.equ MSG_HINT_FOSSIL_RESTORE, 65
+.equ MSG_HINT_GOLDENROD, 66
+.equ MSG_HINT_CELADON, 67
+.equ HINT_WILD_COUNT, MSG_HINT_SKIP - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT
+.equ HINT_HAS_GAME_CORNER, 0
+.equ HINT_HAS_RESEARCH, 1
+.equ HINT_HAS_FOSSILS, 1
+.equ HINT_HAS_GENERIC_PRIZES, 1
+.equ NO_LIST_HIGHLIGHT, 255
+.equ CMD_GYM_POKEMON_HINT, 14
+
 .create "build/falkner_gym_slot1.bin", 0
 
 scr_seq_falkner_gym_001:
@@ -77,6 +97,8 @@ scr_seq_falkner_gym_001:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     // Aerial Ace and Pluck are both unlocked at 0 badges, so the menu always opens.
     count_badges VAR_SPECIAL_x8000
     non_npc_msg_extern MSG_BANK_GYM_REWARDS, MSG_GYM_TM_CHOOSE
@@ -127,7 +149,7 @@ _bag_full:
     end
 
 _already_beaten:
-    goto_if_unset FLAG_GOT_TM51_FROM_FALKNER, _tm_grant
+    goto_if_unset FLAG_GOT_TM51_FROM_FALKNER, _tm_menu
 _rematch_offer:
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
@@ -157,5 +179,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

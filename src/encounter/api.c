@@ -18,6 +18,7 @@ extern u32 BugContest_GenerateEcologyEncounter(FieldSystem *fsys, struct PartyPo
 extern void BugContest_InitEcologyEntries(BugContest *contest);
 extern u16 BugContest_JudgeEcologyMon(BugContest *contest, struct PartyPokemon *mon);
 extern void BugContest_AssignPrize(BugContest *contest);
+extern BOOL EcologyFindHint(u16 species, struct EcologyHint *hint);
 
 const struct EncounterOverlayApi gEncounterOverlayApi __attribute__((section(".encounter_api"))) = {
     ENCOUNTER_OVERLAY_MAGIC,
@@ -39,4 +40,5 @@ const struct EncounterOverlayApi gEncounterOverlayApi __attribute__((section(".e
     BugContest_InitEcologyEntries,
     BugContest_JudgeEcologyMon,
     BugContest_AssignPrize,
+    EcologyFindHint,
 };

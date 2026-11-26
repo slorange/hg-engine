@@ -37,6 +37,26 @@
 .error "Build via tools/patch_scr_seq_gym_janine.py (sets GYM_BADGE_COUNT_FIELD_REWARDS)"
 .endif
 
+.equ MSG_HINT_OFFER, 26
+.equ MSG_HINT_FIRST_WILD, 27
+.equ MSG_HINT_SKIP, 48
+.equ MSG_HINT_LAND, 49
+.equ MSG_HINT_BADGES, 56
+.equ MSG_HINT_CHAMPION, 57
+.equ MSG_HINT_RESEARCH, 58
+.equ MSG_HINT_FOSSIL_SOURCE, 59
+.equ MSG_HINT_FOSSIL_RESTORE, 60
+.equ MSG_HINT_GOLDENROD, 61
+.equ MSG_HINT_CELADON, 62
+.equ HINT_WILD_COUNT, MSG_HINT_SKIP - MSG_HINT_FIRST_WILD
+.equ HINT_SKIP, HINT_WILD_COUNT
+.equ HINT_HAS_GAME_CORNER, 0
+.equ HINT_HAS_RESEARCH, 1
+.equ HINT_HAS_FOSSILS, 1
+.equ HINT_HAS_GENERIC_PRIZES, 1
+.equ NO_LIST_HIGHLIGHT, 255
+.equ CMD_GYM_POKEMON_HINT, 23
+
 .create "build/janine_gym_slot1.bin", 0
 
 scr_seq_janine_gym_leader:
@@ -75,6 +95,8 @@ scr_seq_janine_gym_leader:
     wait_fanfare
 .include "armips/include/gym_badge_hm_reward.inc"
 _tm_grant:
+    call _pokemon_hint
+_tm_menu:
     count_badges VAR_SPECIAL_x8000
     compare VAR_SPECIAL_x8000, BADGES_TM84
     goto_if_lt _only_tm06
@@ -126,7 +148,7 @@ _bag_full:
     end
 
 _already_beaten:
-    goto_if_unset FLAG_GOT_TM84_FROM_JANINE, _tm_grant
+    goto_if_unset FLAG_GOT_TM84_FROM_JANINE, _tm_menu
 _rematch_offer:
     npc_msg MSG_REMATCH_OFFER
     yesno VAR_SPECIAL_RESULT
@@ -158,5 +180,7 @@ _white_out:
     white_out
     releaseall
     end
+
+.include "armips/include/gym_pokemon_hint_menu.inc"
 
 .close

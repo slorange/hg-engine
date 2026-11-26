@@ -10,6 +10,12 @@
 #define ENCOUNTER_OVERLAY_ADDRESS 0x023C0400u
 #define ENCOUNTER_OVERLAY_MAGIC 0x454E4301u
 
+struct EcologyHint {
+    u16 mapId;
+    u8 method;
+    u8 level;
+};
+
 struct EncounterOverlayApi {
     u32 magic;
     void (*cacheCap)(FieldSystem *fsys); // CacheWildLevelCapFromFieldSystem
@@ -30,6 +36,7 @@ struct EncounterOverlayApi {
     void (*contestEntries)(BugContest *contest); // BugContest_InitEcologyEntries
     u16 (*contestJudge)(BugContest *contest, struct PartyPokemon *mon); // BugContest_JudgeEcologyMon
     void (*contestPrize)(BugContest *contest); // BugContest_AssignPrize
+    BOOL (*findHint)(u16 species, struct EcologyHint *hint);
 };
 
 const struct EncounterOverlayApi *EncounterOverlay_Open(BOOL *owned);

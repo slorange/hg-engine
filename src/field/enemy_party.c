@@ -394,7 +394,7 @@ static u32 GetTrainerTypeMask(u8 trainerClass)
     case TRAINERCLASS_ELITE_FOUR_KAREN:
         return (1u << TYPE_DARK);
     case TRAINERCLASS_CHAMPION:
-        return (1u << TYPE_DRAGON) | (1u << TYPE_FLYING);
+        return (1u << TYPE_DRAGON);
     case TRAINERCLASS_BEAUTY:
         return (1u << TYPE_FAIRY) | (1u << TYPE_GRASS);
     case TRAINERCLASS_LASS:
@@ -411,6 +411,34 @@ static u32 GetTrainerTypeMask(u8 trainerClass)
 static BOOL IsTrainerFamilyException(u16 species, u8 trainerClass)
 {
     switch (species) {
+    case SPECIES_MAGIKARP:
+    case SPECIES_GYARADOS:
+        return trainerClass == TRAINERCLASS_LEADER_CLAIR || trainerClass == TRAINERCLASS_CHAMPION;
+    case SPECIES_TENTACOOL:
+    case SPECIES_TENTACRUEL:
+    case SPECIES_HORSEA:
+    case SPECIES_SEADRA:
+    case SPECIES_KINGDRA:
+    case SPECIES_LAPRAS:
+    case SPECIES_TOTODILE:
+    case SPECIES_CROCONAW:
+    case SPECIES_FERALIGATR:
+    case SPECIES_FEEBAS:
+    case SPECIES_MILOTIC:
+        return trainerClass == TRAINERCLASS_LEADER_CLAIR;
+    case SPECIES_CHARMANDER:
+    case SPECIES_CHARMELEON:
+    case SPECIES_CHARIZARD:
+    case SPECIES_AERODACTYL:
+    case SPECIES_GLIGAR:
+    case SPECIES_GLISCOR:
+    case SPECIES_SKARMORY:
+    case SPECIES_YANMA:
+    case SPECIES_YANMEGA:
+    case SPECIES_ZUBAT:
+    case SPECIES_GOLBAT:
+    case SPECIES_CROBAT:
+        return trainerClass == TRAINERCLASS_CHAMPION;
     case SPECIES_VOLTORB:
     case SPECIES_ELECTRODE:
         return trainerClass == TRAINERCLASS_JUGGLER;
@@ -660,6 +688,9 @@ void MakeTrainerPokemonParty(struct BATTLE_PARAM *bp, int num, int heapID)
     u32 typeMask = GetTrainerTypeMask(profileClass);
     // Gym subordinates borrow the type filter but none of the class exceptions.
     u8 exceptionClass = profileClass == trainerClass ? trainerClass : 0;
+    if (exceptionClass == TRAINERCLASS_LEADER_CLAIR) {
+        typeMask = 1u << TYPE_DRAGON;
+    }
 #endif
 
     int partyOrder[pokecount];

@@ -216,7 +216,6 @@ This is **not fully random**. Species and families must still appear in appropri
 - **Encounter method compatibility** remains meaningful: fishing, Surf, grass / cave encounters, Headbutt, Rock Smash, etc.
 - **Area identity** should stay coherent — typed locations favor families that match the area theme when land slots are themed.
 - No requirement that every type appear separately in both Johto and Kanto.
-- **Special encounters** — gifts, fossils, swarms, legendaries, static overworld Pokémon, etc. — need an explicit policy per category **TBD**.
 
 ## National Park and Bug-Catching Contest
 

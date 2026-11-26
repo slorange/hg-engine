@@ -74,7 +74,7 @@ def main(argv: list[str]) -> int:
         raise ValueError(f"empty slot blob {SLOT_BIN}")
 
     data = bytearray(vanilla)
-    patch_script_slot(data, SCRIPT_SLOT, slot_blob)
+    patch_script_slot(data, SCRIPT_SLOT, slot_blob, size_floor=2048)
     target.write_bytes(data)
     print(
         f"patched Misty gym slot {SCRIPT_SLOT} in {target} ({len(data)} bytes, "

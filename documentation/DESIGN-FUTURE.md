@@ -13,7 +13,6 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-2. Full Moon system](#future-2-full-moon-system) |
 | [Future-3. Unlimited learned moves](#future-3-unlimited-learned-moves) |
 | [Future-4. Map editing — world connectivity wishlist](#future-4-map-editing--world-connectivity-wishlist) |
-| [Future-5. Gym Leader Ecology Hints](#future-5-gym-leader-ecology-hints) |
 | [Future-7. Trainer party improvements](#future-7-trainer-party-improvements) |
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
@@ -158,36 +157,6 @@ Multiple legitimate paths through the world: surface roads, water routes, interc
 
 ---
 
-# Future-5. Gym Leader Ecology Hints
-
-**Prerequisite** [Wilds-6](DESIGN-WILDS.md#wilds-6-per-save-wild-ecology-shuffle). Core rules, seed behavior, documented there.
-
-## Gym Leader family location hint
-
-After first Gym clear (alongside badge, HM, TM — see [Battle-3](DESIGN-BATTLES.md#first-defeat-rewards)):
-
-The Leader offers to point the player toward **one evolutionary family** matching the Gym's type(s).
-
-Example flow (Lt. Surge, Electric):
-
-> *"As an extra reward, if there's any Electric-type you're looking for, I'll tell you where to look."*
-
-The player picks from a curated list of families for that Gym. The Leader names a **concrete location** from the player's **generated ecology**, including encounter method when relevant:
-
-> *"Chinchou can be found in Dark Cave using the Good Rod."*
-
-**Rules:**
-- One family choice per first Gym clear (not rematches unless redesigned later).
-- Hint data must come from the save's ecology tables, not hardcoded vanilla locations.
-- Give the location where the chosen family can be encountered at the lowest level in that save's ecology.
-- If that encounter is above the player's current level cap, add “once you have X badges,” where X is the minimum badge count that raises the cap to the encounter's level or higher.
-- Multi-type Leaders (Whitney, Morty) offer families from **either** qualifying type.
-- Family lists are curated per Leader — not every species of that type in the dex.
-- Blue has no type and will need special handling. Consider giving him a curated list of rare mons unavailable by other gym leaders
-
-
----
-
 # Future-7. Trainer party improvements
 
 Build on [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties).
@@ -199,7 +168,7 @@ Build on [Battle-5](DESIGN-BATTLES.md#battle-5-generated-trainer--gym-parties).
 ## Roster curation
 
 - Create a usable Sketched moveset for Smeargle before adding it to the eligible pool.
-- Curate narrower species lists for Lance and Clair, and consider curated lists for other trainer classes as needed.
+- Consider curated lists for other trainer classes as needed.
 - Mitigate shared team weaknesses. Distinguish 2× and 4× weaknesses so Brock doesn't end up with 4× Grass weaknesses.
 
 ## Moveset and stat tuning
@@ -339,7 +308,7 @@ A trainer may ask for a species location. If the player has encountered the requ
 
 ### Encounter information
 
-Trainers may tell the player where undiscovered species can be found (ecology data). **Gym Leaders:** structured first-clear hint — [Future-5](#future-5-gym-leader-ecology-hints).
+Trainers may tell the player where undiscovered species can be found (ecology data). Gym Leaders offer [Pokémon hints](DESIGN-BATTLES.md#pokémon-hints) after the first Gym clear and after rematch wins.
 
 ### Pokémon trades / item trading
 
@@ -368,7 +337,9 @@ Investigate map-level trainer generation, movement, placement, location-weighted
 
 A shared research organization with representatives in every Pokémon Center. The representative is a service in the shared hub ([World-5](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub)), so the player can register finds and claim rewards from any Center.
 
-The society handles three related collection systems: **Arceus Plate** research, **Unown** research, and **Pokédex** completion rewards.
+The society handles **Arceus Plate** research, **Unown** research, and **Pokédex** completion rewards. Its representatives also bring fossil Pokémon back to life when the player brings them the corresponding fossil.
+
+The society also awards starter Pokémon. The research milestones or other requirements for earning them are still open.
 
 ## Plate research
 
@@ -481,7 +452,6 @@ Working scores for what to build next. [Future-14](#future-14-other-potential-ch
 | [Future-7](#future-7-trainer-party-improvements) Trainer party improvements | 7 | 3 | 2 | 1 | 1 | 3 | — |
 | [Future-11](#future-11-pokémon-research-society) Pokémon Research Society | 7 | 3 | 3 | 2 | 2 | 3 | — |
 | [Future-3](#future-3-unlimited-learned-moves) Unlimited moves | 6 | 3 | 3 | 5 | 5 | 5 | — |
-| [Future-5](#future-5-gym-leader-ecology-hints) Gym Leader Ecology Hints | 5 | 2 | 2 | 2 | 3 | 2 | — |
 | [Future-1](#future-1-daycare-breeding--ev-training) Daycare, Breeding & EV Training | 4 | 2 | 3 | 2 | 2 | 1 | — |
 | [Future-4](#future-4-map-editing--world-connectivity-wishlist) Map connectivity | 2 | 4 | 2 | 4 | 1 | 3 | — |
 | [Future-2](#future-2-full-moon-system) Full moon | 1 | 1 | 1 | 2 | 2 | 1 | — |

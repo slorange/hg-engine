@@ -728,7 +728,7 @@ $(SCR_SEQ_NARC): scripts/build/patch_goldenrod_story.py
 $(SCR_SEQ_NARC): scripts/build/patch_route34_story.py
 $(SCR_SEQ_NARC): scripts/build/patch_ilex_kimono.py
 
-$(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) $(SCR_SEQ_NEW_BARK_PATCH_DEPS) $(SCR_SEQ_VIOLET_GATE_PATCH) armips/include/openworld_story_skip_flags.inc include/config.h scripts/build/patch_bug_contest_daily.py scripts/build/patch_route30_apricorn_box.py scripts/build/patch_route30_story.py tools/append_scr_seq_script.py scripts/build/patch_shard_traders.py scripts/build/patch_field_hm_badges.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py scripts/build/patch_center_rest.py scripts/build/patch_center_researchers.py
+$(SCR_SEQ_NARC): $(SCR_SEQ_DEPENDENCIES) $(SCR_SEQ_PATCH_ONLY) armips/include/gym_pokemon_hint_menu.inc $(SCR_SEQ_NEW_BARK_PATCH_DEPS) $(SCR_SEQ_VIOLET_GATE_PATCH) armips/include/openworld_story_skip_flags.inc include/config.h scripts/build/patch_bug_contest_daily.py scripts/build/patch_route30_apricorn_box.py scripts/build/patch_route30_story.py tools/append_scr_seq_script.py scripts/build/patch_shard_traders.py scripts/build/patch_field_hm_badges.py scripts/build/patch_r32_outdoor_rod_guru.py scripts/build/patch_center_relearner.py scripts/build/patch_center_apricorn.py scripts/build/patch_center_abra.py scripts/build/patch_center_rest.py scripts/build/patch_center_researchers.py
 	$(PYTHON) tools/extract_scr_seq_vanilla.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_field_hm_badges.py $(SCR_SEQ_DIR)
 	$(PYTHON) scripts/build/patch_bug_contest_daily.py $(SCR_SEQ_DIR)

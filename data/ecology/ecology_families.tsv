@@ -1,8 +1,8 @@
 Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry	Nocturnal	Pairing	Encounter Methods	Required on Route	Headbutt	Rock Smash	Water type (Salt, Fresh, Cave)	Fishing / Surfing	Bug Catching Contest	Field	Mountain	Forest	Cave	Ruins	Tower
 #0001	Bulbasaur	Grass	Poison			Ice, Fire	Starter	Special				0												
-#0004	Charmander	Fire				Ice	Starter	Special				0												
+#0004	Charmander	Fire		Flying		Ice	Starter	Special				0												
 #0007	Squirtle	Water					Starter	Special				0												
-#0010	Caterpie	Bug						Common		Morning/Day		3		Headbutt				BCC			Forest			
+#0010	Caterpie	Bug		Flying				Common		Morning/Day		3		Headbutt				BCC			Forest			
 #0013	Weedle	Bug	Poison					Common		Morning/Day		3		Headbutt				BCC			Forest			
 #0016	Pidgey	Normal	Flying					Common		Morning/Day		1		Headbutt										
 #0019	Rattata	Normal						Common				2							Field					Tower
@@ -10,8 +10,8 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0023	Ekans	Poison						Common				1							Field					
 #0025	Pikachu	Electric						Rare				2							Field		Forest			
 #0027	Sandshrew	Ground				Ice		Common	Dry			2							Field	Mountain				
-#0029	Nidoran♀	Poison						Common			Nidoran♂	2							Field		Forest			
-#0032	Nidoran♂	Poison						Common			Nidoran♀	2							Field		Forest			
+#0029	Nidoran♀	Poison		Ground				Common			Nidoran♂	2							Field		Forest			
+#0032	Nidoran♂	Poison		Ground				Common			Nidoran♀	2							Field		Forest			
 #0035	Clefairy	Fairy								Morning/Night		2	Mt. Moon						Field					
 #0037	Vulpix	Fire				Ice						3							Field		Forest			Tower
 #0039	Jigglypuff	Normal	Fairy									1							Field					
@@ -22,9 +22,9 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0050	Diglett	Ground				Ice						4	Diglett's Cave		Rock Smash					Mountain		Cave		
 #0052	Meowth	Normal						Common				1							Field					
 #0054	Psyduck	Water							Wet			4				All 3	Both		Field			Cave		
-#0056	Mankey	Fighting										4		Headbutt					Field	Mountain	Forest			
+#0056	Mankey	Fighting		Ghost								4		Headbutt					Field	Mountain	Forest			
 #0058	Growlithe	Fire				Ice			Dry			2							Field					Tower
-#0060	Poliwag	Water						Common	Wet			4				Fresh/Cave	Both		Field			Cave		
+#0060	Poliwag	Water		Fighting				Common	Wet			4				Fresh/Cave	Both		Field			Cave		
 #0063	Abra	Psychic										2							Field					Tower
 #0066	Machop	Fighting										3							Field	Mountain		Cave		
 #0069	Bellsprout	Grass	Poison			Ice, Fire		Common				3	Sprout Tower						Field		Forest			
@@ -39,7 +39,7 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0088	Grimer	Poison										2										Cave	Ruins	
 #0090	Shellder	Water		Ice		Fire						2				Salt/Cave	Fish							
 #0092	Gastly	Ghost	Poison							Night		4									Forest	Cave	Ruins	Tower
-#0095	Onix	Rock	Ground			Ice						2								Mountain		Cave		
+#0095	Onix	Rock	Ground	Steel		Ice						2								Mountain		Cave		
 #0096	Drowzee	Psychic								Night		1							Field					
 #0098	Krabby	Water							Wet			4			Rock Smash	Salt	Fish		Field					
 #0100	Voltorb	Electric										1							Field					
@@ -51,17 +51,17 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0113	Chansey	Normal		Fairy				Very Rare				1							Field					
 #0114	Tangela	Grass				Ice, Fire		Rare				2							Field		Forest			
 #0115	Kangaskhan	Normal						Rare				1							Field					
-#0116	Horsea	Water										2				Salt	Both							
+#0116	Horsea	Water		Dragon								2				Salt	Both							
 #0118	Goldeen	Water						Common				2				Fresh/Cave	Both							
-#0120	Staryu	Water										2				Salt/Cave	Both							
+#0120	Staryu	Water		Psychic								2				Salt/Cave	Both							
 #0122	Mr. Mime	Psychic	Fairy					Rare				1							Field					
-#0123	Scyther	Bug	Flying					Rare				3						BCC	Field		Forest			
+#0123	Scyther	Bug	Flying	Steel				Rare				3						BCC	Field		Forest			
 #0124	Jynx	Ice	Psychic			Fire		Rare				1										Cave		
 #0125	Electabuzz	Electric						Rare				1							Field					
 #0126	Magmar	Fire			Fire	Ice		Rare				2							Field			Cave		
 #0127	Pinsir	Bug						Rare				3						BCC	Field		Forest			
 #0128	Tauros	Normal						Rare			Miltank	1							Field					
-#0129	Magikarp	Water						Common				3	Lake of Rage			All 3	Both							
+#0129	Magikarp	Water		Flying				Common				3	Lake of Rage			All 3	Both							
 #0131	Lapras	Water	Ice			Fire	Static / Gift	Special				0												
 #0132	Ditto	Normal						Rare				2	Route 34, Cinnabar Island						Field					
 #0133	Eevee	Normal					Casino / Gift	Special				0												
@@ -73,7 +73,7 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0144	Articuno	Ice	Flying				Legendary	Special				0												
 #0145	Zapdos	Electric	Flying				Legendary	Special				0												
 #0146	Moltres	Fire	Flying				Legendary	Special				0												
-#0147	Dratini	Dragon				Ice		Very Rare				3	Dragon's Den			Fresh/Cave	Both							
+#0147	Dratini	Dragon		Flying		Ice		Very Rare				3	Dragon's Den			Fresh/Cave	Both							
 #0150	Mewtwo	Psychic					Legendary	Special				0												
 #0151	Mew	Psychic					Legendary	Special				0												
 #0152	Chikorita	Grass				Ice, Fire	Starter	Special				0												
@@ -84,7 +84,7 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0165	Ledyba	Bug	Flying					Common		Morning		3		Headbutt				BCC			Forest			
 #0167	Spinarak	Bug	Poison					Common		Night		3		Headbutt				BCC			Forest			
 #0170	Chinchou	Water	Electric									2				Cave	Both							
-#0176	Togepi	Fairy					Egg	Special				0												
+#0176	Togepi	Fairy		Flying			Egg	Special				0												
 #0177	Natu	Psychic	Flying									3		Headbutt							Forest		Ruins	
 #0179	Mareep	Electric						Common				1							Field					
 #0183	Marill	Water	Fairy						Wet			4				Fresh/Cave	Both		Field			Cave		
@@ -99,7 +99,7 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0201	Unown	Psychic					Future-12. Unown collection quest	Special				2	Ruins of Alph Inside										Ruins	
 #0202	Wobbuffet	Psychic					Casino	Special				0												
 #0203	Girafarig	Normal	Psychic					Rare				1							Field					
-#0204	Pineco	Bug										2		Headbutt							Forest			
+#0204	Pineco	Bug		Steel								2		Headbutt							Forest			
 #0206	Dunsparce	Normal					Weirdo	Special				1										Cave		
 #0207	Gligar	Ground	Flying			Ice		Rare				1								Mountain				
 #0209	Snubbull	Fairy										1							Field					
@@ -107,8 +107,8 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0213	Shuckle	Bug	Rock					Rare				2			Rock Smash							Cave		
 #0214	Heracross	Bug	Fighting									3		Headbutt				BCC			Forest			
 #0215	Sneasel	Dark	Ice			Fire				Night		3							Field	Mountain		Cave		
-#0216	Teddiursa	Normal										3							Field	Mountain	Forest			
-#0218	Slugma	Fire			Fire	Ice						1							Field					
+#0216	Teddiursa	Normal		Ground								3							Field	Mountain	Forest			
+#0218	Slugma	Fire		Rock	Fire	Ice						1							Field					
 #0220	Swinub	Ice	Ground			Fire						3							Field	Mountain		Cave		
 #0222	Corsola	Water	Rock									2				Salt	Both							
 #0223	Remoraid	Water										2				Salt	Both							
@@ -117,35 +117,35 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0227	Skarmory	Steel	Flying					Rare				2							Field	Mountain				
 #0228	Houndour	Dark	Fire			Ice			Dry	Night		1							Field					
 #0231	Phanpy	Ground				Ice						2							Field	Mountain				
-#0234	Stantler	Normal						Rare		Morning/Night		2							Field		Forest			
+#0234	Stantler	Normal		Psychic				Rare		Morning/Night		2							Field		Forest			
 #0235	Smeargle	Normal					Casino	Special				0												
 #0236	Tyrogue	Fighting					Weirdo	Special				0												
 #0241	Miltank	Normal						Rare			Tauros	1							Field					
 #0243	Raikou	Electric					Legendary	Special				0												
 #0244	Entei	Fire					Legendary	Special				0												
 #0245	Suicune	Water					Legendary	Special				0												
-#0246	Larvitar	Rock	Ground					Very Rare				2								Mountain		Cave		
+#0246	Larvitar	Rock	Ground	Dark				Very Rare				2								Mountain		Cave		
 #0249	Lugia	Psychic	Flying				Legendary	Special				0												
 #0250	Ho-Oh	Fire	Flying				Legendary	Special				0												
 #0251	Celebi	Psychic	Grass				Legendary	Special				0												
 #0252	Treecko	Grass				Ice, Fire	Starter	Special				0												
-#0255	Torchic	Fire				Ice	Starter	Special				0												
-#0258	Mudkip	Water					Starter	Special				0												
+#0255	Torchic	Fire		Fighting		Ice	Starter	Special				0												
+#0258	Mudkip	Water		Ground			Starter	Special				0												
 #0261	Poochyena	Dark						Common				2							Field		Forest			
 #0263	Zigzagoon	Normal						Common				2							Field		Forest			
-#0265	Wurmple	Bug						Common				3		Headbutt				BCC			Forest			
+#0265	Wurmple	Bug		Poison				Common				3		Headbutt				BCC			Forest			
 #0270	Lotad	Water	Grass			Ice, Fire		Common	Wet			3				Fresh	Surf		Field					
-#0273	Seedot	Grass				Ice, Fire		Common				2							Field		Forest			
+#0273	Seedot	Grass		Dark		Ice, Fire		Common				3		Headbutt					Field		Forest			
 #0276	Taillow	Normal	Flying					Common				2		Headbutt							Forest			
 #0278	Wingull	Water	Flying					Common				2				Salt	Surf							
-#0280	Ralts	Psychic	Fairy									1							Field					
-#0283	Surskit	Bug	Water									2				Fresh	Surf							
-#0285	Shroomish	Grass				Ice, Fire						3							Field		Forest	Cave		
+#0280	Ralts	Psychic	Fairy	Fighting								1							Field					
+#0283	Surskit	Bug	Water	Flying								2				Fresh	Surf							
+#0285	Shroomish	Grass		Fighting		Ice, Fire						3							Field		Forest	Cave		
 #0287	Slakoth	Normal										2							Field		Forest			
-#0290	Nincada	Bug	Ground									3		Headbutt				BCC			Forest			
+#0290	Nincada	Bug	Ground	Ghost								3		Headbutt				BCC			Forest			
 #0293	Whismur	Normal										1							Field					
 #0296	Makuhita	Fighting										2							Field	Mountain				
-#0299	Nosepass	Rock										3			Rock Smash					Mountain		Cave		
+#0299	Nosepass	Rock		Steel								3			Rock Smash					Mountain		Cave		
 #0300	Skitty	Normal						Common				1							Field					
 #0302	Sableye	Dark	Ghost					Rare				3			Rock Smash							Cave	Ruins	
 #0303	Mawile	Steel	Fairy					Rare				2							Field			Cave		
@@ -164,15 +164,15 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0324	Torkoal	Fire			Fire	Ice		Rare				1							Field					
 #0325	Spoink	Psychic										1							Field					
 #0327	Spinda	Normal					Weirdo	Special				0												
-#0328	Trapinch	Ground				Ice			Dry			2								Mountain		Cave		
-#0331	Cacnea	Grass				Ice			Dry			1								Mountain				
-#0333	Swablu	Normal	Flying									2		Headbutt					Field					
+#0328	Trapinch	Ground		Dragon		Ice			Dry			2								Mountain		Cave		
+#0331	Cacnea	Grass		Dark		Ice			Dry			1								Mountain				
+#0333	Swablu	Normal	Flying	Dragon								2		Headbutt					Field					
 #0335	Zangoose	Normal									Seviper	1							Field					
 #0336	Seviper	Poison									Zangoose	1							Field					
-#0337	Lunatone	Rock	Psychic								Solrock	2										Cave	Ruins	
-#0338	Solrock	Rock	Psychic								Lunatone	2										Cave	Ruins	
+#0337	Lunatone	Rock	Psychic							Night	Solrock	2										Cave	Ruins	
+#0338	Solrock	Rock	Psychic							Morning/Day	Lunatone	2										Cave	Ruins	
 #0339	Barboach	Water	Ground					Common				2				Fresh/Cave	Fish							
-#0341	Corphish	Water							Wet			4				Fresh/Cave	Fish		Field			Cave		
+#0341	Corphish	Water		Dark					Wet			4				Fresh/Cave	Fish		Field			Cave		
 #0343	Baltoy	Ground	Psychic									2										Cave	Ruins	
 #0345	Lileep	Rock	Grass				Fossil	Special				0												
 #0347	Anorith	Rock	Bug				Fossil	Special				0												
@@ -184,12 +184,12 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0357	Tropius	Grass	Flying			Ice, Fire		Rare				2							Field		Forest			
 #0358	Chimecho	Psychic						Rare				3							Field				Ruins	Tower
 #0359	Absol	Dark						Rare				2							Field	Mountain				
-#0361	Snorunt	Ice				Fire						2								Mountain		Cave		
+#0361	Snorunt	Ice		Ghost		Fire						2								Mountain		Cave		
 #0363	Spheal	Ice	Water		Ice	Fire			Wet			3				Salt/Cave	Surf					Cave		
 #0366	Clamperl	Water										2				Salt/Cave	Fish							
 #0369	Relicanth	Water	Rock					Rare				2				Cave	Both							
 #0370	Luvdisc	Water						Common				2				Salt	Fish							
-#0371	Bagon	Dragon				Ice		Very Rare				2								Mountain		Cave		
+#0371	Bagon	Dragon		Flying		Ice		Very Rare				2								Mountain		Cave		
 #0374	Beldum	Steel	Psychic					Very Rare				2								Mountain			Ruins	
 #0377	Regirock	Rock					Legendary	Special				0												
 #0378	Regice	Ice					Legendary	Special				0												
@@ -201,11 +201,11 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0384	Rayquaza	Dragon	Flying				Legendary	Special				0												
 #0385	Jirachi	Steel	Psychic				Legendary	Special				0												
 #0386	Deoxys	Psychic					Legendary	Special				0												
-#0387	Turtwig	Grass				Ice, Fire	Starter	Special				0												
-#0390	Chimchar	Fire				Ice	Starter	Special				0												
-#0393	Piplup	Water					Starter	Special				0												
+#0387	Turtwig	Grass		Ground		Ice, Fire	Starter	Special				0												
+#0390	Chimchar	Fire		Fighting		Ice	Starter	Special				0												
+#0393	Piplup	Water		Steel			Starter	Special				0												
 #0396	Starly	Normal	Flying					Common				1		Headbutt										
-#0399	Bidoof	Normal						Common				1							Field					
+#0399	Bidoof	Normal		Water				Common				1							Field					
 #0401	Kricketot	Bug						Common		Morning/Night		2						BCC			Forest			
 #0403	Shinx	Electric						Common				1							Field					
 #0408	Cranidos	Rock					Fossil	Special				0												
@@ -215,7 +215,7 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0417	Pachirisu	Electric										2		Headbutt							Forest			
 #0418	Buizel	Water						Common	Wet			3				Fresh/Salt	Both		Field					
 #0420	Cherubi	Grass				Ice, Fire						2		Headbutt							Forest			
-#0422	Shellos	Water						Common	Wet			3				Fresh/Salt	Both		Field					
+#0422	Shellos	Water		Ground				Common	Wet			3				Fresh/Salt	Both		Field					
 #0425	Drifloon	Ghost	Flying									2							Field					Tower
 #0427	Buneary	Normal						Common				2							Field		Forest			
 #0431	Glameow	Normal						Common				1							Field					
@@ -224,9 +224,9 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0441	Chatot	Normal	Flying				Weirdo	Special				0												
 #0442	Spiritomb	Ghost	Dark				Weirdo	Special				0												
 #0443	Gible	Dragon	Ground			Ice		Very Rare				2								Mountain		Cave		
-#0447	Riolu	Fighting					Egg	Special				1								Mountain				
+#0447	Riolu	Fighting		Steel			Egg	Special				1								Mountain				
 #0449	Hippopotas	Ground				Ice			Dry			1								Mountain				
-#0451	Skorupi	Poison	Bug						Dry			4			Rock Smash			BCC	Field	Mountain				
+#0451	Skorupi	Poison	Bug	Dark					Dry			4			Rock Smash			BCC	Field	Mountain				
 #0453	Croagunk	Poison	Fighting					Common	Wet			1							Field					
 #0455	Carnivine	Grass				Ice, Fire						2							Field		Forest			
 #0456	Finneon	Water						Common				2				Fresh/Salt	Both							
@@ -246,4 +246,4 @@ Index	Name	Type1	Type2	Type (Vibe)	Required Tag	Avoid Tag	Special	Rarity	Wet/Dry
 #0491	Darkrai	Dark					Legendary	Special				0												
 #0492	Shaymin	Grass					Legendary	Special				0												
 #0493	Arceus	Normal					Legendary	Special				0												
-#0636	Larvesta	Bug	Fire		Fire	Ice		Special				1							Field					
+#0636	Larvesta	Bug	Fire		Fire	Ice		Very Rare				1							Field					

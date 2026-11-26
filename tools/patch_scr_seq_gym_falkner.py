@@ -122,12 +122,14 @@ def patch_slot0_openworld(data: bytearray) -> None:
     patch_script_slot(data, 0, bytes(patched))
 
 
-def patch_script_slot(data: bytearray, slot_index: int, slot_blob: bytes) -> None:
+def patch_script_slot(
+    data: bytearray, slot_index: int, slot_blob: bytes, *, size_floor: int = 1200
+) -> None:
     scripts = extract_scripts(data)
     if slot_index >= len(scripts):
         raise ValueError(f"script slot {slot_index} missing (only {len(scripts)} scripts)")
     vanilla_slot = scripts[slot_index]
-    max_slot = max(len(vanilla_slot) * 8, 1200)
+    max_slot = max(len(vanilla_slot) * 8, size_floor)
     if len(slot_blob) > max_slot:
         raise ValueError(
             f"slot {slot_index} grew suspiciously large "
@@ -141,7 +143,7 @@ def patch_script_slot(data: bytearray, slot_index: int, slot_blob: bytes) -> Non
 
 
 def patch_slot1(data: bytearray, slot1: bytes) -> None:
-    patch_script_slot(data, SCRIPT_SLOT, slot1)
+    patch_script_slot(data, SCRIPT_SLOT, slot1, size_floor=2048)
 
 
 def main(argv: list[str]) -> int:
@@ -175,7 +177,7 @@ def main(argv: list[str]) -> int:
     data = bytearray(vanilla)
     patch_slot0_openworld(data)
     for slot_index, blob in slot_blobs.items():
-        patch_script_slot(data, slot_index, blob)
+        patch_script_slot(data, slot_index, blob, size_floor=2048 if slot_index == SCRIPT_SLOT else 1200)
     target.write_bytes(data)
     print(
         f"patched Falkner gym slots 0-5 in {target} ({len(data)} bytes, "

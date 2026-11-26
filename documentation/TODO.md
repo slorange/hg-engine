@@ -26,10 +26,10 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | ---- | ------ | ------------ |
 | **KB-9: Mahogany Gym exit crash** | | Retest leaving Mahogany Gym after the Goldenrod Rocket takeover removal. |
 | **KB-23: Olivine Gym exit softlock** | | Earn Jasmine's badge as the fifth Johto badge. After exiting, verify movement and menu access with the takeover removed. |
-| **Power Plant / Machine Part (partial)** | | Verify that the Power Plant is in the expected state when the Magnet Train is available without the quest. |
+| **Gym ecology hints above the catch cap** | [Battle-3 § Pokémon hints](DESIGN-BATTLES.md#pokémon-hints) | Choose a wild hint whose lowest ordinary encounter level exceeds the current catch cap. Verify that the Leader gives the correct minimum badge count. After reaching that count, request the same hint on a rematch and verify that the badge warning is gone. |
+| **Power Plant / Machine Part** | | Verify that the Power Plant is in the expected state when the Magnet Train is available without the quest. |
 | **Ruins of Alph and roaming Unown** | [World-6](DESIGN-WORLD.md#world-6-unown-collection-quest) | On a fresh run, solve all four picture puzzles and verify each records completion. Check that neither roamer appears before the fourth puzzle and that it unlocks both. Find level 45 `!` in Johto and `?` in Kanto. Verify fleeing, HP and status persistence, the catch cap, and that a knocked-out roamer returns after the next League clear while a caught one stays gone. |
 | **Poké Ball catch rates** | [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) | Test changed balls. Cover Fast and Heavy bracket boundaries, Fast’s legendary beast bonus, Level’s anchors and intermediate ratios, Dusk’s cave floors and outdoor day/night rates, Love’s gender and Egg Group cases, Friend’s family bonus and 200 friendship, Dream’s sleep. Include non-qualifying controls. |
-| **Ground & hidden item pickups** | [World-8](DESIGN-WORLD.md#ground-and-hidden-items) | Playtest a visible ball and hidden spot, then revisit after collecting. Check that a full Bag leaves the spot available and that a retry gives the same bundle. Spot-check the randomized Ice Path pickup and fixed Mt. Moon Moon Stone. |
 
 ---
 

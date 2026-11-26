@@ -33,3 +33,31 @@ Blaine: Back for more heat?\nWant a rematch?
 Blaine: All right!\nI’ll turn up the heat!\r
 Blaine: Burned out again...\nYou’re something else.\r
 Blaine: Take that move and\nstoke your team.\fCome back when my\nFire-types are ready!\r
+Looking for a Pokémon?\nPick one and I’ll give you a lead.
+Charmander
+Vulpix
+Growlithe
+Ponyta
+Magmar
+Cyndaquil
+Slugma
+Houndour
+Torchic
+Numel
+Torkoal
+Chimchar
+No thanks
+Look for {STRVAR_1 26, 0, 0}\nin {STRVAR_1 30, 1, 0}.
+You can find {STRVAR_1 26, 0, 0}\nby surfing in {STRVAR_1 30, 1, 0}.
+Fish for {STRVAR_1 26, 0, 0} in\n{STRVAR_1 30, 1, 0} with the Old Rod.
+Fish for {STRVAR_1 26, 0, 0} in\n{STRVAR_1 30, 1, 0} with the Good Rod.
+Fish for {STRVAR_1 26, 0, 0} in\n{STRVAR_1 30, 1, 0} with the Super Rod.
+You can find {STRVAR_1 26, 0, 0} by\nsmashing rocks in {STRVAR_1 30, 1, 0}.
+You can find {STRVAR_1 26, 0, 0} by\nusing Headbutt in {STRVAR_1 30, 1, 0}.
+You’ll want {STRVAR_1 52, 0, 0} Badges\nbefore you try to catch one!
+You’ll want to enter the Hall of Fame\nbefore you try to catch one!
+The Pokémon Research Society\noffers {STRVAR_1 26, 0, 0} as a reward.
+Smash rocks to look for\n{STRVAR_1 8, 1, 0}.
+The Pokémon Research Society\ncan revive {STRVAR_1 26, 0, 0} from it.
+Exchange Coins for {STRVAR_1 26, 0, 0}\nat the Goldenrod Game Corner.
+Exchange Coins for {STRVAR_1 26, 0, 0}\nat the Celadon Game Corner.

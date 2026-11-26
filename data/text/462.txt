@@ -16,5 +16,45 @@ TM71 Stone Edge
 TM26 Earthquake
 Brock: Back for another round?\nHow about a rematch?
 Brock: All right! Show me how much\nstronger your Pokémon have grown!\r
-Brock: Your Pokémon are as tough\nas ever. You’ve earned another\freward from me!\r
+Brock: Your Pokémon are as tough\nas ever!
 Brock: I’ll keep polishing my rock\nPokémon’s defenses.\fCome back for a rematch anytime.\nI’ll be ready for you!
+Brock: Looking for a Pokémon?\nPick one and I’ll give you a lead.
+Sandshrew
+Diglett
+Geodude
+Onix
+Cubone
+Rhyhorn
+Omanyte
+Kabuto
+Aerodactyl
+Sudowoodo
+Wooper
+Gligar
+Shuckle
+Swinub
+Corsola
+Phanpy
+Larvitar
+Nosepass
+Aron
+Numel
+Trapinch
+Lileep
+Anorith
+Cranidos
+Shieldon
+Hippopotas
+No thanks
+Look for {STRVAR_1 26, 0, 0}\nin {STRVAR_1 30, 1, 0}.
+You can find {STRVAR_1 26, 0, 0}\nby surfing in {STRVAR_1 30, 1, 0}.
+Fish for {STRVAR_1 26, 0, 0} in\n{STRVAR_1 30, 1, 0} with the Old Rod.
+Fish for {STRVAR_1 26, 0, 0} in\n{STRVAR_1 30, 1, 0} with the Good Rod.
+Fish for {STRVAR_1 26, 0, 0} in\n{STRVAR_1 30, 1, 0} with the Super Rod.
+You can find {STRVAR_1 26, 0, 0} by\nsmashing rocks in {STRVAR_1 30, 1, 0}.
+You can find {STRVAR_1 26, 0, 0} by\nusing Headbutt in {STRVAR_1 30, 1, 0}.
+You’ll want {STRVAR_1 52, 0, 0} Badges\nbefore you try to catch one!
+You’ll want to enter the Hall of Fame\nbefore you try to catch one!
+The Pokémon Research Society\noffers {STRVAR_1 26, 0, 0} as a reward.
+Smash rocks to look for\n{STRVAR_1 8, 1, 0}.
+The Pokémon Research Society\ncan revive {STRVAR_1 26, 0, 0} from it.
