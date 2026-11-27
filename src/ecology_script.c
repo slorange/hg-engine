@@ -5,7 +5,6 @@
 #include "../include/constants/file.h"
 #include "../include/constants/generated/ecology_compat.h"
 #include "../include/ecology/ecology_compat_view.h"
-#include "../include/ecology/ecology_compat_view.h"
 #include "../include/ecology/ecology_generate.h"
 #include "../include/ecology/ecology_script.h"
 #include "../include/save.h"
@@ -57,18 +56,11 @@ static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
 {
     u16 *slots;
     u8 *landMasks;
-    void *compatBlob;
     EcologyWorldSave *eco;
     BOOL ok = FALSE;
 
-    compatBlob = EcologyCompatLoadFromFilesystem();
-    if (compatBlob == NULL) {
+    if (!EcologyCompatSessionEnsure()) {
         sEcologyGenDebugStage = 15;
-        return FALSE;
-    }
-    if (!EcologyCompatBindBlob(compatBlob)) {
-        sys_FreeMemoryEz(compatBlob);
-        sEcologyGenDebugStage = 16;
         return FALSE;
     }
 
@@ -81,8 +73,6 @@ static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
         if (landMasks != NULL) {
             sys_FreeMemoryEz(landMasks);
         }
-        EcologyCompatUnbind();
-        sys_FreeMemoryEz(compatBlob);
         sEcologyGenDebugStage = 17;
         return FALSE;
     }
@@ -111,13 +101,35 @@ static BOOL EcologyGenerateIntoSession(void *saveData, u32 seed)
     sys_FreeMemoryEz(slots);
     sys_FreeMemoryEz(landMasks);
 
-    if (!ok) {
-        EcologyCompatUnbind();
-        sys_FreeMemoryEz(compatBlob);
-    } else {
+    if (ok) {
         sEcologyGenDebugStage = 21;
     }
     return ok;
+}
+
+void EcologyRefreshForEncounter(void)
+{
+    SaveData *saveData = SaveBlock2_get();
+    if (saveData == NULL) {
+        return;
+    }
+
+    EcologyWorldSave *eco = EcologySaveGetMutable(saveData);
+    struct SAVE_MISC_DATA *misc = Sav2_Misc_get(saveData);
+    if (eco == NULL || misc == NULL
+        || (EcologySaveIsValid(eco) && eco->compatVersion == ECOLOGY_COMPAT_VERSION)) {
+        return;
+    }
+
+    const EcologyWorldSave *previous = &misc->ecologyWorldSave;
+    if (previous->magic != ECOLOGY_SAVE_MAGIC || previous->compatVersion == ECOLOGY_COMPAT_VERSION
+        || previous->slotCount == 0) {
+        return;
+    }
+
+    if (EcologyGenerateIntoSession(saveData, previous->worldSeed)) {
+        EcologySaveWriteFlash(misc, eco);
+    }
 }
 
 void EcologyRunNewGameGeneration(void *saveData)

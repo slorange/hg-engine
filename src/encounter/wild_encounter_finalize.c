@@ -12,6 +12,7 @@
 #include "wild_level_caps.h"
 
 #ifdef IMPLEMENT_ECOLOGY_GENERATION
+#include "ecology/ecology_script.h"
 #include "ecology/ecology_encounter.h"
 #endif
 
@@ -243,6 +244,9 @@ static u16 WildEncounterFinishMon(struct PartyPokemon *pp, u16 vanillaTableSpeci
 
     u8 form;
     BOOL roaming = FALSE;
+#ifdef IMPLEMENT_ECOLOGY_GENERATION
+    EcologyRefreshForEncounter();
+#endif
     if (TryPickUnownForm(ecologyMethod, useExplicitMethod, lead, allowRoamer, &form)) {
         u16 species = SPECIES_UNOWN;
         roaming = form >= UNOWN_ROAMER_FIRST_FORM;

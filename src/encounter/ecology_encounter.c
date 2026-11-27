@@ -41,7 +41,8 @@ BOOL EcologyFindHint(u16 species, struct EcologyHint *hint)
     u16 slotBases[ECOLOGY_NUM_GROUPS * ECOLOGY_METHOD_COUNT];
     u16 family;
     hint->level = 0;
-    if (!EcologySaveIsValid(eco) || !EcologyCompatSessionEnsure()
+    if (!EcologySaveIsValid(eco) || eco->compatVersion != ECOLOGY_COMPAT_VERSION
+        || !EcologyCompatSessionEnsure()
         || EcologyGenBuildSlotLayout(slotBases) == 0) {
         return FALSE;
     }
@@ -155,7 +156,7 @@ static u16 RollEcologySpecies(u8 encBank, u8 method, u8 ability)
     }
 
     eco = EcologySaveGetMutable(SaveBlock2_get());
-    if (eco == NULL || !EcologySaveIsValid(eco)) {
+    if (!EcologySaveIsValid(eco) || eco->compatVersion != ECOLOGY_COMPAT_VERSION) {
         return 0;
     }
     if (!EcologyCompatSessionEnsure()) {

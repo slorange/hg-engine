@@ -6,6 +6,7 @@
 
 #if defined(IMPLEMENT_ECOLOGY_GENERATION)
 void EcologyRunNewGameGeneration(void *saveData);
+void EcologyRefreshForEncounter(void);
 void EcologySetGenDebugStage(u8 stage);
 u8 EcologyGetGenDebugStage(void);
 #endif
