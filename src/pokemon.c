@@ -1320,7 +1320,11 @@ u16 LONG_CALL get_mon_ow_tag(u16 species, u32 form, u32 isFemale)
         ret += GetSpeciesBasedOnForm(species, form);
     }
 
-    if (form != 0 && ObjectEvent_GetGraphicsInfo(ret) == NULL) {
+    // Continue can resolve a follower tag before overlay 131 loads the graphics table.
+    // Every valid Unown form has a sprite, so it can skip the check. Other species
+    // with alternate forms still use the early lookup and can hit the same crash.
+    if (form != 0 && !(species == SPECIES_UNOWN && form <= 27)
+        && ObjectEvent_GetGraphicsInfo(ret) == NULL) {
         return get_mon_ow_tag(species, 0, isFemale);
     }
 

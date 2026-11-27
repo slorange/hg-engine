@@ -261,6 +261,16 @@ If **131** reads a **NULL / stale / garbage** global while **`view`** is valid, 
 
 **Was:** Wild **`PokeParaSet`** used OTID **0**; sparkle in battle could disagree with party after catch.
 
+### Crash on Continue with an alternate-form follower
+
+**Observed:** Losing to Morty crashed after the whiteout message and before the Pokémon Center appeared. A clean emulator restart also crashed immediately after Continue with level 26 Unown E leading the party. Continue reproduced on both rollback builds, before the ecology regeneration and Gym Leader hint changes. The Unown fix was confirmed in-game on the rollback build for Continue.
+
+**Diagnosis:** The reported undefined instruction `0x93012301` landed 12 bytes into `WildEncSingle` in ARM mode. The address moved with the build, from `0x023DA710` to `0x023DA6A0`. Morty’s Gym has no wild encounter bank. The link register and stack instead pointed to follower setup and `ObjectEvent_GetGraphicsInfo`. Treat the reported PC as where execution landed.
+
+**Debugger check:** Break at ARM9 `0x021F92DC` during Continue and read the graphics tag in R0. Unown E uses `0x0F94`. In the rollback build, its six-byte entry at `0x023D2DDC` was zero at lookup entry even though the ROM contained `94 0F F9 06 27 4E`. The crash also preceded the return from the field overlay load at `0x0203DF14`. If addresses move, read the packed table pointer from overlay 1 at `0x021F92FC` and locate the tag in the overlay 131 graphics table. That lookup scans for the tag or the end marker and requires the table to be loaded.
+
+**Fix and remaining scope:** `get_mon_ow_tag` in `src/pokemon.c` skips the graphics existence lookup for the 28 valid Unown forms because they all have follower entries. Other alternate-form Pokémon still use the lookup and could hit the same crash if their tag is resolved before overlay 131 loads. A general fix needs to preserve the base-form fallback for species whose alternate forms have no follower sprite. Retest both Continue and blackout return if the symptom comes back.
+
 ### KB-20 — Wild encounter crash (single-tester report)
 
 **Resolved (Nov 2026) — emulator setting, not a ROM bug:** the tester fixed it by changing DeSmuME **Config → 3D Settings → 3D Rendering Engine** from **SoftRasterizer** to **OpenGL 3.2**. Removed from [TODO.md](TODO.md#known-bugs). If a wild-encounter crash is reported again, ask for the renderer setting first. Original notes below.
