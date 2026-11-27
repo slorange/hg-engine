@@ -2,7 +2,7 @@
 
 Deferred systems and wishlist items. **Sections are not listed in intended implementation order**
 >
-> **Index:** [`DESIGN.md`](DESIGN.md) · **Identity:** [Index-2 — Game Identity](DESIGN.md#index-2-game-identity)
+> **Index:** [`DESIGN.md`](DESIGN.md)
 >
 
 ## Sections
@@ -17,6 +17,7 @@ Deferred systems and wishlist items. **Sections are not listed in intended imple
 | [Future-8. Dynamic battle rosters & universal PC](#future-8-dynamic-battle-rosters--universal-pc) |
 | [Future-10. Living trainers & interactions](#future-10-living-trainers--interactions) |
 | [Future-11. Pokémon Research Society](#future-11-pokémon-research-society) |
+| [Future-12. Legendary and Mythical Pokémon](#future-12-legendary-and-mythical-pokémon) |
 | [Future-14. Other potential changes](#future-14-other-potential-changes) |
 | [Priority](#priority) |
 
@@ -335,77 +336,99 @@ Investigate map-level trainer generation, movement, placement, location-weighted
 
 # Future-11. Pokémon Research Society
 
-A shared research organization with representatives in every Pokémon Center. The representative is a service in the shared hub ([World-5](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub)), so the player can register finds and claim rewards from any Center.
+The Pokémon Research Society has representatives in every [Pokémon Center hub](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub). Players can register discoveries, claim rewards, and revive Fossil Pokémon at any Center.
 
-The society handles **Arceus Plate** research, **Unown** research, and **Pokédex** completion rewards. Its representatives also bring fossil Pokémon back to life when the player brings them the corresponding fossil.
-
-The society also awards starter Pokémon. The research milestones or other requirements for earning them are still open.
+The Society tracks Arceus Plates, [Unown forms](DESIGN-WORLD.md#world-6-unown-collection-quest), and Pokédex entries. Its rewards include items and Pokémon unavailable through regular ecology, including additional starters and, eventually, legendary or mythical Pokémon.
 
 ## Plate research
 
-All **17** Arceus Plates, including the **Pixie Plate**, are distributed throughout Johto and Kanto.
+All **17 plates**, including the Pixie Plate, are distributed across Johto and Kanto. Some are reserved for the postgame to gate the final reward. The researcher registers each plate and returns it to the player.
 
-The player shows plates to a researcher, who registers them and gives them back. Plates are never consumed.
+Proposed locations
 
-Each newly registered plate unlocks one Pokémon reward. Rewards progress through tiers, and the player chooses one Pokémon from the current tier.
+- **Pixie Plate** — Route 34 trainer trio
+- **Splash Plate** — Lapras's spot in Union Cave
+- **Meadow Plate** — Sprout Tower reward
+- **Iron Plate** — top of Olivine Lighthouse
+- **Icicle Plate** — Ice Path replacing HM07 Waterfall
+- **Draco Plate** — Dragon's Den quiz reward
 
-Most plates are found loose in caves and optional areas. Locations may be randomized per save. Some sit behind badge-gated field obstacles ([World-3](DESIGN-WORLD.md#world-3-hms-and-field-moves)).
+Plates will be boosted to grant a larger damage bonus than ordinary type-boosting items.
 
-Some plates may instead be tied to a specific encounter:
+### Hidden Power
 
-| Plate | Encounter |
-| ----- | --------- |
-| Flame, Zap, Icicle | Legendary birds |
-| Splash | Red Gyarados |
-| Mind | Mewtwo |
+Using a plate on a Pokémon sets its Hidden Power to the plate's type. The plate is not consumed.
 
-The challenge is collecting plates across the whole world. Each find stays a modest exploration goal.
+## Progress tracking
 
-Plates may grant a stronger damage bonus than ordinary type-boosting items. Whether they do is still open.
+The three research tracks contribute to a shared progress total. Plates account for **34%**, Unown forms for **28%**, and Pokédex entries for **38%**. Each plate adds **2 percentage points**, each Unown form adds **1 percentage point**, and roughly **13 Pokédex entries** add **1 percentage point**.
 
-## Hidden Power
+Players earn prize tickets at progress milestones. The milestone thresholds are undecided.
 
-Using a plate on a Pokémon sets that Pokémon’s **Hidden Power** type to the plate’s type. The plate stays in the bag. Plates are never consumed, including when shown to the researchers above.
+## Tiered Rewards
 
-Until a plate is used, Hidden Power’s type stays IV-dependent. That roll can be any type, including **Fairy**. It skips Fairy today, because Fairy occupies the old ??? type slot; the roll should include Fairy too. The Unown collection still scales Hidden Power’s power ([World-6](DESIGN-WORLD.md#world-6-unown-collection-quest)).
+Players redeem tickets for Pokémon or items in five reward tiers. Each prize can be claimed once. When redeeming another ticket, the player sees only the remaining options.
 
-## Pokémon rewards
+| Tier | Pokémon rewards |
+| ---- | --------------- |
+| 1 | Kecleon, Delibird, Spinda, Chatot |
+| 2 | 12 starter Pokémon |
+| 3 | Togepi, Wynaut, Riolu, Eevee |
+| 4 | Lapras, Munchlax, Spiritomb |
+| 5 | Six Mythical Pokémon opportunities |
 
-| Tier | Plates | Rewards |
-| ---- | ------ | ------- |
-| 1 | 1–4 | Kecleon, Delibird, Spinda, Chatot |
-| 2 | 5–7 | Dunsparce, Wynaut, Tyrogue |
-| 3 | 8–10 | Togepi, Riolu, Eevee |
-| 4 | 11–13 | Lapras, Munchlax, Spiritomb |
-| 5 | 14–15 | Shaymin, Manaphy |
-| 6 | 16–17 | Undecided mythical, Arceus |
+Togepi, Wynaut, Riolu, and Munchlax are awarded as Eggs. The other Pokémon in tiers 1–4 are awarded directly. See [Items-1](DESIGN-ITEMS.md#items-1-item-acquisition-channels) for possible item rewards. Their tiers are undecided.
 
-Tiers **1–5** are obtainable before the Elite Four. Tiers **1–4** are awarded as eggs.
+### Mythical Pokémon
 
-Tiers **5** and **6** are location reports. The researcher describes newly detected activity, and the player investigates. **Arceus** is the final reward, potentially encountered at **Sinjoh Ruins**.
+Tier 5 generally gives players a clue about a sighting or an encounter. Manaphy is awarded as an Egg.
 
-The last two plates are reserved for postgame areas, potentially **Cerulean Cave** and **Mt. Silver**.
+- **Mew** — Nugget Bridge or outside the S.S. Aqua
+- **Deoxys** — the Route 3 meteorites
+- **Manaphy** — Egg reward
+- **Celebi** — GS Ball reward
+- **Shaymin** — Erika's Gym
+- **Jirachi** — Olivine Lighthouse
 
-**Wobbuffet** (tier 2) and **Eevee** (tier 3) are also Game Corner prizes ([Items-2](DESIGN-WORLD.md#pokémon-prizes)).
+## Bonus rewards
 
-## Pokédex research
+Registering every plate earns the **Azure Flute**. Bringing it to the Ruins of Alph brings us to the Sinjoh Ruins for an Arceus encounter.
 
-The same organization could also manage Pokédex completion rewards ([Items-1](DESIGN-ITEMS.md#pokédex-milestone-rewards)).
+Completing the Unown collection and completing the Pokédex also earn bonus rewards. The rewards are undecided.
 
-Milestones grant items, or location information for other legendary and mythical Pokémon.
+---
 
-The same researchers provide an unlimited supply of TM10 after the player completes the [Unown collection quest](DESIGN-WORLD.md#world-6-unown-collection-quest). Additional rewards for individual forms remain open.
+# Future-12. Legendary and Mythical Pokémon
 
-## Open design questions
+Legendary and Mythical Pokémon are found through fixed encounters, roaming, and special events. Some encounters keep their vanilla locations, while others give players a reason to revisit landmarks in Johto and Kanto. The [Pokémon Research Society](#future-11-pokémon-research-society) helps players find several Mythical Pokémon.
 
-- Organization name and NPC presentation.
-- Pokédex milestones and reward structure.
-- What the researchers give for each newly registered Unown form.
-- Whether plate locations are randomized, and how hints work.
-- How plates are split between exploration, encounters, and Pokédex rewards.
-- Which mythical shares tier 6 with Arceus.
-- Whether plates deal more damage than ordinary type-boosting items.
-- Whether plate rewards and Pokédex rewards stay separate tracks or become more integrated.
+## Johto and Kanto landmarks
+
+Articuno stays in the Seafoam Islands and Zapdos stays outside the Power Plant. Moltres moves from Mt. Silver to Cinnabar Island, which also hosts Regirock and Heatran. Regice joins Articuno in the Seafoam Islands, and Registeel joins Zapdos outside the Power Plant. Cerulean Cave is home to both Mewtwo and Regigigas.
+
+At shared locations with a vanilla encounter, that Pokémon appears first. The added Pokémon appear after a later unlock. One option is to require the player to catch the original Pokémon and clear the Elite Four. The final condition is undecided.
+
+Raikou and Entei roam Johto, while Suicune's encounter remains on Route 25. Lugia stays in the Whirl Islands and Ho-Oh stays in Bell Tower. Uxie, Mesprit, and Azelf are all found at the Lake of Rage.
+
+## Roamers and shared questlines
+
+Latias and Latios both roam Kanto on the same save. The Power Plant restoration quest has been removed. The new trigger for Latias and Latios is undecided.
+
+The Embedded Tower houses Kyogre, Groudon, and Rayquaza. Players can encounter both Kyogre and Groudon on one save, allowing them to pursue Rayquaza without a version-exclusive trade. The original progression places Kyogre and Groudon after Red, using the Blue and Red Orbs respectively, and uses the Jade Orb for Rayquaza after obtaining both Pokémon.
+
+Dialga, Palkia, and Giratina are all obtainable through the Ruins of Alph and Sinjoh Ruins questline on the same save. The exact sequence for granting all three is open.
+
+## Research Society and special events
+
+The Society offers location hints for Mew, Jirachi, Deoxys, and Shaymin. Mew's location is still a choice between Nugget Bridge and the S.S. Aqua harbor. Jirachi is at the top of Olivine Lighthouse, Deoxys is at the Route 3 meteorites, and Shaymin is in Erika's Gym.
+
+The Society awards the GS Ball for Celebi's encounter at the Ilex Forest shrine and gives Manaphy as an Egg. Phione is obtained through breeding. Completing plate research earns the Azure Flute, which starts the path to Arceus at the Ruins of Alph and leads to an encounter at the Sinjoh Ruins.
+
+Cresselia and Darkrai are tied to a moon event. Its timing and encounter details are open.
+
+## Encounter requirements
+
+The location plan leaves badge gates and encounter levels open. Vanilla uses Kanto access for Articuno and 16 badges for Zapdos, Moltres, and Mewtwo. In Johto, the Burned Tower event releases Raikou and Entei, Eusine's chase leads to Suicune, and the Silver Wing and Rainbow Wing unlock Lugia and Ho-Oh respectively.
 
 ---
 
@@ -414,7 +437,6 @@ The same researchers provide an unlimited supply of TM10 after the player comple
 Ideas that do not have their own `Future-*` section yet.
 
 - **Starting city and starter selection** — move both choices from Mom’s script to Oak’s intro so players make them before waking up.
-- **Silver encounters** — add an option to restore Silver at all his vanilla locations outside Team Rocket locations and scenes. Rewrite his dialogue so encounters can be played in any order, and give them independent triggers so they never require or restart other quests such as Mr. Pokémon’s Egg errand or the Farfetch’d puzzle near Azalea. Consider a few additional encounters in Kanto.
 - **Portable resting** — consider a tent, sleeping bag, or camping system that lets players rest outside towns to advance time.
 - **Move Tutor** — make special move tutoring available from any Pokémon Center through the [shared hub](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub).
 - **Specialty Trader** — let players exchange items or currencies for selected rewards through the [shared hub](DESIGN-WORLD.md#world-5-shared-pokémon-center-hub). Inventory and pricing TBD.

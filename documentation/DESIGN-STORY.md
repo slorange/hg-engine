@@ -76,9 +76,9 @@ Players should reach cities and dungeons without **story-gated Cut** on main thr
 
 Rocket grunts, hideouts, Radio Tower arc, and related roadblocks must not gate travel, Gyms, or items. Mahogany post-clear on load is the reference pattern; extend to Goldenrod basement, Radio Tower, and remaining grunts until release-complete.
 
-## Rival — remove
+## Silver — flexible encounter order
 
-No rival character: no naming, scripted intro, mandatory early battles, or badge-tier rematch arc. Strip NPCs, battle triggers, and dialogue that assume a persistent rival. Optional one-off trainers on rival-adjacent maps may return later without a “rival” story role.
+Newbarktown storyline and rocket encounters are removed. But all other encounter locations remain, and additional ones are to be added in Kanto. Encounters can be done in any order and dialogue is reworked to handle that.
 
 ## Gyms — access and story policy
 

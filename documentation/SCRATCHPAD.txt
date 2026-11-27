@@ -1,53 +1,23 @@
 
-Legendary / Mythical encounters
-
-Each vanilla legendary spot could roll uncaught legendaries on map load when the player is Champion
-examples: 
-Mewtwo slot -> Regigigas, 
-Moltres -> Heatran (or use Magma Stone somehow), RegiRock
-Zapdos -> Registeel
-Articuno -> Regice
-Red Gyarados -> Lake Trio, etc.
-
-Other Ideas
-Red has one of your missing legendaries every time you fight him. 
-After defeating him, the legendary is available immediately, where he was standing.
-Then you have to rematch the E4 to get Red to appear again.
-
-
-
 Places where the game gave a reward we've removed or moved somewhere else that now need a new reward:
-- Sprout Tower
-- Top of Lighthouse (Jasmine's Ampharos)
-- Kimono Girls (Or not?? This is Clear/Tidal bell to summon Ho-oh / Lugia but not catch I think)
+- Kimono Girls maybe. This is Clear/Tidal bell to summon Ho-oh / Lugia but not catch I think
 - Professor Oak after becoming Champion
 - Professor Elm after becoming Champion (currently master ball)
-- Beating Red
+- Beating Red, might be Red/Blue Orb for Groudon/Kyogre
 - Red Gyarados gives Red Scale which in vanilla trades for an EXP Share
-- Copycat questline in vanilla gives access to the subway once power is on, but also something about Steven in front of Vermilion pokefan and also some legendary or something I don't remember
-
-
-Other places we need rewards:
-- Dex completion milestones
-- Unown questline progression
-- Arceus Plate progression - currently have a list of eggs, but more plates than eggs - docs list mythicals as later rewards as hints but  where do they show up exactly?
-
-
+- Copycat questline in vanilla gives access to the subway once power is on, but also something about Steven in front of Vermilion pokefan triggering Lati's
 
 Items and things that need a location
-- Starter Pokemon
-- Amulet Coin (likely still available in goldenrod)
+- Most of the plates
+- Amulet Coin (goldenrod underground is gone. But we can have this replace Luck Incense in casino rewards)
 - Soothe Bell (likely still available in National Park (BCC))
 - Dowsing MCHN* (vanilla NPC in the house beside Ecruteak Gym)
-- Mew, Jirachi, Deoxys
-- Celebi (I don't think there is GS ball event in this game)
 - Red Orb / Blue Orb, used to summon Groudon / Kyogre. In vanilla Mr Pokemon gives these after you beat Red, based on version
-- Enigma Stone - vanilla came from Mystery Gift event, creats some even for the missing Latios/as
+- Enigma Stone - vanilla came from Mystery Gift event, creates some event for the missing Latios/as
 - Jade Orb for Rayquaza comes from Oak after having both Groudon and Kyogre
 - Dialga, Palkia, Giratina - Seems in vanilla if you have an arceus there's an event to get one of these
-- Cresselia / Darkrai until we have a moon event
-- Manaphy, Shaymin - currently listed as Plate research rewards but where to spawn them?
 - Silverwing / Rainbow Wing - Currently still vanilla, Radio Tower Director and Pewter city old man
 
+Also what about Safari Zone encounters??
 
-Odd Keystone questline for Spiritomb??
+Odd Keystone questline for Spiritomb?? something with Lavendar town?

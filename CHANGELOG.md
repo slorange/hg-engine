@@ -66,7 +66,7 @@ Behavior inherited from HG-Engine.
 - **Wild catch vs. badge cap** — the player cannot catch a wild Pokémon whose level is above their level cap.
 - **Special evolution lines in the wild** — trade, stone, and similar lines can appear as their evolved forms at set level thresholds.
 - **Cinnabar Island** — walking wild encounters on the island
-- **Wild held items** — species table rolls (**65%** common / **15%** rare / **20%** nothing); if still empty, **50%** chance of a random berry. With **Compound Eyes** lead: **70%** common / **30%** rare, then **always** a berry.
+- **Wild held items** — held item rates increased. Berries and Apricorns common.
 - **Per-save wild ecology** — Each new game builds a shuffled assignment of Pokémon families to habitats and encounter methods. Pokémon encounters draw from this list instead of static tables. Applies to grass, caves, Surf, fishing, Headbutt, and Rock Smash. This is not pure random, assignments are filtered based on Type, Encounter method, Rarity, etc.
 - **Wild shinies** — Rate increased to **1/128**
 
@@ -112,10 +112,13 @@ Behavior inherited from HG-Engine.
 
 ### Gyms & story
 
-- **Gym rewards** — All 16 Leaders give a badge, increase the level cap, and may give an HM based on badge count. The player then chooses a TM from that Leader’s pool, which expands based on badge count. Rematches offer the TM choice again.
-- **Lt. Surge & Erika** — Cut trees removed outside Gyms; Celadon Gym maze trees removed; Leaders reachable without Cut.
-- **Jasmine** — Secret Medicine sold at Olivine Mart.
+- **Gym rewards** — All 16 Leaders give a badge, increase the level cap, and may give an HM based on badge count. The player then chooses a TM from that Leader’s pool, which expands based on badge count. Rematches offer the TM choice again. Gym Leaders will also tell you where to find one Pokémon of their type.
+- **Lt. Surge & Erika** — Both leaders reachable without Cut.
+- **Jasmine** — Ampharos quest removed.
 - **Clair (Blackthorn)** — Battle Clair with no prior Gym badges or Rocket gates cleared; Dragon’s Den trial not required for the badge.
 - **Misty (Cerulean)** — Power Plant and Route 25 date chain skipped; Misty in Cerulean Gym from the start.
-- **Blue (Viridian)** — Seven Kanto badge gate removed; Blue in Viridian Gym from the start; overworld appearance on Cinnabar removed.
-- **Broader story skip** — Azalea/Mahogany Rocket skipped, Elm lab errand skipped.
+- **Blue (Viridian)** — Blue available in Viridian Gym from the start.
+- **Broader story skip** — Azalea/Mahogany Rocket skipped.
+
+### Misc.
+- **Unown quest** — The 28 Unown forms are scattered across Johto and Kanto. Each new form you catch permanently boosts every Unown’s stats and increases Hidden Power’s base power for all Pokémon. Unown has a new ability and moveset.

@@ -803,12 +803,19 @@ Vanilla Violet Gym uses **six scr_seq slots**, not just the leader. Open-world p
 |------|--------|
 | Leader and transition scripts | `armips/scr_seq/scr_seq_surge_gym_slot23.s` → `build/surge_gym_slot23.bin` and `build/surge_gym_slot22.bin` |
 | Patch / verify | `tools/patch_scr_seq_gym_surge.py build/a012/2_778`; `verify_falkner_gym_hm_patch.py` |
-| Text | `data/text/485.txt` — leader lines **0–5**; trash / fence strings **6–15**; appended **16–24** (TM labels + rematch) |
+| Text | `data/text/485.txt` — leader lines **0–5**, puzzle and Gym sign text **6–14**, TM and rematch text **15–23**, hint text **24–47** |
 | Vanilla facts | `BADGE_THUNDER`, rematch **722**, `FLAG_GOT_TM34_FROM_LT_SURGE` (**385**) |
 
 **Pool:** Shock Wave / Charge Beam (**0**); Thunder Wave (**2**); Thunder (**8**); Thunderbolt (**10**). Five-entry menu (same pattern as Brock).
 
-The first win opens the fences and removes all six collision objects (**0–5**), setting their shared hide flag (**794**). On transition, slot **22** repairs earlier saves that have the Thunder Badge without that flag. The vanilla transition behavior and trash-can puzzle remain active before the first win.
+The first win opens the fences and removes all six collision objects (**0–5**), setting their shared hide flag (**794**). The vanilla transition makes the objects invisible with `VanishOverworld`, which leaves their collision active. Slot **22** repairs earlier saves that have the Thunder Badge without flag **794**. Write the badge check to `VAR_TEMP_x4000` in the transition script. Writing to `VAR_SPECIAL_RESULT` (**0x800C**) crashed on entry because the transition runs without the dialogue task environment. The vanilla transition behavior and trash-can puzzle remain active before the first win.
+
+### Gym Leader Pokémon hints
+
+- **Reward entry points.** After a first clear or rematch win, call the shared `armips/include/gym_pokemon_hint_menu.inc` routine at `_tm_grant`. A Bag-full retry jumps directly to `_tm_menu` so the player only gets one hint per win. Whitney enters the reward flow at her post-chase badge handoff. Pryce uses the existing append-only extension. Blue skips hints.
+- **Scrollable menu.** Use `ListLocalText`, `AddListOption`, and `ShowList`. Set every option’s highlight message to **255**. Using **254** replaced the question with a blank description when the menu opened. Store the list selection in a separate variable from the lookup result. The list command truncates choice values to eight bits, so pass roster indices even for species with IDs above 255.
+- **Roster and text.** In `src/script_new_cmds.c`, keep each Leader’s species array in the same order as the consecutive labels in that Gym’s text bank. Use the engine species constants, since the ecology TSV’s index can disagree with its label (Togepi is one example). Preserve blank message slots when adding labels and use the ROM charmap’s apostrophe, as in Farfetch’d.
+- **Wild lookup.** The encounter overlay looks up the family in the current save and ranks locations by the lowest ordinary encounter level for that starting city. Check the actual encounter bank’s method rate before suggesting a map, since grouped cave floors can differ. Pass the map ID to `buffer_map_sec_name`. Game Corner and Research Society routes are handled separately from wild lookup. The Society reward and revival dialogue can be present before the corresponding services are implemented.
 
 ### Fuchsia Gym — Janine + Gym TM choice pool
 
@@ -1818,7 +1825,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 
 | Corner | Pokémon prizes (menu order) |
 | ------ | ----------------------------- |
-| Goldenrod | Rotom, Wobbuffet, Smeargle |
+| Goldenrod | Rotom, Tyrogue, Smeargle |
 | Celadon | Porygon, Eevee, Castform |
 
 | Corner | Map | scr_seq member | Text bank |
@@ -1838,7 +1845,7 @@ International HGSS prize menus are **hardcoded scr_seq** (not the unused `sDPPlG
 | Corner | Held items (menu order) |
 | ------ | ----------------------- |
 | Goldenrod | Bright Powder, Quick Claw, Wide Lens, Metronome |
-| Celadon | Focus Band, Zoom Lens, Scope Lens, Luck Incense |
+| Celadon | Focus Band, Zoom Lens, Scope Lens, Amulet Coin |
 
 **Coin costs (temporary):** every TM, held item, and Pokémon prize is **50 Coins** (`PRIZE_COIN_COST` in `patch_scr_seq_game_corner.py`). Flat pricing is a playtest shortcut. Restore tiered costs when [Future-14](DESIGN-FUTURE.md#future-14-other-potential-changes) settles Coin income.
 

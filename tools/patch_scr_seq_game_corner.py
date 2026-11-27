@@ -7,13 +7,13 @@ Goldenrod scr_seq member 910 (T25SP0101):
 
 Celadon scr_seq member 804 (T07R0501 dept 5F):
   TMs: TM58, TM41, TM49, TM67, TM82
-  Items: Focus Band, Zoom Lens, Scope Lens, Luck Incense
+  Items: Focus Band, Zoom Lens, Scope Lens, Amulet Coin
 
 Each changed prize is patched at fixed offsets from vanilla HeartGold scr_seq extract.
 All TM, held-item, and Pokémon prize costs are flattened to PRIZE_COIN_COST (temporary).
 
 Pokémon prizes (species variable passed to give_mon, all level 10):
-  Goldenrod: Rotom, Wobbuffet, Smeargle
+  Goldenrod: Rotom, Tyrogue, Smeargle
   Celadon: Porygon, Eevee, Castform
 
 See documentation/HACK-NOTES.md § Game Corner TM prizes.
@@ -82,7 +82,7 @@ CELADON_PATCHES: list[ItemPatch] = [
     (1492, 251, 230),  # Silk Scarf -> Focus Band
     (1631, 265, 276),  # Wide Lens -> Zoom Lens
     (1770, 276, 232),  # Zoom Lens -> Scope Lens
-    (1909, 277, 319),  # Metronome -> Luck Incense
+    (1909, 277, 223),  # Metronome -> Amulet Coin
 ]
 
 # Compare VAR_SPECIAL_x8006 + TakeCoins pairs per prize block (vanilla costs).
@@ -119,16 +119,16 @@ GOLDENROD_COST_PATCHES: list[CostPatch] = [
 
 # Prize Pokémon — fixed offsets in vanilla 2_910 / 2_804 (HeartGold extract).
 GOLDENROD_SPECIES_PATCHES: list[SpeciesPatch] = [
-    # Abra / Ekans / Dratini / Sandshrew → Rotom / Wobbuffet / Smeargle (purchase + nav copies)
+    # Abra / Ekans / Dratini / Sandshrew → Rotom / Tyrogue / Smeargle (purchase + nav copies)
     (2473, 63, 479),
-    (2485, 23, 202),
+    (2485, 23, 236),
     (2497, 147, 235),
     (2509, 27, 235),
     (2616, 63, 479),
-    (2652, 23, 202),
+    (2652, 23, 236),
     (2688, 27, 235),
     (2776, 63, 479),
-    (2799, 23, 202),
+    (2799, 23, 236),
     (2822, 27, 235),
 ]
 

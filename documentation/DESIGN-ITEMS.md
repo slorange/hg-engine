@@ -35,7 +35,7 @@ The matrix below is the target for **where** each item category may appear. **Be
 <col style="width:11%">
 </colgroup>
 <thead>
-<tr><th>Item category</th><th><a href="#items-4-shops">Shops</a></th><th>Ground / Hidden</th><th>Bug Contest</th><th>Pokéathlon</th><th>Battle Frontier</th><th>Pokédex rewards</th><th><a href="#items-2-tms">Game Corner</a></th></tr>
+<tr><th>Item category</th><th><a href="#items-4-shops">Shops</a></th><th>Ground / Hidden</th><th>Bug Contest</th><th>Pokéathlon</th><th>Battle Frontier</th><th>Research Society rewards</th><th><a href="#items-2-tms">Game Corner</a></th></tr>
 </thead>
 <tbody>
 <tr><td><strong>Treasures</strong> (sellables)</td><td>—</td><td>✓</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>

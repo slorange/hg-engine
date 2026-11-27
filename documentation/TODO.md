@@ -10,8 +10,6 @@ Once a change has been user tested and commit ready, remove it from this file an
 
 ## Known bugs
 
-Regressions in the **current ROM** (not incomplete design from domain sections).
-
 | ID | Symptom | Notes |
 | -- | ------- | ----- |
 | **KB-8** | Ecruteak Gym — if you enter before Burned Tower, elder cutscene runs (walk, eject) but his “Morty is out” dialogue is **blank**. | Leader slot **1** only patched; likely `614.txt` vs vanilla elder msg index — member **922**, non-leader slot. |
@@ -30,6 +28,12 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 | **Power Plant / Machine Part** | | Verify that the Power Plant is in the expected state when the Magnet Train is available without the quest. |
 | **Ruins of Alph and roaming Unown** | [World-6](DESIGN-WORLD.md#world-6-unown-collection-quest) | On a fresh run, solve all four picture puzzles and verify each records completion. Check that neither roamer appears before the fourth puzzle and that it unlocks both. Find level 45 `!` in Johto and `?` in Kanto. Verify fleeing, HP and status persistence, the catch cap, and that a knocked-out roamer returns after the next League clear while a caught one stays gone. |
 | **Poké Ball catch rates** | [Items-6](DESIGN-ITEMS.md#items-6-apricorn-economy--poké-ball-rebalance) | Test changed balls. Cover Fast and Heavy bracket boundaries, Fast’s legendary beast bonus, Level’s anchors and intermediate ratios, Dusk’s cave floors and outdoor day/night rates, Love’s gender and Egg Group cases, Friend’s family bonus and 200 friendship, Dream’s sleep. Include non-qualifying controls. |
+
+---
+
+## Battles ([DESIGN-BATTLES.md](DESIGN-BATTLES.md))
+
+- Default the battle style to **Set** for new games.
 
 ---
 
@@ -56,6 +60,8 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 ## Items ([DESIGN-ITEMS.md](DESIGN-ITEMS.md))
 
+- Reduce Apricorn tree yields from 3-5 to 2-3 Apricorns per harvest.
+
 | Item | Design | Notes |
 | ---- | ------ | ----- |
 | **Pokéathlon prizes** | [Items-1](DESIGN-ITEMS.md#items-1-item-acquisition-channels) | Update the prize exchange to stock the planned Pokéathlon rewards. |
@@ -70,14 +76,13 @@ Implemented or suspected-fixed items that still need an in-game playtest before 
 
 | Vanilla content | Cleanup |
 |-----------------|---------|
-| Ecruteak City – Burned Tower | Remove rival battle and encounter. |
-| Goldenrod City – Radio Tower | Remove disguise exposure cutscene. |
-| Goldenrod City – Underground | Remove rival battle and encounter. |
-| Victory Road – Near exit | Remove rival battle and trigger. |
-| Mt. Moon – Entrance | Remove rival battle and trigger. |
-| Dragon's Den – Lance and Clair | Remove rival multi-battle event. |
-| Dragon's Den – Weekly training | Remove recurring rival NPC. |
-| Indigo Plateau – Weekly rematches | Remove recurring rival battles. |
+| Cherrygrove City | Silver is hidden by the intro. Restore the encounter and update the dialogue. |
+| Azalea Town | The town script skips Silver's battle. Restore the encounter with an independent trigger and update the dialogue. |
+| Ecruteak City and Burned Tower | The intro hides both Silver sprites. Restore the Burned Tower encounter and verify its trigger. |
+| Victory Road, Dragon's Den, Indigo Plateau | The intro sets Silver's hide flags at these locations. Verify which triggers still run and update the dialogue. |
+| Mt. Moon | Verify the encounter and dialogue.
+| Route 22 – Giovanni event | The intro sets the hide flag for Silver's appearance. |
+| Kanto encounters | Add additional encounters in Kanto. |
 
 ### Remaining Team Rocket
 
